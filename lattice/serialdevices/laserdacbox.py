@@ -5,8 +5,8 @@ Created on Jan 26, 2011
 '''
 
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
-from labrad.types import Error
 from twisted.internet import reactor
+
 import binascii
 
 SERVERNAME = 'LaserDAC'
@@ -244,7 +244,7 @@ class DCBoxServer( SerialDeviceServer ):
         if value is not None: return value
         else: raise DCBoxError( 4 )
 
-       #DAC is 16 bit, so the function accepts voltage in mv and converts it to a sequential representation                                                                               
+    #DAC is 16 bit, so the function accepts voltage in mv and converts it to a sequential representation                                                                               
     #2500 -> 2^16 , #1250 -> 2^15
     @staticmethod
     def voltageToFormat( voltage ):
