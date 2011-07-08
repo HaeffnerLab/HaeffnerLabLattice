@@ -1,0 +1,3 @@
+include lrexp/experimenter/icons/*.svg
+include runners/*
+exclude runners/.*
