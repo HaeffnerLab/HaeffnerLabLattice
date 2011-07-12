@@ -7,6 +7,7 @@ Created on Jan 26, 2011
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet import reactor
 
+
 import binascii
 
 SERVERNAME = 'LaserDAC'

@@ -6,7 +6,6 @@ from twisted.internet.defer import returnValue, inlineCallbacks, Deferred
 from labrad.server import LabradServer, setting
 from labrad.errors import Error
 from twisted.internet.threads import deferToThread
-import time
 from twisted.internet import reactor
 import numpy as np
 from processingFunctions import processingFunctions
@@ -33,8 +32,12 @@ class dataProcessor( LabradServer ):
         outputInfo = request.getOutputInfo()
         reactor.callLater(0,request.startProcessing)
         return outputInfo
+    
+    @setting(2, returns = '*s')
+    def availableProcesses(self, c):
+        return self.processingFunctions.availableProcesses()
         
-###        
+             
     def serverConnected( self, ID, name ):
        if name is 'Data Vault':
            self.dv = self.client.data_vault

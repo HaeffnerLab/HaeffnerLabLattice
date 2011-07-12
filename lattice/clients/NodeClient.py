@@ -13,10 +13,10 @@ except:
 
 running_servers = np.array(lpcnode.running_servers().asarray)
 
-#available: 'RS Server blue','HighVoltA','HighVoltB','Agilent Server','Compensation Box'
+#available: 'RS Server blue','HighVoltA','HighVoltB',
 
 serverstostart = ['Data Vault','Serial Server','DC Box','HP Server',
-				'RS Server red','PMT server','Direct Ethernet','Time Resolved Server']
+				'RS Server red','PMT server','Direct Ethernet','Time Resolved Server','Agilent Server','Compensation Box']
 
 
 for server in serverstostart:
