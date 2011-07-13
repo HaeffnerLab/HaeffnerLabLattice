@@ -39,9 +39,9 @@ class dataProcessor( LabradServer ):
         
              
     def serverConnected( self, ID, name ):
-       if name is 'Data Vault':
-           self.dv = self.client.data_vault
-           print 'Data Vault Connected'
+        if name is 'Data Vault':
+            self.dv = self.client.data_vault
+            print 'Data Vault Connected'
 ###   
     def serverDisconnected( self, ID, name ):
         if name is 'Data Vault':
@@ -49,7 +49,7 @@ class dataProcessor( LabradServer ):
             print 'Data Vault Disconnected'
 ###
     def stopServer( self ):
-        #close all current contexsts with datavault
+        #close all current contexts with data vault
         #stop processing all the deferred threads
         pass
     
