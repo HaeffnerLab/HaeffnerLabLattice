@@ -1,69 +1,41 @@
 import labrad
 import numpy as np
 import time
-cxn = labrad.connect()
 
+#connect to LabRAD
 try:
-	lpcnode = cxn.node_lattice_pc
+	cxn = labrad.connect()
 except:
-	print 'Not all node servers running.'
-	time.sleep(2)
+	print 'Please start LabRAD Manager'
+	time.sleep(10)
 	raise()
 
+#keys are possible node servers, values is list of servers that should
+#be started on each node server
+nodeDict = {'node_lattice_pc':
+				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'RS Server red', 'PMT server', 'Direct Ethernet', 'Time Resolved Server', 'Agilent Server', 'Compensation Box'],
+				#'RS Server blue','HighVoltA','HighVoltB'
+			'node_lab_49':
+				['Serial Server', 'LaserDAC'],
+			'node_paul_s_box':
+				['Paul Box']
+			}
 
-running_servers = np.array(lpcnode.running_servers().asarray)
-
-#available: 'RS Server blue','HighVoltA','HighVoltB',
-
-serverstostart = ['Data Vault','Serial Server','DC Box','HP Server',
-				'RS Server red','PMT server','Direct Ethernet','Time Resolved Server','Agilent Server','Compensation Box']
-
-
-for server in serverstostart:
-	if server not in running_servers:
-		print 'Lattice-pc: trying to start', server
-		lpcnode.start(server)
-		#lpcnode.stream_output(server, True) ###doesn't do anythin for seom reason
-		print 'Lattice-pc node: started', server
+for node in nodeDict.keys():
+	#make sure all node servers are up
+	if not node in cxn.servers: print node + ' is not running'
 	else:
-		print 'Lattice-pc node:', server, ' already running'	
-
-try:
-	pbnode = cxn.node_paul_s_box
-except:
-	print 'Not all node servers running.'
-	time.sleep(2)
-	raise()
-
-serverstostart = ['Paul Box']
-running_servers = np.array(pbnode.running_servers().asarray)
-
-for server in serverstostart:
-	if server not in running_servers:
-		print 'Pauls Box node trying to start', server
-		pbnode.start(server)
-		print 'Pauls Box node: started', server
-	else:
-		print 'Pauls Box node:', server, ' already running'	
-
-try:
-	lab49node = cxn.node_lab_49
-except:
-	print 'Not all node servers running.'
-	time.sleep(2)
-	raise()
-
-serverstostart = ['Serial Server','LaserDAC']
-running_servers = np.array(lab49node.running_servers().asarray)
-
-for server in serverstostart:
-	if server not in running_servers:
-		print 'Lab-49 node trying to start', server
-		lab49node.start(server)
-		print 'Lab-49 node: started', server
-	else:
-		print 'Lab-49 node:', server, ' already running'	
-
-
-print 'ALL DONE'
-time.sleep(2)
+		print '\n' + 'Working on ' + node + '\n'
+		#if node server is up, start all possible servers on it that are not already running
+		running_servers = np.array(cxn.servers[node].running_servers().asarray)
+		for server in nodeDict[node]:
+			if server in running_servers: 
+				print server + ' is already running'
+			else:
+				print 'starting ' + server
+				try:
+					cxn.servers[node].start(server)
+				except:
+					print 'ERROR with ' + server
+					
+time.sleep(10)
