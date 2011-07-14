@@ -24,7 +24,7 @@ class processingFunctions():
                                                  'inputs':[
                                                            ('timestep',10**-6),
                                                            ('number_of_bins',50),
-                                                           ('background_kc/sec',0)
+                                                           ('background',0)
                                                            ]
                                                  }
                            }
@@ -53,16 +53,14 @@ class processingFunctions():
         func = self.processMap[processName]['function']
         defaultinputs = self.processMap[processName]['inputs']
         #replace the default values with provided ones
-        providedDict = {}
-        [newargs,newvals] = zip(*newinputs)
-        for defaultarg,defaultval in defaultinputs:
-            if defaultarg in newargs:
-                providedDict[defaultarg] = newvals[newargs.index(defaultarg)]
-            else:
-                providedDict[defaultarg] = defaultval
+        providedDict = dict(defaultinputs)
+        if newinputs is not None:
+            newdict = dict(newinputs)
+            for arg in providedDict.keys():
+                if arg in newdict.keys(): providedDict[arg] = newdict[arg]
         func(newdata, **providedDict)
             
-    def processTest(self, newdata, inputs):
+    def processTest(self, newdata):
         print newdata
     
     def processTimeResolvedFFT(self, newdata, timestep):
@@ -79,7 +77,7 @@ class processingFunctions():
             self.resultParams = [[('Frequency', 'Hz')], [('Strength','arb','FFT')]]
             print self.resultParams[0]
             print self.resultParams[1]
-            self.processTimeResolvedFFT(newdata)
+            self.processTimeResolvedFFT(newdata, timestep)
         else:
             for i in range(len(newdata)) :
                 timeresolved = newdata[i][1]
@@ -94,11 +92,14 @@ class processingFunctions():
                 else:
                     print 'WARNING Not All Data Same Length, Some Data Not Processed'
 
-    #@param bins: number of bins for the collected data
+    #@param number_of_bins: number of bins for the collected data
     #@param timestep: time resolution of the data
     #@param background: background counts in kc/sec 
+    
+    ### finish background subtraction routine
 
-    def heatingRateBinning(self, newdata, bins, timestep, background):
+    def heatingRateBinning(self, newdata, number_of_bins, timestep, background):
+        bins = number_of_bins
         if self.totalProcessedData is None: #first run, configuring output dimensions and setting up time axis
             firstPoint = newdata[0]
             timeresolved = np.array(firstPoint[1])
@@ -111,8 +112,8 @@ class processingFunctions():
             bintime = timestep*self.elemsperbin
             self.totalProcessedData[:,0] = np.arange(bins)*bintime#setting up the time axis
             self.resultParams = [[('Time', 'sec')], [('Counts','arb','arb')]] #convert to KC/sec
-            self.backgroundperbin = (background * 1000.) * bintime
-            self.heatingRateBinning(newdata)
+            self.backgroundperbin = (background * 1000.) * bintime #### finish this
+            self.heatingRateBinning(newdata, number_of_bins, timestep, background )
         else:
             for i in range( len( newdata ) ):
                 timeresolved = np.array(newdata[i][1])

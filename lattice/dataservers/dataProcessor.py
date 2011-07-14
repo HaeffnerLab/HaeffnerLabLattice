@@ -24,7 +24,7 @@ class dataProcessor( LabradServer ):
         self.processingFunctions = processingFunctions()
           
     @setting(1, path = '*s', dataset = 's', process='s', arguments = '*(s,v)', returns = '**s' )
-    def processData(self, c, path, dataset, process, arguments = [()]):
+    def processData(self, c, path, dataset, process, arguments = None):
         if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
         readhandle = ContextHandle(self.client, 'data_vault')
         writehandle = ContextHandle(self.client,'data_vault')
@@ -38,7 +38,7 @@ class dataProcessor( LabradServer ):
         """Returns the list of available processes"""
         return self.processingFunctions.availableProcesses()
     
-    @setting(3, process = 's', returns = '*(s,v)')
+    @setting(3, process = 's', returns = '*(sv)')
     def availableInputs(self, c, process):
         """Returns a list of tuples of available inputs with the default values for a given process"""
         if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')

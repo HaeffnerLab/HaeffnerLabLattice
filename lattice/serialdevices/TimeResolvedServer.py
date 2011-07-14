@@ -104,8 +104,9 @@ class TimeResolvedServer(LabradServer):
                     encoded = base64.b64encode(self.d['TotalMessage'])
                     if self.d['TrialCount'] is not 0:
                         yield self.dv.add([str(self.d['TrialCount']),encoded])
-                        ct = (encoded.count('B') + encoded.count('C') + encoded.count('E') + encoded.count('I') + 
-                              + encoded.count('Q') + encoded.count('g'))
+                        ###testing to see how many counts we have for a low count rate
+                        #ct = (encoded.count('B') + encoded.count('C') + encoded.count('E') + encoded.count('I') + 
+                        #      + encoded.count('Q') + encoded.count('g'))
                         print ct
                     self.d['TrialCount'] += 1
                     self.d['TotalMessage'] = ''
