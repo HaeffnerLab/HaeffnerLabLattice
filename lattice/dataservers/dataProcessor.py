@@ -23,21 +23,27 @@ class dataProcessor( LabradServer ):
             self.dv = None
         self.processingFunctions = processingFunctions()
           
-    @setting(1, path = '*s', dataset = 's', process='s', returns = '**s' )
-    def processData(self, c, path, dataset, process):
+    @setting(1, path = '*s', dataset = 's', process='s', arguments = '*(s,v)', returns = '**s' )
+    def processData(self, c, path, dataset, process, arguments = [()]):
         if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
         readhandle = ContextHandle(self.client, 'data_vault')
         writehandle = ContextHandle(self.client,'data_vault')
-        request = Request(path, dataset, process, readhandle, writehandle)
+        request = Request(path, dataset, process, readhandle, writehandle, arguments)
         outputInfo = request.getOutputInfo()
         reactor.callLater(0,request.startProcessing)
         return outputInfo
     
     @setting(2, returns = '*s')
     def availableProcesses(self, c):
+        """Returns the list of available processes"""
         return self.processingFunctions.availableProcesses()
+    
+    @setting(3, process = 's', returns = '*(s,v)')
+    def availableInputs(self, c, process):
+        """Returns a list of tuples of available inputs with the default values for a given process"""
+        if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
+        return self.processingFunctions.availableInputs(process)
         
-             
     def serverConnected( self, ID, name ):
         if name is 'Data Vault':
             self.dv = self.client.data_vault
@@ -55,12 +61,13 @@ class dataProcessor( LabradServer ):
     
 class Request():
 
-    def __init__(self, inputpath, inputdataset, process, readhandle,writehandle):
+    def __init__(self, inputpath, inputdataset, process, readhandle,writehandle, arguments):
         self.readhandle = readhandle
         self.writehandle = writehandle
         self.inputpath = inputpath
         self.inputdataset = inputdataset
         self.process = process
+        self.arguments = arguments
         self.outputfile =  inputdataset + ' ' + self.process
         self.outputpath = inputpath + ['Processed Data']
         self.pF = processingFunctions()
@@ -96,7 +103,7 @@ class Request():
     @inlineCallbacks
     def processNewData(self, newdata):
         print 'processing data'
-        yield deferToThread(self.pF.process, *(self.process, newdata))
+        yield deferToThread(self.pF.process, *(self.process, newdata, self.arguments))
         if self.pF.newResultReady:
             resultParams = self.pF.getResultParams()
             output = self.pF.returnResult()
