@@ -107,7 +107,7 @@ class TimeResolvedServer(LabradServer):
                         ###testing to see how many counts we have for a low count rate
                         #ct = (encoded.count('B') + encoded.count('C') + encoded.count('E') + encoded.count('I') + 
                         #      + encoded.count('Q') + encoded.count('g'))
-                        print ct
+                        #print ct
                     self.d['TrialCount'] += 1
                     self.d['TotalMessage'] = ''
             self.d['TotalMessage'] += readout
