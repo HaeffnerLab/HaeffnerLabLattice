@@ -23,7 +23,7 @@ class processingFunctions():
                                                  'function':self.heatingRateBinning,
                                                  'inputs':[
                                                            ('timestep',10**-6),
-                                                           ('number_of_bins',50),
+                                                           ('number_of_bins',750),
                                                            ('background',0)
                                                            ]
                                                  }
