@@ -23,8 +23,7 @@ class processingFunctions():
                                                  'function':self.heatingRateBinning,
                                                  'inputs':[
                                                            ('timestep',10**-6),
-                                                           ('number_of_bins',100),
-                                                           ('background',0)
+                                                           ('bin_duration',100*10**-6),
                                                            ]
                                                  }
                            }
@@ -57,7 +56,7 @@ class processingFunctions():
         if newinputs is not None:
             newdict = dict(newinputs)
             for arg in providedDict.keys():
-                if arg in newdict.keys(): providedDict[arg] = newdict[arg]
+                if arg in newdict.keys(): providedDict[arg] = float(newdict[arg]) #float is necessary because otherwise newdict[agr] is Value(#, None)
         func(newdata, **providedDict)
             
     def processTest(self, newdata):
@@ -92,29 +91,29 @@ class processingFunctions():
                 else:
                     print 'WARNING Not All Data Same Length, Some Data Not Processed'
 
-    #@param number_of_bins: number of bins for the collected data
-    #@param timestep: time resolution of the data
-    #@param background: background counts in kc/sec 
-    
-    ### finish background subtraction routine
 
-    def heatingRateBinning(self, newdata, number_of_bins, timestep, background):
-        bins = number_of_bins
-        if self.totalProcessedData is None: #first run, configuring output dimensions and setting up time axis
+    def heatingRateBinning(self, newdata, bin_duration, timestep):
+        """
+        @param bin_duration: duration of each bin in seconds
+        @param timestep: time resolution of the data in seconds
+        """       
+        def configureOutput(newdata, bin_duration, timestep):
+            """
+            Uses the first point to configure the output dimensions of the result
+            """
             firstPoint = newdata[0]
             timeresolved = np.array(firstPoint[1])
             b = bitarray.bitarray()
             decoded = base64.b64decode( timeresolved )
             b.fromstring( decoded )
             self.dataLength = len( b )
-            self.totalProcessedData = np.zeros([bins,2])
-            self.elemsperbin = self.dataLength / bins 
-            bintime = timestep*self.elemsperbin
-            self.totalProcessedData[:,0] = np.arange(bins)*bintime#setting up the time axis
+            self.binNumber = np.floor(self.dataLength * timestep / bin_duration)
+            self.totalProcessedData = np.zeros([self.binNumber,2])
+            self.elemsperbin = np.floor(bin_duration / timestep)
+            self.totalProcessedData[:,0] = np.arange(self.binNumber)*bin_duration#setting up the time axis
             self.resultParams = [[('Time', 'sec')], [('Counts','arb','arb')]] #convert to KC/sec
-            self.backgroundperbin = (background * 1000.) * bintime #### finish this
-            self.heatingRateBinning(newdata, number_of_bins, timestep, background )
-        else:
+            
+        def doProcess(newdata):
             for i in range( len( newdata ) ):
                 timeresolved = np.array(newdata[i][1])
                 decoded = base64.b64decode( timeresolved )
@@ -123,7 +122,12 @@ class processingFunctions():
                 if len( b ) != self.dataLength: print 'WARNING Not All Data Same Length, Some Data Not Processed'
                 else:
                     timeresolvedarr = np.array( b )
-                    newbinned = np.sum(timeresolvedarr[0:self.elemsperbin* bins].reshape(bins,self.elemsperbin),1)
-                    newbinned = newbinned - self.backgroundperbin #background subtraction
+                    newbinned = np.sum(timeresolvedarr[0:self.elemsperbin* self.binNumber].reshape(self.binNumber,self.elemsperbin),1)
                     self.totalProcessedData[:,1]  = newbinned  + self.totalProcessedData[:,1]
-                    self.newResultReady = True
+        
+        if self.totalProcessedData is None: #first run, configuring output dimensions and setting up time axis
+            configureOutput(newdata, bin_duration, timestep)
+        ####print self.totalProcessedData
+        doProcess(newdata)
+        ####print self.totalProcessedData
+        self.newResultReady = True
