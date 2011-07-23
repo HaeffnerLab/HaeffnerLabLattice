@@ -3,7 +3,6 @@ Created on Apr 7, 2011
 
 @author: lattice
 '''
-
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet.defer import returnValue
 from twisted.internet.threads import deferToThread
@@ -11,7 +10,6 @@ from labrad.types import Error
 import time
 import subprocess as sp
 from twisted.internet import reactor
-
 
 NUMCHANNELS = 16
 TIMEOUT = 1.0

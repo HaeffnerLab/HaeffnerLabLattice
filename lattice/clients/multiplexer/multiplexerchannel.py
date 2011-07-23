@@ -3,6 +3,7 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore,uic
 import os
 import RGBconverter as RGB
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 class Multiplexer_Channel(QtGui.QWidget):
     def __init__(self, server, wavelength, parent=None):
@@ -12,16 +13,21 @@ class Multiplexer_Channel(QtGui.QWidget):
             raise Exception('Please set your LABRADPATH environment variable')
         path = os.path.join(basepath,'lattice/clients/qtui/MultiplexerChannel.ui')
         uic.loadUi(path,self)
-        self.server= server
-        self.channel = self.server.get_channel_from_wavelength(wavelength)
+        self.server = server
         self.RGBconverter = RGB.RGBconverter()
+        self.wavelength = wavelength
+        self.initializeValues()
+        
+    @inlineCallbacks
+    def initializeValues(self):
+        self.channel = yield self.server.get_channel_from_wavelength(self.wavelength)
         #set initial values
-        [r,g,b] = self.RGBconverter.wav2RGB(int(wavelength))
+        [r,g,b] = self.RGBconverter.wav2RGB(int(self.wavelength))
         self.label.setStyleSheet('color:rgb(%d,%d,%d)' %(r,g,b))
-        self.label.setText(wavelength + 'nm')
-        isSelected = self.channel in server.get_selected_channels()
+        self.label.setText(self.wavelength + 'nm')
+        isSelected = self.channel in (yield self.server.get_selected_channels())
         self.checkBox.setChecked(isSelected)
-        exposure = self.server.get_exposures()[self.channel]
+        exposure = (yield self.server.get_exposures())[self.channel]
         self.spinBox.setValue(exposure)
         #connect functions
         self.connect(self.checkBox, QtCore.SIGNAL('stateChanged(int)'), self.measureChannel)
