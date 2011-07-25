@@ -6,7 +6,7 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    from MULTIPLEXER_CONTROL_test import MULTIPLEXER_CONTROL_test
-    MULTIPLEXER_CONTROL = MULTIPLEXER_CONTROL_test()
-    reactor.callWhenRunning( MULTIPLEXER_CONTROL.show )
+    from multiplexer_widgets import multiplexerWidget
+    multiplexerWidget = multiplexerWidget()
+    reactor.callWhenRunning( multiplexerWidget.show )
     sys.exit( reactor.run() )

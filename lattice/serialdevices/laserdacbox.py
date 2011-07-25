@@ -1,13 +1,10 @@
 '''
 Created on Jan 26, 2011
-
-@author: christopherreilly
+Last Modified July 25, 2011
+@author: Christopher Reilly, Michael Ramm
 '''
-
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet import reactor
-
-
 import binascii
 
 SERVERNAME = 'LaserDAC'
@@ -31,7 +28,7 @@ class DCBoxError( SerialConnectionError ):
         5:'Correct response from DC box not received, sleeping for short period'
         }
 
-class DCBoxServer( SerialDeviceServer ):
+class laserDACServer( SerialDeviceServer ):
     """
     DC Box Server
     
@@ -81,23 +78,13 @@ class DCBoxServer( SerialDeviceServer ):
         self.free = True
 
     def createDict( self ):
-        """
-        Initializes DC Box dictionary (dcDict)
-        Format is as follows:
         
-        dcDict = {
-            device:{
-                devChannels:{
-                    devChannel:{
-                        channel:(channel value)
-                        value:(state of device)
-                        }
-                    ...
-                    }
-                range:( (minValue, maxValue) )
-                }
-            ...
-            }
+        class Channel():
+            __init__(number, name, )
+        """
+        Initializes the dictionary in the form:
+        d[
+        
         """
         d = {}
         devTup = ( 'cavity', )
@@ -295,6 +282,6 @@ class DCBoxServer( SerialDeviceServer ):
 
 if __name__ == "__main__":
     from labrad import util
-    util.runServer( DCBoxServer() )
+    util.runServer( laserDACServer() )
 
 
