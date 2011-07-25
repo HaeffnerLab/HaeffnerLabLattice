@@ -9,11 +9,12 @@ from pylab import *
 #pixels = data.imageData[:,:,0] - back.imageData[:,:,0]
 
 
-[data, back, ref] = sifread('ourimage.sif')
+[data, back, ref] = sifread('ourimage2.sif')
 pixels =  data.imageData[:,:,0]
+print type(pixels)
 # Print some information about the main (data) image
 data.printInfo()
 
 # Display the image
-matshow(pixels)
+matshow(log(pixels))
 show()
