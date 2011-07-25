@@ -28,6 +28,15 @@ class DCBoxError( SerialConnectionError ):
         5:'Correct response from DC box not received, sleeping for short period'
         }
 
+class Channel():
+    "Used to store information about channels"    
+    def __init__(self, chanNumber, chanName, wavelength, range):
+        self.chanNumber = chanNumber
+        self.chanNamename = chanName
+        self.chanWL = wavelength
+        self.range = range
+        self.voltage = None
+        
 class laserDACServer( SerialDeviceServer ):
     """
     DC Box Server
@@ -56,7 +65,7 @@ class laserDACServer( SerialDeviceServer ):
         
         @raise SerialDeviceError: (For subclass author) Define regKey and serNode attributes
         """
-        self.createDict()
+        self.createInfo()
         self.queue = []
         if not self.regKey or not self.serNode: raise SerialDeviceError( 'Must define regKey and serNode attributes' )
         port = yield self.getPortFromReg( self.regKey )
@@ -74,46 +83,31 @@ class laserDACServer( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
-        self.populateDict()
+        self.populateInfo()
         self.free = True
 
-    def createDict( self ):
-        
-        class Channel():
-            __init__(number, name, )
+    def createInfo( self ):
         """
-        Initializes the dictionary in the form:
-        d[
-        
+        Initializes the list of Channels
         """
-        d = {}
-        devTup = ( 'cavity', )
-        for dev in devTup:
-            d[dev] = {'devChannels':{}}
-        cavity = ( ( '397', 0 ), ( '866', 1 ), ('422', 2) )
-        chanTup = (cavity,)
-        for dev, value in zip( devTup, chanTup ):
-            for chanPair in value:
-                d[dev]['devChannels'][chanPair[0]] = {'value':None, 'channel':chanPair[1]}
-        cavityRange = (0.0,2500.0)
-        rangeTup = ( cavityRange,)
-        for dev, value in zip( devTup, rangeTup ): d[dev]['range'] = value
-        self.dcDict = d
-    
+        self.channelList = []
+        self.channelList.append(Channel(0,'397',397,(0.0,2500.0)))
+        self.channelList.append(Channel(1,'866',866,(0.0,2500.0)))
+        self.channelList.append(Channel(2,'422',422,(0.0,2500.0)))
+        
     @inlineCallbacks
-    def populateDict(self):
+    def populateInfo(self):
         """
-        Gets the information about the current setting from the hardware
+        Gets the information about the current channels from the hardware
         """
-        for dev in self.dcDict:
-            for devChannel in self.dcDict[dev]['devChannels']:
-                channel = self.dcDict[dev]['devChannels'][devChannel]['channel']
-                comstring = str(channel)+'r'
-                yield self.ser.write(comstring)
-                encoded = yield self.ser.read(3)
-                seq = int(binascii.hexlify(encoded[0:2]),16)
-                voltage = int(round(float(seq * DAC_MAX) / (2**16 - 1)))
-                self.dcDict[dev]['devChannels'][devChannel]['value'] = voltage
+        for givenChannel in self.channelList:
+            chanNum = givenChannel.chanNumber
+            comstring = str(chanNum)+'r'
+            yield self.ser.write(comstring)
+            encoded = yield self.ser.read(3)
+            seq = int(binascii.hexlify(encoded[0:2]),16)
+            voltage = int(round(float(seq * DAC_MAX) / (2**16 - 1)))
+            givenChannel.voltage = voltage
             
     @inlineCallbacks
     def checkQueue( self ):
