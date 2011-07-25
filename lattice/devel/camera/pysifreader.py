@@ -13,8 +13,8 @@
 #	    * Redistributions in binary form must reproduce the above copyright 
 #	      notice, this list of conditions and the following disclaimer in 
 #	      the documentation and/or other materials provided with the distribution
-#	    * Neither the name of the Ecole Polytechnique Fédérale de Lausanne,
-#	      Laboratoire d'Optique Biomédicale nor the names of its contributors may
+#	    * Neither the name of the Ecole Polytechnique Fï¿½dï¿½rale de Lausanne,
+#	      Laboratoire d'Optique Biomï¿½dicale nor the names of its contributors may
 #	      be used to endorse or promote products derived from this software
 #	      without specific prior written permission.
 #	      
@@ -82,9 +82,9 @@
 #  available on request.
 #
 
-# Original MATLAB code by: © Marcel Leutenegger, November 2008
+# Original MATLAB code by: ï¿½ Marcel Leutenegger, November 2008
 #  http://www.mathworks.com/matlabcentral/fileexchange/11224
-# Ported to python by André Xuereb, October 2009
+# Ported to python by Andrï¿½ Xuereb, October 2009
 #  <andre.xuereb@soton.ac.uk>
 
 class SIFimage:
@@ -165,8 +165,11 @@ def sifread(file):
 	def readSection():
 		def readString():
 			s = readLine(f).strip()
+			print 'reading string ',s
 			n = int(s)
 			s = f.read(n)
+			print 'reading string#2', s
+			print s
 			if ((n > 0) and (s == '')) or (n < 0):
 				f.close()
 				error('Inconsistent string.')
@@ -207,19 +210,32 @@ def sifread(file):
 			o = skipandread()
 		o = toint(skipandread().split())
 		image.shutterTime = o[4:6]
-		for n in range(15):
+		print 'shutter time is 4:6 ', o
+		for n in range(8): ####used to be 15
 			o = skipandread()
+			print o
+		print 'after weird skip and read, we read in'
+		print o
 		image.frameAxis = readString()
-		image.dataType = readString()
+		print 'frame axis ', image.frameAxis
+		#print 'about to crash'
+		image.dataType = readString() #crashes here
 		image.imageAxis = readString()
 		o = skipandread().split()
 		o += skipandread().split()
 		o = toint(o)
+		print 'other information'
+		print o
 		image.imageArea = [[o[1], o[4], o[6]], [o[3], o[2], o[5]]]
 		image.frameArea=[[o[10], o[13]], [o[12], o[11]]]
 		image.frameBins=[o[15], o[14]]
+		print 'frame area',  image.frameArea
+		print 'frame bins', image.frameBins
+		print 'image area', image.imageArea
 		s = int(((1 - (image.frameArea[0][0] - image.frameArea[1][0]))/(1.*image.frameBins[0]))*((1 - (image.frameArea[0][1] - image.frameArea[1][1]))/(1.*image.frameBins[1])))
-		z = 1 + (image.imageArea[0][2] - image.imageArea[1][2])
+		z = 1 - (image.imageArea[0][2] - image.imageArea[1][2]) #switching sign here, used to be 1 +
+		print 's', s
+		print 'z', z
 		if (s != o[8]) or (o[8]*z != o[7]):
 			f.close()
 			error('Inconsistent image header.')
@@ -235,6 +251,7 @@ def sifread(file):
 		readString()
 		o = skipandread().split()
 		next = int(o[0])
+		print 'mysterious next ', next
 		return [image, next]
 
 	if not path.exists(file):
@@ -261,7 +278,8 @@ def sifread(file):
 			ref = SIFimage()
 	else:
 		back = SIFimage()
-		ref = copy(back)
+		print 'weird copy command'
+		####ref = copy(back)
+		ref = SIFimage()
 	f.close()
-
 	return [data, back, ref]
