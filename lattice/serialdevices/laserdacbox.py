@@ -50,6 +50,8 @@ class laserDACServer( SerialDeviceServer ):
     port = None
     serNode = 'lab-49'
     timeout = TIMEOUT
+    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', 's')
+       
 
     @inlineCallbacks
     def initServer( self ):
@@ -75,8 +77,7 @@ class laserDACServer( SerialDeviceServer ):
                 print 'Check set up and restart serial server'
             else: raise
         self.populateInfo()
-        ####self.parent = super(self.__class___, self).parent
-        self.setupSignals()
+        self.listeners = set()
         self.free = True
 
     def createInfo( self ):
@@ -87,11 +88,7 @@ class laserDACServer( SerialDeviceServer ):
         self.channelList.append(Channel(0,'397',397,(0.0,2500.0)))
         self.channelList.append(Channel(1,'866',866,(0.0,2500.0)))
         self.channelList.append(Channel(2,'422',422,(0.0,2500.0)))
-    
-    def setupSignals(self):
-        self.listeners = set()
-        self.onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', 's')
-        
+ 
     @inlineCallbacks
     def populateInfo(self):
         
