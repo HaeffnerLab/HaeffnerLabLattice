@@ -5,7 +5,7 @@ from twisted.internet.defer import returnValue
 
 TIMEOUT = 1.0
 
-class RSblue(SerialDeviceServer):
+class RSred(SerialDeviceServer):
     """Controls Rohde and Schwartz SMB100A Signal Generator"""
     name = "%LABRADNODE% RS Server blue"
     regKey = 'RSblue'
@@ -49,38 +49,39 @@ class RSblue(SerialDeviceServer):
         state = yield self.GetState(-1) #using fake context of -1
         freq = yield self.GetFreq(-1)
         power = yield self.GetPower(-1)
-        self.rsDict['state'] = float(state) 
+        self.rsDict['state'] = float(state)
         self.rsDict['power'] = float(power)
-        self.rsDict['freq'] = float(freq)/10.**6
+        self.rsDict['freq'] = float(freq)/10.**6 #to get to Mhz 
         
     @setting(1, "Identify", returns='s')
     def Identify(self, c):
-    	'''Ask instrument to identify itself'''
-    	self.SetControllerWait(1) #expect a reply from instrument
-    	command = self.IdenStr()
-    	self.ser.write(command)
-    	answer = self.ser.readline()
-    	return answer
+        '''Ask instrument to identify itself'''
+        self.SetControllerWait(1) #expect a reply from instrument
+        command = self.IdenStr()
+        self.ser.write(command)
+        answer = self.ser.readline()
+        return answer
 
     @setting(2, "GetFreq", returns='v')
     def GetFreq(self,c):
-    	'''Returns current frequency'''
+        '''Returns current frequency in Hz'''
         if self.rsDict['freq'] is not None:
             answer = self.rsDict['freq']
         else:
-        	self.SetControllerWait(1) #expect a reply from instrument
-        	command = self.FreqReqStr()
-        	self.ser.write(command)
-        	answer = self.ser.readline()
-    	return answer
+            self.SetControllerWait(1) #expect a reply from instrument
+            command = self.FreqReqStr()
+            self.ser.write(command)
+            answer = self.ser.readline()
+        return answer
 
     @setting(3, "SetFreq", freq = 'v', returns = "")
     def SetFreq(self,c,freq):
-    	'''Sets frequency, enter value in MHZ'''
-    	self.SetControllerWait(0) #expect no reply from instrument
-    	command = self.FreqSetStr(freq)
-    	self.ser.write(command)
+        '''Sets frequency, enter value in MHZ'''
+        self.SetControllerWait(0) #expect no reply from instrument
+        command = self.FreqSetStr(freq)
+        self.ser.write(command)
         self.rsDict['freq'] = freq
+        print self.rsDict
       
     @setting(4, "GetState", returns='w')
     def GetState(self,c):
@@ -97,30 +98,30 @@ class RSblue(SerialDeviceServer):
     
     @setting(5, "SetState", state= 'w', returns = "")
     def SetState(self,c, state):
-    	'''Sets on/off (enter 1/0)'''
-    	self.SetControllerWait(0) #expect no reply from instrument
-    	command = self.StateSetStr(state)
-    	self.ser.write(command)
+        '''Sets on/off (enter 1/0)'''
+        self.SetControllerWait(0) #expect no reply from instrument
+        command = self.StateSetStr(state)
+        self.ser.write(command)
         self.rsDict['state'] = state
     
     @setting(6, "GetPower", returns = 'v')
     def GetPower(self,c):
-    	''' Returns current power level in dBm'''
+        ''' Returns current power level in dBm'''
         if self.rsDict['power'] is not None:
             answer = self.rsDict['power']
         else:
-        	self.SetControllerWait(1) #expect a reply from instrument
-        	command = self.PowerReqStr()
-        	self.ser.write(command)
-        	answer = self.ser.readline()
-    	return answer
+            self.SetControllerWait(1) #expect a reply from instrument
+            command = self.PowerReqStr()
+            self.ser.write(command)
+            answer = self.ser.readline()
+        return answer
     
     @setting(7, "SetPower", level = 'v',returns = "")
     def SetPower(self,c, level):
-    	'''Sets power level, enter power in dBm'''
-    	self.SetControllerWait(0) #expect no reply from instrument
-    	command = self.PowerSetStr(level)
-    	self.ser.write(command)
+        '''Sets power level, enter power in dBm'''
+        self.SetControllerWait(0) #expect no reply from instrument
+        command = self.PowerSetStr(level)
+        self.ser.write(command)
         self.rsDict['power'] = level
 	
     #send message to controller to indicate whether or not (status = 1 or 0)
@@ -166,4 +167,4 @@ class RSblue(SerialDeviceServer):
 
 if __name__ == "__main__":
     from labrad import util
-    util.runServer(RSblue())
+    util.runServer(RSred())

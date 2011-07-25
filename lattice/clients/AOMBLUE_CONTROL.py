@@ -4,14 +4,14 @@ from PyQt4 import QtCore,uic
 from qtui.QCustomFreqPower import QCustomFreqPower
 
 MinPower = -145 #dbM
-MaxPower = -13.5
-MinFreq = 190 #Mhz
-MaxFreq = 250
+MaxPower = 23
+MinFreq = 70 #Mhz
+MaxFreq = 90
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class AOMRED_CONTROL(QCustomFreqPower):
     def __init__(self, server,parent=None):
-        QCustomFreqPower.__init__( self, '397 Double Pass', (MinFreq,MaxFreq), (MinPower,MaxPower), parent )
+        QCustomFreqPower.__init__( self, '397 Double Pass with red AO', (MinFreq,MaxFreq), (MinPower,MaxPower), parent )
         self.server= server
         #connect functions
         self.spinPower.valueChanged.connect(self.powerChanged)
