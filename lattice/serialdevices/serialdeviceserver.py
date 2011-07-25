@@ -90,7 +90,6 @@ class SerialDeviceServer( LabradServer ):
     regKey = None
     serNode = None
     timeout = None
-
     ser = None
 
     class SerialConnection():
