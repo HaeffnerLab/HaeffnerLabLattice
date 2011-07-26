@@ -50,7 +50,7 @@ class laserDACServer( SerialDeviceServer ):
     port = None
     serNode = 'lab-49'
     timeout = TIMEOUT
-    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', 's')
+    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(sv)')
        
 
     @inlineCallbacks
@@ -197,13 +197,13 @@ class laserDACServer( SerialDeviceServer ):
     def expireContext(self, c):
         self.listeners.remove(c.ID)
     
-    def notifyOtherListeners(self, context, chanName):
+    def notifyOtherListeners(self, context, chanInfo):
         """
         Notifies all listeners except the one in the given context
         """
         notified = self.listeners.copy()
         notified.remove(context.ID)
-        self.onNewUpdate(chanName, notified)
+        self.onNewUpdate(chanInfo, notified)
     
     @setting( 0 , chanName = 's: which laser (i.e 397 )',voltage = 'v: voltage to apply',returns = '' )
     def setVoltage( self, c, chanName, voltage ):
@@ -213,7 +213,7 @@ class laserDACServer( SerialDeviceServer ):
         givenChannel = self.getChannel(chanName )
         self.validateInput( givenChannel, voltage )
         self.tryToSend( givenChannel, voltage )
-        self.notifyOtherListeners(c, chanName)
+        self.notifyOtherListeners(c, (chanName,voltage))
 
     @setting( 1 , chanName = 's: which laser (i.e 397 )',returns = 'v: voltage' )
     def getVoltage( self, c, chanName ):

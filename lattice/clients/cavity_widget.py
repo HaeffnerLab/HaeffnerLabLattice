@@ -6,9 +6,8 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 SIGNALID = 187566
 
-class widgetWrapper(widget):
+class widgetWrapper():
     def __init__(self, serverName, displayName, regName, globalRange, units = 'mV'):
-        self.parent = parent
         self.serverName = serverName
         self.displayName = displayName
         self.regName = regName
@@ -45,21 +44,20 @@ class cavityWidget(QtGui.QWidget):
         yield self.setupListeners()
         yield self.initializeGUI()
     
-    @inlineCallbacks(self):
+    @inlineCallbacks
     def loadDict(self):
         #sets the range and makes widgets
-        for widgetWrapper = self.d.values():
-            range = yield getRangefromReg( widgetWrapper.regName )
+        for widgetWrapper in self.d.values():
+            range = yield self.getRangefromReg( widgetWrapper.regName )
             widgetWrapper.range = range
             widgetWrapper.makeWidget()
     
     @inlineCallbacks
     def setupListeners(self):
-        yield self.server.signal___channel_has_been_updated()
-        yield self.serveraddListener(listener = followSignal, source = None, ID = SIGNALID)
+        yield self.server.signal__channel_has_been_updated(SIGNALID)
+        yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
     
-    @inlineCallbacks
-    def followSignal(self, chanName):
+    def followSignal(self, x, (chanName,voltage)):
         widget = self.d[chanName].widget
         widget.setValueNoSignal(voltage)
     
@@ -68,7 +66,7 @@ class cavityWidget(QtGui.QWidget):
         #get voltages
         for chanName in self.d.keys():
             voltage =  yield self.server.getvoltage(chanName)
-            d[chanName].widget.spin.setValue(voltage)
+            self.d[chanName].widget.spin.setValue(voltage)
         #lay out the widget
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
@@ -107,5 +105,5 @@ class cavityWidget(QtGui.QWidget):
     def sendToServer(self):
         for widgetWrapper in self.d.values():
             if widgetWrapper.updated:
-                yield server.setvoltage(widgetWrapper.serverName, widgetWrapper.widget.spin.value())
+                yield self.server.setvoltage(widgetWrapper.serverName, widgetWrapper.widget.spin.value())
                 widgetWrapper.updated = False
