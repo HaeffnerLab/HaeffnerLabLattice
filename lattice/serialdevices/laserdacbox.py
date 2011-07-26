@@ -1,14 +1,13 @@
 '''
 Created on Jan 26, 2011
-
-@author: christopherreilly
+Last Modified July 25, 2011
+@author: Christopher Reilly, Michael Ramm
 '''
-
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet import reactor
-
-
+from twisted.internet.defer import returnValue
 import binascii
+from labrad.server import Signal
 
 SERVERNAME = 'LaserDAC'
 PREC_BITS = 16.
@@ -20,46 +19,46 @@ TIMEOUT = 1.0
 RESP_STRING = 'r'
 #time to wait if correct response not received
 ERROR_TIME = 1.0
+SIGNALID = 270579
 
 class DCBoxError( SerialConnectionError ):
     errorDict = {
-        0:'Invalid device channel',
-        1:'Value out of range',
+        0:'Invalid channel name',
+        1:'Voltage out of range',
         2:'Queue size exceeded',
         3:'Shutter input must be boolean',
         4:'Must set value before you can retrieve',
         5:'Correct response from DC box not received, sleeping for short period'
         }
 
-class DCBoxServer( SerialDeviceServer ):
-    """
-    DC Box Server
-    
-    Serial device controlling three separate functions:
+class Channel():
+    "Used to store information about channels"    
+    def __init__(self, chanNumber, chanName, wavelength, range):
+        self.chanNumber = chanNumber
+        self.chanName = chanName
+        self.chanWL = wavelength
+        self.range = range
+        self.voltage = None
         
-        End caps
-        Compensation Electrodes
-        Shutters
+class laserDACServer( SerialDeviceServer ):
+    """
+    LaserDAC Server
+    Serial device controlling cavities and laser piezos
     """
     name = SERVERNAME
     regKey = 'LaserRoomDac'
     port = None
     serNode = 'lab-49'
     timeout = TIMEOUT
+    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', 's')
+       
 
     @inlineCallbacks
     def initServer( self ):
         """
-        Initialize DC Box server
-        
-        Initializes dictionary (dcDict) of relevant device data
-        Initializes queue (queue) for commands to send
-        Initializes serial connection
-        Frees connection for writing
-        
-        @raise SerialDeviceError: (For subclass author) Define regKey and serNode attributes
+        Initialize laserDACServer
         """
-        self.createDict()
+        self.createInfo()
         self.queue = []
         if not self.regKey or not self.serNode: raise SerialDeviceError( 'Must define regKey and serNode attributes' )
         port = yield self.getPortFromReg( self.regKey )
@@ -77,56 +76,38 @@ class DCBoxServer( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
-        self.populateDict()
+        self.populateInfo()
+        self.listeners = set()
         self.free = True
 
-    def createDict( self ):
+    def createInfo( self ):
         """
-        Initializes DC Box dictionary (dcDict)
-        Format is as follows:
+        Initializes the list of Channels
+        """
+        self.channelList = []
+        self.channelList.append(Channel(0,'397',397,(0.0,2500.0)))
+        self.channelList.append(Channel(1,'866',866,(0.0,2500.0)))
+        self.channelList.append(Channel(2,'422',422,(0.0,2500.0)))
+ 
+    @inlineCallbacks
+    def populateInfo(self):
         
-        dcDict = {
-            device:{
-                devChannels:{
-                    devChannel:{
-                        channel:(channel value)
-                        value:(state of device)
-                        }
-                    ...
-                    }
-                range:( (minValue, maxValue) )
-                }
-            ...
-            }
         """
-        d = {}
-        devTup = ( 'cavity', )
-        for dev in devTup:
-            d[dev] = {'devChannels':{}}
-        cavity = ( ( '397', 0 ), ( '866', 1 ), ('422', 2) )
-        chanTup = (cavity,)
-        for dev, value in zip( devTup, chanTup ):
-            for chanPair in value:
-                d[dev]['devChannels'][chanPair[0]] = {'value':None, 'channel':chanPair[1]}
-        cavityRange = (0.0,2500.0)
-        rangeTup = ( cavityRange,)
-        for dev, value in zip( devTup, rangeTup ): d[dev]['range'] = value
-        self.dcDict = d
+        Gets the information about the current channels from the hardware
+        """
+        for givenChannel in self.channelList:
+            chanNum = givenChannel.chanNumber
+            voltage = yield self.acquireVoltage(chanNum)
+            givenChannel.voltage = voltage
     
     @inlineCallbacks
-    def populateDict(self):
-        """
-        Gets the information about the current setting from the hardware
-        """
-        for dev in self.dcDict:
-            for devChannel in self.dcDict[dev]['devChannels']:
-                channel = self.dcDict[dev]['devChannels'][devChannel]['channel']
-                comstring = str(channel)+'r'
-                yield self.ser.write(comstring)
-                encoded = yield self.ser.read(3)
-                seq = int(binascii.hexlify(encoded[0:2]),16)
-                voltage = int(round(float(seq * DAC_MAX) / (2**16 - 1)))
-                self.dcDict[dev]['devChannels'][devChannel]['value'] = voltage
+    def acquireVoltage(self, chan):
+        comstring = str(chan)+'r'
+        yield self.ser.write(comstring)
+        encoded = yield self.ser.read(3)
+        seq = int(binascii.hexlify(encoded[0:2]),16)
+        voltage = int(round(float(seq * DAC_MAX) / (2**16 - 1)))
+        returnValue(voltage)
             
     @inlineCallbacks
     def checkQueue( self ):
@@ -140,7 +121,7 @@ class DCBoxServer( SerialDeviceServer ):
             print 'queue free for writing'
             self.free = True
 
-    def tryToSend( self, channel, value ):
+    def tryToSend( self, givenChannel, value ):
         """
         Check if serial connection is free.
         If free, write value to channel.
@@ -154,13 +135,13 @@ class DCBoxServer( SerialDeviceServer ):
         """
         if self.free:
             self.free = False
-            self.writeToSerial( channel, value )
+            self.writeToSerial( givenChannel, value )
         elif len( self.queue ) > MAX_QUEUE_SIZE:
             raise DCBoxError( 2 )
-        else: self.queue.append( ( channel, value ) )
+        else: self.queue.append( ( givenChannel, value ) )
 
     @inlineCallbacks
-    def writeToSerial( self, channel, value ):
+    def writeToSerial( self, givenChannel, value ):
         """
         Write value to specified channel through serial connection.
         
@@ -175,75 +156,84 @@ class DCBoxServer( SerialDeviceServer ):
         @raise SerialConnectionError: Error code 2.  No open serial connection.
         """
         self.checkConnection()
-        toSend = self.mapMessage( channel, value )
+        toSend = self.mapMessage( givenChannel, value )
         self.ser.write( toSend )
         resp = yield self.ser.read( len( RESP_STRING ) )
         if RESP_STRING != resp:
-#            Since we didn't get the the correct reponse,
+#            Since we didn't get the the correct response,
 #            place the value back in the front of the queue
 #            and wait for a specified ERROR_TIME before
 #            checking the queue again.
-            self.queue.insert( 0, ( channel, value ) )
+            self.queue.insert( 0, ( givenChannel, value ) )
             reactor.callLater( ERROR_TIME, self.checkQueue )
             raise DCBoxError(5)
         else:
-#            Since we got the correct reponse,
+#            Since we got the correct response,
 #            update the value entry for this channel
 #            and check the queue.
-            dev, devChannel = self.getChannelInfo( channel )
-            self.dcDict[dev]['devChannels'][devChannel]['value'] = value
+            givenChannel.voltage = value
             self.checkQueue()
 
-    def validateDevChannel( self, dev, devChannel ):
+    def getChannel( self, chanName ):
         """
-        Check to see if specified device possesses specified devChannel.
-        
-        @param dev: DC Box device
-        @param devChannel: DC Box device channel
-        
-        @raise DCBoxError: Error code 0.  Device does not possess devChannel.
+        Find the channel class corresponding to the given channel name
         """
-        d = self.dcDict
-        if devChannel not in d[dev]['devChannels'].keys(): raise DCBoxError( 0 )
+        for givenChannel in self.channelList:
+            if givenChannel.chanName == chanName:
+                return givenChannel
+        raise DCBoxError( 0 )
 
-    def validateInput( self, dev, value ):
+    def validateInput( self, givenChannel, voltage ):
         """
-        Check to see if value lies within specified device's range.
-        
-        @param dev: DC Box device
-        @param value: DC Box device value
-        
-        @raise DCBoxError: Error code 3.  Value not within device's range.
+        Check to see if value lies within specified channel's range.        
         """
-        d = self.dcDict
-        MIN, MAX = d[dev]['range']
-        if not MIN <= value <= MAX: raise DCBoxError( 1 )
+        MIN, MAX = givenChannel.range
+        if not MIN <= voltage <= MAX: raise DCBoxError( 1 )
 
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+    
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
+    
+    def notifyOtherListeners(self, context, chanName):
+        """
+        Notifies all listeners except the one in the given context
+        """
+        notified = self.listeners.copy()
+        notified.remove(context.ID)
+        self.onNewUpdate(chanName, notified)
+    
+    @setting( 0 , chanName = 's: which laser (i.e 397 )',voltage = 'v: voltage to apply',returns = '' )
+    def setVoltage( self, c, chanName, voltage ):
+        """
+        Sets the DAC Voltage on the channel with name chanName
+        """
+        givenChannel = self.getChannel(chanName )
+        self.validateInput( givenChannel, voltage )
+        self.tryToSend( givenChannel, voltage )
+        self.notifyOtherListeners(c, chanName)
 
-    @setting( 0 , devChannel = 's: which laser (i.e 397 )',
-              voltage = 'v: voltage to apply',
-              returns = '' )
-    def setCavity( self, c, devChannel, voltage ):
+    @setting( 1 , chanName = 's: which laser (i.e 397 )',returns = 'v: voltage' )
+    def getVoltage( self, c, chanName ):
         """
-        Sets end cap voltage.
+        Retrieve the DAC voltage on the channel with name chanName
         """
-        dev = 'cavity'
-        self.validateDevChannel( dev, devChannel )
-        self.validateInput( dev, voltage )
-        channel = self.dcDict[dev]['devChannels'][devChannel]['channel']
-        self.tryToSend( channel, voltage )
-
-    @setting( 1 , devChannel = 's: which laser (i.e 397 )',
-              returns = 'v: voltage' )
-    def getCavity( self, c, devChannel ):
-        """
-        Retrieve end cap voltage for specified device channel.
-        """
-        dev = 'cavity'
-        self.validateDevChannel( dev, devChannel )
-        value = self.dcDict[dev]['devChannels'][devChannel]['value']
-        if value is not None: return value
+        givenChannel = self.getChannel(chanName )
+        voltage = givenChannel.voltage
+        if voltage is not None: return voltage
         else: raise DCBoxError( 4 )
+    
+    @setting(2, returns = '*s')
+    def getChannelNames(self, c):
+        """
+        Returns the list of available channel names
+        """
+        names = []
+        for givenChannel in self.channelList:
+            names.append(givenChannel.chanName)
+        return names
 
     #DAC is 16 bit, so the function accepts voltage in mv and converts it to a sequential representation                                                                               
     #2500 -> 2^16 , #1250 -> 2^15
@@ -261,7 +251,7 @@ class DCBoxServer( SerialDeviceServer ):
         comstring = str( channel ) + ',' + numstr
         return comstring
 
-    def mapMessage( self, channel, value ):
+    def mapMessage( self, givenChannel, value ):
         """
         Map value to serial string for specified channel.
         
@@ -274,27 +264,12 @@ class DCBoxServer( SerialDeviceServer ):
         """
         def mapVoltage( value, range ):
             return ( float( value ) - float( range[0] ) ) * DAC_MAX / ( range[1] - range[0] )
-        d = self.dcDict
-        dev = self.getChannelInfo( channel )[0]
-        range = d[dev]['range']
-        if dev == 'shutter': value = range[1] if value else range[0]
-        return self.makeComString( channel, self.voltageToFormat( mapVoltage( value, range ) ) )
-
-    def getChannelInfo( self, channel ):
-        """
-        Retrieve device info from channel
-        
-        @param channel: DC Box channel
-        
-        @return: two-tuple of device and device channel assosciated with channel
-        """
-        d = self.dcDict
-        for dev in d:
-            for devChannel in d[dev]['devChannels']:
-                if d[dev]['devChannels'][devChannel]['channel'] == channel: return ( dev, devChannel )
-
+        range = givenChannel.range
+        chanNumber = givenChannel.chanNumber
+        return self.makeComString( chanNumber, self.voltageToFormat( mapVoltage( value, range ) ) )
+    
 if __name__ == "__main__":
     from labrad import util
-    util.runServer( DCBoxServer() )
+    util.runServer( laserDACServer() )
 
 

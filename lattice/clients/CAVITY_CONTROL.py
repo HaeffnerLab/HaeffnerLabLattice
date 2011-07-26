@@ -1,23 +1,28 @@
 import sys
 from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
+from PyQt4 import QtCore
 import labrad
-import os
 from labrad.types import Error
 from qtui.QCustomSliderSpin import QCustomSliderSpin
 
+####modify qcustoms liderspin not to emit signals when set with a function
+####then connect signal listener to that function
+#### combine the timing operations
+#### figure out how to integrate into GUI
+
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 GlobalRange = (0,2500)
+
 class CAVITY_CONTROL(QtGui.QWidget):
     def __init__(self, cxn ,parent=None):
         QtGui.QWidget.__init__(self, parent)
         #get initial information from servers
         self.server = cxn.laserdac
         self.registry = cxn.registry
-        [MinLevel397,MaxLevel397, MinLevel866,MaxLevel866, MinLevel422, MaxLevel422] = self.getRangefromReg()
-        val397 = self.server.getCavity('397')
-        val866 = self.server.getCavity('866')
-        val422 = self.server.getCavity('422')      
+        [MinLevel397,MaxLevel397, MinLevel866,MaxLevel866, MinLevel422, MaxLevel422] = self.getRangefromReg()      
+        val397 = self.server.getvoltage('397')
+        val866 = self.server.getvoltage('866')
+        val422 = self.server.getvoltage('422')      
         #lay out the widget
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
@@ -78,20 +83,20 @@ class CAVITY_CONTROL(QtGui.QWidget):
                 [min866,max866] = [0,2500]
                 [min422,max422] = [0,2500]
         return [min397,max397,min866,max866, min422,max422]
-	
-	#if inputs are updated by user, send the values to server
+    
+    #if inputs are updated by user, send the values to server
     def sendToServer(self):
         if(self.updated397):
             print 'CAVITY_CONTROL sending data'
-            self.server.setCavity('397',self.widg397.spin.value())
+            self.server.setvoltage('397',self.widg397.spin.value())
             self.updated397 = False
         if(self.updated866):
             print 'CAVITY_CONTROL sending data'
-            self.server.setCavity('866',self.widg866.spin.value())
+            self.server.setvoltage('866',self.widg866.spin.value())
             self.updated866 = False
         if(self.updated422):
             print 'CAVITY_CONTROL sending data'
-            self.server.setCavity('866',self.widg866.spin.value())
+            self.server.setvoltage('866',self.widg866.spin.value())
             self.updated422 = False
   
 if __name__=="__main__":
