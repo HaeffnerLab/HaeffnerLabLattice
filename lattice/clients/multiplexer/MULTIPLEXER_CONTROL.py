@@ -1,7 +1,6 @@
-from PyQt4 import QtGui, QtCore, uic
-
 if __name__=="__main__":
     import sys
+    from PyQt4 import QtGui
     a = QtGui.QApplication( [] )
     import qt4reactor
     qt4reactor.install()
