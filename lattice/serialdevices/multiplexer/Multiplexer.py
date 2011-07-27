@@ -193,7 +193,7 @@ class Multiplexer( SerialDeviceServer ):
         else:
             yield deferToThread(time.sleep, .1)
         freq = yield self._getFreq()
-        if freq is not self.info.getFreq(next): #if a new frequency is found
+        if freq is not self.info.getFreq(next) and self.info.getState(next): #if a new frequency is found and still need to measure
             self.info.setFreq(next, freq)
             self.onNewFreq((next, freq))
         reactor.callLater(0,self.measureChan)
