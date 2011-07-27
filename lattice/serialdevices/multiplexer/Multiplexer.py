@@ -77,7 +77,7 @@ class channelInfo():
     def setFreq(self, chanName, freq):
         self.channelDict[chanName].freq = freq
     
-    def getFrq(self, chanName):
+    def getFreq(self, chanName):
         return self.channelDict[chanName].freq
     
     def getWavelength(self, chanName):
@@ -204,7 +204,7 @@ class Multiplexer( SerialDeviceServer ):
     def isCycling(self,c):
         return self.isCycling
     
-    @setting(3,'Get Avialable Channels', returns = '*s: list of connected channels')
+    @setting(3,'Get Available Channels', returns = '*s: list of connected channels')
     def getAvailableChannels(self,c):
         return self.info.getChanNames()
     
