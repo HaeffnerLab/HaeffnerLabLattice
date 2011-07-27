@@ -10,6 +10,7 @@ from labrad.types import Error
 import time
 import subprocess as sp
 from twisted.internet import reactor
+from labrad.server import Signal
 
 NUMCHANNELS = 16
 TIMEOUT = 1.0
@@ -17,12 +18,18 @@ BAUDRATE = 115200
 DelayWhenSwtch = 300 #additional delay needed to complete switching
 SetExposureFile = 'setExposure.exe'
 GetFreqFile = 'getFreq.exe'
+NotMeasuredCode = -6.0
+
+SIGNALID1 = 270580
+SIGNALID2 = 270581
+SIGNALID3 = 270582
+SIGNALID4 = 270583
 
 class channelInfo():
     def __init__(self):
         self.channelDict = {}
         self.lastMeasured = None
-
+        
     class channel():
         def __init__(self, chanName, chanNumber, wavelength):
             self.chanName = chanName
@@ -30,7 +37,7 @@ class channelInfo():
             self.wavelength = wavelength
             self.state = None
             self.exp = None
-            self.freq = None
+            self.freq = NotMeasuredCode
          
     def addChannel(self, chanName, chanNumber, wavelength):
         self.channelDict[chanName] = channel(chanName, chanNumber, wavelength)
@@ -86,8 +93,11 @@ class Multiplexer( SerialDeviceServer ):
     port = None
     serNode = 'lab-49'
     timeout = TIMEOUT
-    Signal new_setting ### [ chanName, type, value]
-                        #set notmeasuredcode to deselectedchannels and to initial channels instead of none
+    
+    onNewState = Signal(SIGNALID1, 'signal: channel toggled', '(sb)')
+    onNewExposure = Signal(SIGNALID2, 'signal: new exposure set', '(sv)')
+    onNewFreq = Signal(SIGNALID3, 'signal: new frequency measured', '(sv)')
+    onCycling = Signal(SIGNALID4, 'signal: updated whether cycling', 'b')
 
     @inlineCallbacks
     def initServer( self ):
@@ -127,7 +137,7 @@ class Multiplexer( SerialDeviceServer ):
                 [state, exp] = yield reg.get(chanName)    
             except Error, e:
                 if e.code is 21:
-                    [state, exp] = [1 , 1]
+                    [state, exp] = [True , 1]
             self.info.setState(chanName, state)
             self.info.setExposure(chanName, exp)
     
@@ -176,23 +186,28 @@ class Multiplexer( SerialDeviceServer ):
         else:
             yield deferToThread(time.sleep, .1)
         freq = yield self._getFreq()
-        self.info.setFreq(measureChanName, freq)
+        if freq is not self.info.getFreq(measureChanName): #if a new frequency is found
+            self.info.setFreq(measureChanName, freq)
+            self.onNewFreq(measureChanName, freq)
         reactor.callLater(0,self.measureChan)
     
     @setting(0,'Start Cycling', returns = '')
     def startCycling(self,c):
         self.isCycling = True
+        self.onCycling(True)
         self.measureChan()
                 
     @setting(1,'Stop Cycling', returns = '')
     def stopCycling(self,c):
         self.isCycling = False
+        self.onCycling(False)
     
     @setting(2, 'Is Cycling',returns = 'b')
     def isCycling(self,c):
         return self.isCycling
     
-    @setting(3,'Get Avialable Channels', returns = '*s: list of connected channels'):
+    @setting(3,'Get Avialable Channels', returns = '*s: list of connected channels')
+    def getAvailableChannels(self,c):
         return self.info.getChanNames()
     
     @setting(4,'Get State', chanName = 's: name of the channel, i.e 422', returns = 'b: is channel selected')
@@ -203,7 +218,8 @@ class Multiplexer( SerialDeviceServer ):
     @setting(5,'Set State', chanName = 's: name of the channel, i.e 422', state='b', returns='')
     def setState(self,c, chanName, state):
         self.validateInput(chanName, 'channelName')
-        self.info.setState(chanName, int(state))
+        self.info.setState(chanName, state)
+        self.onNewState(chanName, state)
         self.saveChannelInfo()
     
     @setting(6,'Select One Channel', chanName = 's: name of the channel, i.e 422', returns = '')
@@ -211,9 +227,11 @@ class Multiplexer( SerialDeviceServer ):
         self.validateInput(chanName, 'channelName')
         for ch in self.info.getChanNames():
             if ch == chanName:
-                self.info.setState(ch, 1)
+                self.info.setState(ch, True)
+                self.onNewState(ch, True)
             else:
-                self.info.setState(ch, 0)
+                self.info.setState(ch, False)
+                self.onNewState(ch, False)
     
     @setting(7,'Get Exposure', chanName = 's: name of the channel, i.e 422', returns = 'w: exposure')
     def getExpsure(self, c , chanName):
@@ -225,10 +243,11 @@ class Multiplexer( SerialDeviceServer ):
         self.validateInput(chanName, 'channelName')
         self.validateInput(exposure,'exposure')
         self.info.setExposure(chanName, exposure)
+        self.onNewExposure(chanName, exposure)
         self.saveChannelInfo()
     
     @setting(9, 'Get Wavelength From Channel', chanName = 's: name of the channel, i.e 422', returns = 's')
-    def wlfromch(self, c, channel):
+    def wlfromch(self, c, chanName):
         self.validateInput(chanName, 'channelName')
         return self.info.getWavelength(chanName)
 
