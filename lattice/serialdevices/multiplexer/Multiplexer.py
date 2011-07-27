@@ -222,7 +222,7 @@ class Multiplexer( SerialDeviceServer ):
         self.isCycling = False
         notified = self.getOtherListeners(c)
         self.onCycling(False,notified)
-        for name in self.info.getChanNames()
+        for name in self.info.getChanNames():
             self.info.setFreq(name, NotMeasuredCode)
             self.onNewFreq((name, NotMeasuredCode))
     
