@@ -185,8 +185,10 @@ class Multiplexer( SerialDeviceServer ):
         curExp = self.info.getExposure(next)
         yield self._setExposure(curExp)
         if switch:
+            print 'now switching'
             prevExp = self.info.lastExposure
             waittime = prevExp + curExp + DelayWhenSwtch
+            print 'have to wait ', waittime
             yield deferToThread(time.sleep, waittime / 1000.0)
             self.info.lastExposure = curExp
         else:
