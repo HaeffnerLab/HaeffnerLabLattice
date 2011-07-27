@@ -58,7 +58,6 @@ class channelInfo():
             next = selected[newindex]
             switch = (next == self.lastMeasured)
         self.lastMeasured = next
-        self.lastExposure = self.getExposure(next)
         return [next, switch]
             
     def getChanNames(self):
@@ -189,9 +188,12 @@ class Multiplexer( SerialDeviceServer ):
             prevExp = self.info.lastExposure
             waittime = prevExp + curExp + DelayWhenSwtch
             yield deferToThread(time.sleep, waittime / 1000.0)
+            self.info.lastExposure = curExp
         else:
             yield deferToThread(time.sleep, .1)
+        print 'measuring freq'
         freq = yield self._getFreq()
+        print freq
         if freq is not self.info.getFreq(next): #if a new frequency is found
             self.info.setFreq(next, freq)
             self.onNewFreq((next, freq))
