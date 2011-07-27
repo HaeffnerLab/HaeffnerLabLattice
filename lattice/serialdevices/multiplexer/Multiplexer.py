@@ -64,6 +64,9 @@ class channelInfo():
     def getChanNames(self):
         return self.channelDict.keys()
     
+    def getChanNumber(self, chanName):
+        return self.channelDict[chanName].chanNumber
+    
     def setState(self, chanName, state):
         self.channelDict[chanName].state = state
         
@@ -173,24 +176,25 @@ class Multiplexer( SerialDeviceServer ):
     @inlineCallbacks
     def measureChan(self):
         if not self.isCycling: return
-        [measureChanName, isSwitching] = self.info.getNextChannel()
-        if measureChanName is None:
+        [next, switch] = self.info.getNextChannel()
+        if next is None:
             reactor.callLater(.5, self.measureChan)
             return
-        if isSwitching:
-            yield self._switchChannel(channel)
-        curExp = self.info.getExposure(measureChanName)
+        if switch:
+            ch = self.info.getChanNumber(next)
+            yield self._switchChannel(ch)
+        curExp = self.info.getExposure(next)
         yield self._setExposure(curExp)
-        if isSwitching:
+        if switch:
             prevExp = self.info.lastExposure
             waittime = prevExp + curExp + DelayWhenSwtch
             yield deferToThread(time.sleep, waittime / 1000.0)
         else:
             yield deferToThread(time.sleep, .1)
         freq = yield self._getFreq()
-        if freq is not self.info.getFreq(measureChanName): #if a new frequency is found
-            self.info.setFreq(measureChanName, freq)
-            self.onNewFreq((measureChanName, freq))
+        if freq is not self.info.getFreq(next): #if a new frequency is found
+            self.info.setFreq(next, freq)
+            self.onNewFreq((next, freq))
         reactor.callLater(0,self.measureChan)
     
     @setting(0,'Start Cycling', returns = '')
