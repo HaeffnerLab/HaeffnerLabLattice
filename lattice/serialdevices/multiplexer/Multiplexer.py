@@ -186,7 +186,7 @@ class Multiplexer( SerialDeviceServer ):
         freq = yield self._getFreq()
         if freq is not self.info.getFreq(measureChanName): #if a new frequency is found
             self.info.setFreq(measureChanName, freq)
-            self.onNewFreq(measureChanName, freq)
+            self.onNewFreq((measureChanName, freq))
         reactor.callLater(0,self.measureChan)
     
     @setting(0,'Start Cycling', returns = '')
@@ -217,7 +217,7 @@ class Multiplexer( SerialDeviceServer ):
     def setState(self,c, chanName, state):
         self.validateInput(chanName, 'channelName')
         self.info.setState(chanName, state)
-        self.onNewState(chanName, state)
+        self.onNewState((chanName, state))
         self.saveChannelInfo()
     
     @setting(6,'Select One Channel', chanName = 's: name of the channel, i.e 422', returns = '')
@@ -226,10 +226,10 @@ class Multiplexer( SerialDeviceServer ):
         for ch in self.info.getChanNames():
             if ch == chanName:
                 self.info.setState(ch, True)
-                self.onNewState(ch, True)
+                self.onNewState((ch, True))
             else:
                 self.info.setState(ch, False)
-                self.onNewState(ch, False)
+                self.onNewState((ch, False)
     
     @setting(7,'Get Exposure', chanName = 's: name of the channel, i.e 422', returns = 'w: exposure')
     def getExpsure(self, c , chanName):
@@ -241,7 +241,7 @@ class Multiplexer( SerialDeviceServer ):
         self.validateInput(chanName, 'channelName')
         self.validateInput(exposure,'exposure')
         self.info.setExposure(chanName, exposure)
-        self.onNewExposure(chanName, exposure)
+        self.onNewExposure((chanName, exposure))
         self.saveChannelInfo()
     
     @setting(9, 'Get Wavelength From Channel', chanName = 's: name of the channel, i.e 422', returns = 's')
