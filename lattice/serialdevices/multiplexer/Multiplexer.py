@@ -144,7 +144,7 @@ class Multiplexer( SerialDeviceServer ):
         for chanName in self.info.getChanNames():
             state = self.info.getState(chanName)
             exp = self.info.getExposure(chanName)
-            yield self.client.registry.set(chanName,[state,exp])
+            yield self.client.registry.set(chanName,(state,exp))
     
     def validateInput(self, input, type):
         if type is 'channelName':
