@@ -47,7 +47,7 @@ class channelInfo():
     
     #determines what is the next selected channel to be measured, and whether a switch of channels is required
     def getNextChannel(self):
-        selected = sorted(getSelectedChannels())
+        selected = sorted(self.getSelectedChannels())
         if not selected: return [None, None] #if no channels are selected, ruturn None
         if self.lastMeasured not in selected: #if the previously measured channel is no longer selected, measure the first of currently selected ones
             next = selected[0]
