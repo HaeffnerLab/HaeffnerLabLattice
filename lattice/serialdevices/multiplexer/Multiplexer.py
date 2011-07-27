@@ -229,10 +229,10 @@ class Multiplexer( SerialDeviceServer ):
                 self.onNewState((ch, True))
             else:
                 self.info.setState(ch, False)
-                self.onNewState((ch, False)
+                self.onNewState((ch, False))
     
     @setting(7,'Get Exposure', chanName = 's: name of the channel, i.e 422', returns = 'w: exposure')
-    def getExpsure(self, c , chanName):
+    def getExposure(self, c , chanName):
         self.validateInput(chanName, 'channelName')
         return self.info.getExposure(chanName)
     
