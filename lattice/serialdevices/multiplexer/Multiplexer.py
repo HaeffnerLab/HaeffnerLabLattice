@@ -211,7 +211,7 @@ class Multiplexer( SerialDeviceServer ):
     
     def getOtherListeners(self,c):
      notified = self.listeners.copy()
-     notified.remove(context.ID)
+     notified.remove(c.ID)
      return notified
     
     @setting(0,'Start Cycling', returns = '')
