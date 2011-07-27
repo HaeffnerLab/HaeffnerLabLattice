@@ -186,17 +186,13 @@ class Multiplexer( SerialDeviceServer ):
         curExp = self.info.getExposure(next)
         yield self._setExposure(curExp)
         if switch:
-            print 'now switching'
             prevExp = self.info.lastExposure
             waittime = prevExp + curExp + DelayWhenSwtch
-            print 'have to wait ', waittime
             yield deferToThread(time.sleep, waittime / 1000.0)
             self.info.lastExposure = curExp
         else:
             yield deferToThread(time.sleep, .1)
-        print 'measuring freq'
         freq = yield self._getFreq()
-        print freq
         if freq is not self.info.getFreq(next): #if a new frequency is found
             self.info.setFreq(next, freq)
             self.onNewFreq((next, freq))
@@ -226,6 +222,9 @@ class Multiplexer( SerialDeviceServer ):
         self.isCycling = False
         notified = self.getOtherListeners(c)
         self.onCycling(False,notified)
+        for name in self.info.getChanNames()
+            self.info.setFreq(name, NotMeasuredCode)
+            self.onNewFreq((name, NotMeasuredCode))
     
     @setting(2, 'Is Cycling',returns = 'b')
     def isCycling(self,c):
@@ -247,7 +246,10 @@ class Multiplexer( SerialDeviceServer ):
         notified = self.getOtherListeners(c)
         self.onNewState((chanName, state),notified)
         self.saveChannelInfo()
-    
+        if not state:
+            self.info.setFreq(chanName, NotMeasuredCode)
+            self.onNewFreq((chanName,NotMeasuredCode))
+            
     @setting(6,'Select One Channel', chanName = 's: name of the channel, i.e 422', returns = '')
     def selectOneChan(self,c,chanName):
         self.validateInput(chanName, 'channelName')
