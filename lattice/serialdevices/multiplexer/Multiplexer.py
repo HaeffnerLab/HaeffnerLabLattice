@@ -56,7 +56,7 @@ class channelInfo():
         else:
             newindex = ((selected.index(self.lastMeasured) + 1) % len(selected)) #new index in the next item in the selected list with cyclical boundary conditions
             next = selected[newindex]
-            switch = (next == self.lastMeasured)
+            switch =  (next != self.lastMeasured)
         self.lastMeasured = next
         return [next, switch]
             

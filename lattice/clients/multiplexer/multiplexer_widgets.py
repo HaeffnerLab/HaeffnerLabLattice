@@ -55,7 +55,7 @@ class multiplexerWidget(QtGui.QWidget):
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.multiplexer_server
         yield self.initializeGUI()
-        yield self.setupListeners()
+        #yield self.setupListeners()
         
     @inlineCallbacks
     def initializeGUI(self):
