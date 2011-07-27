@@ -29,6 +29,7 @@ class channelInfo():
     def __init__(self):
         self.channelDict = {}
         self.lastMeasured = None
+        self.lastExposure = 1
         
     class channel():
         def __init__(self, chanName, chanNumber, wavelength):
@@ -57,6 +58,7 @@ class channelInfo():
             next = selected[newindex]
             switch = (next == self.lastMeasured)
         self.lastMeasured = next
+        self.lastExposure = self.getExposure(next)
         return [next, switch]
             
     def getChanNames(self):
@@ -177,8 +179,10 @@ class Multiplexer( SerialDeviceServer ):
             return
         if isSwitching:
             yield self._switchChannel(channel)
+        curExp = self.info.getExposure(measureChanName)
         yield self._setExposure(curExp)
         if isSwitching:
+            prevExp = self.info.lastExposure
             waittime = prevExp + curExp + DelayWhenSwtch
             yield deferToThread(time.sleep, waittime / 1000.0)
         else:
