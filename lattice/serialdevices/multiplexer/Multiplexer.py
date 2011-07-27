@@ -40,8 +40,7 @@ class channelInfo():
             self.freq = NotMeasuredCode
          
     def addChannel(self, chanName, chanNumber, wavelength):
-        self.channelDict[chanName] = channel(chanName, chanNumber, wavelength)
-    
+        self.channelDict[chanName] = self.channel(chanName, chanNumber, wavelength)
     #returns names of all selected channels, that is all channels whose state == 1
     def getSelectedChannels(self):
         return [ch.chanName for ch in self.channelDict.values() if ch.state == 1]
