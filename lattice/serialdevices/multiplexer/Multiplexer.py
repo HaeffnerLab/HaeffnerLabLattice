@@ -15,7 +15,7 @@ from labrad.server import Signal
 NUMCHANNELS = 16
 TIMEOUT = 1.0
 BAUDRATE = 115200
-DelayWhenSwtch = 300 #additional delay needed to complete switching
+DelayWhenSwtch = 300.0 #additional delay needed to complete switching
 SetExposureFile = 'setExposure.exe'
 GetFreqFile = 'getFreq.exe'
 NotMeasuredCode = -6.0
