@@ -122,6 +122,7 @@ class Multiplexer( SerialDeviceServer ):
             else: raise
         self.reg = self.client.registry
         self.loadChannelInfo()
+        self.listeners = set()
         self.isCycling = False
     
     def createChannelInfo(self):
@@ -201,16 +202,30 @@ class Multiplexer( SerialDeviceServer ):
             self.onNewFreq((next, freq))
         reactor.callLater(0,self.measureChan)
     
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+    
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
+    
+    def getOtherListeners(self,c):
+     notified = self.listeners.copy()
+     notified.remove(context.ID)
+     return notified
+    
     @setting(0,'Start Cycling', returns = '')
     def startCycling(self,c):
         self.isCycling = True
-        self.onCycling(True)
+        notified = self.getOtherListeners(c)
+        self.onCycling(True, notified)
         self.measureChan()
                 
     @setting(1,'Stop Cycling', returns = '')
     def stopCycling(self,c):
         self.isCycling = False
-        self.onCycling(False)
+        notified = self.getOtherListeners(c)
+        self.onCycling(False,notified)
     
     @setting(2, 'Is Cycling',returns = 'b')
     def isCycling(self,c):
@@ -229,19 +244,21 @@ class Multiplexer( SerialDeviceServer ):
     def setState(self,c, chanName, state):
         self.validateInput(chanName, 'channelName')
         self.info.setState(chanName, state)
-        self.onNewState((chanName, state))
+        notified = self.getOtherListeners(c)
+        self.onNewState((chanName, state),notified)
         self.saveChannelInfo()
     
     @setting(6,'Select One Channel', chanName = 's: name of the channel, i.e 422', returns = '')
     def selectOneChan(self,c,chanName):
         self.validateInput(chanName, 'channelName')
+        notified = self.getOtherListeners(c)
         for ch in self.info.getChanNames():
             if ch == chanName:
                 self.info.setState(ch, True)
-                self.onNewState((ch, True))
+                self.onNewState((ch, True),notified)
             else:
                 self.info.setState(ch, False)
-                self.onNewState((ch, False))
+                self.onNewState((ch, False),notified)
     
     @setting(7,'Get Exposure', chanName = 's: name of the channel, i.e 422', returns = 'w: exposure')
     def getExposure(self, c , chanName):
@@ -253,7 +270,8 @@ class Multiplexer( SerialDeviceServer ):
         self.validateInput(chanName, 'channelName')
         self.validateInput(exposure,'exposure')
         self.info.setExposure(chanName, exposure)
-        self.onNewExposure((chanName, exposure))
+        notified = self.getOtherListeners(c)
+        self.onNewExposure((chanName, exposure),notified)
         self.saveChannelInfo()
     
     @setting(9, 'Get Wavelength From Channel', chanName = 's: name of the channel, i.e 422', returns = 's')

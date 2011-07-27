@@ -20,17 +20,26 @@ class widgetWrapper():
         self.widget = multiplexerChannel(self.wavelength, self.hint)           
         
     def setFreq(self, freq):
-            if freq in self.codeDict.keys():
-                text = self.codeDict[freq]
-            else:
-                text = '%.5f'%freq
-            self.widget.freq.setText(text)            
+        if freq in self.codeDict.keys():
+            text = self.codeDict[freq]
+        else:
+            text = '%.5f'%freq
+        self.widget.freq.setText(text)            
             
-    def setState(self, state):
-            self.widget.checkBox.setChecked(state)
+    def setState(self, state, disableSignals = False):
+        if disableSignals:
+            self.widget.checkBox.blockSignals(True)
+        self.widget.checkBox.setChecked(state)
+        if disableSignals:
+            self.widget.checkBox.blockSignals(False)
         
-    def setExposure(self, exposure):
-            self.widget.spinBox.setValue(exposure)
+    def setExposure(self, exposure, disableSignals = False):
+        if disableSignals:
+            self.widget.checkBox.blockSignals(True)
+        self.widget.spinBox.setValue(exposure)
+        if disableSignals:
+            self.widget.checkBox.blockSignals(False)
+        
             
 class multiplexerWidget(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -55,7 +64,7 @@ class multiplexerWidget(QtGui.QWidget):
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.multiplexer_server
         yield self.initializeGUI()
-        #yield self.setupListeners()
+        yield self.setupListeners()
         
     @inlineCallbacks
     def initializeGUI(self):
@@ -101,16 +110,19 @@ class multiplexerWidget(QtGui.QWidget):
         yield self.server.addListener(listener = self.followNewCycling, source = None, ID = SIGNALID4)
     
     def followNewState(self,x,(chanName,state)):
-        self.d[chanName].setState(state)
+        self.d[chanName].setState(state, True)
         
     def followNewExposure(self, x, (chanName,exp)):
-        self.d[chanName].setExposure(exp)
+        self.d[chanName].setExposure(exp, True)
     
     def followNewFreq(self, x, (chanName, freq)):
         self.d[chanName].setFreq(freq)
     
     def followNewCycling(self, x, cycling):
-        self.setOnOff(cycling)
+        self.pushButton.blockSignals(True)
+        self.pushButton.setChecked(cycling)
+        self.pushButton.blockSignals(False)
+        self.setButtonText()
     
     def setButtonText(self):
         if self.pushButton.isChecked():
