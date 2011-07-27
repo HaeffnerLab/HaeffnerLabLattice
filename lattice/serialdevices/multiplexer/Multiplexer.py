@@ -1,7 +1,7 @@
 '''
 Created on Apr 7, 2011
-
-@author: lattice
+Modified July 26, 2011
+@author: Michael Ramm
 '''
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet.defer import returnValue
@@ -14,7 +14,7 @@ from twisted.internet import reactor
 NUMCHANNELS = 16
 TIMEOUT = 1.0
 BAUDRATE = 115200
-DelayWhenSwtch = 300#ms
+DelayWhenSwtch = 300 #additional delay needed to complete switching
 SetExposureFile = 'setExposure.exe'
 GetFreqFile = 'getFreq.exe'
 
@@ -22,12 +22,17 @@ GetFreqFile = 'getFreq.exe'
 class Multiplexer( SerialDeviceServer ):
     '''
     LabRAD Sever for interfacing with the Wavemeter and the Multiplexer
-    '''
-    class ChannelInfo(object):
-        def __init__(self, state, exposureTime):
-            self.state = state
-            self.exp = exposureTime
-            self.freq = 0
+    '''  
+    class channelInfo():
+        
+        class channel():
+            def __init__(self, chanName, chanNumber, wavelength, state, exposureTime):
+                self.chanName = chanName
+                self.chanNumber = chanNumber #what's written on the box i.e 1,2,3 and is used by the serial port
+                self.wavelength = wavelegth
+                self.state = state
+                self.exp = exposureTime
+                self.freq = None
 
     name = 'Multiplexer Server' 
     regKey = 'Multiplexer'
@@ -38,8 +43,9 @@ class Multiplexer( SerialDeviceServer ):
 
     @inlineCallbacks
     def initServer( self ):
-        self.channelinfolist = yield self.loadChanInfo()
-        self.wllist = self.loadwlList()
+        self.createChannelInfo()
+        ####self.channelinfolist = yield self.loadChanInfo()
+        ####self.wllist = self.loadwlList()
         print [(i.state,i.exp) for i in self.channelinfolist]
         if not self.regKey or not self.serNode: raise SerialDeviceError( 'Must define regKey and serNode attributes' )
         port = yield self.getPortFromReg( self.regKey )
@@ -57,8 +63,12 @@ class Multiplexer( SerialDeviceServer ):
                 print 'Check set up and restart serial server'
             else: raise
         self.isCycling = False
-            
-    def loadwlList(self):
+    
+    def createDict(self):
+        self.d = {}
+        self.d['397'] = ChannelInfo(chanName = '397', chanNumer = )
+        
+    ####def loadwlList(self):
         d = [None for ch in range(NUMCHANNELS)]
         d[3] = '422'
         d[4]=  '397'
@@ -151,36 +161,36 @@ class Multiplexer( SerialDeviceServer ):
     def stopCycling(self,c):
         self.isCycling = False
     
-    @setting(2,'Get Frequency',channel = 'w: which channel',returns ='v: laser frequency')
+    @setting(2,'Get Frequency',channel = 'w: which channel',returns ='v: laser frequency') ####
     def getFreq(self,c, channel):
         return self.channelinfolist[channel].freq
     
-    @setting(3,'Get Frequencies', returns ='*v: laser frequencies')
+    @setting(3,'Get Frequencies', returns ='*v: laser frequencies') ####
     def getFreqs(self,c):
         return [chan.freq for chan in self.channelinfolist]
 
-    @setting(4,'Get Selected Channels', returns='*w: which channels are selected')
+    @setting(4,'Get Selected Channels', returns='*w: which channels are selected') ####
     def getActiveChans(self,c):
         return [ index for index, state in enumerate( [channel.state for channel in self.channelinfolist]) if state ]
     
-    @setting(5,'Get Exposures',returns='*w: exposure times for all channels')
+    @setting(5,'Get Exposures',returns='*w: exposure times for all channels') ####
     def getExposures(self,c):
         return [ chan.exp for chan in self.channelinfolist ]
     
-    @setting(6,'Toggle Channel', channel = 'w', state='b', returns='')
+    @setting(6,'Toggle Channel', channel = 'w', state='b', returns='') ####
     def toggleChan(self,c,channel, state):
         self.validateInput(channel,'channel')
         self.channelinfolist[channel].state = int(state)
         yield self.saveChannelInfo()
     
-    @setting(7,'Set Exposure', channel = 'w', exposure='w',returns='')
+    @setting(7,'Set Exposure', channel = 'w', exposure='w',returns='') ####
     def setExposure(self,c,channel,exposure):
         self.validateInput(channel,'channel')
         self.validateInput(exposure,'exposure')
         self.channelinfolist[channel].exp = exposure
         self.saveChannelInfo()
     
-    @setting(8,'Select One Channel', selectedch = 'w', returns = '')
+    @setting(8,'Select One Channel', selectedch = 'w', returns = '') ####
     def selectOneChan(self,c,selectedch):
         for ch in range(NUMCHANNELS):
             if selectedch == ch:
@@ -188,12 +198,12 @@ class Multiplexer( SerialDeviceServer ):
             else:
                 self.channelinfolist[ch].state = 0
     
-    @setting(9, 'Get Wavelength From Channel', channel = 'w', returns = 's')
+    @setting(9, 'Get Wavelength From Channel', channel = 'w', returns = 's') ####
     def wlfromch(self, c, channel):
         self.validateInput(channel,'connectedchannel')
         return self.wllist[channel]
     
-    @setting(10, 'Get Channel From Wavelength', wl = 's', returns = 'w')
+    @setting(10, 'Get Channel From Wavelength', wl = 's', returns = 'w') ####
     def chfromwl(self, c, wl):
         self.validateInput(wl,'wavelength')
         return self.wllist.index(wl)
