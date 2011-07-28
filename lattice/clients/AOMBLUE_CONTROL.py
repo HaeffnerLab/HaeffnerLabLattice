@@ -9,7 +9,7 @@ MinFreq = 70 #Mhz
 MaxFreq = 90
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
-class AOMRED_CONTROL(QCustomFreqPower):
+class AOMBLUE_CONTROL(QCustomFreqPower):
     def __init__(self, server,parent=None):
         QCustomFreqPower.__init__( self, '397 Double Pass with red AO', (MinFreq,MaxFreq), (MinPower,MaxPower), parent )
         self.server= server

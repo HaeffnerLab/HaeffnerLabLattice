@@ -21,8 +21,8 @@ class SHUTTER_CONTROL(QtGui.QWidget):
         self.shutterThree.toggled.connect(self.buttonThreeToggled)
         #set initial values
         self.buttonsUpdated=[0,0,0]
-        self.shutterOne.setChecked(not server.getShutter(1))
-        self.shutterTwo.setChecked(not server.getShutter(2))
+        self.shutterOne.setChecked(server.getShutter(1))
+        self.shutterTwo.setChecked(server.getShutter(2))
         self.shutterThree.setChecked(server.getShutter(3))
         self.setButtonText(self.shutterOne, 'Blue PI')
         self.setButtonText(self.shutterTwo, 'Red PI')
@@ -54,11 +54,11 @@ class SHUTTER_CONTROL(QtGui.QWidget):
     def sendToServer(self):
         if(self.buttonsUpdated[0]):
             self.buttonsUpdated[0] = 0
-            self.server.setshutter(1,not self.shutterOne.isChecked())
+            self.server.setshutter(1,self.shutterOne.isChecked())
             print 'SHUTTER_CONTROL sending data'
         if(self.buttonsUpdated[1]):
             self.buttonsUpdated[1] = 0
-            self.server.setshutter(2,not self.shutterTwo.isChecked())
+            self.server.setshutter(2,self.shutterTwo.isChecked())
             print 'SHUTTER_CONTROL sending data'
         if(self.buttonsUpdated[2]):
             self.buttonsUpdated[2] = 0               
