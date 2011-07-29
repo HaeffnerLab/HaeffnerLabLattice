@@ -56,7 +56,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         elif name =='lattice_pc_hp_server':
             self.verticalLayoutDC.addWidget(TRAPDRIVE_CONTROL.TRAPDRIVE_CONTROL(self.LabRADcxn.lattice_pc_hp_server))
         elif name == 'laserdac':
-            self.verticalLayoutFreq.addWidget(CAVITY_CONTROL.CAVITY_CONTROL(self.LabRADcxn))
+            pass
+            #self.verticalLayoutFreq.addWidget(CAVITY_CONTROL.CAVITY_CONTROL(self.LabRADcxn))
         elif name == 'paul_box':
             self.verticalLayoutPB.addWidget(PAULBOX_CONTROL.PAULBOX_CONTROL(self.LabRADcxn.paul_box))
         elif name == 'lattice_pc_rs_server_blue':
@@ -68,7 +69,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         elif name == 'experimenter':
             self.tab_4.layout().addWidget(LREXP(self, QtCore.Qt.Widget))
         elif name == 'multiplexer_server':
-            self.verticalLayoutFreq_3.addWidget(MULTIPLEXER_CONTROL.MULTIPLEXER_CONTROL(self.LabRADcxn.multiplexer_server))
+            pass
+            #self.verticalLayoutFreq_3.addWidget(MULTIPLEXER_CONTROL.MULTIPLEXER_CONTROL(self.LabRADcxn.multiplexer_server))
         elif name == 'pmt_server':
             self.verticalLayoutFreq_2.addWidget(PMT_CONTROL.PMT_CONTROL(self.LabRADcxn.pmt_server))
         elif name == 'time_resolved_server':

@@ -83,7 +83,7 @@ class cavityWidget(QtGui.QWidget):
         self.timer.start(UpdateTime)
     
     @inlineCallbacks
-    def saveNewRange(self):
+    def saveNewRange(self, val):
         yield self.registry.cd(['','Clients','Cavity Control'],True)
         for widgetWrapper in self.d.values():
             widget = widgetWrapper.widget

@@ -16,7 +16,7 @@ class QCustomLevelTilt(QtGui.QWidget):
         #set widget properties
         self.title.setText(title)
         self.labelLeft.setText(channelNames[0])
-        self.labelRight.seqtText(channelNames[1])
+        self.labelRight.setText(channelNames[1])
         self.levelRange = levelRange
         #set ranges
         maxDifference = abs(levelRange[1] - levelRange[0])
