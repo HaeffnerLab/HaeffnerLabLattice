@@ -43,7 +43,6 @@ Created on Dec 22, 2010
 
 
 from twisted.internet.defer import returnValue, inlineCallbacks
-
 from labrad.server import LabradServer, setting
 from labrad.types import Error
 
@@ -90,9 +89,8 @@ class SerialDeviceServer( LabradServer ):
     regKey = None
     serNode = None
     timeout = None
-
     ser = None
-
+    
     class SerialConnection():
         """
         Wrapper for our server's client connection to the serial server.   
@@ -141,7 +139,6 @@ class SerialDeviceServer( LabradServer ):
         except Error:
             self.ser = None
             raise SerialConnectionError( 1 )
-
     @inlineCallbacks
     def getPortFromReg( self, regKey = None ):
         """

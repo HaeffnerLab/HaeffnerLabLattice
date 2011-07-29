@@ -1,9 +1,8 @@
 '''
 Created on Apr 7, 2011
-
-@author: lattice
+Modified July 26, 2011
+@author: Michael Ramm, Christopher Reilly
 '''
-
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet.defer import returnValue
 from twisted.internet.threads import deferToThread
@@ -11,38 +10,101 @@ from labrad.types import Error
 import time
 import subprocess as sp
 from twisted.internet import reactor
-
+from labrad.server import Signal
 
 NUMCHANNELS = 16
 TIMEOUT = 1.0
 BAUDRATE = 115200
-DelayWhenSwtch = 300#ms
+DelayWhenSwtch = 300.0 #additional delay needed to complete switching
 SetExposureFile = 'setExposure.exe'
 GetFreqFile = 'getFreq.exe'
+NotMeasuredCode = -6.0
 
+SIGNALID1 = 270580
+SIGNALID2 = 270581
+SIGNALID3 = 270582
+SIGNALID4 = 270583
+
+class channelInfo():
+    def __init__(self):
+        self.channelDict = {}
+        self.lastMeasured = None
+        self.lastExposure = 1
+        
+    class channel():
+        def __init__(self, chanName, chanNumber, wavelength):
+            self.chanName = chanName
+            self.chanNumber = chanNumber
+            self.wavelength = wavelength
+            self.state = None
+            self.exp = None
+            self.freq = NotMeasuredCode
+         
+    def addChannel(self, chanName, chanNumber, wavelength):
+        self.channelDict[chanName] = self.channel(chanName, chanNumber, wavelength)
+    #returns names of all selected channels, that is all channels whose state == 1
+    def getSelectedChannels(self):
+        return [ch.chanName for ch in self.channelDict.values() if ch.state == 1]
+    
+    #determines what is the next selected channel to be measured, and whether a switch of channels is required
+    def getNextChannel(self):
+        selected = sorted(self.getSelectedChannels())
+        if not selected: return [None, None] #if no channels are selected, ruturn None
+        if self.lastMeasured not in selected: #if the previously measured channel is no longer selected, measure the first of currently selected ones
+            next = selected[0]
+            switch = True
+        else:
+            newindex = ((selected.index(self.lastMeasured) + 1) % len(selected)) #new index in the next item in the selected list with cyclical boundary conditions
+            next = selected[newindex]
+            switch =  (next != self.lastMeasured)
+        self.lastMeasured = next
+        return [next, switch]
+            
+    def getChanNames(self):
+        return self.channelDict.keys()
+    
+    def getChanNumber(self, chanName):
+        return self.channelDict[chanName].chanNumber
+    
+    def setState(self, chanName, state):
+        self.channelDict[chanName].state = state
+        
+    def getState(self, chanName):
+        return self.channelDict[chanName].state
+    
+    def setExposure(self, chanName, exp):
+        self.channelDict[chanName].exp = exp
+    
+    def getExposure(self, chanName):
+        return self.channelDict[chanName].exp
+    
+    def setFreq(self, chanName, freq):
+        self.channelDict[chanName].freq = freq
+    
+    def getFreq(self, chanName):
+        return self.channelDict[chanName].freq
+    
+    def getWavelength(self, chanName):
+        return self.channelDict[chanName].wavelength
 
 class Multiplexer( SerialDeviceServer ):
     '''
     LabRAD Sever for interfacing with the Wavemeter and the Multiplexer
-    '''
-    class ChannelInfo(object):
-        def __init__(self, state, exposureTime):
-            self.state = state
-            self.exp = exposureTime
-            self.freq = 0
-
+    '''  
     name = 'Multiplexer Server' 
     regKey = 'Multiplexer'
     port = None
     serNode = 'lab-49'
     timeout = TIMEOUT
-
+    
+    onNewState = Signal(SIGNALID1, 'signal: channel toggled', '(sb)')
+    onNewExposure = Signal(SIGNALID2, 'signal: new exposure set', '(sv)')
+    onNewFreq = Signal(SIGNALID3, 'signal: new frequency measured', '(sv)')
+    onCycling = Signal(SIGNALID4, 'signal: updated whether cycling', 'b')
 
     @inlineCallbacks
     def initServer( self ):
-        self.channelinfolist = yield self.loadChanInfo()
-        self.wllist = self.loadwlList()
-        print [(i.state,i.exp) for i in self.channelinfolist]
+        self.createChannelInfo()
         if not self.regKey or not self.serNode: raise SerialDeviceError( 'Must define regKey and serNode attributes' )
         port = yield self.getPortFromReg( self.regKey )
         self.port = port
@@ -58,47 +120,44 @@ class Multiplexer( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
+        self.reg = self.client.registry
+        self.loadChannelInfo()
+        self.listeners = set()
         self.isCycling = False
-            
-    def loadwlList(self):
-        d = [None for ch in range(NUMCHANNELS)]
-        d[3] = '422'
-        d[4]=  '397'
-        d[5] = '866'
-        d[9] = '732'
-        return d
     
+    def createChannelInfo(self):
+        self.info = channelInfo()
+        self.info.addChannel(chanName = '397', chanNumber = 4, wavelength = '397')
+        self.info.addChannel(chanName = '422', chanNumber = 3, wavelength = '422')
+        self.info.addChannel(chanName = '866', chanNumber = 5, wavelength = '866')
+        self.info.addChannel(chanName = '732', chanNumber = 9, wavelength = '732')
+        
     @inlineCallbacks
-    def loadChanInfo(self):
-        reg = self.client.registry
-        yield reg.cd(['','Servers','Multiplexer'],True)
-        try:
-            regInfo = yield reg.get('channelinfo')
-            channelinfo = [self.ChannelInfo(i[0],i[1]) for i in regInfo]
-        except Error, e:
-            if e.code is 21:
-                channelinfo = [self.ChannelInfo(1,1) for i in range(NUMCHANNELS)]
-        returnValue(channelinfo)
+    def loadChannelInfo(self):
+        yield self.reg.cd(['','Servers','Multiplexer'],True)
+        for chanName in self.info.getChanNames():
+            try:
+                [state, exp] = yield self.reg.get(chanName)    
+            except Error, e:
+                if e.code is 21:
+                    [state, exp] = [True , 1]
+            self.info.setState(chanName, state)
+            self.info.setExposure(chanName, exp)
     
     @inlineCallbacks
     def saveChannelInfo(self):
-        info = [(channel.state,channel.exp) for channel in self.channelinfolist]
-        yield self.client.registry.set('channelinfo',info)
+        for chanName in self.info.getChanNames():
+            state = self.info.getState(chanName)
+            exp = self.info.getExposure(chanName)
+            yield self.client.registry.set(chanName,(state,exp))
     
     def validateInput(self, input, type):
-        if type is 'channel':
-            if input not in range(NUMCHANNELS):
-                raise Error('channel out of range')
-        if type is 'connectedchannel':
-            connectedCh = [index for index,wl in enumerate(self.wllist) if wl is not None]
-            if input not in connectedCh:
-                raise Error('this channel not connected')
+        if type is 'channelName':
+            if input not in self.info.getChanNames():
+                raise Error('No such channel')
         if type is 'exposure':
             if not 0 <= input <= 2000:
-                raise Error('exposure invalid')   
-        if type is 'wavelength':
-            if not input in self.wllist:
-                raise Error('No channel corresponding to selected frequency')    
+                raise Error('exposure invalid')     
     
     @inlineCallbacks
     def _setExposure(self, exp):
@@ -113,97 +172,120 @@ class Multiplexer( SerialDeviceServer ):
     def _switchChannel(self, chan):
         line = 'I1 ' + str(chan+ 1) +'\r' #format specified by DiCon Manual p7
         yield self.ser.write(line)
+            
+    @inlineCallbacks
+    def measureChan(self):
+        if not self.isCycling: return
+        [next, switch] = self.info.getNextChannel()
+        if next is None:
+            reactor.callLater(.5, self.measureChan)
+            return
+        if switch:
+            ch = self.info.getChanNumber(next)
+            yield self._switchChannel(ch)
+        curExp = self.info.getExposure(next)
+        yield self._setExposure(curExp)
+        if switch:
+            prevExp = self.info.lastExposure
+            waittime = prevExp + curExp + DelayWhenSwtch
+            yield deferToThread(time.sleep, waittime / 1000.0)
+            self.info.lastExposure = curExp
+        else:
+            yield deferToThread(time.sleep, .1)
+        freq = yield self._getFreq()
+        if freq is not self.info.getFreq(next) and self.info.getState(next) and self.isCycling: #if a new frequency is found and still need to measure
+            self.info.setFreq(next, freq)
+            self.onNewFreq((next, freq))
+        reactor.callLater(0,self.measureChan)
+    
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+    
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
+    
+    def getOtherListeners(self,c):
+     notified = self.listeners.copy()
+     notified.remove(c.ID)
+     return notified
     
     @setting(0,'Start Cycling', returns = '')
     def startCycling(self,c):
         self.isCycling = True
+        notified = self.getOtherListeners(c)
+        self.onCycling(True, notified)
         self.measureChan()
-        
-    @inlineCallbacks
-    def measureChan(self, prevChannel = None ):
-        if not self.isCycling: return
-        activeChannels = [index for index, state in enumerate([channel.state for channel in self.channelinfolist]) if state]
-        if not activeChannels:
-            reactor.callLater(.5, self.measureChan)
-            return
-        if prevChannel is None or prevChannel not in activeChannels:
-            channel = activeChannels[0]
-            prevChannel = channel
-            isSwitching = True
-        else:
-            channel = activeChannels[(activeChannels.index(prevChannel) + 1) % len(activeChannels)]
-            isSwitching = channel is not prevChannel
-        prevExp, curExp = [self.channelinfolist[channel].exp for channel in (prevChannel, channel)]
-        if isSwitching:
-            print 'switching channel to ', channel
-            yield self._switchChannel(channel)
-        yield self._setExposure(curExp)
-        print 'setting current exposure to ', curExp 
-        if isSwitching:
-            waittime = prevExp + curExp + DelayWhenSwtch
-            yield deferToThread(time.sleep, waittime / 1000.0)
-        else:
-            yield deferToThread(time.sleep, .1)
-        freq = yield self._getFreq()
-        print 'found freq of', freq, 'for channel', channel
-        self.channelinfolist[channel].freq = freq
-        reactor.callLater(0,self.measureChan, channel)
                 
     @setting(1,'Stop Cycling', returns = '')
     def stopCycling(self,c):
         self.isCycling = False
+        notified = self.getOtherListeners(c)
+        self.onCycling(False,notified)
+        for name in self.info.getChanNames():
+            self.info.setFreq(name, NotMeasuredCode)
+            self.onNewFreq((name, NotMeasuredCode))
     
-    @setting(2,'Get Frequency',channel = 'w: which channel',returns ='v: laser frequency')
-    def getFreq(self,c, channel):
-        return self.channelinfolist[channel].freq
-    
-    @setting(3,'Get Frequencies', returns ='*v: laser frequencies')
-    def getFreqs(self,c):
-        return [chan.freq for chan in self.channelinfolist]
-
-    @setting(4,'Get Selected Channels', returns='*w: which channels are selected')
-    def getActiveChans(self,c):
-        return [ index for index, state in enumerate( [channel.state for channel in self.channelinfolist]) if state ]
-    
-    @setting(5,'Get Exposures',returns='*w: exposure times for all channels')
-    def getExposures(self,c):
-        return [ chan.exp for chan in self.channelinfolist ]
-    
-    @setting(6,'Toggle Channel', channel = 'w', state='b', returns='')
-    def toggleChan(self,c,channel, state):
-        self.validateInput(channel,'channel')
-        self.channelinfolist[channel].state = int(state)
-        yield self.saveChannelInfo()
-    
-    @setting(7,'Set Exposure', channel = 'w', exposure='w',returns='')
-    def setExposure(self,c,channel,exposure):
-        self.validateInput(channel,'channel')
-        self.validateInput(exposure,'exposure')
-        self.channelinfolist[channel].exp = exposure
-        self.saveChannelInfo()
-    
-    @setting(8,'Select One Channel', selectedch = 'w', returns = '')
-    def selectOneChan(self,c,selectedch):
-        for ch in range(NUMCHANNELS):
-            if selectedch == ch:
-                self.channelinfolist[ch].state = 1
-            else:
-                self.channelinfolist[ch].state = 0
-    
-    @setting(9, 'Get Wavelength From Channel', channel = 'w', returns = 's')
-    def wlfromch(self, c, channel):
-        self.validateInput(channel,'connectedchannel')
-        return self.wllist[channel]
-    
-    @setting(10, 'Get Channel From Wavelength', wl = 's', returns = 'w')
-    def chfromwl(self, c, wl):
-        self.validateInput(wl,'wavelength')
-        return self.wllist.index(wl)
-    
-    @setting(11, 'Is Cycling',returns = 'b')
+    @setting(2, 'Is Cycling',returns = 'b')
     def isCycling(self,c):
         return self.isCycling
-        
+    
+    @setting(3,'Get Available Channels', returns = '*s: list of connected channels')
+    def getAvailableChannels(self,c):
+        return self.info.getChanNames()
+    
+    @setting(4,'Get State', chanName = 's: name of the channel, i.e 422', returns = 'b: is channel selected')
+    def getState(self, c , chanName):
+        self.validateInput(chanName, 'channelName')
+        return self.info.getState(chanName)
+    
+    @setting(5,'Set State', chanName = 's: name of the channel, i.e 422', state='b', returns='')
+    def setState(self,c, chanName, state):
+        self.validateInput(chanName, 'channelName')
+        self.info.setState(chanName, state)
+        notified = self.getOtherListeners(c)
+        self.onNewState((chanName, state),notified)
+        self.saveChannelInfo()
+        if not state:
+            self.info.setFreq(chanName, NotMeasuredCode)
+            self.onNewFreq((chanName,NotMeasuredCode))
+            
+    @setting(6,'Select One Channel', chanName = 's: name of the channel, i.e 422', returns = '')
+    def selectOneChan(self,c,chanName):
+        self.validateInput(chanName, 'channelName')
+        notified = self.getOtherListeners(c)
+        for ch in self.info.getChanNames():
+            if ch == chanName:
+                self.info.setState(ch, True)
+                self.onNewState((ch, True),notified)
+            else:
+                self.info.setState(ch, False)
+                self.onNewState((ch, False),notified)
+    
+    @setting(7,'Get Exposure', chanName = 's: name of the channel, i.e 422', returns = 'w: exposure')
+    def getExposure(self, c , chanName):
+        self.validateInput(chanName, 'channelName')
+        return self.info.getExposure(chanName)
+    
+    @setting(8,'Set Exposure', chanName = 's: name of the channel, i.e 422', exposure = 'w : exposure in ms', returns = '')
+    def setExposure(self,c,chanName,exposure):
+        self.validateInput(chanName, 'channelName')
+        self.validateInput(exposure,'exposure')
+        self.info.setExposure(chanName, exposure)
+        notified = self.getOtherListeners(c)
+        self.onNewExposure((chanName, exposure),notified)
+        self.saveChannelInfo()
+    
+    @setting(9, 'Get Wavelength From Channel', chanName = 's: name of the channel, i.e 422', returns = 's')
+    def wlfromch(self, c, chanName):
+        self.validateInput(chanName, 'channelName')
+        return self.info.getWavelength(chanName)
+
+    @setting(10,'Get Frequency',chanName = 's: name of the channel, i.e 422',returns ='v: laser frequency')
+    def getFreq(self,c, chanName):
+        self.validateInput(chanName, 'channelName')
+        return self.info.getFreq(chanName)
+    
 if __name__ == "__main__":
     from labrad import util
     util.runServer(Multiplexer())    

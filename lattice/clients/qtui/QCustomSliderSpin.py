@@ -25,6 +25,14 @@ class QCustomSliderSpin(QtGui.QWidget):
         maxrange = self.maxrange.value()
         self.spin.setRange(minrange,maxrange)
         self.slider.setRange(minrange,maxrange)
+        
+    def setValueNoSignal(self, value):
+        self.spin.blockSignals(True)
+        self.slider.blockSignals(True)
+        self.spin.setValue(value)
+        self.slider.setValue(value)
+        self.spin.blockSignals(False)
+        self.slider.blockSignals(False)        
 
 if __name__=="__main__":
     app = QtGui.QApplication(sys.argv)
