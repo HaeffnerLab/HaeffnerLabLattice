@@ -63,6 +63,6 @@ if __name__=="__main__":
     cxn = labrad.connect()
     server = cxn.lattice_pc_rs_server_blue
     app = QtGui.QApplication(sys.argv)
-    icon = AOMRED_CONTROL(server)
+    icon = AOMBLUE_CONTROL(server)
     icon.show()
     app.exec_()
