@@ -6,8 +6,6 @@ Created on Feb 11, 2011
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
 from twisted.internet.defer import returnValue, inlineCallbacks
-import sys
-import time
 import base64
 
 ADAPTER = 1
@@ -105,9 +103,9 @@ class TimeResolvedServer(LabradServer):
                     if self.d['TrialCount'] is not 0:
                         yield self.dv.add([str(self.d['TrialCount']),encoded])
                         ###testing to see how many counts we have for a low count rate
-                        #ct = (encoded.count('B') + encoded.count('C') + encoded.count('E') + encoded.count('I') + 
-                        #      + encoded.count('Q') + encoded.count('g'))
-                        #print ct
+                        #ct1 = (encoded.count('B') + encoded.count('C') + encoded.count('E') + encoded.count('I') + encoded.count('Q') + encoded.count('g'))
+                        #ct2 = 2 * (len(encoded) - encoded.count('A') - ct1)
+                        #print ct1 + ct2
                     self.d['TrialCount'] += 1
                     self.d['TotalMessage'] = ''
             self.d['TotalMessage'] += readout
