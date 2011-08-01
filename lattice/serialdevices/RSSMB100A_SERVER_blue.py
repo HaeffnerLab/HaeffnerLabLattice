@@ -127,7 +127,6 @@ class RSred(SerialDeviceServer):
     @setting(8, "SetFreqCalibrated", freq = 'v', returns = "")
     def setFreqCal(self, c, freq):
         def func2(x):
-            import math
             a1=2.475e12
             b1=-78.72
             c1=28.64
@@ -152,43 +151,43 @@ class RSred(SerialDeviceServer):
     #send message to controller to indicate whether or not (status = 1 or 0)
     #a response is expected from the instrument
     def SetControllerWait(self,status):
-	command = self.WaitRespStr(status) #expect response from instrument
-	self.ser.write(command)
+        command = self.WaitRespStr(status) #expect response from instrument
+        self.ser.write(command)
   
     def IdenStr(self):
-	return '*IDN?'+'\n'
-	
+        return '*IDN?'+'\n'
+    
     # string to request current frequency
     def FreqReqStr(self):
-	return 'SOURce:FREQuency?'+'\n'
-	      
+        return 'SOURce:FREQuency?'+'\n'
+          
     # string to set freq (in MHZ)
     def FreqSetStr(self,freq):
-	return 'SOURce:FREQuency '+ str(freq) +'MHZ'+'\n'
-	  
+        return 'SOURce:FREQuency '+ str(freq) +'MHZ'+'\n'
+    
     # string to request on/off?
     def StateReqStr(self):
-	return 'OUTput:STATe?'+'\n'
+        return 'OUTput:STATe?'+'\n'
 
     # string to set on/off (state is given by 0 or 1)
     def StateSetStr(self, state):
-	return 'OUTput:STATe '+ str(state) +'\n'
+        return 'OUTput:STATe '+ str(state) +'\n'
 
     # string to request current power
     def PowerReqStr(self):
-	return 'POWer?'+'\n'
+        return 'POWer?'+'\n'
 
     # string to set power (in dBm)
     def PowerSetStr(self,pwr):
-	return 'POWer '+ str(pwr)+'\n'
-	  
+        return 'POWer '+ str(pwr)+'\n'
+    
     # string for prologix to request a response from instrument, wait can be 0/1
     def WaitRespStr(self, wait):
-	return '++auto '+ str(wait) + '\n'
-	  
+        return '++auto '+ str(wait) + '\n'
+    
     # string to set the addressing of the prologix
     def SetAddrStr(self, addr):
-	return '++addr ' + str(addr) + '\n'
+        return '++addr ' + str(addr) + '\n'
 
 if __name__ == "__main__":
     from labrad import util
