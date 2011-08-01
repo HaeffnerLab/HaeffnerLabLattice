@@ -2,6 +2,7 @@ from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, Ser
 from labrad.types import Error
 from twisted.internet import reactor
 from twisted.internet.defer import returnValue
+import math
 
 TIMEOUT = 1.0
 
@@ -81,7 +82,6 @@ class RSred(SerialDeviceServer):
         command = self.FreqSetStr(freq)
         self.ser.write(command)
         self.rsDict['freq'] = freq
-        print self.rsDict
       
     @setting(4, "GetState", returns='w')
     def GetState(self,c):
@@ -123,7 +123,32 @@ class RSred(SerialDeviceServer):
         command = self.PowerSetStr(level)
         self.ser.write(command)
         self.rsDict['power'] = level
-	
+        
+    @setting(8, "SetFreqCalibrated", freq = 'v', returns = "")
+    def setFreqCal(self, c, freq):
+        def func2(x):
+            import math
+            a1=2.475e12
+            b1=-78.72
+            c1=28.64
+            a2=37.59
+            b2=134
+            c2=51.51
+            a3=8.113
+            b3=70.38
+            c3=12.07
+            f = a1*math.exp(-((x-b1)/c1)**2) + a2*math.exp(-((x-b2)/c2)**2) + a3*math.exp(-((x-b3)/c3)**2)
+            return f
+        self.SetControllerWait(0) #expect no reply from instrument
+        command = self.FreqSetStr(freq)
+        self.ser.write(command)
+        self.rsDict['freq'] = freq
+        level = func2(freq)
+        command = self.PowerSetStr(level)
+        self.ser.write(command)
+        self.rsDict['power'] = level
+        print self.rsDict
+        
     #send message to controller to indicate whether or not (status = 1 or 0)
     #a response is expected from the instrument
     def SetControllerWait(self,status):
