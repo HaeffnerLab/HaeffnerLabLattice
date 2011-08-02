@@ -22,18 +22,18 @@ class TRAPDRIVE_CONTROL(QtGui.QWidget):
         
     @inlineCallbacks
     def setupListeners(self):
-        yield self.server.signal__channel_has_been_updated(SIGNAL_ID1)
+        yield self.server.signal__settings_updated(SIGNAL_ID1)
         yield self.server.addListener(listener = self.followNewSetting, source = None, ID = SIGNAL_ID1)
-        yield self.server.signal__no_state(SIGNAL_ID2)
-        yield self.server.addListener(listener = self.followNewPower, source = None, ID = SIGNAL_ID2)
+        yield self.server.signal__state_updated(SIGNAL_ID2)
+        yield self.server.addListener(listener = self.followNewState, source = None, ID = SIGNAL_ID2)
     
-    def followNewSetting(self, x, (type,value)):
-        if type is 'freq'
+    def followNewSetting(self, x, (kind,value)):
+        if kind == 'freq':
             self.widget.setFreqNoSignal(value)
-        elif type is 'power'
+        elif kind == 'power':
             self.widget.setPowerNoSignal(value)
     
-    def followNewPower(self, x, checked):
+    def followNewState(self, x, checked):
         self.widget.setStateNoSignal(checked)
         
     @inlineCallbacks
@@ -83,7 +83,7 @@ class TRAPDRIVE_CONTROL(QtGui.QWidget):
         yield self.server.setstate(False)
         
     def userReject(self):
-        self.widget.buttonSwitch.toggle()        
+        self.widget.setStateNoSignal(True)        
     
 class MyAppDialog(QtGui.QDialog):
     def __init__(self):

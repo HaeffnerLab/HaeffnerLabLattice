@@ -35,8 +35,8 @@ class QCustomFreqPower(QtGui.QWidget):
         self.buttonSwitch.blockSignals(True)
         self.buttonSwitch.setChecked(state)
         self.setText(state)
-        self.buttonSwtich.blockSignals(False)
-	
+        self.buttonSwitch.blockSignals(False)
+        
     def setText(self, down):
         if down:
             self.buttonSwitch.setText('ON')

@@ -17,7 +17,7 @@ class HPServer( SerialDeviceServer ):
     timeout = 1.0
     gpibaddr = 0
     onNewUpdate = Signal(SIGNALID, 'signal: settings updated', '(sv)')
-    onStateUpdate = Signal(SIGNALID1, 'signal: state updated', '(sb)')
+    onStateUpdate = Signal(SIGNALID1, 'signal: state updated', 'b')
     
     @inlineCallbacks
     def initServer( self ):
@@ -76,26 +76,26 @@ class HPServer( SerialDeviceServer ):
     
     @setting(1, "Identify", returns='s')
     def Identify(self, c):
-	'''Ask instrument to identify itself'''
+        '''Ask instrument to identify itself'''
         command = self.IdenStr()
-    	self.ser.write(command)
-    	self.ForceRead() #expect a reply from instrument
-    	answer = yield self.ser.readline()
+        self.ser.write(command)
+        self.ForceRead() #expect a reply from instrument
+        answer = yield self.ser.readline()
         returnValue(answer[:-1])
 
     @setting(2, "GetFreq", returns='v')
     def GetFreq(self,c):
-    	'''Returns current frequency'''
+        '''Returns current frequency'''
         return self.hpDict['freq']
 
     @setting(3, "SetFreq", freq = 'v', returns = "")
     def SetFreq(self,c,freq):
-    	'''Sets frequency, enter value in MHZ'''
-    	command = self.FreqSetStr(freq)
-    	self.ser.write(command)
+        '''Sets frequency, enter value in MHZ'''
+        command = self.FreqSetStr(freq)
+        self.ser.write(command)
         self.hpDict['freq'] = freq
         notified = self.getOtherListeners(c)
-        self.onNewUpdate(notified, ('freq',freq) )
+        self.onNewUpdate(('freq',freq),notified )
       
     @setting(4, "GetState", returns='b')
     def GetState(self,c):
@@ -104,27 +104,27 @@ class HPServer( SerialDeviceServer ):
     
     @setting(5, "SetState", state= 'b', returns = "")
     def SetState(self,c, state):
-    	'''Sets on/off '''
-    	command = self.StateSetStr(state)
-    	self.ser.write(command)
+        '''Sets on/off '''
+        command = self.StateSetStr(state)
+        self.ser.write(command)
         self.hpDict['state'] = state
         notified = self.getOtherListeners(c)
-        self.onStateUpdate(notified, ('state',state))
+        self.onStateUpdate(state,notified)
     
     @setting(6, "GetPower", returns = 'v')
     def GetPower(self,c):
-    	''' Returns current power level in dBm'''
+        ''' Returns current power level in dBm'''
         return self.hpDict['power']
     
     @setting(7, "SetPower", level = 'v',returns = "")
     def SetPower(self,c, level):
-    	'''Sets power level, enter power in dBm'''
+        '''Sets power level, enter power in dBm'''
         self.checkPower(level)
-    	command = self.PowerSetStr(level)
-    	self.ser.write(command)
+        command = self.PowerSetStr(level)
+        self.ser.write(command)
         self.hpDict['power'] = level
         notified = self.getOtherListeners(c)
-        self.onNewUpdate(notified, ('state',level))
+        self.onNewUpdate(('power',level),notified)
     
     @setting(8, "Get Power Range", returns = "*v:")
     def GetPowerRange(self,c):
@@ -141,7 +141,7 @@ class HPServer( SerialDeviceServer ):
     
     def checkFreq(self, freq):
         MIN,MAX = self.hpDict['freqrange']
-        if not MIN <= level <= MAX:
+        if not MIN <= freq <= MAX:
             raise('Frequency Out of Allowed Range')
     
     @inlineCallbacks
@@ -184,15 +184,12 @@ class HPServer( SerialDeviceServer ):
   
     def IdenStr(self):
         return '*IDN?'+'\n'
-	
     # string to request current frequency
     def FreqReqStr(self):
         return 'FREQ:CW?' + '\n'
-	
     # string to set freq (in MHZ)
     def FreqSetStr(self,freq):
         return 'FREQ:CW '+ str(freq) +'MHZ'+'\n'
-	  
     # string to request on/off?
     def StateReqStr(self):
         return 'OUTP:STAT?' + '\n'
@@ -216,11 +213,10 @@ class HPServer( SerialDeviceServer ):
     # string to force read
     def ForceReadStr(self):
         return '++read eoi' + '\n'
-	
     # string for prologix to request a response from instrument, wait can be 0 for listen / for talk
     def WaitRespStr(self, wait):
         return '++auto '+ str(wait) + '\n'
-	  
+    
     # string to set the addressing of the prologix
     def SetAddrStr(self, addr):
         return '++addr ' + str(addr) + '\n'
