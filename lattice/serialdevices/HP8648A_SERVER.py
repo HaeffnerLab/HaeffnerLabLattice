@@ -42,7 +42,6 @@ class HPServer( SerialDeviceServer ):
         self.SetControllerWait(0) #turns off automatic listen after talk, necessary to stop line unterminated errors
         yield self.populateDict()
         self.listeners = set()
-        print self.hpDict
         
     def createDict(self):
         d = {}
@@ -50,6 +49,7 @@ class HPServer( SerialDeviceServer ):
         d['power'] = None #power is in dBm
         d['freq'] = None #frequency is in MHz
         d['powerrange'] = (-5.9,5.0)
+        d['freqrange'] = (14.5,15.5) #MHz
         self.hpDict = d
 
     
@@ -130,10 +130,19 @@ class HPServer( SerialDeviceServer ):
     def GetPowerRange(self,c):
         return self.hpDict['powerrange']
     
+    @setting(9, "Get Frequency Range", returns = "*v:")
+    def getFreqRange(self,c):
+        return self.hpDict['freqrange']
+    
     def checkPower(self, level):
         MIN,MAX = self.hpDict['powerrange']
         if not MIN <= level <= MAX:
-            raise('Power Our of Range')
+            raise('Power Out of Allowed Range')
+    
+    def checkFreq(self, freq):
+        MIN,MAX = self.hpDict['freqrange']
+        if not MIN <= level <= MAX:
+            raise('Frequency Out of Allowed Range')
     
     @inlineCallbacks
     def _GetState(self):
