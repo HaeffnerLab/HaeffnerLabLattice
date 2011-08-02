@@ -4,7 +4,7 @@ from PyQt4 import QtCore,uic
 import os
 
 class QCustomFreqPower(QtGui.QWidget):
-    def __init__(self, title, freqrange, powerrange, parent=None):
+    def __init__(self, title,  parent=None):
         QtGui.QWidget.__init__(self, parent)
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
@@ -12,16 +12,21 @@ class QCustomFreqPower(QtGui.QWidget):
         path = os.path.join(basepath,'lattice/clients/qtui/powerfreqspin.ui')
         uic.loadUi(path,self)
         self.title.setText(title)
-	self.spinPower.setRange(*powerrange)
-	self.spinFreq.setRange(*freqrange)
-	self.buttonSwitch.clicked.connect(self.setText)
-	
+        self.buttonSwitch.clicked.connect(self.setText)
+        self.buttonSwitch.toggled.connect(self.setText)
+    
+    def setPowerRange(self, powerrange):
+        self.spinPower.setRange(*powerrange)
+    
+    def setFreqRange(self, freqrange):
+        self.spinFreq.setRange(*freqrange)
+
 	
     def setText(self, down):
-      if down:
-	self.buttonSwitch.setText('ON')
-      else:
-	self.buttonSwitch.setText('OFF') 
+        if down:
+            self.buttonSwitch.setText('ON')
+        else:
+            self.buttonSwitch.setText('OFF') 
 
 if __name__=="__main__":
     app = QtGui.QApplication(sys.argv)
