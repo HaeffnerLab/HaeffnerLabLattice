@@ -4,6 +4,9 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore,uic
 from labrad.wrappers import connectAsync
 
+SIGNAL_ID1 = 187571
+SIGNAL_ID2 = 187572
+
 class TRAPDRIVE_CONTROL(QtGui.QWidget):
     def __init__(self,parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -15,6 +18,23 @@ class TRAPDRIVE_CONTROL(QtGui.QWidget):
         self.server = self.cxn.lattice_pc_hp_server
         self.widget = QCustomFreqPower('Trap Drive')
         self.setupWidget()
+        self.setupListeners()
+        
+    @inlineCallbacks
+    def setupListeners(self):
+        yield self.server.signal__channel_has_been_updated(SIGNAL_ID1)
+        yield self.server.addListener(listener = self.followNewSetting, source = None, ID = SIGNAL_ID1)
+        yield self.server.signal__no_state(SIGNAL_ID2)
+        yield self.server.addListener(listener = self.followNewPower, source = None, ID = SIGNAL_ID2)
+    
+    def followNewSetting(self, x, (type,value)):
+        if type is 'freq'
+            self.widget.setFreqNoSignal(value)
+        elif type is 'power'
+            self.widget.setPowerNoSignal(value)
+    
+    def followNewPower(self, x, checked):
+        self.widget.setStateNoSignal(checked)
         
     @inlineCallbacks
     def setupWidget(self):

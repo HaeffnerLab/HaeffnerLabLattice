@@ -20,7 +20,22 @@ class QCustomFreqPower(QtGui.QWidget):
     
     def setFreqRange(self, freqrange):
         self.spinFreq.setRange(*freqrange)
-
+        
+    def setPowerNoSignal(self, power):
+        self.spinPower.blockSignals(True)
+        self.spinPower.setValue(power)
+        self.spinPower.blockSignals(False)
+        
+    def setFreqNoSignal(self, freq):
+        self.spinFreq.blockSignals(True)
+        self.spinFreq.setValue(freq)
+        self.spinPower.blockSignals(False)
+    
+    def setStateNoSignal(self, state):
+        self.buttonSwitch.blockSignals(True)
+        self.buttonSwitch.setChecked(state)
+        self.setText(state)
+        self.buttonSwtich.blockSignals(False)
 	
     def setText(self, down):
         if down:
