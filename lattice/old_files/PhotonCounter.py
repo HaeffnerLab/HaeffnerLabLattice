@@ -291,7 +291,7 @@ class gui:
         for f in range(oversample,100):
             samp = 0.
             camp = 0.
-            total = 0.
+            total = 0.2**
 	    samples = int(100 - math.fmod(100,100.*oversample/f))
             for i in range(samples):
                 total = total + data[i]
