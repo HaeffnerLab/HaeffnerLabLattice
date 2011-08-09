@@ -9,30 +9,18 @@ from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, Deferred
 
 #import base64
-
-DEFAULT_SAVE_FOLDER = ['','TimeResolvedCounts']
 okDeviceID = 'TimeResolvedCounter'
 
-class TimeResolvedServer(LabradServer):
-    name = 'Time Resolved Server'
+class TimeResolvedFPGA(LabradServer):
+    name = 'TimeResolvedFPGA'
     
+    @inlineCallbacks
     def initServer(self):
-        self.connectDataVault()
-        self.connectOKBoard()
         self.inRequest = False
+        self.singleReadingDeferred = None
+        yield Deferred(self.connectOKBoard)
     
-    
-    """
-    Tries to connected to data vault, self.dv = None is unable to connect
-    """
-    def connectDataVault(self):
-        try:
-            self.dv = self.client.data_vault
-            self.dv.cd(DEFAULT_SAVE_FOLDER,True)
-        except:
-            print 'Data Vault Not Found'
-            self.dv = None      
-    
+    @inlineCallbacks
     """
     Attemps to connect to the OK board with the given okDeviceIDm self.xem = None is not able to connect
     """
@@ -49,51 +37,36 @@ class TimeResolvedServer(LabradServer):
                 self.xem = tmp
                 print 'Connected to {}'.format(id)
                 break
+        reactor.callLater(10, self.connectOKBoard)
                 
-#    def newDataSet(self):
-#        dataset = yield self.dv.new('TimeResolvedcounts',['Trial'],['Counts'],'s')
-#        #self.createDict(dataset[1])
-#        #self.shouldRun = False
-#               
-#    def createDict(self, dataset):
-#        self.d = {
-#                  'DataSet':dataset,
-#                  'TrialCount':0,
-#                  'TotalMessage':''
-#                  }
-        
-    @setting(0, 'Reset the Board', returns = '')
-    """
-    Resets the board to get it ready for counting
-    """
-    def reset(self, c):
-        if self.xem is None: raise('No Board is connected')
-        self.xem.ActivateTriggerIn(0x40,0)
-    
-    @setting(1, 'Perform Single Reading', timelength = 'v' returns = '')
+    @setting(0, 'Perform Time Resolved Measurement', timelength = 'v' returns = '')
     """
     Commands to OK board to get ready to peform a single measurement
     The result can then be retrieved with getSingleResult()
     """
     def performSingleReading(self, c, timelength):
-        if self.xem is None: raise('No Board is Connected')
+        if self.inRequest: raise('Board busy performaing a measurement')
+        self.inRequest = True
         self.singleReadingDeferred = Deferred()
         reactor.callLater(0, self.doSingleReading, self.singleReadingDeferred, timelength)
     
     def doSingleReading(self, deferred, timelength):
-        self.xem.ActivateTriggerIn(0x40,0)
+        self.xem.ActivateTriggerIn(0x40,0) #reset the board
         buf = '\x00'*16776192 ####get this number from timelength, ask hong how
         self.xem.ReadFromBlockPipeOut(0xa0,1024,buf)
+        self.inRequest = False
         deferred.callback(buf)
     
-    @setting(2, 'Get Result of Single Reading', returns = 'v')
+    @setting(1, 'Get Result of Measurement', returns = 'v')
     """
     Acquires the result of a single reading requested earlier
     """
     def getSingleResult(self, c):
+        if self.singleReadingDeferred is None: raise "Single reading was not previously requested"
         data = yield self.singleReadingDeferred
+        self.singleReadingDeferred = None
         returnValue(data)
-            
+  
 if __name__ == "__main__":
     from labrad import util
-    util.runServer( TimeResolvedServer() )
+    util.runServer( TimeResolvedFPGA() )
