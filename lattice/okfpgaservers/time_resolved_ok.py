@@ -16,7 +16,7 @@ okDeviceID = 'TimeResolvedFPGA'
 ProgramPath = ''
 DefaultTimeLength = 0.1 #seconds
 devicePollingPeriod = 10
-MINBUF,MAXBUF = [2, 16776192] #range of allowed buffer lengths
+MINBUF,MAXBUF = [1024, 16776192] #range of allowed buffer lengths
 
 class TimeResolvedFPGA(LabradServer):
     name = 'TimeResolvedFPGA'
@@ -87,8 +87,9 @@ class TimeResolvedFPGA(LabradServer):
     def findBufLength(timelength):
         """
         Converts time length in seconds to length of the buffer needed to request that much data
+        Buffer is rounded to 1024 for optimal data transfer rate.
         """
-        return int(math.floor(timelength / (40. * 10**-9)))
+        return (timelength / (40. * 10**-9)) / 1024 * 1024
         
     @setting(1, 'Get Result of Measurement', returns = 's')
     def getSingleResult(self, c):
