@@ -1,6 +1,6 @@
 '''
-Created on Apr 27, 2011
-@author: Michael Ramm, Christopher Reilly Haeffner Lab
+Created on Aug 11, 2011
+@author: Michael Ramm
 '''
 #from twisted.internet.defer import returnValue, inlineCallbacks, Deferred
 #from labrad.server import LabradServer, setting
@@ -11,7 +11,88 @@ Created on Apr 27, 2011
 #from processingFunctions import processingFunctions
 #from datetime import datetime
 
-class p
+class automatorProcess():
+    self.name  = None
+    self.serversRequired = None
+    self.optionalServers = None
+    self.inputsRequired = None
+    self.optionalInputs = None
+    self.conflictingProccesses = None
+    self.isRunning = None
+    self.cxn = None
+    
+    def __init__(self, cxn, inputs):        
+        self.cxn = cxn
+        self.makeInputDict()
+        self.setInputs(inputs)
+    
+    @inlineCallbacks
+    def startReady(self):
+        yield self.confirmServersUp()
+        self.confirmHaveInputs()
+    
+    def start(self):
+        pass
+    
+    def stop(self):
+        pass
+    
+    def isRunning(self):
+        return self.isRunning
+    
+    def confirmServersUp(self):
+        for servername in self.serversRequired:
+            if servername not in self.cxn.servers: raise("{} server not up".format(servername))
+    
+    def makeInputDict(self):
+        self.inputDict = dict(self.inputsOptional)
+        for req in self.inputsRequired
+            self.inputDict[req] = None
+    
+    def setInputs(self, newinputs):
+        newdict = dict(newinputs)
+        for arg in self.inputDict.keys():
+            if arg in newdict.keys(): providedDict[arg] = newdict[arg]
+    
+    def confirmHaveInputs(self):
+        for req in self.inputsRequired:
+            if self.inputDict[req] is None: raise("{} required input not set".format(req))
+
+class processInfo():
+    def __init__(self):
+        self.processDict = {}
+
+    def addProcess(self, process):
+        self.processDict[process.name] = process
+    
+    def availableProcesses(self):
+        return self.processDict.keys()
+    
+    def nonConflicting(self, procName):
+        all = set(self.processDict.keys())
+        conflicting = set(self.processDict[procName].conflictingProcesses)
+        return all - conflicting
+    
+    def getProcess(self, procName):
+        return self.processDict[procName]
+
+class timeResolvedFullFFT(automatorProcess):
+    """
+    Performs and plots the FFT of Time Resolved Photons.
+    """
+    name = timeResolvedFullFFT
+    serversRequired = ['data_vault','timeresolvedfpga','pauls box']
+    serversOptional = None
+    conflictingProcesses = None
+    inputsRequired = ['Measurement Time']
+    inputsOptional = [
+                      ('Iterations',1),
+                      ('Data Vault Directory',['','TimeResolvedCounts'])
+                      ]
+    
+    def __init__(self, cxn, inputs):
+        self.parent.__init__(cxn,inputs)
+        
 
 class Automator( LabradServer ):
     """
@@ -21,15 +102,13 @@ class Automator( LabradServer ):
     name = 'Automator'
     def initServer(self):
         self.setupProcessInfo()  
-        pass #instantiate classes here
-        #self.processingFunctions = processingFunctions()
     
     def setupProcessInfo(self):
         """
         Sets up the information about all available tasks
         """
-        
-    
+        self.info = processInfo()
+        self.info.addProcess(timeResolvedFullFFT)
     
     @setting(1, path = '*s', dataset = 's', process='s', followlive = 'b', arguments = '*(s,v)', returns = '**s' )
     def processData(self, c, path, dataset, process, followlive = False, arguments = None):
