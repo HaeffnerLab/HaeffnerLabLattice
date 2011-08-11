@@ -1,13 +1,10 @@
 import time
 import numpy
-#from scipy.sparse import lil_matrix
-#from scipy.fftpack import rfft
 
 
 t = cxn.timeresolvedfpga
 t.set_time_length(0.1)
 t.perform_time_resolved_measurement()
-time.sleep(2)
 res = t.get_result_of_measurement()
 bytelength = res[0]
 arr = res[1].asarray
@@ -30,6 +27,20 @@ result = result.flatten()
 
 import time
 t1 = time.time()
-fft = numpy.fft.rfft(result) #returns nice form
+fft = numpy.fft.rfft(result) #returns nice form, faster than fft for real inputs
 t2 = time.time()
 print t2 - t1
+
+timestep = 5*10**-9 #nanoseconds, ADD this to server
+freqs = numpy.fft.fftfreq(result.size, d = timestep)
+freqs = numpy.abs(freqs[0:result.size/2 + 1])
+ampl = numpy.abs(fft)
+import matplotlib
+matplotlib.use('Qt4Agg')
+from matplotlib import pyplot
+pyplot.plot(freqs, ampl)
+pyplot.show()
+
+#from scipy.sparse import lil_matrix
+#from scipy.fftpack import rfft
+
