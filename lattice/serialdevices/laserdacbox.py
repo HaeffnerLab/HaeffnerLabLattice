@@ -48,7 +48,8 @@ class laserDACServer( SerialDeviceServer ):
     name = SERVERNAME
     regKey = 'LaserRoomDac'
     port = None
-    serNode = 'lab-49'
+    #serNode = 'lab-49'
+    serNode = 'lattice-pc'
     timeout = TIMEOUT
     onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(sv)')
        
@@ -88,6 +89,8 @@ class laserDACServer( SerialDeviceServer ):
         self.channelList.append(Channel(0,'397',397,(0.0,2500.0)))
         self.channelList.append(Channel(1,'866',866,(0.0,2500.0)))
         self.channelList.append(Channel(2,'422',422,(0.0,2500.0)))
+        self.channelList.append(Channel(3,'397S',397,(0.0,2500.0)))
+        self.channelList.append(Channel(4,'732',732,(0.0,2500.0)))
  
     @inlineCallbacks
     def populateInfo(self):
@@ -157,6 +160,7 @@ class laserDACServer( SerialDeviceServer ):
         """
         self.checkConnection()
         toSend = self.mapMessage( givenChannel, value )
+        print toSend
         self.ser.write( toSend )
         resp = yield self.ser.read( len( RESP_STRING ) )
         if RESP_STRING != resp:

@@ -1,0 +1,19 @@
+instr.clear()
+chars = ['\r','\n','\r\n',None, '', '\f']
+endings = [True, False]
+formats = ['ascii', 'single','double']
+delays = [0.0, 1.0]
+instr.timeout = 1
+instr.chunklength = 102400
+for ch in chars:
+	for end in endings:
+		for format in formats:
+			for delay in delays:
+				instr.send_end = end
+				instr.term_chars = ch
+				instr.values_format = format
+				instr.delay = delay
+				try:
+					print instr.write('*IDN?')
+				except:
+					print 'nope'

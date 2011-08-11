@@ -2,6 +2,9 @@ from PyQt4 import QtGui, QtCore
 from labrad.wrappers import connectAsync
 from qtui.QCustomSliderSpin import QCustomSliderSpin
 from twisted.internet.defer import inlineCallbacks, returnValue
+from labrad.types import Error
+
+
 
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 SIGNALID = 187566
@@ -34,7 +37,9 @@ class cavityWidget(QtGui.QWidget):
         self.d['397'] =  widgetWrapper( serverName = '397', displayName = '397 Cavity', regName = 'range397', globalRange = (0,2500))
         self.d['866'] =  widgetWrapper( serverName = '866', displayName = '866 Cavity', regName = 'range866', globalRange = (0,2500))
         self.d['422'] =  widgetWrapper( serverName = '422', displayName = '422 Offset', regName = 'range422', globalRange = (0,2500))
-    
+        self.d['397S'] =  widgetWrapper( serverName = '397S', displayName = '397 Single Pass Cavity', regName = 'range397S', globalRange = (0,2500))
+        self.d['732'] =  widgetWrapper( serverName = '732', displayName = '732 Offset', regName = 'range732', globalRange = (0,2500))
+        
     @inlineCallbacks
     def connect(self):
         self.cxn = yield connectAsync()
@@ -70,7 +75,7 @@ class cavityWidget(QtGui.QWidget):
         #lay out the widget
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
-        for name in ['397','866','422']: #sets the order of appearance
+        for name in ['397','866','422','397S','732']: #sets the order of appearance
             layout.addWidget(self.d[name].widget)
         #connect functions
         for widgetWrapper in self.d.values():

@@ -4,14 +4,14 @@ Created on Aug 08, 2011
 Thanks for code ideas from Quanta Lab, MIT
 '''
 import ok
-import math
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
 from twisted.internet.threads import deferToThread
 import os
+import numpy
+import time
 
-#import base64
 okDeviceID = 'TimeResolvedFPGA'
 ProgramPath = ''
 DefaultTimeLength = 0.1 #seconds
@@ -51,8 +51,9 @@ class TimeResolvedFPGA(LabradServer):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/devel/okfpgaservers/TimeResolvedFPGA.bit')
-        xem.ConfigureFPGA(path)
+        path = os.path.join(basepath,'lattice/okfpgaservers/TimeResolvedFPGA.bit')
+        prog = xem.ConfigureFPGA(path)
+        if prog: raise("Not able to program FPGA")
         pll = ok.PLL22150()
         xem.GetEepromPLL22150Configuration(pll)
         pll.SetDiv1(pll.DivSrc_VCO,4) 
@@ -89,25 +90,40 @@ class TimeResolvedFPGA(LabradServer):
         Converts time length in seconds to length of the buffer needed to request that much data
         Buffer is rounded to 1024 for optimal data transfer rate.
         """
-        return (timelength / (40. * 10**-9)) / 1024 * 1024
+        return int(timelength / (40. * 10**-9)) / 1024 * 1024
         
-    @setting(1, 'Get Result of Measurement', returns = 's')
+    @setting(1, 'Get Result of Measurement', returns = '(w?)')
     def getSingleResult(self, c):
         """
         Acquires the result of a single reading requested earlier
+        Output:
+        The raw data is a binary expression where each 0 corresponds to no photons
+        and 1 corresponds to a hit per one clock cycle of the FPGA clock.
+        The function compresses the data and put into a 2D numpy array by doing the following:
+        1. The binary data is split into a list of bytes (LB), and each byte gets converted to decimal
+        where most bytes are 0 as no counts took place in 8 clock cycles
+        2. We return a 2D numpy array, where the first row is the position of nonzero elements in LB
+        and the second row are those corresponding elements.
+        There operations have been found to be much faster than the data transfer rate from FPGA
         """
         if self.singleReadingDeferred is None: raise "Single reading was not previously requested"
-        data = yield self.singleReadingDeferred
+        raw = yield self.singleReadingDeferred
         self.singleReadingDeferred = None
-        returnValue(data)
+        t1 = time.time()
+        data = numpy.fromstring(raw, dtype = numpy.uint8)
+        nzindeces = numpy.array(data.nonzero()[0], dtype=numpy.int)
+        nzelems = numpy.array(data[nzindeces],dtype=int)
+        result = numpy.vstack((nzindeces,nzelems))
+        returnValue((data.size, result))
         
     @setting(2, 'Set Time Length', timelength = 'v[s]', returns = '')
     def setTimeLength(self, c, timelength):
         """
         Sets the default time length for measurements in seconds
         """
-        buf = self.findBufLength(timelength)
-        if not MINBUF <= buflength <= MAXBUF: raise('Incorrect timelength buffer length out of bounds')
+        timelength = timelength['s']
+        buflength = self.findBufLength(timelength)
+        if not MINBUF <= buflength <= MAXBUF: raise('Incorrect timelength: buffer length out of bounds')
         self.timelength = timelength
   
 if __name__ == "__main__":
