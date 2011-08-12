@@ -2,7 +2,7 @@
 Created on Aug 11, 2011
 @author: Michael Ramm
 '''
-from twisted.internet.defer import inlineCallbacks#returnValue, , Deferred
+from twisted.internet.defer import inlineCallbacks, returnValue#, , Deferred
 from labrad.server import LabradServer, setting
 #from labrad.errors import Error
 #from twisted.internet.threads import deferToThread
@@ -25,13 +25,14 @@ class automatorProcess():
         self.cxn = cxn
         self.makeInputDict()
         self.setInputs(inputs)
+        self.readyToExecute()
     
     @inlineCallbacks
-    def startReady(self):
+    def readyToExecute(self):
         yield self.confirmServersUp()
         self.confirmHaveInputs()
-    
-    def start(self):
+        
+    def execute(self):
         pass
     
     def stop(self):
@@ -61,9 +62,13 @@ class automatorProcess():
 class processInfo():
     def __init__(self):
         self.processDict = {}
+        self.running = []
 
     def addProcess(self, process):
         self.processDict[process.name] = process
+    
+    def getProcess(self, procName):
+        return self.processDict[procName]
     
     def availableProcesses(self):
         return self.processDict.keys()
@@ -73,9 +78,19 @@ class processInfo():
         conflicting = set(self.processDict[procName].conflictingProcesses)
         return all - conflicting
     
-    def getProcess(self, procName):
-        return self.processDict[procName]
+    def addRunningIstance(self, procName, instance):
+        self.running.append( (procName,instance) )
     
+    def getRunningInstance(self, procName):
+        for name,instance in self.running:
+            if name == procName: return instance
+        return ''
+    
+    def removeRunningInstance(self, processNames,instance):
+        for name,inst in self.running:
+            if processName == name and inst == instance:
+                self.running.remove((name,instss))
+
     def getRequiredInputs(self, procName):
         process = self.processDict[procName]
         return process.inputsRequired
@@ -83,6 +98,12 @@ class processInfo():
     def getOptionalInputs(self, procName):
         process = self.processDict[procName]
         return process.inputsOptional
+    
+    def getRunningProcesses(self):
+        running = set()
+        for procName,instance in self.running:
+            running.add(procName)
+        return list(running)
 
 class timeResolvedFullFFT(automatorProcess):
     """
@@ -95,11 +116,23 @@ class timeResolvedFullFFT(automatorProcess):
     inputsRequired = ['Measurement Time']
     inputsOptional = [
                       ('Data Vault Directory','*s',"['','TimeResolvedCounts']"),
-                      ('Iterations','w','1')
+                      ('Iterations','w','1'),
+                      ('runForever','b','False')
                       ]
     
-    def __init__(self, cxn, inputs):
-        self.parent.__init__(cxn,inputs)
+    def execute(self):
+        print 'executing process'
+        print self.name
+        print 'with inputs'
+        print self.inputs
+        servers = self.yieldsomething()
+        print 'yield running servers'
+        print servers
+        
+    @inlineCallbacks
+    def yieldsomething():
+        servers = yield self.cxn.manager.servers()
+        returnValue(servers)
         
 
 class Automator( LabradServer ):
@@ -125,7 +158,7 @@ class Automator( LabradServer ):
         """
         return self.info.availableProcesses()
     
-    @setting(1, 'Get Required Inputs', processName = 's', returns = '*s')
+    @setting(1, 'Get Inputs Required', processName = 's', returns = '*s')
     def getRequiredInputs(self, c, processName):
         """
         Returns the list of inputs for the given process.
@@ -134,7 +167,7 @@ class Automator( LabradServer ):
         return self.info.getRequiredInputs(processName)
     
     
-    @setting(2, 'Get Optional Inputs', processName = 's', returns = '*(sss)')
+    @setting(2, 'Get Inputs Optional', processName = 's', returns = '*(sss)')
     def getOptionalInputs(self, c, processName):
         """
         Returns the list of optional inputs for the given process in the form (name, labrad dtype, default value)
@@ -142,140 +175,40 @@ class Automator( LabradServer ):
         if processName not in self.info.availableProcesses(): raise('Process Name Not Found')
         return self.info.getOptionalInputs(processName)
     
-    @setting(3, 'Set Inputs')
-    
+    @setting(3, 'Set Inputs', processName = 's',inputs = '*(sss)', returns = '')
+    def setInputs(self, c, processName, inputs):
+        """
+        For the current context, sets the inputs for processName for future executations.
+        """
+        c[processName] = {'inputs' : inputs }
         
-    
-    
-    
-#    @setting(1, path = '*s', dataset = 's', process='s', followlive = 'b', arguments = '*(s,v)', returns = '**s' )
-#    def processData(self, c, path, dataset, process, followlive = False, arguments = None):
-#        """
-#        Process the data by specifying the path and dataset name in datavault.
-#        If followlive is selected, any new updates to the selected dataset will be processed on the flu
-#        Arguements let user change the default processing settings
-#        """
-#        if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
-#        readhandle = ContextHandle(self.client, 'data_vault')
-#        writehandle = ContextHandle(self.client,'data_vault')
-#        request = Request(path, dataset, process, readhandle, writehandle, followlive, arguments)
-#        outputInfo = request.getOutputInfo()
-#        reactor.callLater(0,request.startProcessing)
-#        return outputInfo
-#        
-#    @setting(2, returns = '*s')
-#    def nameProcesses(self, c):
-#        """Returns the list of available processes"""
-#        return self.processingFunctions.availableProcesses()
-#    
-#    @setting(3, process = 's', returns = '*(sv)')
-#    def optionalInputs(self, c, process):
-#        """Returns a list of tuples of available inputs with the default values for a given process"""
-#        if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
-#        return self.processingFunctions.availableInputs(process)
-#        
-#    def serverConnected( self, ID, name ):
-#        if name is 'Data Vault':
-#            self.dv = self.client.data_vault
-#            print 'Data Vault Connected'
-####   
-#    def serverDisconnected( self, ID, name ):
-#        if name is 'Data Vault':
-#            self.dv = None
-#            print 'Data Vault Disconnected'
-####
-#    def stopServer( self ):
-#        #close all current contexts with data vault
-#        #stop processing all the deferred threads
-#        pass
-    
-#class Request():
-#    def __init__(self, inputpath, inputdataset, process, readhandle,writehandle, followlive, arguments):
-#        self.readhandle = readhandle
-#        self.writehandle = writehandle
-#        self.inputpath = inputpath
-#        self.inputdataset = inputdataset
-#        self.process = process
-#        self.followlive = followlive
-#        self.arguments = arguments
-#        self.outputfile =  inputdataset + ' ' + self.process + ' ' + str(datetime.now())
-#        self.outputpath = inputpath + ['Processed Data']
-#        self.pF = processingFunctions()
-#    
-#    def getOutputInfo(self):
-#        return [self.outputpath,[self.outputfile]]
-#    
-#    def listener(self,msgCtx, data):
-#        self.newData() 
-#        
-#    @inlineCallbacks    
-#    def startProcessing(self):
-#        #self.cumulRawData = np.array()
-#        #self.cumulProcData = np.array()
-#        try:
-#            yield self.readhandle.call('cd',self.inputpath)
-#            yield self.readhandle.call('open',self.inputdataset)
-#            yield self.writehandle.call('cd',*(self.outputpath,True))
-#        except:
-#            raise Error('Dataset not found in provided directory') #find a way to get this out to the user
-#        #start a timer 24 hours
-#        #connect endprocessing
-#        if self.followlive:
-#            yield self.processRepeatedly()
-#        else:
-#            yield self.processOnce()
-#            
-#    @inlineCallbacks
-#    def processOnce(self):
-#        data = yield self.readhandle.call('get')
-#        if np.size(data):
-#            print 'processing ' + self.inputdataset
-#            yield self.processNewData(data)
-#            print 'done processing'
-#        else:
-#            print 'no data in '+ self.inputdataset
-#        
-#    @inlineCallbacks
-#    def processRepeatedly(self):
-#        data = yield self.readhandle.call('get')
-#        if np.size(data):
-#            yield self.processNewData(data)
-#            reactor.callLater(0, self.processRepeatedly)
-#        else:
-#            print 'no new data'
-#            reactor.callLater(10, self.processRepeatedly)
-#            
-#    @inlineCallbacks
-#    def processNewData(self, newdata):
-#        yield deferToThread(self.pF.process, *(self.process, newdata, self.arguments))
-#        if self.pF.newResultReady:
-#            resultParams = self.pF.getResultParams()
-#            output = self.pF.returnResult()
-#            #delete previous dataset here
-#            print self.outputfile
-#            a = yield self.writehandle.call('new',self.outputfile, resultParams[0],resultParams[1])#make more general
-#            print a
-#            yield self.writehandle.call('add',output)
+    @setting(4, 'Get Running Processes', returns = '*s')
+    def getRunningProcesses(self, c):
+        """
+        Returns processes that are currently executing
+        """
+        return self.info.getRunningProcesses()
         
-#class ContextHandle( object ):
-#    def __init__( self, cxn, server ):
-#        self.cxn = cxn
-#        self.context = self.cxn.context()
-#        self.server = server  
-#
-#    @inlineCallbacks
-#    def call( self, setting, *args, **kwargs ):
-#        kwargs['context'] = self.context
-#        result = yield self.cxn.servers[self.server].settings[setting]( *args, **kwargs )
-#        returnValue( result )
-#    
-#    def addListener( self, listener, ID ):
-#        self.cxn._addListener( listener = listener, source = None, ID = ID, context = self.context )
-#
-#    def removeListener( self, listener, ID ):
-#        self.cxn._removeListener( listener = (listener,(),{}), source = None, ID = ID, context = self.context )
-
-
+    @setting(5, 'Start process execution', processName = 's', returns = '')
+    def startProcessExecution(self, c, processName):
+        """start
+        Starts execution the specified process. Must run Set Inputs prior to execution to
+        set any required inputs for the process.
+        """
+        process = self.info.getProcess(processName)
+        if 'inputs' not in c[processName].keys(): raise('Inputs have not been set')
+        inputs = c[processName]['inputs']
+        cxn = self.client
+        instance = process(cxn, inputs)
+        instance.execute()
+    
+    @setting(6, 'Stop process execution', processName = 's')
+    def stopProcess(self, c, processName):
+        if processName not in self.info.getRunningProcesses(): raise('{} not currently running'.format(processName))
+        instance = self.info.getRunningInstance(processName)
+        instance.stop()
+        self.info.removeRunningInstance(processName, instance)
+        
 if __name__ == "__main__":
     from labrad import util
     util.runServer( Automator() )
