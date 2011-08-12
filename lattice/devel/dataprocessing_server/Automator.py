@@ -25,12 +25,16 @@ class automatorProcess():
         self.cxn = cxn
         self.makeInputDict()
         self.setInputs(inputs)
-        self.readyToExecute()
+        ####self.readyToExecute()
     
     @inlineCallbacks
     def readyToExecute(self):
         yield self.confirmServersUp()
         self.confirmHaveInputs()
+        self.checkInputBounds()
+    
+    def checkInputBounds(self):
+        pass
         
     def execute(self):
         pass
@@ -51,9 +55,10 @@ class automatorProcess():
             self.inputDict[req] = None
     
     def setInputs(self, newinputs):
+        if newinputs is None: return
         newdict = dict(newinputs)
         for arg in self.inputDict.keys():
-            if arg in newdict.keys(): providedDict[arg] = newdict[arg]
+            if arg in newdict.keys(): inputDict[arg] = newdict[arg]
     
     def confirmHaveInputs(self):
         for req in self.inputsRequired:
@@ -115,25 +120,62 @@ class timeResolvedFullFFT(automatorProcess):
     conflictingProcesses = None
     inputsRequired = ['Measurement Time']
     inputsOptional = [
-                      ('Data Vault Directory','*s',"['','TimeResolvedCounts']"),
-                      ('Iterations','w','1'),
-                      ('runForever','b','False')
+                      ('Data Vault Directory',"['','TimeResolvedCounts']"),
+                      ('Iterations','1'),
+                      ('runForever','False')
                       ]
     
-    def execute(self):
-        print 'executing process'
-        print self.name
-        print 'with inputs'
-        print self.inputs
-        servers = self.yieldsomething()
-        print 'yield running servers'
-        print servers
-        
     @inlineCallbacks
-    def yieldsomething():
-        servers = yield self.cxn.manager.servers()
-        returnValue(servers)
-        
+    def execute(self):
+        print 'running'
+        import time
+        import numpy
+        #import matplotlib
+        #matplotlib.use('Qt4Agg')
+        #from matplotlib import pyplot
+        yield self.do()
+    
+    @inlineCallbacks    
+    def do(self):
+        print 'communicating'
+        t = self.cxn.timeresolvedfpga
+        yield t.set_time_length(0.010)
+        yield t.perform_time_resolved_measurement()
+        res = yield t.get_result_of_measurement()
+        bytelength = res[0][0]
+        timelength = res[0][1]
+        arr = res[1].asarray
+        positions = arr[0];
+        elems = arr[1];
+
+    #this process is much faster but equilvant to bitarray.fromstring(raw)
+    #arr = numpy.array(b)
+
+        result = numpy.zeros(( bytelength, 8), dtype = numpy.uint8)
+
+        #goes from 255 to [1,1,1,1,1,1,1,1]
+        def converter(x):
+            str = bin(x)[2:].zfill(8)
+            l = [int(s) for s in str]
+            return l
+
+        elems = map(converter , elems);
+        result[positions] = elems
+        result = result.flatten()
+        fft = numpy.fft.rfft(result) #returns nice form, faster than fft for real inputs
+        timestep = 5*10**-9 #nanoseconds, ADD this to server
+        freqs = numpy.fft.fftfreq(result.size, d = timestep)
+        freqs = numpy.abs(freqs[0:result.size/2 + 1])
+        ampl = numpy.abs(fft)
+        print 'done'
+        #pyplot.plot(freqs, ampl)
+        #pyplot.show()
+
+#    @inlineCallbacks
+#    def yieldsomething(self):
+#        servers = yield self.cxn.manager.servers()
+#        print servers
+#        
 
 class Automator( LabradServer ):
     """
@@ -167,7 +209,7 @@ class Automator( LabradServer ):
         return self.info.getRequiredInputs(processName)
     
     
-    @setting(2, 'Get Inputs Optional', processName = 's', returns = '*(sss)')
+    @setting(2, 'Get Inputs Optional', processName = 's', returns = '*(ss)')
     def getOptionalInputs(self, c, processName):
         """
         Returns the list of optional inputs for the given process in the form (name, labrad dtype, default value)
@@ -180,7 +222,7 @@ class Automator( LabradServer ):
         """
         For the current context, sets the inputs for processName for future executations.
         """
-        c[processName] = {'inputs' : inputs }
+        c['inputs'] = {processName : inputs }
         
     @setting(4, 'Get Running Processes', returns = '*s')
     def getRunningProcesses(self, c):
@@ -196,11 +238,13 @@ class Automator( LabradServer ):
         set any required inputs for the process.
         """
         process = self.info.getProcess(processName)
-        if 'inputs' not in c[processName].keys(): raise('Inputs have not been set')
-        inputs = c[processName]['inputs']
+        if processName not in c['inputs'].keys():
+            inputs = None
+        else:
+            inputs = c['inputs'][processName]
         cxn = self.client
         instance = process(cxn, inputs)
-        instance.execute()
+        yield instance.execute()
     
     @setting(6, 'Stop process execution', processName = 's')
     def stopProcess(self, c, processName):
@@ -208,6 +252,9 @@ class Automator( LabradServer ):
         instance = self.info.getRunningInstance(processName)
         instance.stop()
         self.info.removeRunningInstance(processName, instance)
+    
+    def initContext(self, c):
+        c['inputs'] = {}
         
 if __name__ == "__main__":
     from labrad import util
