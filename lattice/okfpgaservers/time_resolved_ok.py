@@ -10,7 +10,6 @@ from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
 from twisted.internet.threads import deferToThread
 import os
 import numpy
-import time
 
 okDeviceID = 'TimeResolvedFPGA'
 ProgramPath = ''
@@ -92,7 +91,7 @@ class TimeResolvedFPGA(LabradServer):
         """
         return int(timelength / (40. * 10**-9)) / 1024 * 1024
         
-    @setting(1, 'Get Result of Measurement', returns = '(w?)')
+    @setting(1, 'Get Result of Measurement', returns = '((wv)?)')
     def getSingleResult(self, c):
         """
         Acquires the result of a single reading requested earlier
@@ -109,12 +108,15 @@ class TimeResolvedFPGA(LabradServer):
         if self.singleReadingDeferred is None: raise "Single reading was not previously requested"
         raw = yield self.singleReadingDeferred
         self.singleReadingDeferred = None
-        t1 = time.time()
+        ####
+        #fakeraw = len(raw)/8*'\x00\x00\x00\x01\x00\x00\x00\x01'
+        #raw = fakeraw
+        ####
         data = numpy.fromstring(raw, dtype = numpy.uint8)
         nzindeces = numpy.array(data.nonzero()[0], dtype=numpy.int)
         nzelems = numpy.array(data[nzindeces],dtype=int)
         result = numpy.vstack((nzindeces,nzelems))
-        returnValue((data.size, result))
+        returnValue(((data.size, self.timelength),result))
         
     @setting(2, 'Set Time Length', timelength = 'v[s]', returns = '')
     def setTimeLength(self, c, timelength):

@@ -3,15 +3,23 @@ import numpy
 
 
 t = cxn.timeresolvedfpga
-t.set_time_length(0.1)
+t.set_time_length(0.010)
 t.perform_time_resolved_measurement()
 res = t.get_result_of_measurement()
-bytelength = res[0]
+bytelength = res[0][0]
+timelength = res[0][1]
+
+print bytelength
+print timelength
+
 arr = res[1].asarray
 
 positions = arr[0];
 elems = arr[1];
 
+#this process is much faster but equilvant to 
+#bitarray.fromstring(raw)
+#arr.array(b)
 
 result = numpy.zeros(( bytelength, 8), dtype = numpy.uint8)
 
@@ -25,15 +33,14 @@ elems = map(converter , elems);
 result[positions] = elems
 result = result.flatten()
 
-import time
-t1 = time.time()
 fft = numpy.fft.rfft(result) #returns nice form, faster than fft for real inputs
-t2 = time.time()
-print t2 - t1
 
 timestep = 5*10**-9 #nanoseconds, ADD this to server
+
 freqs = numpy.fft.fftfreq(result.size, d = timestep)
 freqs = numpy.abs(freqs[0:result.size/2 + 1])
+
+
 ampl = numpy.abs(fft)
 import matplotlib
 matplotlib.use('Qt4Agg')
@@ -43,4 +50,3 @@ pyplot.show()
 
 #from scipy.sparse import lil_matrix
 #from scipy.fftpack import rfft
-
