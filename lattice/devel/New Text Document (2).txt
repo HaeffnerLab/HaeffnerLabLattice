@@ -3,13 +3,13 @@ import numpy
 
 
 t = cxn.timeresolvedfpga
-t.set_time_length(0.010)
+t.set_time_length(0.045)
 t.perform_time_resolved_measurement()
 res = t.get_result_of_measurement()
-bytelength = res[0][0]
+complength = res[0][0]
 timelength = res[0][1]
 
-print bytelength
+print complength
 print timelength
 
 arr = res[1].asarray
@@ -21,11 +21,11 @@ elems = arr[1];
 #bitarray.fromstring(raw)
 #arr.array(b)
 
-result = numpy.zeros(( bytelength, 8), dtype = numpy.uint8)
+result = numpy.zeros(( complength, 16), dtype = numpy.uint8)
 
-#goes from 255 to [1,1,1,1,1,1,1,1]
+#goes from 255 to [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
 def converter(x):
-	str = bin(x)[2:].zfill(8)
+	str = bin(x)[2:].zfill(16)
 	l = [int(s) for s in str]
 	return l
 

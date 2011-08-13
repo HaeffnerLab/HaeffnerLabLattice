@@ -12,10 +12,10 @@ import os
 import numpy
 
 okDeviceID = 'TimeResolvedFPGA'
-ProgramPath = ''
 DefaultTimeLength = 0.1 #seconds
 devicePollingPeriod = 10
 MINBUF,MAXBUF = [1024, 16776192] #range of allowed buffer lengths
+timeResolution = 5.0*10**-9 #seconds
 
 class TimeResolvedFPGA(LabradServer):
     name = 'TimeResolvedFPGA'
@@ -50,12 +50,12 @@ class TimeResolvedFPGA(LabradServer):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/okfpgaservers/TimeResolvedFPGA.bit')
+        path = os.path.join(basepath,'lattice/okfpgaservers/led.bit')
         prog = xem.ConfigureFPGA(path)
         if prog: raise("Not able to program FPGA")
         pll = ok.PLL22150()
         xem.GetEepromPLL22150Configuration(pll)
-        pll.SetDiv1(pll.DivSrc_VCO,4) 
+        pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
     @setting(0, "Perform Time Resolved Measurement", timelength = 'v[s]', returns = '')
@@ -69,6 +69,7 @@ class TimeResolvedFPGA(LabradServer):
         self.inRequest = True
         if timelength is None: timelength = self.timelength
         buflength = self.findBufLength(timelength)
+        self.singleReadingDeferred = Deferred()
         reactor.callLater(0, self.doSingleReading, buflength)
     
     @inlineCallbacks
@@ -76,7 +77,6 @@ class TimeResolvedFPGA(LabradServer):
         yield deferToThread(self._singleReading, buflength)
 
     def _singleReading(self, buflength):
-        self.singleReadingDeferred = Deferred()
         self.xem.ActivateTriggerIn(0x40,0) #reset the board
         buf = '\x00'*buflength
         self.xem.ReadFromBlockPipeOut(0xa0,1024,buf)
@@ -89,9 +89,18 @@ class TimeResolvedFPGA(LabradServer):
         Converts time length in seconds to length of the buffer needed to request that much data
         Buffer is rounded to 1024 for optimal data transfer rate.
         """
-        return int(timelength / (40. * 10**-9)) / 1024 * 1024
+        return int(timelength / (8 * timeResolution )) / 1024 * 1024
+    
+    @staticmethod
+    def getOptimalTiming():
+        """
+        Return computationally preferable measurement times, that correspond to future arrays that are powers of 2 and are easy to FFT.
+        """
+        powers = numpy.array([2**p for p in range(10,25)])
+        times = powers * 8 * timeResolution
+        return times
         
-    @setting(1, 'Get Result of Measurement', returns = '((wv)?)')
+    @setting(1, 'Get Result of Measurement', returns = '((wvv)?)')
     def getSingleResult(self, c):
         """
         Acquires the result of a single reading requested earlier
@@ -108,15 +117,11 @@ class TimeResolvedFPGA(LabradServer):
         if self.singleReadingDeferred is None: raise "Single reading was not previously requested"
         raw = yield self.singleReadingDeferred
         self.singleReadingDeferred = None
-        ####
-        #fakeraw = len(raw)/8*'\x00\x00\x00\x01\x00\x00\x00\x01'
-        #raw = fakeraw
-        ####
-        data = numpy.fromstring(raw, dtype = numpy.uint8)
+        data = numpy.fromstring(raw, dtype = numpy.uint16)        
         nzindeces = numpy.array(data.nonzero()[0], dtype=numpy.int)
         nzelems = numpy.array(data[nzindeces],dtype=int)
         result = numpy.vstack((nzindeces,nzelems))
-        returnValue(((data.size, self.timelength),result))
+        returnValue(((data.size, self.timelength, timeResolution),result))
         
     @setting(2, 'Set Time Length', timelength = 'v[s]', returns = '')
     def setTimeLength(self, c, timelength):
@@ -127,6 +132,13 @@ class TimeResolvedFPGA(LabradServer):
         buflength = self.findBufLength(timelength)
         if not MINBUF <= buflength <= MAXBUF: raise('Incorrect timelength: buffer length out of bounds')
         self.timelength = timelength
+    
+    @setting(3, 'Get Optimal Time Lengths', returns = '*v')
+    def optimalTL(self, c):
+        """
+        Returns Optimal Time Lengths that will be easy to process for FFT
+        """
+        return self.getOptimalTiming()
   
 if __name__ == "__main__":
     from labrad import util
