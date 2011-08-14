@@ -13,10 +13,6 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
-
-#IMPROVE ON:
-#handling of data_vault not found (wait for it to connect)
-
 class TimeResolvedFlow( LabradServer):
     
     name = 'TimeResolvedFlow'
@@ -38,7 +34,7 @@ class TimeResolvedFlow( LabradServer):
         dir - self.saveFolder
         name = self.dataSet
         yield self.dv.cd(dir, True)
-        yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
+        #yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
         yield self.addParameters()
         yield self.dv.new()
     
