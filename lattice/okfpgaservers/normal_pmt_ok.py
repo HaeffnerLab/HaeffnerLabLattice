@@ -4,22 +4,23 @@ Created on Aug 13, 2011
 '''
 import ok
 from labrad.server import LabradServer, setting
-from twisted.internet import reactor
-from twisted.internet.defer import DeferredLock
+from twisted.internet import reactor, threads
+from twisted.internet.defer import DeferredLock, returnValue, inlineCallbacks
+from labrad import util
 import os
 import time
 
-okDeviceID = 'NormalPMTCountFPGA'
+okDeviceID = 'TimeResolvedFPGA'#'NormalPMTCountFPGA'
+devicePollingPeriod = 10
+timeout = 1
 
-class TimeResolvedFPGA(LabradServer):
+class NormalPMTCountFPGA(LabradServer):
     name = 'NormalPMTCountFPGA'
     
     def initServer(self):
         self.collectionTime = {'Normal':0.100,'Differential':0.100}
         self.currentMode = 'Normal'
         self.inCommunication = DeferredLock()
-#        self.normalModeUpdateTime = 0.100 #default update time
-#        self.differentialModeUpdateTime = 0.100
         self.connectOKBoard()
     
     def connectOKBoard(self):
@@ -46,7 +47,7 @@ class TimeResolvedFPGA(LabradServer):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/okfpgaservers/normal.bit')
+        path = os.path.join(basepath,'lattice/okfpgaservers/pmt.bit')
         prog = xem.ConfigureFPGA(path)
         if prog: raise("Not able to program FPGA")
         pll = ok.PLL22150()
@@ -54,13 +55,12 @@ class TimeResolvedFPGA(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
-    @staticmethod
-    def _resetFIFO():
+    def _resetFIFO(self):
         self.xem.ActivateTriggerIn(0x40,0)
     
-    @staticmethod
-    def _setUpdateTime(time):
+    def _setUpdateTime(self, time):
         self.xem.SetWireInValue(0x01,int(1000 * time))
+        self.xem.UpdateWireIns()
       
     @setting(0, 'Set Mode', mode = 's', returns = '')
     def setMode(self, c, mode):
@@ -83,7 +83,7 @@ class TimeResolvedFPGA(LabradServer):
         self._resetFIFO()
         self.inCommunication.release()
     
-    @setting(1, 'Set Collection Time', time = 'v[s]', mode = 's', returns = '')
+    @setting(1, 'Set Collection Time', time = 'v', mode = 's', returns = '')
     def setCollectTime(self, c, time, mode):
         """
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
@@ -107,10 +107,10 @@ class TimeResolvedFPGA(LabradServer):
         self._resetFIFO()
         self.inCommunication.release()
     
-    @setting(3, 'Get All Counts', atleast = 'w',returns = '*(wss)')
+    @setting(3, 'Get All Counts', atleast = 'w',returns = '*(vsv)')
     def getALLCounts(self, c, atleast = 0):
         """
-        Returns the list of counts stored on the FPGA in the form (w,s1,s2) where w is the count
+        Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/sec
         and s can be 'ON' in normal mode or in Differential mode with repump on and 'OFF' for differential
         mode when repump is off. s2 is the approximate time of acquasition
         
@@ -119,13 +119,20 @@ class TimeResolvedFPGA(LabradServer):
         in the queue
         """
         yield self.inCommunication.acquire()
+        d = threads.deferToThread(self.doGetAllCounts, atleast)
+        countlist = yield util.maybeTimeout(d, 5, [])
+        self.inCommunication.release()
+        returnValue(countlist)
+
+    @inlineCallbacks
+    def doGetAllCounts(self, atleast):
         inFIFO = yield self._countsInFIFO()
         request = max(inFIFO, atleast)
         reading = yield self._readCounts(request)
         self.inCommunication.release()
         split = self.split_len(reading, 4)
-        countlist = map(infoFromBuf, split)
-        countlist = map(convertKCperSEC, countlist)
+        countlist = map(self.infoFromBuf, split)
+        countlist = map(self.convertKCperSec, countlist)
         countlist = self.appendTimes(countlist, time.time())
         returnValue( countlist)    
     
@@ -149,23 +156,21 @@ class TimeResolvedFPGA(LabradServer):
         #useful for splitting a string in lenght-long pieces
         return [seq[i:i+length] for i in range(0, len(seq), length)]
     
-    @staticmethod
-    def _countsInFIFO():
+    def _countsInFIFO(self):
         """
         returns how many counts are in FIFO
         """
-        xem.UpdateWireOuts()
-        inFIFO16bit = xem.GetWireOutValue(0x21)
+        self.xem.UpdateWireOuts()
+        inFIFO16bit = self.xem.GetWireOutValue(0x21)
         counts = inFIFO16bit / 2
         return counts
     
-    @staticmethod
-    def _readCounts(number):
+    def _readCounts(self, number):
         """
         reads the next number of counts from the FPGA
         """
         buf = "\x00"* ( number * 4 )
-        xem.ReadFromBlockPipeOut(0xa0,4,buf)
+        self.xem.ReadFromBlockPipeOut(0xa0,4,buf)
         return buf
     
     @staticmethod
@@ -183,4 +188,4 @@ class TimeResolvedFPGA(LabradServer):
   
 if __name__ == "__main__":
     from labrad import util
-    util.runServer( TimeResolvedFPGA() )
+    util.runServer( NormalPMTCountFPGA() )
