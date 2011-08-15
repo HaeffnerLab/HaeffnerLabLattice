@@ -48,8 +48,7 @@ class laserDACServer( SerialDeviceServer ):
     name = SERVERNAME
     regKey = 'LaserRoomDac'
     port = None
-    #serNode = 'lab-49'
-    serNode = 'lattice-pc'
+    serNode = 'lab-49'
     timeout = TIMEOUT
     onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(sv)')
        
