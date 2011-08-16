@@ -31,12 +31,13 @@ class NormalPMTFlow( LabradServer):
        self.running = DeferredLock()
        self.requestList = []
        self.keepRunning = False
-       
+    
+    @inlineCallbacks
     def makeNewDataSet(self):
         dir = self.saveFolder
         name = self.dataSet
-        yield self.dv.cd(dir, True)
-        yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
+        a = yield self.dv.cd(dir, True)
+        b = yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
         yield self.addParameters()
     
     @inlineCallbacks
@@ -55,17 +56,19 @@ class NormalPMTFlow( LabradServer):
         yield self.makeNewDataSet()
     
     @setting( 2, "Set Mode", mode = 's', returns = '' )
-    def setModeRecord(self,c, mode):
+    def setMode(self,c, mode):
         """
         Start recording Time Resolved Counts into Data Vault
         """
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
-        self.keepRunning = False
-        yield self.running.acquire() #wait for current execution to finish
-        self.currentMode = mode
-        yield self.n.setmode(mode)
-        self.running.release()
-        yield self.recordData()
+        if not self.keepRunning:
+            self.currentMode = mode
+            yield self.n.set_mode(mode)
+        else:
+            self.running.acquire()
+            self.currentMode = mode
+            yield self.n.set_mode(mode)
+            self.running.release()
 
     @setting(3, 'getCurrentMode', returns = 's')
     def getCurrentMode(self, c):
@@ -75,16 +78,15 @@ class NormalPMTFlow( LabradServer):
         return self.currentMode
     
     @setting(4, 'Record Data', returns = '')
-    def recordData(self):
+    def recordData(self, c):
         """
         Starts recording data of the current PMT mode into datavault
         """
         self.keepRunning = True
-        if self.mode == 'Normal':
-            reactor.callLater(self.recordNormal, 0)
-        elif self.mode == 'Differential':
-            #trigger always
-            reactor.callLater(self.recordDifferential, 0)
+        yield self.n.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
+        yield self.n.set_mode(self.currentMode)
+        yield self.makeNewDataSet()
+        reactor.callLater(0, self._record)
     
     @setting(5, returns = '')
     def stopRecording(self,c):
@@ -92,6 +94,8 @@ class NormalPMTFlow( LabradServer):
         Stop recording counts into Data Vault
         """
         self.keepRunning = False
+        yield self.running.acquire()
+        self.running.release()
         if self.currentMode == 'Differential':
             pass
             #stop non-stop triggering here
@@ -101,17 +105,23 @@ class NormalPMTFlow( LabradServer):
         """
         Returns whether or not currently recording
         """
-        return self.shouldRun
+        return self.keepRunning
         
     @setting(7, returns = 's')
     def currentDataSet(self,c):
         return self.dataSet
     
     @setting(8, 'Set Time Length', mode = 's', timelength = 'v')
-    def setTimeLenght(self, c, mode, timelength):
+    def setTimeLength(self, c, mode, timelength):
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
         if not 0 < timelength < 5.0: raise ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
+        if mode == self.currentMode:
+            yield self.running.acquire()
+            yield self.n.set_collection_time(timelength, mode)
+            self.running.release()
+        else:
+            yield self.n.set_collection_time(timelength, mode)
         
     @setting(9, 'Get Next Counts', type = 's', number = 'w', average = 'b', returns = ['*v', 'v'])
     def getNextCounts(self, c, type, number, average = False):
@@ -124,10 +134,13 @@ class NormalPMTFlow( LabradServer):
         """
         if type not in ['ON', 'OFF','DIFF']: raise('Incorrect type')
         if type in ['OFF','DIFF'] and self.currentMode == 'Normal':raise('in the wrong mode to process this request')
-        if not 0 < w < 1000: raise('Incorrect Number')
+        if not 0 < number < 1000: raise('Incorrect Number')
+        if not self.keepRunning: raise('Not currently recording')
         d = Deferred()
         self.requestList.append(self.readingRequest(d, type, number))
         data = yield d
+        if average:
+            data = sum(data) / len(data)
         returnValue(data)
         
     class readingRequest():
@@ -156,34 +169,29 @@ class NormalPMTFlow( LabradServer):
                         req.d.callback(req.data)
                         
     @inlineCallbacks
-    def recordNormal(self):
+    def _record(self):
+        yield self.running.acquire()
         if self.keepRunning:
-            yield self.running.acquire()
-            rawdata = yield self.n.getallcounts()
-            toDataVault = [ [elem[2], elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]
-            self.processRequests(toDataVault)
-            yield self.dv.add(toDataVault)
-            self.runnnig.release()
-            reactor.callLater(0,self.recordNormal)
-    
-    @inlineCallbacks
-    def recordDifferential(self):
-        if self.keepRunning:
-            yield self.running.acquire()
-            rawdata = yield self.n.getallcounts()
-            toDataVault = self.convertDifferential(rawdata)
-            self.processRequests(toDataVault)
-            yield self.dv.add(toDataVault)
-            self.runnnig.release()
-            reactor.callLater(0,self.recordDifferential)
+            rawdata = yield self.n.get_all_counts(1)
+            if len(rawdata) != 0:
+                if self.currentMode == 'Normal':
+                    toDataVault = [ [elem[2], elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]
+                elif self.currentMode =='Differential':
+                    toDataVault = self.convertDifferential(rawdata)
+                self.processRequests(toDataVault)
+                yield self.dv.add(toDataVault)
+                self.running.release()
+                reactor.callLater(0,self._record)
+        else:
+            self.running.release()
     
     def convertDifferential(self, rawdata):
         totalData = []
         for dataPoint in rawdata:
-            type = dataPoint[1]
-            self.lastDifferential[type] = rawdata[0]
+            t = str(dataPoint[1])
+            self.lastDifferential[t] = float(dataPoint[0])
             diff = self.lastDifferential['ON'] - self.lastDifferential['OFF']
-            totalData.append( [ dataPont[2], self.lastDifferential['ON'], self.lastDifferential['OFF'], diff ] )
+            totalData.append( [ dataPoint[2], self.lastDifferential['ON'], self.lastDifferential['OFF'], diff ] )
         return totalData
             
 if __name__ == "__main__":

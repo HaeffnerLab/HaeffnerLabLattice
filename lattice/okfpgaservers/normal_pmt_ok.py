@@ -71,7 +71,7 @@ class NormalPMTCountFPGA(LabradServer):
         frequency and to know when the repumping light is swtiched on or off.
         """
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
-        self.mode = mode
+        self.currentMode = mode
         yield self.inCommunication.acquire()
         if mode == 'Normal':
             #set the mode on the device and set update time for normal mode
@@ -88,6 +88,7 @@ class NormalPMTCountFPGA(LabradServer):
         """
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
         """
+        time = float(time)
         if not 0.0<time<5.0: raise('incorrect collection time')
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
         if mode == 'Normal':
@@ -120,21 +121,19 @@ class NormalPMTCountFPGA(LabradServer):
         """
         yield self.inCommunication.acquire()
         d = threads.deferToThread(self.doGetAllCounts, atleast)
-        countlist = yield util.maybeTimeout(d, 5, [])
+        countlist = yield util.maybeTimeout(d, 1.0, []) #there is a subtle behavior that happens if oen calles getAllCounts(1000), then times out, then one call getAllCoutns() and gets nothing. maybe the Hardware timeout needs to be ste to match
         self.inCommunication.release()
         returnValue(countlist)
-
-    @inlineCallbacks
+    
     def doGetAllCounts(self, atleast):
-        inFIFO = yield self._countsInFIFO()
+        inFIFO = self._countsInFIFO()
         request = max(inFIFO, atleast)
-        reading = yield self._readCounts(request)
-        self.inCommunication.release()
+        reading = self._readCounts(request)
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf, split)
         countlist = map(self.convertKCperSec, countlist)
         countlist = self.appendTimes(countlist, time.time())
-        returnValue( countlist)    
+        return countlist
     
     def convertKCperSec(self, input):
         [rawCount,type] = input
@@ -153,7 +152,7 @@ class NormalPMTCountFPGA(LabradServer):
         return list
         
     def split_len(self,seq, length):
-        #useful for splitting a string in lenght-long pieces
+        #useful for splitting a string in length-long pieces
         return [seq[i:i+length] for i in range(0, len(seq), length)]
     
     def _countsInFIFO(self):
