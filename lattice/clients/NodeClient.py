@@ -12,8 +12,9 @@ except:
 
 #keys are possible node servers, values is list of servers that should
 #be started on each node server
+#'Direct Ethernet'
 nodeDict = {'node_lattice_pc':
-				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'RS Server red', 'PMT server', 'Direct Ethernet', 'Time Resolved Server', 'Agilent Server', 'Compensation Box','RS Server blue'],
+				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'RS Server red', 'Agilent Server', 'Compensation Box','RS Server blue','NormalPMTCountFPGA','NormalPMTFlow'],
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_paul_s_box':

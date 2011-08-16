@@ -11,7 +11,9 @@ UpdateTime = 100 #in ms, how often data is checked for communication with the se
 
 class AOMRED_CONTROL(QCustomFreqPower):
     def __init__(self, server,parent=None):
-        QCustomFreqPower.__init__( self, '866 Double Pass', (MinFreq,MaxFreq), (MinPower,MaxPower), parent )
+        QCustomFreqPower.__init__( self, '866 Double Pass',  parent )
+        self.setPowerRange((MinPower,MaxPower))
+        self.setFreqRange((MinFreq,MaxFreq))
         self.server= server
         #connect functions
         self.spinPower.valueChanged.connect(self.powerChanged)

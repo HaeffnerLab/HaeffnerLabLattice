@@ -12,7 +12,7 @@ import PAULBOX_CONTROL
 import TRAPDRIVE_CONTROL
 import AOMBLUE_CONTROL
 import AOMRED_CONTROL
-import TRAPDRIVE_MODULATION_CONTROL
+#import TRAPDRIVE_MODULATION_CONTROL
 import multiplexer.MULTIPLEXER_CONTROL as MULTIPLEXER_CONTROL
 import PMT_CONTROL
 import TIME_RESOLVED_CONTROL
@@ -54,7 +54,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
             self.verticalLayoutDC.addWidget(COMPENSATION_LINESCAN.COMPENSATION_LINESCAN_CONTROL(self.cxn2))
             self.verticalLayoutDC.addWidget(DCONRF_CONTROL.DCONRF_CONTROL(self.LabRADcxn.dc_box))#assumes it's running
         elif name =='lattice_pc_hp_server':
-            self.verticalLayoutDC.addWidget(TRAPDRIVE_CONTROL.TRAPDRIVE_CONTROL(self.LabRADcxn.lattice_pc_hp_server))
+            pass
+            #self.verticalLayoutDC.addWidget(TRAPDRIVE_CONTROL.TRAPDRIVE_CONTROL(self.LabRADcxn.lattice_pc_hp_server))
         elif name == 'laserdac':
             pass
             #self.verticalLayoutFreq.addWidget(CAVITY_CONTROL.CAVITY_CONTROL(self.LabRADcxn))
