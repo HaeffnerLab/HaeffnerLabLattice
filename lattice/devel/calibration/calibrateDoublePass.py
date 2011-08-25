@@ -138,7 +138,4 @@ def func(x):
     b2=1246
     c2=252.2
     f = a1*math.exp(-((x-b1)/c1)**2) + a2*math.exp(-((x-b2)/c2)**2)
-    return f
-
-
-    
+    return f    
