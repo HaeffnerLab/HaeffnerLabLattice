@@ -10,7 +10,7 @@ from labrad import util
 import os
 import time
 
-okDeviceID = 'TimeResolvedFPGA'#'NormalPMTCountFPGA'
+okDeviceID = 'NormalPMTCountFPGA'
 devicePollingPeriod = 10
 timeout = 1
 
@@ -123,6 +123,7 @@ class NormalPMTCountFPGA(LabradServer):
         d = threads.deferToThread(self.doGetAllCounts, atleast)
         countlist = yield util.maybeTimeout(d, 1.0, []) #there is a subtle behavior that happens if oen calles getAllCounts(1000), then times out, then one call getAllCoutns() and gets nothing. maybe the Hardware timeout needs to be ste to match
         self.inCommunication.release()
+        print countlist
         returnValue(countlist)
     
     def doGetAllCounts(self, atleast):
@@ -177,7 +178,7 @@ class NormalPMTCountFPGA(LabradServer):
         #converts the received buffer into useful information
         #the most significant digit of the buffer indicates wheter 866 is on or off
         count = 65536*(256*ord(buf[1])+ord(buf[0]))+(256*ord(buf[3])+ord(buf[2]))
-        if count > 2**31:
+        if count >= 2**31:
             status = 'OFF'
             count = count % 2**31
         else:
