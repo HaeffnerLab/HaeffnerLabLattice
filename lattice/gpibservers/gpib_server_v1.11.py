@@ -24,7 +24,7 @@ from pyvisa import visa, vpp43
 ### BEGIN NODE INFO
 [info]
 name = GPIB Bus
-version = 1.1
+version = 1.11
 description = Gives access to GPIB devices via pyvisa.
 instancename = %LABRADNODE% GPIB Bus
 
@@ -87,7 +87,6 @@ class GPIBBusServer(LabradServer):
                     else:
                         continue
                     instr = visa.instrument(instName, timeout=1.0)
-                    instr.clear()
                     self.devices[addr] = instr
                     self.sendDeviceMessage('GPIB Device Connect', addr)
                 except Exception, e:
@@ -160,6 +159,17 @@ class GPIBBusServer(LabradServer):
         instr.write(data)
         ans = instr.read()
         return ans
+    
+    @setting(6, termchars = 's', returns ='')
+    def termchars(self, c, termchars):
+        """Sets the end characters for communication with the device"""
+        instr = self.getDevice(c)
+        instr.term_chars  = termchars
+    
+    @setting(7, returns = '')
+    def clear(self, c):
+        instr = self.getDevice(c)
+        instr.clear()
 
     @setting(20, returns='*s')
     def list_devices(self, c):

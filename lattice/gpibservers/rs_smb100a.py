@@ -16,8 +16,8 @@
 """
 ### BEGIN NODE INFO
 [info]
-name = Anritsu Server
-version = 2.1
+name = Rohde&Schwarz Server
+version = 1.0
 description = 
 
 [startup]
@@ -37,10 +37,11 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 class AnritsuWrapper(GPIBDeviceWrapper):
     @inlineCallbacks
     def initialize(self):
-        self.frequency = yield self.getFrequency()
-        self.amplitude = yield self.getAmplitude()
-        self.outputStateKnown = False # there is not way to query for the output state
-        self.output = True
+        yield None
+#        self.frequency = yield self.getFrequency()
+#        self.amplitude = yield self.getAmplitude()
+#        self.outputStateKnown = False # there is not way to query for the output state
+#        self.output = True
 
     @inlineCallbacks
     def getFrequency(self):
@@ -73,8 +74,8 @@ class AnritsuWrapper(GPIBDeviceWrapper):
 
 class AnritsuServer(GPIBManagedServer):
     """Provides basic CW control for Anritsu 68367C Microwave Generators"""
-    name = 'Anritsu Server'
-    deviceName = 'ANRITSU 68367C'
+    name = 'Rohde%Schwarz Server'
+    deviceName = 'Rohde&Schwarz SMB100A'
     deviceWrapper = AnritsuWrapper
 
     @setting(10, 'Frequency', f=['v[MHz]'], returns=['v[MHz]'])
