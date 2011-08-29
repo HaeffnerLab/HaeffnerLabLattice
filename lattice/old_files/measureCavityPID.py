@@ -14,7 +14,11 @@ dv.new('Cavity Temperature PID',[('time','sec')],[('errorSignal','errorSignal','
 
 
 while True:
-    errorSignal = gpib.query('MEASurement:MEAS1:VALue?')
+    errorSignal = 
+    
+    scope = cxn.servers(
+    scope.measure(1))
+    
     PIDoutput = gpib.query('MEASurement:MEAS2:VALue?')
     t = time.time()
     time.sleep(0.1)

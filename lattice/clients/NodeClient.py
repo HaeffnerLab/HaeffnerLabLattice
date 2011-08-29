@@ -10,11 +10,9 @@ except:
 	time.sleep(10)
 	raise()
 
-#keys are possible node servers, values is list of servers that should
-#be started on each node server
-#'Direct Ethernet'
 nodeDict = {'node_lattice_pc':
-				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'RS Server red', 'Agilent Server', 'Compensation Box','RS Server blue','NormalPMTCountFPGA','NormalPMTFlow'],
+				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','NormalPMTCountFPGA','NormalPMTFlow',
+				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server'],
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_paul_s_box':

@@ -16,7 +16,7 @@
 """
 ### BEGIN NODE INFO
 [info]
-name = RohdeSchwarz Server
+name = Agilent Server
 version = 1.0
 description = 
 
@@ -34,7 +34,7 @@ from labrad.server import setting
 from labrad.gpib import GPIBManagedServer, GPIBDeviceWrapper
 from twisted.internet.defer import inlineCallbacks, returnValue
 
-class RSSMB100AWrapper(GPIBDeviceWrapper):
+class Agilent33220AWrapper(GPIBDeviceWrapper):
     @inlineCallbacks
     def initialize(self):
         self.frequency = yield self.getFrequency()
@@ -43,44 +43,79 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
 
     @inlineCallbacks
     def getFrequency(self):
-        frequency = yield self.query('SOURce:FREQuency?').addCallback(float)
+        frequency = yield self.query('FREQuency?').addCallback(float)
         self.frequency = frequency / 10.**6 #now in MHz
         returnValue(self.frequency)
 
     @inlineCallbacks
     def getAmplitude(self):
-        self.amplitude = yield self.query('POWer?').addCallback(float)
+        self.amplitude = yield self.query('Voltage:UNIT DBM\r\n'+'Voltage?').addCallback(float)
         returnValue(self.amplitude)
     
     @inlineCallbacks
     def getOutput(self):
-        state = yield self.query('OUTput:STATe?').addCallback(float)
+        state = yield self.query('OUTput?').addCallback(float)
         self.state = bool(state)
         returnValue(self.state)
     
     @inlineCallbacks
     def setFrequency(self, f):
         if self.frequency != f:
-            yield self.write('SOURce:FREQuency {}MHZ'.format(float(f)))
+            yield self.write('FREQuency {}Mhz'.format(float(f)))
             self.frequency = f
     
     @inlineCallbacks
     def setAmplitude(self, a):
         if self.amplitude != a:
-            yield self.write('POWer {}'.format(float(a)))
+            yield self.write('Voltage:UNIT DBM\r\nVoltage {}'.format(float(a)))
             self.amplitude = a
 
     @inlineCallbacks
     def setOutput(self, out):
         if self.output != out:
-            yield self.write('OUTput:STATe {}'.format(int(out)))
+            if out == True:
+                comstr = 'OUTPut ON'
+            else:
+                comstr = 'OUTPut OFF'
+            yield self.write(comstr)
             self.output = out
 
-class RohdeSchwarzServer(GPIBManagedServer):
-    """Provides basic CW control for Rohde&Schwarz SMB100A RF Generators"""
-    name = 'RohdeSchwarz Server'
-    deviceName = 'Rohde&Schwarz SMB100A'
-    deviceWrapper = RSSMB100AWrapper
+#currently not implemented but possible:
+#===============================================================================
+#    def VoltageReqStr(self):
+#        return 'Voltage:UNIT VPP\r\n'+'Voltage?' + '\r\n'
+#    
+#    # string to set voltage
+#    def VoltageSetStr(self,volt):
+#        return 'Voltage:UNIT VPP\r\n'+'Voltage ' +str(volt) + '\r\n'
+#
+#    #string to get current function
+#    def FunctionReqStr(self):
+#        return 'FUNCtion?\r\n'
+#    
+#    # string to set function
+#    def FunctionSetStr(self,func):
+#        if func == 'SINE':
+#            comstr = 'FUNCtion ' + 'SIN' + '\r\n'
+#        elif func == 'SQUARE':
+#            comstr = 'FUNCtion ' + 'SQU' + '\r\n'
+#        elif func == 'RAMP':
+#            comstr = 'FUNCtion ' + 'RAMP' + '\r\n'
+#        elif func == 'PULSE':
+#            comstr = 'FUNCtion ' + 'PULSe' + '\r\n'
+#        elif func == 'NOISE':
+#            comstr = 'FUNCtion ' + 'NOISe' + '\r\n'
+#        elif func == 'DC':
+#            comstr = 'FUNCtion ' + 'DC' + '\r\n'
+#        return comstr       
+#===============================================================================
+ 
+
+class AgilentServer(GPIBManagedServer):
+    """Provides basic CW control for Agilent Signal Generators"""
+    name = 'Agilent Server'
+    deviceName = 'Agilent Technologies 33220A'
+    deviceWrapper = Agilent33220AWrapper
 
     @setting(10, 'Frequency', f=['v[MHz]'], returns=['v[MHz]'])
     def frequency(self, c, f=None):
@@ -106,7 +141,7 @@ class RohdeSchwarzServer(GPIBManagedServer):
             yield dev.setOutput(os)
         returnValue(dev.output)
 
-__server__ = RohdeSchwarzServer()
+__server__ = AgilentServer()
 
 if __name__ == '__main__':
     from labrad import util
