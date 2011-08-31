@@ -10,7 +10,6 @@ import CAVITY_CONTROL
 import SHUTTER_CONTROL
 import PAULBOX_CONTROL
 import TRAPDRIVE_CONTROL
-import AOMBLUE_CONTROL
 import AOMRED_CONTROL
 #import TRAPDRIVE_MODULATION_CONTROL
 import multiplexer.MULTIPLEXER_CONTROL as MULTIPLEXER_CONTROL
@@ -61,8 +60,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
             #self.verticalLayoutFreq.addWidget(CAVITY_CONTROL.CAVITY_CONTROL(self.LabRADcxn))
         elif name == 'paul_box':
             self.verticalLayoutPB.addWidget(PAULBOX_CONTROL.PAULBOX_CONTROL(self.LabRADcxn.paul_box))
-        elif name == 'lattice_pc_rs_server_blue':
-            self.verticalLayoutFreq.addWidget(AOMBLUE_CONTROL.AOMBLUE_CONTROL(self.LabRADcxn.lattice_pc_rs_server_blue))
         elif name =='lattice_pc_rs_server_red':
             self.verticalLayoutFreq_2.addWidget(AOMRED_CONTROL.AOMRED_CONTROL(self.LabRADcxn.lattice_pc_rs_server_red))
         elif name == 'lattice_pc_agilent_33220a_server':

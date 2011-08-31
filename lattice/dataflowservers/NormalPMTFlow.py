@@ -3,28 +3,28 @@ Created on Aug 12, 2011
 
 @author: Michael Ramm
 '''
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 from labrad.types import Error
 from twisted.internet.defer import Deferred, returnValue, inlineCallbacks, DeferredLock
 from twisted.internet import reactor
 from twisted.internet.threads import deferToThread
-import numpy
-import matplotlib
-matplotlib.use('Qt4Agg')
-from matplotlib import pyplot
+
+SIGNALID = 331483
 
 class NormalPMTFlow( LabradServer):
     
     name = 'NormalPMTFlow'
+    onNewCount = Signal(SIGNALID, 'signal: new count', 'v')
+    
     @inlineCallbacks
     def initServer(self):
     #improve on this to start in arbitrary order
        self.dv = yield self.client.data_vault
        self.n = yield self.client.normalpmtcountfpga
-       ####self.dp = yield self.client.dataProcessor
        ####self.pbox = yield self.client.paulsbox
        self.saveFolder = ['','PMT Counts']
-       self.dataSet = 'PMT Counts'
+       self.dataSetName = 'PMT Counts'
+       self.dataSet = None
        self.collectTimes = {'Normal':0.100, 'Differential':0.100}
        self.lastDifferential = {'ON': 0, 'OFF': 0}
        self.currentMode = 'Normal'
@@ -35,9 +35,9 @@ class NormalPMTFlow( LabradServer):
     @inlineCallbacks
     def makeNewDataSet(self):
         dir = self.saveFolder
-        name = self.dataSet
-        a = yield self.dv.cd(dir, True)
-        b = yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
+        name = self.dataSetName
+        yield self.dv.cd(dir, True)
+        self.dataSet = yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
         yield self.addParameters()
     
     @inlineCallbacks
@@ -52,7 +52,7 @@ class NormalPMTFlow( LabradServer):
     @setting(1, 'Start New Dataset', setName = 's', returns = '')
     def setNewDataSet(self, c, setName = None):
         """Starts new dataset, if name not provided, it will be the same"""
-        if setName is not None: self.dataSet = setName
+        if setName is not None: self.dataSetName = setName
         yield self.makeNewDataSet()
     
     @setting( 2, "Set Mode", mode = 's', returns = '' )
@@ -85,7 +85,8 @@ class NormalPMTFlow( LabradServer):
         self.keepRunning = True
         yield self.n.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
         yield self.n.set_mode(self.currentMode)
-        yield self.makeNewDataSet()
+        if self.dataSet is None:
+            yield self.makeNewDataSet()
         reactor.callLater(0, self._record)
     
     @setting(5, returns = '')
@@ -109,10 +110,13 @@ class NormalPMTFlow( LabradServer):
         
     @setting(7, returns = 's')
     def currentDataSet(self,c):
-        return self.dataSet
+        if self.dataSet is None: return ''
+        name = self.dataSet[1]
+        return name
     
-    @setting(8, 'Set Time Length', mode = 's', timelength = 'v')
-    def setTimeLength(self, c, mode, timelength):
+    @setting(8, 'Set Time Length', timelength = 'v', mode = 's')
+    def setTimeLength(self, c, timelength, mode = None):
+        if mode is None: mode = self.currentMode
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
         if not 0 < timelength < 5.0: raise ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
@@ -142,6 +146,13 @@ class NormalPMTFlow( LabradServer):
         if average:
             data = sum(data) / len(data)
         returnValue(data)
+    
+    @setting(10, 'Get Time Length', returns = 'v')
+    def getMode(self, c):
+        """
+        Returns the current timelength of in the current mode
+        """
+        return self.collectTimes[self.currentMode]
         
     class readingRequest():
         def __init__(self, d, type, count):
@@ -153,8 +164,6 @@ class NormalPMTFlow( LabradServer):
     def processRequests(self, data):
         for dataPoint in data:
             for req in self.requestList:
-                #for every combination of dataPoint in Request
-                #add all 'ON' points
                 if dataPoint[1] != 0 and req.type == 'ON':
                     req.data.append(dataPoint[1])
                     if len(req.data) == req.count:
@@ -179,11 +188,17 @@ class NormalPMTFlow( LabradServer):
                 elif self.currentMode =='Differential':
                     toDataVault = self.convertDifferential(rawdata)
                 self.processRequests(toDataVault)
+                self.processSignals(toDataVault)
                 yield self.dv.add(toDataVault)
                 self.running.release()
                 reactor.callLater(0,self._record)
         else:
             self.running.release()
+    
+    def processSignals(self, data):
+        lastPt = data[-1]
+        NormalCount = lastPt[1]
+        self.onNewCount(NormalCount)
     
     def convertDifferential(self, rawdata):
         totalData = []

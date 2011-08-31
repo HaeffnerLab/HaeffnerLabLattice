@@ -1,5 +1,4 @@
 Normal PMT Counts:
-	stop-start would go to the same dataset
 	after hardware is fixed, fix jumps after switching timing
 	implement hardware timeout / make sure it doesn't crash if timeout
 	
