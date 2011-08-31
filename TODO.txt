@@ -1,4 +1,10 @@
 Normal PMT Counts:
+	talk to paul's box and be able to change the duration by reprogramming it
 	after hardware is fixed, fix jumps after switching timing
 	implement hardware timeout / make sure it doesn't crash if timeout
+Client:
+	Conver all clients sans experimenter to asynchronuos, redo the GUI
+Server:
+	spectrum analyzer server, then calibrate VCO
+	separate double pass server with signals / one if daring then select
 	
