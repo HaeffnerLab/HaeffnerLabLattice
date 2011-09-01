@@ -7,4 +7,25 @@ Client:
 Server:
 	spectrum analyzer server, then calibrate VCO
 	separate double pass server with signals / one if daring then select
+Scripts:
+    resolution as a parameter for scripts
+    separate resolution for how quickly to come back
+    save detunings, other parameters
+PMt server:
+    transpose data, float_ in the server
+Data vault improvement:
+    accept int32
+TimeResolvedFlow:
+    properly add the compressed data / new folder / many traces?
+    change name of live fft
+    currentdataset() crashes
+PMTflow:
+    normal pmt starts new datase
+
+report on:
+    intensity stabilization
+    dark resonances to see estimate linewidth on new laser
+    FFT
+
+
 	
