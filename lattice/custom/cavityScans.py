@@ -44,6 +44,5 @@ def scanCavity(ch, resolution, min, max):
         ld.setvoltage(ch,voltage)
         print voltage
         time.sleep(SLEEP)
-        
 
         

@@ -21,7 +21,8 @@ class NormalPMTFlow( LabradServer):
     #improve on this to start in arbitrary order
        self.dv = yield self.client.data_vault
        self.n = yield self.client.normalpmtcountfpga
-       ####self.pbox = yield self.client.paulsbox
+       #self.pbox = yield self.client.paul_box
+       #self.confirmPBoxScripting()
        self.saveFolder = ['','PMT Counts']
        self.dataSetName = 'PMT Counts'
        self.dataSet = None
@@ -31,6 +32,13 @@ class NormalPMTFlow( LabradServer):
        self.running = DeferredLock()
        self.requestList = []
        self.keepRunning = False
+    
+    @inlineCallbacks
+    def confirmPBoxScripting(self):
+        script = 'DifferentialPMTCount.py'
+        variable = 'CountingInterval'
+        if script not in self.pbox.get_available_scripts(): raise Exception('Pauls Box script {} does not exist'.format(script))
+        if variable not in self.pbox.get_variable_list(script): raise Exception('Variable {} not found'.format(variable))
     
     @inlineCallbacks
     def makeNewDataSet(self):
@@ -99,7 +107,7 @@ class NormalPMTFlow( LabradServer):
         self.running.release()
         if self.currentMode == 'Differential':
             pass
-            #stop non-stop triggering here
+            #stop the triggering here
         
     @setting(6, returns = 'b')
     def isRunning(self,c):
