@@ -24,19 +24,25 @@ class TimeResolvedFlow( LabradServer):
        ####self.dp = yield self.client.dataProcessor
        ####self.pbox = yield self.client.paulsbox
        self.saveFolder = ['','Time Resolved Counts']
-       self.dataSet = 'CompressedCounts'
-       self.fftSet = 'FFT'
-       self.timelength = 0.010
+       self.dataSetName = 'CompressedCountsTimeResolved'
+       self.dataSet = None
+       #self.fftSet = 'FFT'
+       self.timelength = 0.010 #default timelength
        self.shouldRun = False
        self.figure = pyplot.figure()
-       
+    
+    @inlineCallbacks
     def makeNewDataSet(self):
-        dir - self.saveFolder
-        name = self.dataSet
+        dir = self.saveFolder
+        name = self.dataSetName
         yield self.dv.cd(dir, True)
-        #yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
-        yield self.addParameters()
-        yield self.dv.new()
+        self.dataSet = yield self.dv.new(name, [('nonzero', 'num')], [('count','num','num')])
+    
+    @inlineCallbacks
+    def addParameters(self, arrayLength, timeLength, timeResolution):
+        yield self.dv.add_parameter('arrayLength', arrayLength)
+        yield self.dv.add_parameter('timeLength', timeLength)
+        yield self.dv.add_parameter('timeResolution', timeResolution)
     
     @setting(0, 'Set Save Folder', folder = '*s', returns = '')
     def setSaveFolder(self,c , folder):
@@ -45,9 +51,10 @@ class TimeResolvedFlow( LabradServer):
         self.saveFolder = folder
     
     @setting(1, 'Start New Dataset', setName = 's', returns = '')
-    def setNewDataSet(self, c, setName):
+    def setNewDataSet(self, c, setName = None):
         if self.shouldRun: raise("Please Stop Process First")
-        self.dataSet = setName
+        if setName is not None:
+            self.dataSetName = setName
         yield self.makeNewDataSet()
             
     @setting( 2, returns = '' )
@@ -56,7 +63,9 @@ class TimeResolvedFlow( LabradServer):
         Start recording Time Resolved Counts into Data Vault
         """
         self.shouldRun = True
-        reactor.callLater( 0, self.doLiveFFT )
+        if self.dataSet is None: yield self.makeNewDataSet()
+        yield self.t.set_time_length(self.timelength)
+        reactor.callLater( 0, self._run, True)
     
     @setting( 3, returns = '')
     def stopLiveFFT(self,c):
@@ -77,28 +86,29 @@ class TimeResolvedFlow( LabradServer):
         return self.dataSet
     
     @setting(7, 'Set Time Length', timelength = 'v')
-    def setTimeLenght(self, c, timelength):
+    def setTimeLength(self, c, timelength):
+        yield self.t.set_time_length(timelength)
         self.timelength = timelength
-               
+
     @inlineCallbacks
-    def doLiveFFT(self):
+    def _run(self, addParams = False):
         if self.shouldRun:
-            yield self.t.set_time_length(self.timelength)
             yield self.t.perform_time_resolved_measurement()
             (arrayLength, timeLength, timeResolution), measuredData = yield self.t.get_result_of_measurement()
             measuredData = measuredData.asarray
-            yield self.saveResult(arrayLength, timeLength, timeResolution, measuredData)
+            ####measuredData = numpy.array(measuredData.asarray.transpose(), dtype=numpy.float_)
+####            if addParams:
+####                yield self.addParameters(arrayLength, timeLength, timeResolution)
+####            yield self.saveResult(measuredData)
             (freqs, ampl) = yield deferToThread(self.process, arrayLength, timeLength, timeResolution, measuredData)
             del(measuredData)
-            #yield deferToThread(self.plot, freqs,ampl)
+            yield deferToThread(self.plot, freqs,ampl)
             del(freqs,ampl)
-            print 'starting again'
-            reactor.callLater(0,self.doLiveFFT)
+            reactor.callLater(0,self._run)
     
     @inlineCallbacks
-    def saveResult(self, arrayLength, timeLength, timeResolution, measuredData):
-        yield None
-        #### implement this
+    def saveResult(self, measuredData):
+        yield self.dv.add(measuredData)
     
     def plot(self, x, y):
         import time

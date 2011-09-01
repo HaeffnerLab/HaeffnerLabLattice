@@ -12,7 +12,7 @@ Rp4
 (dp5
 S'name'
 p6
-S'866 Line Scan'
+S'397S Line Scan'
 p7
 sS'_args'
 p8
@@ -50,7 +50,7 @@ S'Min'
 p24
 sS'value'
 p25
-F450.0
+F740.0
 sS'description'
 p26
 S''
@@ -78,7 +78,7 @@ g6
 S'Max'
 p36
 sg25
-F670.0
+F790.0
 sg26
 g27
 sbsg26
@@ -110,7 +110,7 @@ p46
 sbsS'_function'
 p47
 clrexp.functions.custom.cavityScans
-scanCavity866
+scanCavity397S
 p48
 sS'_argList'
 p49
