@@ -29,7 +29,7 @@ for index in range(len(q)):
 	
 
 import numpy
-path = '/home/micramm/Documents/test.csv'
+path = 'C:\\Python26\\Lib\\idlelib\\__data__\\Time Resolved Counts.dir\\firsttrace38.csv'
 f = open(path)
 raw = numpy.loadtxt(f, delimiter = ',', dtype=numpy.int32)
 measuredData = raw.transpose()

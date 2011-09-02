@@ -4,9 +4,9 @@ from PyQt4 import QtCore,uic
 from qtui.QCustomFreqPower import QCustomFreqPower
 
 MinPower = -145 #dbM
-MaxPower = 0
-MinFreq = 65 #Mhz
-MaxFreq = 95
+MaxPower = 24
+MinFreq = 190 #Mhz
+MaxFreq = 250
 
 class RF_CONTROL(QCustomFreqPower):
     def __init__(self, server, name, parent=None):
@@ -42,6 +42,6 @@ if __name__=="__main__":
     server = cxn.rohdeschwarz_server
     server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543')
     app = QtGui.QApplication(sys.argv)
-    icon = RF_CONTROL(server, name = '866 Double Pass')
+    icon = RF_CONTROL(server, name = 'Local Probe Double Pass')
     icon.show()
     app.exec_()

@@ -12,6 +12,7 @@ import numpy
 import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
+import time
 
 class TimeResolvedFlow( LabradServer):
     
@@ -29,7 +30,6 @@ class TimeResolvedFlow( LabradServer):
        #self.fftSet = 'FFT'
        self.timelength = 0.010 #default timelength
        self.shouldRun = False
-       self.figure = pyplot.figure()
     
     @inlineCallbacks
     def makeNewDataSet(self):
@@ -83,6 +83,7 @@ class TimeResolvedFlow( LabradServer):
         
     @setting(6, returns = 's')
     def currentDataSet(self,c):
+        if self.dataSet is None: return ''
         return self.dataSet
     
     @setting(7, 'Set Time Length', timelength = 'v')
@@ -96,14 +97,16 @@ class TimeResolvedFlow( LabradServer):
             yield self.t.perform_time_resolved_measurement()
             (arrayLength, timeLength, timeResolution), measuredData = yield self.t.get_result_of_measurement()
             measuredData = measuredData.asarray
-            ####measuredData = numpy.array(measuredData.asarray.transpose(), dtype=numpy.float_)
-####            if addParams:
-####                yield self.addParameters(arrayLength, timeLength, timeResolution)
-####            yield self.saveResult(measuredData)
-            (freqs, ampl) = yield deferToThread(self.process, arrayLength, timeLength, timeResolution, measuredData)
-            del(measuredData)
-            yield deferToThread(self.plot, freqs,ampl)
-            del(freqs,ampl)
+            print measuredData.size
+            if measuredData.size: #if got a nonzero result
+                ####measuredData = numpy.array(measuredData.asarray.transpose(), dtype=numpy.float_)
+    ####            if addParams:
+    ####                yield self.addParameters(arrayLength, timeLength, timeResolution)
+    ####            yield self.saveResult(measuredData)
+                (freqs, ampl) = yield deferToThread(self.process, arrayLength, timeLength, timeResolution, measuredData)
+                del(measuredData)
+                yield deferToThread(self.plot, freqs,ampl)
+                del(freqs,ampl)
             reactor.callLater(0,self._run)
     
     @inlineCallbacks
@@ -111,13 +114,15 @@ class TimeResolvedFlow( LabradServer):
         yield self.dv.add(measuredData)
     
     def plot(self, x, y):
-        import time
         t = time.time()
-        self.figure.clf()
+        figure = pyplot.figure()
+        figure.clf()
         pyplot.plot(x,y)
         pyplot.savefig('test')
+        pyplot.close()
+        del(figure)
         print time.time() - t
-        print 'NEW'
+        print 'NEW PLOT'
     
     def process(self, arrayLength, timeLength, timeResolution, measuredData):
         positionsNZ = measuredData[0]
