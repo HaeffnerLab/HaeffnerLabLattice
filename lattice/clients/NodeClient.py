@@ -15,7 +15,7 @@ nodeDict = {'node_lattice_pc':
 				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server'],
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
-			'node_paul_s_box':
+			'node_lab_197':
 				['Paul Box']
 			}
 
