@@ -1,13 +1,27 @@
-# -*- coding: utf-8 -*-
-'''
-Created on Jan 24, 2011
+#Created on Jan 24, 2011
+#@author: christopherreilly, Michael Ramm
 
-@author: christopherreilly
-'''
+"""
+### BEGIN NODE INFO
+[info]
+name = Paul Box
+version = 1.1
+description = 
+instancename = Paul Box
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 import socket
 import shelve
 import os
-
 from labrad.server import LabradServer, setting
 
 class script:
@@ -20,42 +34,25 @@ class PBError( Exception ):
 
 class PaulBoxServer( LabradServer ):
     #change nodename in environment vars
-    name = 'Lab-48 Pauls Box Server'
+    name = 'Paul Box'
 
     def initServer( self ):
-        self.loadConfig()
         self.connectSocket()
         self.loadDatabase()
         self.loadScripts()
 
-    def loadConfig( self ):
-        """
-        Load configuration settings from registry.
-        
-        TODO: details
-        """
-        pass
-
     def connectSocket( self ):
-        """
-        Connect socket.
-        
-        TODO: details
-        """
         port = 8880
         self.sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-        # find ip of localhost if running on same machine as python server
         local_ip = socket.gethostbyname( socket.gethostname() )
         self.sock.connect( ( local_ip, port ) )
 
     def loadDatabase( self ):
         """
         Load database.
-        
-        TODO: details
         """
-        dbfile = 'paulbox.db'
-        self.db = shelve.open( dbfile, 'c' )
+        self.db = {}
+
 
     def loadScripts( self ):
         """
@@ -87,7 +84,6 @@ class PaulBoxServer( LabradServer ):
             return varlist
 
         directory = '/home/lattice/Desktop/sequencer2/PulseSequences/protected/'
-        db = self.db
 
         for filename in os.listdir( directory ):
             path = directory + filename
@@ -102,21 +98,17 @@ class PaulBoxServer( LabradServer ):
             newscript.scriptname = filename
             newscript.filemodtime = modtime
             newscript.varlist = parse_sequence( sequence_string )
-            db[filename] = newscript;
+            self.db[filename] = newscript;
 
     def sendPB( self, toSend ):
         """
         Lower level sending
-        
-        TODO: details
         """
         self.sock.sendall( toSend )
 
     def recPB( self ):
         """
         Lower level receiving
-        
-        TODO: details
         """
         return '\n'.join( self.sock.recv( 4 * 8192 ) for i in range( 2 ) )
 
@@ -127,8 +119,6 @@ class PaulBoxServer( LabradServer ):
     def sendCommand( self, c, scriptName, inputList ):
         """
         Send command to Paul's Box.
-        
-        TODO: details
         """
         if len( filter( lambda x: len( x ) == 3, inputList ) ) != len( inputList ):
             raise PBError( 'Input parameters must be in form of a list of 3 entry lists' )
@@ -152,13 +142,6 @@ class PaulBoxServer( LabradServer ):
              returns = '*2s: list of script\'s variables')
     def getVariables(self, c, script):
         return self.db[script].varlist
-    
-    def stopServer(self):
-	print 'crashing...'
-	if self.db:
-	    self.db.close()
-	if self.sock:
-	    self.sock.close()
         
 if __name__ == "__main__":
     from labrad import util
