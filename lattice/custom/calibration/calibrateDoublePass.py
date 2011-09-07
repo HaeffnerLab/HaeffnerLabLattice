@@ -11,14 +11,14 @@ scope = cxn.tektronix_server
 scope.select_device(0) #only works if one tektronix scope is connected
 CHANNEL = 1
 
-NUM_STEP_FREQ = 5
-AVERAGE_POINTS = 1#10 #how many ouput points to average
+NUM_STEP_FREQ = 40.0
+AVERAGE_POINTS = 1#10 #how many output points to average
 MIN_FREQ = 190.0 #MHZ
 MAX_FREQ = 250.0 #MHZ
 scanList = numpy.r_[MIN_FREQ:MAX_FREQ:complex(0,NUM_STEP_FREQ)]
 MAX_POWER = -13.5
-MIN_POWER = -30
-STEP_POWER = 0.5
+MIN_POWER = -20
+STEP_POWER = 0.1
 
 #scans the AO frequency and returns the resulting PMT counts at a given power
 def performScan(pwr):
@@ -37,7 +37,6 @@ def record(points):
     for j in range(points):
         time.sleep(1)
         result[j] = scope.measure(CHANNEL)
-        print 'measured {}'.format(result[j])
     time.sleep(1)
     return numpy.average(result)
 
@@ -77,74 +76,66 @@ def findPower(guessPower, setpt):
         pwr = lowerTillMatches(MIN_POWER, guessPower, setpt )
     return pwr
 
-print 'performing initial scan at maximum power'
-scan = numpy.array(performScan(MAX_POWER))
-print scan
-minCount = scan.min()
-print 'minimum counts are ', minCount
-minarg = scan.argmin()
-print 'frequency giving least intensity is ', scanList[minarg]
-setPointCount = minCount * 0.9 #setting setpoint to 90% of the minimum power
-print 'setting the output set point to ', setPointCount
-
-calibration = []
-guess = MAX_POWER;
-for freq in scanList:
-    print 'calibration freq', freq
-    sigGen.frequency(freq)
-    pwr = findPower(guess, setPointCount)
-    guess = pwr
-    calibration.append([freq, pwr])
-
-print 'final calibration'
-print calibration
-
-print 'adding to data vault'
 dv.cd(['','Calibrations'],True)
-dv.new('397 double pass 3080-120 local beam probe',[('freq','MHz')],[('power','power','dBm')])
-dv.add(calibration)    
+dv.open(38)
+data = dv.get()
 
-#def func(x):
-#    import math
-#    a1=2.461e24
-#    b1=-1223
-#    c1=176.5
-#    a2=2.165e10
-#    b2=1246
-#    c2=252.2
-#    f = a1*math.exp(-((x-b1)/c1)**2) + a2*math.exp(-((x-b2)/c2)**2)
-#    return f
+dv.new('397 calibrated output',[('freq','MHz')],[('power','power','dBm')])
+for point in data:
+    freq = point[0]
+    power = point[1]
+    print 'setting {0}, {1}'.format(freq,power)
+    sigGen.frequency(freq)
+    sigGen.amplitude(power)
+    Output = record(AVERAGE_POINTS)
+    dv.add([freq, Output])
+    
+    
+    
+#print 'setting power to MAX and scanning the frequency'
+#scan = numpy.array(performScan(MAX_POWER))
+#dv.cd(['','Calibrations'],True)
+#dv.new('397 local probe double pass 3220-120 scan frequency at max power',[('freq','MHz')],[('power','power','dBm')])
+#data = numpy.vstack((scanList, scan)).transpose()
+#dv.add(data)  
+#print 'done'
 
-#def func(x):
-#    import math
-#    a1=2.461e24
-#    b1=-1223
-#    c1=176.5
-#    a2=2.165e10
-#    b2=1246
-#    c2=252.2
-#    f = a1*math.exp(-((x-b1)/c1)**2) + a2*math.exp(-((x-b2)/c2)**2)
-#    return f
-#
-#def func2(x):
-#    import math
-#    a1=2.475e12
-#    b1=-78.72
-#    c1=28.64
-#    a2=37.59
-#    b2=134
-#    c2=51.51
-#    a3=8.113
-#    b3=70.38
-#    c3=12.07
-#    f = a1*math.exp(-((x-b1)/c1)**2) + a2*math.exp(-((x-b2)/c2)**2) + a3*math.exp(-((x-b3)/c3)**2)
-#    return f
+##POWER SCAN AT FIXED FREQ
+#print 'setting the frequency to {} and scanning the power'.format(MIN_FREQ)
+#sigGen.frequency(MIN_FREQ)
+#dv.cd(['','Calibrations'],True)
+#dv.new('397 heating double pass 3080-120 scan power at min freq',[('power','dBM')],[('power','power','V')])
+#for pwr in numpy.arange(MIN_POWER,MAX_POWER + STEP_POWER,STEP_POWER):
+#    print 'power {}'.format(pwr)
+#    sigGen.amplitude(pwr)
+#    output = record(AVERAGE_POINTS)
+#    dv.add(pwr, output)
+#print 'done'
+    
 
+##FINDS THE MINIMUM (FREQ./POWER) OF THE SCAN
+#print scan
+#minCount = scan.min()
+#print 'minimum counts are ', minCount
+#minarg = scan.argmin()
+#print 'frequency giving least intensity is ', scanList[minarg]
+#setPointCount = minCount * 0.9 #setting setpoint to 90% of the minimum power
+#print 'setting the output set point to ', setPointCount
+###
+###CALIBRATING
+#calibration = []
+#guess = MAX_POWER;
 #for freq in scanList:
+#    print 'calibration freq', freq
 #    sigGen.frequency(freq)
-#    pwr = func2(freq)
-#    print freq
-#    print pwr
-#    sigGen.setpower(pwr)
-#    arr = pmt.getnextreadings(AVERAGE_POINTS)
-#    newCnt = numpy.average(numpy.transpose(arr)[1])    
+#    pwr = findPower(guess, setPointCount)
+#    guess = pwr
+#    calibration.append([freq, pwr])
+#
+#print 'final calibration'
+#print calibration
+#
+#print 'adding to data vault'
+#dv.cd(['','Calibrations'],True)
+#dv.new('397 double pass 3080-120 local beam probe',[('freq','MHz')],[('power','power','dBm')])
+#dv.add(calibration)    
