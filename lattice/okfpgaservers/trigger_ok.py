@@ -109,9 +109,9 @@ class TriggerFPGA(LabradServer):
         yield self.inCommunication.release()
         
     @setting(4, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
-    def setCollectTime(self, c, time, mode):
+    def setCollectTime(self, c, timeout = 10):
         """
-        Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
+        Returns true if Paul Box sequence has completed within a timeout period
         """
         time = float(time)
         if not 0.0<time<5.0: raise('incorrect collection time')
