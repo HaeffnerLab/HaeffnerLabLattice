@@ -1,27 +1,30 @@
 '''
-Created on Aug 13, 2011
+Created on Sept 6, 2011
 @author: Michael Ramm, Haeffner Lab
 '''
 import ok
 from labrad.server import LabradServer, setting
-from twisted.internet import reactor, threads
+from twisted.internet import reactor
 from twisted.internet.defer import DeferredLock, returnValue, inlineCallbacks
+from twisted.internet.threads import deferToThread
 from labrad import util
 import os
 import time
 
-okDeviceID = 'NormalPMTCountFPGA'
+okDeviceID = 'Trigger'
 devicePollingPeriod = 10
 timeout = 1
 
-class NormalPMTCountFPGA(LabradServer):
-    name = 'NormalPMTCountFPGA'
+class TriggerFPGA(LabradServer):
+    name = 'Trigger'
     
     def initServer(self):
-        self.collectionTime = {'Normal':0.100,'Differential':0.100}
-        self.currentMode = 'Normal'
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
+        self.dict = {
+                     'Triggers':{'PaulBox':0},
+                     'Switches':{'866':(0x01,True), 'BluePI':(0x02,True)}
+                     }
     
     def connectOKBoard(self):
         self.xem = None
@@ -47,7 +50,7 @@ class NormalPMTCountFPGA(LabradServer):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/okfpgaservers/pmt.bit')
+        path = os.path.join(basepath,'lattice/okfpgaservers/trigger.bit')
         prog = xem.ConfigureFPGA(path)
         if prog: raise("Not able to program FPGA")
         pll = ok.PLL22150()
@@ -55,35 +58,57 @@ class NormalPMTCountFPGA(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
-    def _resetFIFO(self):
-        self.xem.ActivateTriggerIn(0x40,0)
+    def _isSequenceDone(self):
+        self.xem.UpdateTriggerOuts()
+        return self.xem.IsTriggered()
     
-    def _setUpdateTime(self, time):
-        self.xem.SetWireInValue(0x01,int(1000 * time))
-        self.xem.UpdateWireIns()
-      
-    @setting(0, 'Set Mode', mode = 's', returns = '')
-    def setMode(self, c, mode):
+    def _trigger(self, channel):
+        self.xem.ActivateTriggerIn(0x40, channel)
+    
+    def _switch(self, channel, value):
+        if value:
+            self.xem.SetWireInValue(0x00,channel,channel)
+        else:
+            self.xem.SetWireInValue(0x00,0x00,channel)
+    
+    @setting(0, 'Get Trigger Channels', returns = '*s')
+    def getTriggerChannels(self, c):
         """
-        Set the counting mode, either 'Normal' or 'Differential'
-        In the Normal Mode, the FPGA automatically sends the counts with a preset frequency
-        In the differential mode, the FPGA uses triggers from Paul's box for the counting
-        frequency and to know when the repumping light is swtiched on or off.
+        Returns available channels for triggering
         """
-        if mode not in self.collectionTime.keys(): raise("Incorrect mode")
-        self.currentMode = mode
+        return self.dict['Triggers'].keys()
+    
+    @setting(1, 'Get Switching Channels', returns = '*s')
+    def getSwitchingChannels(self, c):
+        """
+        Returns available channels for switching
+        """
+        return self.dict['Switches'].keys()
+    
+    @setting(2, 'Trigger', channelName = 's')
+    def trigger(self, c, channelName):
+        """
+        Triggers the select channel
+        """
+        if channelName not in self.dict['Triggers']: raise Exception("Incorrect Channel")
         yield self.inCommunication.acquire()
-        if mode == 'Normal':
-            #set the mode on the device and set update time for normal mode
-            self.xem.SetWireInValue(0x00,0x0000)
-            self._setUpdateTime(self.collectionTime[mode])
-        elif mode == 'Differential':
-            self.xem.SetWireInValue(0x00,0x0001)
-        self.xem.UpdateWireIns()
-        self._resetFIFO()
-        self.inCommunication.release()
+        channel = self.dict['Triggers'][channelName]
+        yield deferToThread(self._trigger, channel)
+        yield self.inCommunication.release()
     
-    @setting(1, 'Set Collection Time', time = 'v', mode = 's', returns = '')
+    @setting(3, 'Switch', channelName = 's', state= 'b')
+    def switch(self, c, channelName):  
+        """
+        Swtiches the given channel
+        """
+        if channelName not in self.dict['Switches']: raise Exception("Incorrect Channel")
+        if not self.dict['Switches'][channelName][1]: state = not state #allows for easy reversal of high/low
+        yield self.inCommunication.acquire()
+        channel = self.dict['Switches'][channelName]
+        yield deferToThread(self._switch, channel, state)
+        yield self.inCommunication.release()
+        
+    @setting(4, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
     def setCollectTime(self, c, time, mode):
         """
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
@@ -98,94 +123,7 @@ class NormalPMTCountFPGA(LabradServer):
             self.inCommunication.release()
         elif mode == 'Differential':
             self.collectionTime[mode] = time
-    
-    @setting(2, 'Reset FIFO', returns = '')
-    def resetFIFO(self,c):
-        """
-        Resets the FIFO on board, deleting all queued counts
-        """
-        yield self.inCommunication.acquire()
-        self._resetFIFO()
-        self.inCommunication.release()
-    
-    @setting(3, 'Get All Counts', atleast = 'w',returns = '*(vsv)')
-    def getALLCounts(self, c, atleast = 0):
-        """
-        Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/sec
-        and s can be 'ON' in normal mode or in Differential mode with repump on and 'OFF' for differential
-        mode when repump is off. s2 is the approximate time of acquasition
-        
-        The optional atleast parameter determines requires we get back at least that number
-        of counts, which may lead to waiting for the next counts if they are not already 
-        in the queue
-        """
-        yield self.inCommunication.acquire()
-        d = threads.deferToThread(self.doGetAllCounts, atleast)
-        countlist = yield util.maybeTimeout(d, 1.0, []) #there is a subtle behavior that happens if oen calles getAllCounts(1000), then times out, then one call getAllCoutns() and gets nothing. maybe the Hardware timeout needs to be ste to match
-        self.inCommunication.release()
-        print countlist
-        returnValue(countlist)
-    
-    def doGetAllCounts(self, atleast):
-        inFIFO = self._countsInFIFO()
-        request = max(inFIFO, atleast)
-        reading = self._readCounts(request)
-        split = self.split_len(reading, 4)
-        countlist = map(self.infoFromBuf, split)
-        countlist = map(self.convertKCperSec, countlist)
-        countlist = self.appendTimes(countlist, time.time())
-        return countlist
-    
-    def convertKCperSec(self, input):
-        [rawCount,type] = input
-        countKCperSec = float(rawCount) / self.collectionTime[self.currentMode] / 1000.
-        return [countKCperSec, type]
-        
-    def appendTimes(self, list, timeLast):
-        #in the case that we received multiple PMT counts, uses the current time
-        #and the collectionTime to guess the arrival time of the previous readings
-        #i.e ( [[1,2],[2,3]] , timeLAst = 1.0, normalupdatetime = 0.1) ->
-        #    ( [(1,2,0.9),(2,3,1.0)])
-        collectionTime = self.collectionTime[self.currentMode]
-        for i in range(len(list)):
-            list[-i - 1].append(timeLast - i * collectionTime)
-            list[-i - 1] = tuple(list[-i - 1])
-        return list
-        
-    def split_len(self,seq, length):
-        #useful for splitting a string in length-long pieces
-        return [seq[i:i+length] for i in range(0, len(seq), length)]
-    
-    def _countsInFIFO(self):
-        """
-        returns how many counts are in FIFO
-        """
-        self.xem.UpdateWireOuts()
-        inFIFO16bit = self.xem.GetWireOutValue(0x21)
-        counts = inFIFO16bit / 2
-        return counts
-    
-    def _readCounts(self, number):
-        """
-        reads the next number of counts from the FPGA
-        """
-        buf = "\x00"* ( number * 4 )
-        self.xem.ReadFromBlockPipeOut(0xa0,4,buf)
-        return buf
-    
-    @staticmethod
-    def infoFromBuf(buf):
-        #converts the received buffer into useful information
-        #the most significant digit of the buffer indicates wheter 866 is on or off
-        count = 65536*(256*ord(buf[1])+ord(buf[0]))+(256*ord(buf[3])+ord(buf[2]))
-        if count >= 2**31:
-            status = 'OFF'
-            count = count % 2**31
-        else:
-            status = 'ON'
-        return [count, status]
 
-  
 if __name__ == "__main__":
     from labrad import util
-    util.runServer( NormalPMTCountFPGA() )
+    util.runServer( TriggerFPGA() )

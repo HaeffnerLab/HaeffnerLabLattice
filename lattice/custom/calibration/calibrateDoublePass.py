@@ -77,7 +77,7 @@ def findPower(guessPower, setpt):
     return pwr
 
 dv.cd(['','Calibrations'],True)
-dv.open(38)
+dv.open(49)
 data = dv.get()
 
 dv.new('397 calibrated output',[('freq','MHz')],[('power','power','dBm')])
@@ -113,7 +113,7 @@ for point in data:
 #print 'done'
     
 
-##FINDS THE MINIMUM (FREQ./POWER) OF THE SCAN
+#FINDS THE MINIMUM (FREQ./POWER) OF THE SCAN
 #print scan
 #minCount = scan.min()
 #print 'minimum counts are ', minCount
