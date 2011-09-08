@@ -76,29 +76,29 @@ def findPower(guessPower, setpt):
         pwr = lowerTillMatches(MIN_POWER, guessPower, setpt )
     return pwr
 
-dv.cd(['','Calibrations'],True)
-dv.open(49)
-data = dv.get()
-
-dv.new('397 calibrated output',[('freq','MHz')],[('power','power','dBm')])
-for point in data:
-    freq = point[0]
-    power = point[1]
-    print 'setting {0}, {1}'.format(freq,power)
-    sigGen.frequency(freq)
-    sigGen.amplitude(power)
-    Output = record(AVERAGE_POINTS)
-    dv.add([freq, Output])
-    
-    
-    
-#print 'setting power to MAX and scanning the frequency'
-#scan = numpy.array(performScan(MAX_POWER))
 #dv.cd(['','Calibrations'],True)
-#dv.new('397 local probe double pass 3220-120 scan frequency at max power',[('freq','MHz')],[('power','power','dBm')])
-#data = numpy.vstack((scanList, scan)).transpose()
-#dv.add(data)  
-#print 'done'
+#dv.open(57)
+#data = dv.get()
+#
+#dv.new('397 calibrated output',[('freq','MHz')],[('power','power','dBm')])
+#for point in data:
+#    freq = point[0]
+#    power = point[1]
+#    print 'setting {0}, {1}'.format(freq,power)
+#    sigGen.frequency(freq)
+#    sigGen.amplitude(power)
+#    Output = record(AVERAGE_POINTS)
+#    dv.add([freq, Output])
+    
+    
+    
+print 'setting power to MAX and scanning the frequency'
+scan = numpy.array(performScan(MAX_POWER))
+dv.cd(['','Calibrations'],True)
+dv.new('397 local probe double pass 3220-120 scan frequency at max power',[('freq','MHz')],[('power','power','dBm')])
+data = numpy.vstack((scanList, scan)).transpose()
+dv.add(data)  
+print 'done'
 
 ##POWER SCAN AT FIXED FREQ
 #print 'setting the frequency to {} and scanning the power'.format(MIN_FREQ)
@@ -114,28 +114,28 @@ for point in data:
     
 
 #FINDS THE MINIMUM (FREQ./POWER) OF THE SCAN
-#print scan
-#minCount = scan.min()
-#print 'minimum counts are ', minCount
-#minarg = scan.argmin()
-#print 'frequency giving least intensity is ', scanList[minarg]
-#setPointCount = minCount * 0.9 #setting setpoint to 90% of the minimum power
-#print 'setting the output set point to ', setPointCount
-###
-###CALIBRATING
-#calibration = []
-#guess = MAX_POWER;
-#for freq in scanList:
-#    print 'calibration freq', freq
-#    sigGen.frequency(freq)
-#    pwr = findPower(guess, setPointCount)
-#    guess = pwr
-#    calibration.append([freq, pwr])
-#
-#print 'final calibration'
-#print calibration
-#
-#print 'adding to data vault'
-#dv.cd(['','Calibrations'],True)
-#dv.new('397 double pass 3080-120 local beam probe',[('freq','MHz')],[('power','power','dBm')])
-#dv.add(calibration)    
+print scan
+minCount = scan.min()
+print 'minimum counts are ', minCount
+minarg = scan.argmin()
+print 'frequency giving least intensity is ', scanList[minarg]
+setPointCount = minCount * 0.9 #setting setpoint to 90% of the minimum power
+print 'setting the output set point to ', setPointCount
+##
+##CALIBRATING
+calibration = []
+guess = MAX_POWER;
+for freq in scanList:
+    print 'calibration freq', freq
+    sigGen.frequency(freq)
+    pwr = findPower(guess, setPointCount)
+    guess = pwr
+    calibration.append([freq, pwr])
+
+print 'final calibration'
+print calibration
+
+print 'adding to data vault'
+dv.cd(['','Calibrations'],True)
+dv.new('397 double pass 3080-120 local beam probe',[('freq','MHz')],[('power','power','dBm')])
+dv.add(calibration)    

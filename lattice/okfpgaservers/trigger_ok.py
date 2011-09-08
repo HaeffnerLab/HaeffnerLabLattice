@@ -13,7 +13,6 @@ import time
 
 okDeviceID = 'Trigger'
 devicePollingPeriod = 10
-timeout = 1
 
 class TriggerFPGA(LabradServer):
     name = 'Trigger'
@@ -60,7 +59,7 @@ class TriggerFPGA(LabradServer):
     
     def _isSequenceDone(self):
         self.xem.UpdateTriggerOuts()
-        return self.xem.IsTriggered()
+        return self.xem.IsTriggered(0x6A,0b00000001)
     
     def _trigger(self, channel):
         self.xem.ActivateTriggerIn(0x40, channel)
@@ -70,6 +69,7 @@ class TriggerFPGA(LabradServer):
             self.xem.SetWireInValue(0x00,channel,channel)
         else:
             self.xem.SetWireInValue(0x00,0x00,channel)
+        self.xem.UpdateWireIns()
     
     @setting(0, 'Get Trigger Channels', returns = '*s')
     def getTriggerChannels(self, c):
@@ -90,21 +90,21 @@ class TriggerFPGA(LabradServer):
         """
         Triggers the select channel
         """
-        if channelName not in self.dict['Triggers']: raise Exception("Incorrect Channel")
+        if channelName not in self.dict['Triggers'].keys(): raise Exception("Incorrect Channel")
         yield self.inCommunication.acquire()
         channel = self.dict['Triggers'][channelName]
         yield deferToThread(self._trigger, channel)
         yield self.inCommunication.release()
     
     @setting(3, 'Switch', channelName = 's', state= 'b')
-    def switch(self, c, channelName):  
+    def switch(self, c, channelName, state):  
         """
-        Swtiches the given channel
+        Switches the given channel
         """
-        if channelName not in self.dict['Switches']: raise Exception("Incorrect Channel")
+        if channelName not in self.dict['Switches'].keys(): raise Exception("Incorrect Channel")
         if not self.dict['Switches'][channelName][1]: state = not state #allows for easy reversal of high/low
         yield self.inCommunication.acquire()
-        channel = self.dict['Switches'][channelName]
+        channel = self.dict['Switches'][channelName][0]
         yield deferToThread(self._switch, channel, state)
         yield self.inCommunication.release()
         
@@ -113,16 +113,18 @@ class TriggerFPGA(LabradServer):
         """
         Returns true if Paul Box sequence has completed within a timeout period
         """
-        time = float(time)
-        if not 0.0<time<5.0: raise('incorrect collection time')
-        if mode not in self.collectionTime.keys(): raise("Incorrect mode")
-        if mode == 'Normal':
-            self.collectionTime[mode] = time
+        requestCalls = int(timeout / 0.050 ) #number of request calls
+        for i in range(requestCalls):
             yield self.inCommunication.acquire()
-            self._setUpdateTime(time)
-            self.inCommunication.release()
-        elif mode == 'Differential':
-            self.collectionTime[mode] = time
+            done = yield deferToThread(self._isSequenceDone)
+            yield self.inCommunication.release()
+            if done: returnValue(True)
+            yield deferToThread(time.sleep, 0.050)
+        returnValue(False)
+            
+            
+            
+                           
 
 if __name__ == "__main__":
     from labrad import util
