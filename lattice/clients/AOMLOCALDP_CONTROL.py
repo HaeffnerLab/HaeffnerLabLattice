@@ -1,6 +1,5 @@
 import sys
 from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
 from qtui.QCustomFreqPower import QCustomFreqPower
 
 MinPower = -145 #dbM
@@ -28,11 +27,11 @@ class RF_CONTROL(QCustomFreqPower):
         self.setText(initstate)
 
     def powerChanged(self):
-         self.server.amplitude(self.spinPower.value())
-	
+        self.server.amplitude(self.spinPower.value())
+        
     def freqChanged(self):
         self.server.frequency(self.spinFreq.value())
-	
+    
     def switchChanged(self):
         self.server.output(self.buttonSwitch.isChecked())
         

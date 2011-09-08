@@ -5,9 +5,8 @@ Created on Sept 6, 2011
 import ok
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
-from twisted.internet.defer import DeferredLock, returnValue, inlineCallbacks
+from twisted.internet.defer import DeferredLock, returnValue
 from twisted.internet.threads import deferToThread
-from labrad import util
 import os
 import time
 
@@ -20,10 +19,13 @@ class TriggerFPGA(LabradServer):
     def initServer(self):
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
+        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , isnegatedlogic, isTrueAtStart'
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'866':(0x01,True), 'BluePI':(0x02,True)}
+                     'Switches':{'866':(0x01,True, True), 'BluePI':(0x02,True, False)}
                      }
+        self.initializeChannels()
+        
     
     def connectOKBoard(self):
         self.xem = None
@@ -57,6 +59,15 @@ class TriggerFPGA(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
+    def initializeChannels(self):
+        for switchName in self.dict['Switches'].keys():
+            channel = dict['Switches'][switchName][0]
+            value = dict['Switches'][switchName][1]
+            initialize = dict['Switches'][switchName][2]
+            if initialize:
+                print 'initializing {0} to {1}'.format(channel, value)
+                self._switch( channel, value)
+        
     def _isSequenceDone(self):
         self.xem.UpdateTriggerOuts()
         return self.xem.IsTriggered(0x6A,0b00000001)
