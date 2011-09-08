@@ -103,9 +103,11 @@ class TimeResolvedFlow( LabradServer):
     ####            if addParams:
     ####                yield self.addParameters(arrayLength, timeLength, timeResolution)
     ####            yield self.saveResult(measuredData)
+                t = time.time()
                 (freqs, ampl) = yield deferToThread(self.process, arrayLength, timeLength, timeResolution, measuredData)
+                print time.time() - t
                 del(measuredData)
-                yield deferToThread(self.plot, freqs,ampl)
+                #yield deferToThread(self.plot, freqs,ampl)
                 del(freqs,ampl)
             reactor.callLater(0,self._run)
     
