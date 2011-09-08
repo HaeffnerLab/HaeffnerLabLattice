@@ -26,7 +26,6 @@ class TriggerFPGA(LabradServer):
                      }
         self.initializeChannels()
         
-    
     def connectOKBoard(self):
         self.xem = None
         fp = ok.FrontPanel()
@@ -61,11 +60,11 @@ class TriggerFPGA(LabradServer):
     
     def initializeChannels(self):
         for switchName in self.dict['Switches'].keys():
-            channel = dict['Switches'][switchName][0]
-            value = dict['Switches'][switchName][1]
-            initialize = dict['Switches'][switchName][2]
+            channel = self.dict['Switches'][switchName][0]
+            value = self.dict['Switches'][switchName][1]
+            initialize = self.dict['Switches'][switchName][2]
             if initialize:
-                print 'initializing {0} to {1}'.format(channel, value)
+                print 'initializing {0} to {1}'.format(switchName, value)
                 self._switch( channel, value)
         
     def _isSequenceDone(self):
