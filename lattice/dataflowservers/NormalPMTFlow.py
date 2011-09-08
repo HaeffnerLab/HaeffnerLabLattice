@@ -4,10 +4,8 @@ Created on Aug 12, 2011
 @author: Michael Ramm
 '''
 from labrad.server import LabradServer, setting, Signal
-from labrad.types import Error
 from twisted.internet.defer import Deferred, returnValue, inlineCallbacks, DeferredLock
 from twisted.internet import reactor
-from twisted.internet.threads import deferToThread
 
 SIGNALID = 331483
 
@@ -18,20 +16,20 @@ class NormalPMTFlow( LabradServer):
     
     @inlineCallbacks
     def initServer(self):
-    #improve on this to start in arbitrary order
-       self.dv = yield self.client.data_vault
-       self.n = yield self.client.normalpmtcountfpga
-       #self.pbox = yield self.client.paul_box
-       #self.confirmPBoxScripting()
-       self.saveFolder = ['','PMT Counts']
-       self.dataSetName = 'PMT Counts'
-       self.dataSet = None
-       self.collectTimes = {'Normal':0.100, 'Differential':0.100}
-       self.lastDifferential = {'ON': 0, 'OFF': 0}
-       self.currentMode = 'Normal'
-       self.running = DeferredLock()
-       self.requestList = []
-       self.keepRunning = False
+        #improve on this to start in arbitrary order
+        self.dv = yield self.client.data_vault
+        self.n = yield self.client.normalpmtcountfpga
+        #self.pbox = yield self.client.paul_box
+        #self.confirmPBoxScripting()
+        self.saveFolder = ['','PMT Counts']
+        self.dataSetName = 'PMT Counts'
+        self.dataSet = None
+        self.collectTimes = {'Normal':0.100, 'Differential':0.100}
+        self.lastDifferential = {'ON': 0, 'OFF': 0}
+        self.currentMode = 'Normal'
+        self.running = DeferredLock()
+        self.requestList = []
+        self.keepRunning = False
     
     @inlineCallbacks
     def confirmPBoxScripting(self):

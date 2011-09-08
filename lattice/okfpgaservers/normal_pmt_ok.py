@@ -5,8 +5,7 @@ Created on Aug 13, 2011
 import ok
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor, threads
-from twisted.internet.defer import DeferredLock, returnValue, inlineCallbacks
-from labrad import util
+from twisted.internet.defer import DeferredLock, returnValue
 import os
 import time
 
