@@ -11,7 +11,7 @@ Scripts:
     resolution as a parameter for scripts
     separate resolution for how quickly to come back
     save detunings, other parameters
-PMt server:
+PMT server:
     transpose data, float_ in the server
 Data vault improvement:
     accept int32
@@ -21,8 +21,3 @@ TimeResolvedFlow:
     currentdataset() crashes
 pmt flow:
     with trigger available paul box intergration
-
-report on:
-    intensity stabilization
-    dark resonances to see estimate linewidth on new laser
-    FFT
