@@ -11,8 +11,8 @@ except:
 	raise()
 
 nodeDict = {'node_lattice_pc':
-				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','NormalPMTCountFPGA','NormalPMTFlow',
-				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server'],
+				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','NormalPMTCountFPGA',
+				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','Trigger','NormalPMTFlow'],
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_lab_197':

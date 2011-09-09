@@ -1,7 +1,24 @@
-'''
-Created on Sept 6, 2011
-@author: Michael Ramm, Haeffner Lab
-'''
+#Created on Sept 6, 2011
+#@author: Michael Ramm, Haeffner Lab
+
+"""
+### BEGIN NODE INFO
+[info]
+name = Trigger
+version = 1.0
+description = 
+instancename = Trigger
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 import ok
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
