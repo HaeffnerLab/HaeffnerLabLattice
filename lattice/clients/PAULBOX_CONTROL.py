@@ -46,23 +46,24 @@ class PAULBOX_CONTROL( QtGui.QWidget ):
         currentfloat = 0#determines how many fields have been filled so far
         currentbool = 0
         for setting in varlist:
-            varname = setting[0]
-            vartype = setting[1]
-            defvalue = setting[2]
-            if len( setting ) > 3:
-                minvalue = setting[3]
-                maxvalue = setting[4]
-            else:
-                minvalue = ''
-                maxvalue = ''
-            if vartype == 'float':
-                self.floatnames[currentfloat] = varname
-                self.floatval[currentfloat] = defvalue
-                self.minfloatval[currentfloat] = minvalue
-                self.maxfloatval[currentfloat] = maxvalue
-                currentfloat = currentfloat + 1
-            elif vartype == 'bool':
-                pass #populate booleans
+            if setting:#fix to make sure empty sequences are displayed
+                varname = setting[0]
+                vartype = setting[1]
+                defvalue = setting[2]
+                if len( setting ) > 3:
+                    minvalue = setting[3]
+                    maxvalue = setting[4]
+                else:
+                    minvalue = ''
+                    maxvalue = ''
+                if vartype == 'float':
+                    self.floatnames[currentfloat] = varname
+                    self.floatval[currentfloat] = defvalue
+                    self.minfloatval[currentfloat] = minvalue
+                    self.maxfloatval[currentfloat] = maxvalue
+                    currentfloat = currentfloat + 1
+                elif vartype == 'bool':
+                    pass #populate booleans
         self.drawValues()
 
     def drawValues( self ):

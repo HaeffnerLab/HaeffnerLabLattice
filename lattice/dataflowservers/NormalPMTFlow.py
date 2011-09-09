@@ -1,8 +1,24 @@
-'''
-Created on Aug 12, 2011
+#Created on Aug 12, 2011
+#@author: Michael Ramm
 
-@author: Michael Ramm
-'''
+"""
+### BEGIN NODE INFO
+[info]
+name = NormalPMTFlow
+version = 1.0
+description = 
+instancename = NormalPMTFlow
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet.defer import Deferred, returnValue, inlineCallbacks, DeferredLock
 from twisted.internet import reactor
@@ -19,8 +35,8 @@ class NormalPMTFlow( LabradServer):
         #improve on this to start in arbitrary order
         self.dv = yield self.client.data_vault
         self.n = yield self.client.normalpmtcountfpga
-        #self.pbox = yield self.client.paul_box
-        #self.confirmPBoxScripting()
+        self.pbox = yield self.client.paul_box
+        self.trigger = yield self.client.trigger
         self.saveFolder = ['','PMT Counts']
         self.dataSetName = 'PMT Counts'
         self.dataSet = None
@@ -31,12 +47,14 @@ class NormalPMTFlow( LabradServer):
         self.requestList = []
         self.keepRunning = False
     
-    @inlineCallbacks
-    def confirmPBoxScripting(self):
-        script = 'DifferentialPMTCount.py'
-        variable = 'CountingInterval'
-        if script not in self.pbox.get_available_scripts(): raise Exception('Pauls Box script {} does not exist'.format(script))
-        if variable not in self.pbox.get_variable_list(script): raise Exception('Variable {} not found'.format(variable))
+#    @inlineCallbacks
+#    def confirmPBoxScripting(self):
+#        self.script = 'DifferentialPMTCount.py'
+#        self.variable = 'CountingInterval'
+#        allScripts = yield self.pbox.get_available_scripts()
+#        if script not in allScripts: raise Exception('Pauls Box script {} does not exist'.format(script))
+#        allVariables = yield self.pbox.get_variable_list(script)
+#        if variable not in allVariables[0]: raise Exception('Variable {} not found'.format(variable))
     
     @inlineCallbacks
     def makeNewDataSet(self):
@@ -71,10 +89,10 @@ class NormalPMTFlow( LabradServer):
             self.currentMode = mode
             yield self.n.set_mode(mode)
         else:
-            self.running.acquire()
+            yield self.dostopRecording()
             self.currentMode = mode
             yield self.n.set_mode(mode)
-            self.running.release()
+            yield self.dorecordData()
 
     @setting(3, 'getCurrentMode', returns = 's')
     def getCurrentMode(self, c):
@@ -88,9 +106,15 @@ class NormalPMTFlow( LabradServer):
         """
         Starts recording data of the current PMT mode into datavault
         """
+        yield self.dorecordData()
+    
+    @inlineCallbacks
+    def dorecordData(self):
         self.keepRunning = True
         yield self.n.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
         yield self.n.set_mode(self.currentMode)
+        if self.currentMode == 'Differential':
+            yield self._programPBOXDiff()
         if self.dataSet is None:
             yield self.makeNewDataSet()
         reactor.callLater(0, self._record)
@@ -100,12 +124,14 @@ class NormalPMTFlow( LabradServer):
         """
         Stop recording counts into Data Vault
         """
+        yield self.dostopRecording()
+    
+    @inlineCallbacks
+    def dostopRecording(self):
         self.keepRunning = False
         yield self.running.acquire()
         self.running.release()
-        if self.currentMode == 'Differential':
-            pass
-            #stop the triggering here
+        yield self._programPBOXEmpty()
         
     @setting(6, returns = 'b')
     def isRunning(self,c):
@@ -129,6 +155,8 @@ class NormalPMTFlow( LabradServer):
         if mode == self.currentMode:
             yield self.running.acquire()
             yield self.n.set_collection_time(timelength, mode)
+            if mode == 'Differential':
+                yield self._programPBOXDiff()
             self.running.release()
         else:
             yield self.n.set_collection_time(timelength, mode)
@@ -159,6 +187,16 @@ class NormalPMTFlow( LabradServer):
         Returns the current timelength of in the current mode
         """
         return self.collectTimes[self.currentMode]
+    
+    @inlineCallbacks
+    def _programPBOXDiff(self):
+        yield self.pbox.send_command('DifferentialPMTCount.py',[['FLOAT','CountingInterval',str(10**6 * self.collectTimes['Differential'])]])
+        yield self.trigger.trigger('PaulBox')
+    
+    @inlineCallbacks
+    def _programPBOXEmpty(self):
+        yield self.pbox.send_command('emptySequence.py',[['FLOAT','nothing','0']])
+        yield self.trigger.trigger('PaulBox')
         
     class readingRequest():
         def __init__(self, d, type, count):
@@ -196,8 +234,9 @@ class NormalPMTFlow( LabradServer):
                 self.processRequests(toDataVault)
                 self.processSignals(toDataVault)
                 yield self.dv.add(toDataVault)
-                self.running.release()
-                reactor.callLater(0,self._record)
+            self.running.release()
+            delayTime = self.collectTimes[self.currentMode]/2 #set to half the collection time no to miss anythign
+            reactor.callLater(delayTime,self._record)
         else:
             self.running.release()
     
