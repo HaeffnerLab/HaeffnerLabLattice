@@ -1,8 +1,25 @@
-'''
-Created on Aug 08, 2011
-@author: Michael Ramm, Haeffner Lab
-Thanks for code ideas from Quanta Lab, MIT
-'''
+#Created on Aug 08, 2011
+#@author: Michael Ramm, Haeffner Lab
+#Thanks for code ideas from Quanta Lab, MIT
+
+"""
+### BEGIN NODE INFO
+[info]
+name = TimeResolvedFPGA
+version = 1.0
+description = 
+instancename = TimeResolvedFPGA
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 import ok
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
@@ -30,7 +47,7 @@ class TimeResolvedFPGA(LabradServer):
         self.xem = None
         fp = ok.FrontPanel()
         module_count = fp.GetDeviceCount()
-        print "Found {} modules".format(module_count)
+        print "Found {} unused modules".format(module_count)
         for i in range(module_count):
             serial = fp.GetDeviceListSerial(i)
             tmp = ok.FrontPanel()
@@ -77,7 +94,7 @@ class TimeResolvedFPGA(LabradServer):
         yield deferToThread(self._singleReading, buflength)
 
     def _singleReading(self, buflength):
-        self.xem.ActivateTriggerIn(0x40,0) #reset the board
+        self.xem.ActivateTriggerIn(0x40,0) #reset the board and FIFO
         buf = '\x00'*buflength
         self.xem.ReadFromBlockPipeOut(0xa0,1024,buf)
         self.inRequest = False
@@ -114,6 +131,8 @@ class TimeResolvedFPGA(LabradServer):
         and the second row are those corresponding elements.
         There operations have been found to be much faster than the data transfer rate from FPGA
         """
+        #may need to implement a timeout by checking if  self.singleReadingDeferred has fired by asking
+        #of self.inRequest and only yielding to self.singleReadingDeferred when False
         if self.singleReadingDeferred is None: raise "Single reading was not previously requested"
         raw = yield self.singleReadingDeferred
         self.singleReadingDeferred = None

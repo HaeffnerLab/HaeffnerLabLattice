@@ -44,7 +44,7 @@ class NormalPMTCountFPGA(LabradServer):
         self.xem = None
         fp = ok.FrontPanel()
         module_count = fp.GetDeviceCount()
-        print "Found {} modules".format(module_count)
+        print "Found {} unused modules".format(module_count)
         for i in range(module_count):
             serial = fp.GetDeviceListSerial(i)
             tmp = ok.FrontPanel()
