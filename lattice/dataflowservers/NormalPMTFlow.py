@@ -187,7 +187,7 @@ class NormalPMTFlow( LabradServer):
     def _record(self):
         yield self.running.acquire()
         if self.keepRunning:
-            rawdata = yield self.n.get_all_counts(1)
+            rawdata = yield self.n.get_all_counts()
             if len(rawdata) != 0:
                 if self.currentMode == 'Normal':
                     toDataVault = [ [elem[2], elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]

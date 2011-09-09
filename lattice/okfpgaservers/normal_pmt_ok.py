@@ -4,7 +4,8 @@ Created on Aug 13, 2011
 '''
 import ok
 from labrad.server import LabradServer, setting
-from twisted.internet import reactor, threads
+from twisted.internet import reactor
+from twisted.internet.threads import deferToThread
 from twisted.internet.defer import DeferredLock, returnValue
 import os
 import time
@@ -107,28 +108,28 @@ class NormalPMTCountFPGA(LabradServer):
         self._resetFIFO()
         self.inCommunication.release()
     
-    @setting(3, 'Get All Counts', atleast = 'w',returns = '*(vsv)')
-    def getALLCounts(self, c, atleast = 0):
+    @setting(3, 'Get All Counts', returns = '*(vsv)')
+    def getALLCounts(self, c):
         """
-        Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/sec
-        and s can be 'ON' in normal mode or in Differential mode with repump on and 'OFF' for differential
-        mode when repump is off. s2 is the approximate time of acquasition
+        Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/SEC
+        and s can be 'ON' in normal mode or in Differential mode with 866 on and 'OFF' for differential
+        mode when 866 is off. s2 is the approximate time of acquisition.
         
-        The optional atleast parameter determines requires we get back at least that number
-        of counts, which may lead to waiting for the next counts if they are not already 
-        in the queue
+        NOTE: For some reason, FGPA ReadFromBlockPipeOut never time outs, so can not implement requesting more packets than
+        currently stored because it may hang the device.
         """
         yield self.inCommunication.acquire()
-        d = threads.deferToThread(self.doGetAllCounts, atleast)
-        countlist = yield util.maybeTimeout(d, 1.0, []) #there is a subtle behavior that happens if oen calles getAllCounts(1000), then times out, then one call getAllCoutns() and gets nothing. maybe the Hardware timeout needs to be ste to match
+        countlist = yield deferToThread(self.doGetAllCounts)
         self.inCommunication.release()
-        print countlist
         returnValue(countlist)
     
-    def doGetAllCounts(self, atleast):
+    @setting(4, 'Get Current Mode', returns = 's')
+    def getMode(self, c):
+        return self.currentMode
+        
+    def doGetAllCounts(self):
         inFIFO = self._countsInFIFO()
-        request = max(inFIFO, atleast)
-        reading = self._readCounts(request)
+        reading = self._readCounts(inFIFO)
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf, split)
         countlist = map(self.convertKCperSec, countlist)
