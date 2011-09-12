@@ -27,6 +27,7 @@ from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
 from twisted.internet.threads import deferToThread
 import os
 import numpy
+import time
 
 okDeviceID = 'TimeResolvedFPGA'
 DefaultTimeLength = 0.1 #seconds
@@ -87,14 +88,18 @@ class TimeResolvedFPGA(LabradServer):
         if timelength is None: timelength = self.timelength
         buflength = self.findBufLength(timelength)
         self.singleReadingDeferred = Deferred()
+        yield deferToThread(self._resetBoard)
         reactor.callLater(0, self.doSingleReading, buflength)
+        yield deferToThread(time.sleep, 0.020) #delay to make sure the previous command got to the  ReadFromBlockPipeOut line
     
     @inlineCallbacks
     def doSingleReading(self, buflength):
         yield deferToThread(self._singleReading, buflength)
 
-    def _singleReading(self, buflength):
+    def _resetBoard(self):
         self.xem.ActivateTriggerIn(0x40,0) #reset the board and FIFO
+        
+    def _singleReading(self, buflength):
         buf = '\x00'*buflength
         self.xem.ReadFromBlockPipeOut(0xa0,1024,buf)
         self.inRequest = False
@@ -138,8 +143,8 @@ class TimeResolvedFPGA(LabradServer):
         self.singleReadingDeferred = None
         data = numpy.fromstring(raw, dtype = numpy.uint16)        
         nzindeces = numpy.array(data.nonzero()[0], dtype=numpy.int)
-        nzelems = numpy.array(data[nzindeces],dtype=int)
-        result = numpy.vstack((nzindeces,nzelems))
+        nzelems = numpy.array(data[nzindeces],dtype=numpy.int)
+        result = numpy.vstack((nzindeces,nzelems)).transpose()
         returnValue(((data.size, self.timelength, timeResolution),result))
         
     @setting(2, 'Set Time Length', timelength = 'v[s]', returns = '')

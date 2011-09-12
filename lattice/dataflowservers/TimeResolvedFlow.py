@@ -1,8 +1,24 @@
-'''
-Created on Aug 12, 2011
+#Created on Aug 12, 2011
+#@author: Michael Ramm
 
-@author: Michael Ramm
-'''
+"""
+### BEGIN NODE INFO
+[info]
+name = TimeResolvedFlow
+version = 1.0
+description = 
+instancename = TimeResolvedFlow
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 from labrad.server import LabradServer, setting
 from labrad.types import Error
 from twisted.internet.defer import Deferred, returnValue, inlineCallbacks
@@ -19,43 +35,37 @@ class TimeResolvedFlow( LabradServer):
     name = 'TimeResolvedFlow'
     @inlineCallbacks
     def initServer(self):
-    #improve on this to start in arbitrary order
-       self.dv = yield self.client.data_vault
-       self.t = yield self.client.timeresolvedfpga
-       ####self.dp = yield self.client.dataProcessor
-       ####self.pbox = yield self.client.paulsbox
-       self.saveFolder = ['','Time Resolved Counts']
-       self.dataSetName = 'CompressedCountsTimeResolved'
-       self.dataSet = None
-       #self.fftSet = 'FFT'
-       self.timelength = 0.010 #default timelength
-       self.shouldRun = False
+        #improve on this to start in arbitrary order
+        #self.dv = yield self.client.data_vault #does not have dv functioanlity until improvemetns are made to dv
+        self.t = yield self.client.timeresolvedfpga
+        self.pbox = yield self.client.paul_box
+        self.trigger = yield self.client.trigger
+#        self.dp = yield self.client.dataprocessor
+#        self.saveFolderBase = ['','Time Resolved Counts']
+#        self.dataSetName = 'CompressedCountsTimeResolved'
+#        self.dataSetFolder = None
+        self.timelength = 0.010 #default timelength
+        self.shouldRun = False
+        self.incrementSaveName = 0
     
-    @inlineCallbacks
-    def makeNewDataSet(self):
-        dir = self.saveFolder
-        name = self.dataSetName
-        yield self.dv.cd(dir, True)
-        self.dataSet = yield self.dv.new(name, [('nonzero', 'num')], [('count','num','num')])
+#    @inlineCallbacks
+#    def makeNewFolder(self):
+#        dir = self.saveFolderBase
+#        dir.append(time.asctime())
+#        yield self.dv.cd(dir, True)
+  
+#    @setting(0, 'Set Save Folder', folder = '*s', returns = '')
+#    def setSaveFolder(self,c , folder):
+#        if self.shouldRun: raise("Please Stop Process First")
+#        yield self.dv.cd(folder, True)
+#        self.saveFolder = folder
     
-    @inlineCallbacks
-    def addParameters(self, arrayLength, timeLength, timeResolution):
-        yield self.dv.add_parameter('arrayLength', arrayLength)
-        yield self.dv.add_parameter('timeLength', timeLength)
-        yield self.dv.add_parameter('timeResolution', timeResolution)
-    
-    @setting(0, 'Set Save Folder', folder = '*s', returns = '')
-    def setSaveFolder(self,c , folder):
-        if self.shouldRun: raise("Please Stop Process First")
-        yield self.dv.cd(folder, True)
-        self.saveFolder = folder
-    
-    @setting(1, 'Start New Dataset', setName = 's', returns = '')
-    def setNewDataSet(self, c, setName = None):
-        if self.shouldRun: raise("Please Stop Process First")
-        if setName is not None:
-            self.dataSetName = setName
-        yield self.makeNewDataSet()
+#    @setting(1, 'Start New Data Folder', setName = 's', returns = '')
+#    def setNewDataSet(self, c, setName = None):
+#        if self.shouldRun: raise("Please Stop Process First")
+#        if setName is not None:
+#            self.dataSetName = setName
+#        yield self.makeNewDataSet()
             
     @setting( 2, returns = '' )
     def startLiveFFT( self, c):
@@ -63,7 +73,6 @@ class TimeResolvedFlow( LabradServer):
         Start recording Time Resolved Counts into Data Vault
         """
         self.shouldRun = True
-        if self.dataSet is None: yield self.makeNewDataSet()
         yield self.t.set_time_length(self.timelength)
         reactor.callLater( 0, self._run, True)
     
@@ -81,10 +90,10 @@ class TimeResolvedFlow( LabradServer):
         """
         return self.shouldRun
         
-    @setting(6, returns = 's')
-    def currentDataSet(self,c):
-        if self.dataSet is None: return ''
-        return self.dataSet
+#    @setting(6, returns = 's')
+#    def currentDataSet(self,c):
+#        if self.dataSet is None: return ''
+#        return self.dataSet
     
     @setting(7, 'Set Time Length', timelength = 'v')
     def setTimeLength(self, c, timelength):
@@ -95,43 +104,52 @@ class TimeResolvedFlow( LabradServer):
     def _run(self, addParams = False):
         if self.shouldRun:
             yield self.t.perform_time_resolved_measurement()
+            yield self.trigger.trigger('PaulBox')
             (arrayLength, timeLength, timeResolution), measuredData = yield self.t.get_result_of_measurement()
             measuredData = measuredData.asarray
-            print measuredData.size
-            if measuredData.size: #if got a nonzero result
-                ####measuredData = numpy.array(measuredData.asarray.transpose(), dtype=numpy.float_)
-    ####            if addParams:
-    ####                yield self.addParameters(arrayLength, timeLength, timeResolution)
-    ####            yield self.saveResult(measuredData)
+            #measuredData =  numpy.array(measuredData.asarray, dtype=numpy.float_)#dv requires numpy_float_
+            if measuredData.size:#if got a nonzero result
+                name = yield deferToThread(self.saveResult, measuredData, arrayLength, timeLength,timeResolution )
+                #FFT, should me moved to DP server                
                 t = time.time()
                 (freqs, ampl) = yield deferToThread(self.process, arrayLength, timeLength, timeResolution, measuredData)
-                print time.time() - t
+                print "fft processing took {} seconds".format(time.time() - t)
                 del(measuredData)
-                #yield deferToThread(self.plot, freqs,ampl)
+                t = time.time()
+                yield deferToThread(self.plot, freqs,ampl, name)
+                print "plotting took took {} seconds".format(time.time() - t)
                 del(freqs,ampl)
             reactor.callLater(0,self._run)
     
-    @inlineCallbacks
-    def saveResult(self, measuredData):
-        yield self.dv.add(measuredData)
-    
-    def plot(self, x, y):
-        t = time.time()
+#    @inlineCallbacks
+    def saveResult(self, measuredData, arrayLength, timeLength,timeResolution):
+        infoarray = numpy.array([arrayLength,timeLength,timeResolution])
+        saveName = 'TimeResolved{}'.format(self.incrementSaveName)
+        numpy.savez(saveName,measuredData, infoarray)
+        self.incrementSaveName+=1
+        return saveName
+#        name = self.dataSetName
+#        response = yield self.dv.new(name, [('nonzero', 'num')], [('count','num','num')])
+#        yield self.dv.add(measuredData)
+#        yield self.dv.add_parameter('arrayLength', arrayLength)
+#        yield self.dv.add_parameter('timeLength', timeLength)
+#        yield self.dv.add_parameter('timeResolution', timeResolution)
+  
+    def plot(self, x, y, name):
         figure = pyplot.figure()
         figure.clf()
+        figure.suptitle(name)
         pyplot.plot(x,y)
-        #pyplot.xlim(2*10**6,3 *10**6)
+        #pyplot.xlim(0*10**6,1 *10**6)
         pyplot.xlim(15.1*10**6,15.125 *10**6)
         pyplot.ylim(0,700)
         pyplot.savefig('test')
         pyplot.close()
         del(figure)
-        print time.time() - t
-        print 'NEW PLOT'
-    
+
     def process(self, arrayLength, timeLength, timeResolution, measuredData):
-        positionsNZ = measuredData[0]
-        elems = measuredData[1]
+        positionsNZ = measuredData[:,0]
+        elems = measuredData[:,1]
         #the following if faster but equivalent to binary conversion using the bitarray module
         result = numpy.zeros(( arrayLength, 16), dtype = numpy.uint8)          
         elems = map(self.converter , elems);
