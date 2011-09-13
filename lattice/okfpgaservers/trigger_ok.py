@@ -36,10 +36,10 @@ class TriggerFPGA(LabradServer):
     def initServer(self):
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
-        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , isnegatedlogic, isTrueAtStart'
+        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , logicnotnegated, isTrueAtStart'
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'866':(0x01,True, True), 'BluePI':(0x02,True, False)}
+                     'Switches':{'866':(0x01,True, True), 'BluePI':(0x02,True, False), '397LocalHeating':(0x04,True,False)}
                      }
         self.initializeChannels()
         
