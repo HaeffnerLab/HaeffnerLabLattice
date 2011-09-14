@@ -1,157 +1,116 @@
-'''
-Created on Apr 27, 2011
-@author: Michael Ramm, Christopher Reilly Haeffner Lab
-'''
-from twisted.internet.defer import returnValue, inlineCallbacks, Deferred
+#Created on Aug 11, 2011
+#Last Modified on Sep 14, 2011
+#@author: Michael Ramm
+
+"""
+### BEGIN NODE INFO
+[info]
+name = dataProcessor
+version = 1.0
+description = 
+instancename = dataProcessor
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
+from twisted.internet.defer import returnValue
 from labrad.server import LabradServer, setting
-from labrad.errors import Error
 from twisted.internet.threads import deferToThread
-from twisted.internet import reactor
-import numpy as np
-from processingFunctions import processingFunctions
-from datetime import datetime
+#from timeResolvedFullFFT import timeResolvedFullFFT
+from timeResolvedBinning import timeResolvedBinning
 
 class dataProcessor( LabradServer ):
     """
-    Server for processing raw data from data vault and savings the results back to data vault.
+    Server for Processing Data
     """
     name = 'dataProcessor'
     def initServer(self):
-        try:
-            self.dv = self.client.data_vault
-        except Exception, e:####
-            print 'Need to start data vault'
-            self.dv = None
-        self.processingFunctions = processingFunctions()
-          
-    @setting(1, path = '*s', dataset = 's', process='s', followlive = 'b', arguments = '*(s,v)', returns = '**s' )
-    def processData(self, c, path, dataset, process, followlive = False, arguments = None):
+        self.setupProcessInfo()  
+    
+    def setupProcessInfo(self):
         """
-        Process the data by specifying the path and dataset name in datavault.
-        If followlive is selected, any new updates to the selected dataset will be processed on the flu
-        Arguements let user change the default processing settings
+        Sets up the information about all available tasks
         """
-        if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
-        readhandle = ContextHandle(self.client, 'data_vault')
-        writehandle = ContextHandle(self.client,'data_vault')
-        request = Request(path, dataset, process, readhandle, writehandle, followlive, arguments)
-        outputInfo = request.getOutputInfo()
-        reactor.callLater(0,request.startProcessing)
-        return outputInfo
+        self.processDict = {}
+        importedProcesses = [timeResolvedBinning]
+        for process in importedProcesses:
+            self.processDict[process.name] = process
         
-    @setting(2, returns = '*s')
-    def nameProcesses(self, c):
-        """Returns the list of available processes"""
-        return self.processingFunctions.availableProcesses()
+    @setting(0, 'Get Available Processes', returns = '*s')
+    def getAvailableProcesses(self, c):
+        """
+        Returns the list of names with processes available for running.
+        """
+        return self.processDict.keys()
     
-    @setting(3, process = 's', returns = '*(sv)')
-    def optionalInputs(self, c, process):
-        """Returns a list of tuples of available inputs with the default values for a given process"""
-        if process not in self.processingFunctions.availableProcesses(): raise Error('Process not available')
-        return self.processingFunctions.availableInputs(process)
-        
-    def serverConnected( self, ID, name ):
-        if name is 'Data Vault':
-            self.dv = self.client.data_vault
-            print 'Data Vault Connected'
-###   
-    def serverDisconnected( self, ID, name ):
-        if name is 'Data Vault':
-            self.dv = None
-            print 'Data Vault Disconnected'
-###
-    def stopServer( self ):
-        #close all current contexts with data vault
-        #stop processing all the deferred threads
-        pass
+    @setting(1, 'Get Inputs Required', processName = 's', returns = '*s')
+    def getRequiredInputs(self, c, processName):
+        """
+        Returns the list of inputs for the given process.
+        """
+        if processName not in self.processDict.keys(): raise Exception('Process Name Not Found')
+        return self.processDict[processName].inputsRequired
     
-class Request():
-    def __init__(self, inputpath, inputdataset, process, readhandle,writehandle, followlive, arguments):
-        self.readhandle = readhandle
-        self.writehandle = writehandle
-        self.inputpath = inputpath
-        self.inputdataset = inputdataset
-        self.process = process
-        self.followlive = followlive
-        self.arguments = arguments
-        self.outputfile =  inputdataset + ' ' + self.process + ' ' + str(datetime.now())
-        self.outputpath = inputpath + ['Processed Data']
-        self.pF = processingFunctions()
+    @setting(2, 'Get Inputs Optional', processName = 's', returns = '')
+    def getOptionalInputs(self, c, processName):
+        """
+        Returns the list of optional inputs for the given process in the form (name, value)
+        """
+        if processName not in self.processDict.keys(): raise Exception('Process Name Not Found')
+        return self.processDict[processName].inputsOptional
     
-    def getOutputInfo(self):
-        return [self.outputpath,[self.outputfile]]
-    
-    def listener(self,msgCtx, data):
-        self.newData() 
-        
-    @inlineCallbacks    
-    def startProcessing(self):
-        #self.cumulRawData = np.array()
-        #self.cumulProcData = np.array()
-        try:
-            yield self.readhandle.call('cd',self.inputpath)
-            yield self.readhandle.call('open',self.inputdataset)
-            yield self.writehandle.call('cd',*(self.outputpath,True))
-        except:
-            raise Error('Dataset not found in provided directory') #find a way to get this out to the user
-        #start a timer 24 hours
-        #connect endprocessing
-        if self.followlive:
-            yield self.processRepeatedly()
+    @setting(3, 'Set Inputs', processName = 's',inputs = ['*(sv)','*(ss)'], returns = '')
+    def setInputs(self, c, processName, inputs):
+        """
+        For the current context, sets the inputs for processName for future executions.
+        """
+        c['inputs'] = {processName : inputs }
+               
+    @setting(4, 'New Process', processName = 's', returns = '')
+    def newProcess(self, c, processName):
+        """
+        Sets up the execution of the specified process. All inputs must be set prior.
+        """
+        if processName not in self.processDict.keys(): raise Exception('Process Name Not Found')
+        if processName not in c['inputs'].keys():
+            inputs = None
         else:
-            yield self.processOnce()
-            
-    @inlineCallbacks
-    def processOnce(self):
-        data = yield self.readhandle.call('get')
-        if np.size(data):
-            print 'processing ' + self.inputdataset
-            yield self.processNewData(data)
-            print 'done processing'
-        else:
-            print 'no data in '+ self.inputdataset
+            inputs = c['inputs'][processName]
+        process = self.processDict[processName]
+        instance = process(inputs)
+        c['processInstances'][processName] = instance
         
-    @inlineCallbacks
-    def processRepeatedly(self):
-        data = yield self.readhandle.call('get')
-        if np.size(data):
-            yield self.processNewData(data)
-            reactor.callLater(0, self.processRepeatedly)
-        else:
-            print 'no new data'
-            reactor.callLater(10, self.processRepeatedly)
-            
-    @inlineCallbacks
-    def processNewData(self, newdata):
-        yield deferToThread(self.pF.process, *(self.process, newdata, self.arguments))
-        if self.pF.newResultReady:
-            resultParams = self.pF.getResultParams()
-            output = self.pF.returnResult()
-            #delete previous dataset here
-            print self.outputfile
-            a = yield self.writehandle.call('new',self.outputfile, resultParams[0],resultParams[1])#make more general
-            print a
-            yield self.writehandle.call('add',output)
-        
-class ContextHandle( object ):
-    def __init__( self, cxn, server ):
-        self.cxn = cxn
-        self.context = self.cxn.context()
-        self.server = server  
-
-    @inlineCallbacks
-    def call( self, setting, *args, **kwargs ):
-        kwargs['context'] = self.context
-        result = yield self.cxn.servers[self.server].settings[setting]( *args, **kwargs )
+    @setting(5, 'Process New Data', processName = 's', newdata = '?', returns = '')
+    def processNewData(self, c, processName, newdata):
+        """
+        Starts execution the specified process.  to execution to
+        set any required inputs for the process.
+        """
+        if processName not in c['processInstances'].keys(): raise Exception('Process does not exist')
+        instance =  c['processInstances'][processName]
+        yield deferToThread(instance.processNewData, newdata)
+    
+    @setting(6, 'Get Result', processName = 's', returns = '?')
+    def getResult(self, c, processName):
+        if processName not in c['processInstances'].keys(): raise Exception('Process does not exist')
+        instance =  c['processInstances'][processName]
+        result = yield deferToThread(instance.getResult)
         returnValue( result )
+        
+    #@setting closeProcess (if necessary)
+    #expireContext (if necessary)
     
-    def addListener( self, listener, ID ):
-        self.cxn._addListener( listener = listener, source = None, ID = ID, context = self.context )
-
-    def removeListener( self, listener, ID ):
-        self.cxn._removeListener( listener = (listener,(),{}), source = None, ID = ID, context = self.context )
-
-
+    def initContext(self, c):
+        c['inputs'] = {}
+        c['processInstances'] = {}
+            
 if __name__ == "__main__":
     from labrad import util
     util.runServer( dataProcessor() )
