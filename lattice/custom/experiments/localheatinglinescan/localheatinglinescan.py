@@ -71,7 +71,7 @@ def scan():
             print 'now saving {}'.format(saveName)
             numpy.savez(saveName,measuredData, infoarray)
             print 'now waiting to complete recooling'
-            #print time.sleep(0.100)
+            print time.sleep(0.100)
             
 print 'initializing parameters'
 initialize()
