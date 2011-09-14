@@ -13,7 +13,7 @@ pboxSequence = 'LocalHeatingLineScan.py'
 backgroundMeasureTime = 25.*10**3 #microseconds
 localHeatingTime = 50.*10**3#microseconds
 recoolingTime = 50.*10**3 #microseconds
-iterationsPerFreq = 10#### #how many traces to take at each frequency
+iterationsPerFreq = 100#### #how many traces to take at each frequency
 recordTime =  (backgroundMeasureTime + localHeatingTime + recoolingTime) / 10**6 #in seconds
 #data processing on the fly
 binTime = 100*10**-6
