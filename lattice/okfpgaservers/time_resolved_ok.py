@@ -163,6 +163,10 @@ class TimeResolvedFPGA(LabradServer):
         Returns Optimal Time Lengths that will be easy to process for FFT
         """
         return self.getOptimalTiming()
+    
+    @setting(4, 'Get Resolution', returns = 'v')
+    def getResolution(self,c ):
+        return timeResolution
   
 if __name__ == "__main__":
     from labrad import util

@@ -16,7 +16,7 @@ nodeDict = {'node_lattice_pc':
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_lab_197':
-				['Paul Box']
+				['Paul Box','dataProcessor']
 			}
 
 for node in nodeDict.keys():

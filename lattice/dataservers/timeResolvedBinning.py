@@ -30,7 +30,7 @@ class timeResolvedBinning(dataProcess):
         for byteNumber,bytePosition in enumerate(nonZeroPositions):
             byte = correspondingElements[byteNumber]
             for bitposition in byte.nonzero()[0]:
-                arrivalTime = (bytePosition * 8 + bitposition)*self.resolution
+                arrivalTime = (bytePosition * 16 + bitposition)*self.resolution
                 binNumber = np.floor(arrivalTime / self.bintime)
                 print self.result.shape
                 print binNumber
@@ -39,9 +39,9 @@ class timeResolvedBinning(dataProcess):
     def getResult(self):
         return self.result
 
-    #goes from 255 to numpy.array([1,1,1,1,1,1,1,1])
     @staticmethod
+    #goes from 255 to [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
     def converter(x):
-        st = bin(x)[2:].zfill(8)
-        l = [int(s) for s in st]
-        return np.array(l)
+        str = bin(x)[2:].zfill(16)
+        l = [int(s) for s in str]
+        return l
