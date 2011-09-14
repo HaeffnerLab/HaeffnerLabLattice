@@ -44,4 +44,4 @@ class timeResolvedBinning(dataProcess):
     def converter(x):
         str = bin(x)[2:].zfill(16)
         l = [int(s) for s in str]
-        return numpy.array(l)
+        return np.array(l)
