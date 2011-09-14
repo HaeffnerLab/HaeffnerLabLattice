@@ -87,8 +87,7 @@ def scan():
         print 'getting result and adding to data vault'
         binned = dp.get_result('timeResolvedBinning').asarray
         dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
-        print binned.shape
-        #dv.add(binned)
+        dv.add(binned)
         
 print 'initializing parameters'
 initialize()
