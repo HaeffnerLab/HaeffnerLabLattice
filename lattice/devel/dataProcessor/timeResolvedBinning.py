@@ -19,39 +19,29 @@ class timeResolvedBinning(dataProcess):
         self.result[:,0] = np.arange(self.binNumber) * self.bintime
 
     def processNewData(self, newdata):
-        nonZeroPositions = newdata[0]
-        correspondingElements = newdata[1]
+        newdata = newdata.asarray
+        nonZeroPositions = newdata[:,0]
+        correspondingElements = newdata[:,1]
+        print nonZeroPositions
+        print correspondingElements
         #expanding compressed data to bit representation
-        elements = map(converter , elems)
+        correspondingElements = map(self.converter , correspondingElements)
         #for every bit, calculate the time of photon arrival and add to appropriate bin
         for byteNumber,bytePosition in enumerate(nonZeroPositions):
             byte = correspondingElements[byteNumber]
-            for bitposition in byte.nonzeros()[0]:
+            for bitposition in byte.nonzero()[0]:
                 arrivalTime = (bytePosition * 8 + bitposition)*self.resolution
+                binNumber = np.floor(arrivalTime / self.bintime)
+                print self.result.shape
+                print binNumber
+                self.result[binNumber,1] += 1
                 
     def getResult(self):
         return self.result
 
-  
-    #goes from 255 to [1,1,1,1,1,1,1,1]
+    #goes from 255 to numpy.array([1,1,1,1,1,1,1,1])
+    @staticmethod
     def converter(x):
         st = bin(x)[2:].zfill(8)
         l = [int(s) for s in st]
-        return l
-
-        result[positions] = elems
-        result = result.flatten()
-        fft = numpy.fft.rfft(result) #returns nice form, faster than fft for real inputs
-        timestep = 5*10**-9 #nanoseconds, ADD this to server
-        freqs = numpy.fft.fftfreq(result.size, d = timestep)
-        freqs = numpy.abs(freqs[0:result.size/2 + 1])
-        ampl = numpy.abs(fft)
-        print 'done'
-        #pyplot.plot(freqs, ampl)
-        #pyplot.show()
-
-#    @inlineCallbacks
-#    def yieldsomething(self):
-#        servers = yield self.cxn.manager.servers()
-#        print servers
-#        
+        return np.array(l)

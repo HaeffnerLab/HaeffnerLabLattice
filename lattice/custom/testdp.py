@@ -1,8 +1,10 @@
 import labrad
+import numpy
 cxn = labrad.connect()
 dp = cxn.dataprocessor
 print dp.get_available_processes()
-dp.set_inputs('timeResolvedBinning',[('timelength',0.100),('resolution',5*10**-9),('bintime',100*10**-6)])
+dp.set_inputs('timeResolvedBinning',[('timelength',1000),('resolution',5),('bintime',100)])
 dp.new_process('timeResolvedBinning')
-print dp.get_result('timeResolvedBinning').asarray.shape
-print dp.get_result('timeResolvedBinning').asarray[0:5]
+fakedata = numpy.array([[0,255],[2,255]])
+dp.process_new_data('timeResolvedBinning',fakedata)
+print dp.get_result('timeResolvedBinning').asarray
