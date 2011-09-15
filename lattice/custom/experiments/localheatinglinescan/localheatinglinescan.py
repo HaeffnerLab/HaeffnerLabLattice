@@ -16,7 +16,7 @@ recoolingTime = 50.*10**3 #microseconds
 iterationsPerFreq = 100#### #how many traces to take at each frequency
 recordTime =  (backgroundMeasureTime + localHeatingTime + recoolingTime) / 10**6 #in seconds
 #data processing on the fly
-binTime = 100*10**-6
+binTime = 500*10**-6
 #connect
 cxn = labrad.connect()
 #define servers we'll be using
@@ -40,6 +40,10 @@ print 'Recording {} traces at each frequency'.format(iterationsPerFreq)
 print '############################################'
 
 def initialize():
+    #get calibration
+    dv.cd(['','Calibrations'],True)
+    dv.open(62)
+    calibration = dv.get().asarray
     #set recording time length for time resolved counts
     trfpga.set_time_length(recordTime)
     #program paul box script
@@ -60,12 +64,18 @@ def initialize():
     resolution = trfpga.get_resolution()
     dp.set_inputs('timeResolvedBinning',[('timelength',recordTime),('resolution',resolution),('bintime',binTime)])
     #where to save into datavault
-    dv.cd(['Experiments', 'localheatinglinescan',dirappend], True )
+    dv.cd(['','Experiments', 'localheatinglinescan',dirappend], True )
+    return calibration####
     
-def scan():
+def scan(calibration):####
     for freq in FreqScanList:
+   # for point in calibration:
+        #freq = point[0]
+        #power = point[1]
         print 'setting frequency {}'.format(freq)
         sigGen.frequency(freq)
+        #print 'setting power {}'.format(power)
+        #sigGen.amplitude(power)####
         dp.new_process('timeResolvedBinning')
         for iteration in range(iterationsPerFreq):
             print 'recording trace {0} out of {1}'.format(iteration, iterationsPerFreq)
@@ -90,9 +100,9 @@ def scan():
         dv.add(binned)
         
 print 'initializing parameters'
-initialize()
+calibration = initialize()
 print 'scanning'
-scan()
+scan(calibration)
 print 'DONE'
 
 
