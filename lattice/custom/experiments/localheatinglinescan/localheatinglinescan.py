@@ -6,7 +6,7 @@ import os
 ##Frequency Scan of Local Heating Beam
 MIN_FREQ = 190.0 #MHZ
 MAX_FREQ = 250.0 #MHZ
-STEP_FREQ = 10#MHZ
+STEP_FREQ = 30#MHZ
 FreqScanList = numpy.arange(MIN_FREQ,MAX_FREQ + STEP_FREQ, STEP_FREQ)
 ##Timing for Paul's Box Sequence, all in microseconds
 pboxSequence = 'LocalHeatingLineScan.py' 

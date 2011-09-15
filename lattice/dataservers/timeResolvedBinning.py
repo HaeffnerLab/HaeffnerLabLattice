@@ -14,7 +14,7 @@ class timeResolvedBinning(dataProcess):
         self.bintime = self.inputDict['bintime']
         self.timelength = self.inputDict['timelength']
         self.resolution = self.inputDict['resolution']
-        self.binNumber = np.floor(self.timelength/self.bintime) #number of bins
+        self.binNumber = np.ceil(self.timelength/self.bintime) #number of bins
         self.result = np.zeros([self.binNumber,2])
         self.result[:,0] = np.arange(self.binNumber) * self.bintime
 
