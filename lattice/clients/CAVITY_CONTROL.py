@@ -27,7 +27,7 @@ class cavityWidget(QtGui.QWidget):
         super(cavityWidget, self).__init__(parent)
         self.reactor = reactor
         self.createDict()
-        self.connect() 
+        self.connect()
     
     def createDict(self):
         self.d = {}
@@ -64,6 +64,9 @@ class cavityWidget(QtGui.QWidget):
     def followSignal(self, x, (chanName,voltage)):
         widget = self.d[chanName].widget
         widget.setValueNoSignal(voltage)
+    
+    def sizeHint(self):
+        return QtCore.QSize(800,500)
     
     @inlineCallbacks
     def initializeGUI(self):

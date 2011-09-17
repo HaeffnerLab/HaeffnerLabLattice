@@ -4,19 +4,19 @@ import time
 import os
 #global parameters
 ##Frequency Scan of Local Heating Beam
-MIN_FREQ = 190.0 #MHZ
+MIN_FREQ = 190.0 #MHZ####
 MAX_FREQ = 250.0 #MHZ
-STEP_FREQ = 30#MHZ
+STEP_FREQ = 15#MHZ
 FreqScanList = numpy.arange(MIN_FREQ,MAX_FREQ + STEP_FREQ, STEP_FREQ)
 ##Timing for Paul's Box Sequence, all in microseconds
 pboxSequence = 'LocalHeatingLineScan.py' 
-backgroundMeasureTime = 25.*10**3 #microseconds
+backgroundMeasureTime = 20.*10**3 #microseconds
 localHeatingTime = 50.*10**3#microseconds
 recoolingTime = 50.*10**3 #microseconds
 iterationsPerFreq = 100#### #how many traces to take at each frequency
 recordTime =  (backgroundMeasureTime + localHeatingTime + recoolingTime) / 10**6 #in seconds
 #data processing on the fly
-binTime = 500*10**-6
+binTime =50*10**-6
 #connect
 cxn = labrad.connect()
 #define servers we'll be using
@@ -68,10 +68,10 @@ def initialize():
     return calibration####
     
 def scan(calibration):####
-    for freq in FreqScanList:
-   # for point in calibration:
-        #freq = point[0]
-        #power = point[1]
+   #for freq in FreqScanList:
+    for point in calibration[1:40:7]:
+        freq = point[0]
+        power = point[1]
         print 'setting frequency {}'.format(freq)
         sigGen.frequency(freq)
         #print 'setting power {}'.format(power)
