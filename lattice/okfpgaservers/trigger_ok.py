@@ -36,10 +36,11 @@ class TriggerFPGA(LabradServer):
     def initServer(self):
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
-        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , logicnotnegated, isTrueAtStart'
+        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , logicnotnegated, state'
+        #the state written below represents the initial state of the server
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'866':(0x01,True, True), 'BluePI':(0x02,True, False), '397LocalHeating':(0x04,True,False)}
+                     'Switches':{'866':[0x01,True, True], 'BluePI':[0x02,True, False], '397LocalHeating':[0x04,True,False]}
                      }
         self.initializeChannels()
         
@@ -134,8 +135,19 @@ class TriggerFPGA(LabradServer):
         channel = self.dict['Switches'][channelName][0]
         yield deferToThread(self._switch, channel, state)
         yield self.inCommunication.release()
-        
-    @setting(4, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
+        self.dict['Switches'][channelName][2] = state
+    
+    @setting(4, 'Get State', channelName = 's', returns = 'b')
+    def getState(self, c, channelName):
+        """
+        Returns the current state of the switch
+        """
+        if channelName not in self.dict['Switches'].keys(): raise Exception("Incorrect Channel")
+        state = self.dict['Switches'][channelName][2]
+        if not self.dict['Switches'][channelName][1]: state = not state #allows for easy reversal of high/low
+        return state
+    
+    @setting(5, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
     def setCollectTime(self, c, timeout = 10):
         """
         Returns true if Paul Box sequence has completed within a timeout period
