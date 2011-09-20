@@ -280,7 +280,7 @@ class DCBoxServer( SerialDeviceServer ):
         """
         dev = 'dcoffsetonrf'
         self.validateDevChannel( dev, devChannel = 1 )
-        value = self.dcDict[dev]['devChannels'][1]['value']
+        value = self.dcDict[dev]['devChannels'][1]['value'] + 0.0251
         if value is not None: return value
         else: raise DCBoxError( 4 )
 

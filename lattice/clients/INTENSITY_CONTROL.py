@@ -1,63 +1,71 @@
-import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-import labrad
-import os
-from labrad.types import Error
+from PyQt4 import QtGui, QtCore
 from qtui.QCustomSliderSpin import QCustomSliderSpin
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
-class INTENSITY_CONTROL(QtGui.QWidget):
-    def __init__(self, cxn ,parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        #get initial information from servers
-        self.server = cxn.dc_box
-        self.registry = cxn.registry
-        [Min397Intensity,Max397Intensity] = self.getRangefromReg()
-        self.widg397 = QCustomSliderSpin('397 Intensity','mV',(Min397Intensity,Max397Intensity),(0,2500))
-        self.widg397.spin.setValue(self.server.getIntensity397())
-        #lay out the widget
-        layout = QtGui.QVBoxLayout()
-        self.setLayout(layout)
-        layout.addWidget(self.widg397)
+class INTENSITY_CONTROL(QCustomSliderSpin):
+    def __init__(self, reactor ,parent=None):
+        super(INTENSITY_CONTROL, self).__init__('397 Intensity','mV',(0,2500),(0,2500),parent)
+        self.reactor = reactor
+        self.connect()
+    
+    @inlineCallbacks
+    def connect(self):
+        from labrad.wrappers import connectAsync
+        from labrad.types import Error
+        self.cxn = yield connectAsync()
+        self.server = yield self.cxn.dc_box
+        self.registry = yield self.cxn.registry
+        [Min397Intensity,Max397Intensity] = yield self.getRangefromReg()
+        self.minrange.setValue(Min397Intensity)
+        self.maxrange.setValue(Max397Intensity)
+        intensity = yield self.server.getintensity397()
+        self.spin.setValue(intensity)
         #connect functions
-        self.widg397.spin.valueChanged.connect(self.on397Update)
-        self.widg397.minrange.valueChanged.connect(self.saveNewRange)
-        self.widg397.maxrange.valueChanged.connect(self.saveNewRange)
+        self.spin.valueChanged.connect(self.on397Update)
+        self.minrange.valueChanged.connect(self.saveNewRange)
+        self.maxrange.valueChanged.connect(self.saveNewRange)
         #start timer
         self.updated397 = False;
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.sendToServer)
         self.timer.start(UpdateTime)
     
-    def saveNewRange(self):
-        [min397,max397] = [self.widg397.minrange.value(), self.widg397.maxrange.value()]
-        self.registry.cd(['','Clients','Intensity Control'],True)
-        self.registry.set('range397', [min397,max397])
+    @inlineCallbacks
+    def saveNewRange(self, val):
+        [min397,max397] = [self.minrange.value(), self.maxrange.value()]
+        yield self.registry.cd(['','Clients','Intensity Control'],True)
+        yield self.registry.set('range397', [min397,max397])
          
     def on397Update(self):
         self.updated397 = True
     
+    @inlineCallbacks
     def getRangefromReg(self):
-        self.registry.cd(['','Clients','Intensity Control'],True)
+        yield self.registry.cd(['','Clients','Intensity Control'],True)
         try:
-            [min397,max397] = self.registry.get('range397')
+            [min397,max397] = yield self.registry.get('range397')
         except Error, e:
             if e.code is 21:
                 [min397,max397] = [0,2500] #default min and max levels
-        return [min397,max397]
+        returnValue( [min397,max397] )
 	
 	#if inputs are updated by user, send the values to server
+    @inlineCallbacks
     def sendToServer(self):
         if(self.updated397):
-            print 'INTENSITY_CONTROL sending data'
-            self.server.setIntensity397(self.widg397.spin.value())
+            yield self.server.setintensity397(self.spin.value())
             self.updated397 = False
+        
+    def closeEvent(self, x):
+        self.reactor.stop()
 
 if __name__=="__main__":
-    cxn = labrad.connect()
-    app = QtGui.QApplication(sys.argv)
-    icon = INTENSITY_CONTROL(cxn)
-    icon.show()
-    app.exec_()
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    INTENSITY_CONTROL = INTENSITY_CONTROL(reactor)
+    INTENSITY_CONTROL.show()
+    reactor.run()

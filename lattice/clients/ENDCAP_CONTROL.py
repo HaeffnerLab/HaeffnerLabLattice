@@ -1,24 +1,30 @@
-import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-import labrad
+from PyQt4 import QtGui, QtCore
 from qtui.QCustomLevelTilt import QCustomLevelTilt
+from twisted.internet.defer import inlineCallbacks
 
 MinLevel = 0
 MaxLevel = 40
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class ENDCAP_CONTROL(QCustomLevelTilt):
-    def __init__(self, server, parent=None):
-        QCustomLevelTilt.__init__(self,'DC Endcaps',['d1','d2'],(MinLevel,MaxLevel), parent)
-        self.server = server
-    	#connect functions
-        self.onNewValues.connect(self.inputHasUpdated)
+    def __init__(self, reactor, parent=None):
+        self.reactor = reactor
+        super(ENDCAP_CONTROL, self).__init__('DC Endcaps',['d1','d2'],(MinLevel,MaxLevel), parent)
+        self.connect()
+    
+    @inlineCallbacks
+    def connect(self):
+        from labrad.wrappers import connectAsync
+        from labrad.types import Error
+        self.cxn = yield connectAsync()
+        self.server = yield self.cxn.dc_box
         #set initial values
-        one = server.getEndCap(1)
-        two = server.getEndCap(2)
+        one = yield self.server.getendcap(1)
+        two = yield self.server.getendcap(2)
         self.valueLeft.setValue(one)
         self.valueRight.setValue(two)
+        #connect functions
+        self.onNewValues.connect(self.inputHasUpdated)
         ##start timer
         self.inputUpdated = False;
         self.timer = QtCore.QTimer(self)
@@ -28,22 +34,24 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
     def inputHasUpdated(self):
         self.inputUpdated = True
 	            
-    #if inputs are updated by user, send the LCD values to server
+    @inlineCallbacks
     def sendToServer(self):
     	if(self.inputUpdated):
-    	      print 'ENDCAP_CONTROL sending data'
               one = self.valueLeft.value()
               two =  self.valueRight.value()
-    	      self.server.setendcap(1,one)
-              self.server.setendcap(2,two)
+    	      yield self.server.setendcap(1,one)
+              yield self.server.setendcap(2,two)
     	      self.inputUpdated = False;
     
-if __name__=='__main__':
-	cxn = labrad.connect()
-	server = cxn.dc_box
-	app = QtGui.QApplication(sys.argv)
-	icon = ENDCAP_CONTROL(server)
-	icon.show()
-	app.exec_()
-
+    def closeEvent(self, x):
+        self.reactor.stop()
+    
+if __name__=="__main__":
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    ENDCAP_CONTROL = ENDCAP_CONTROL(reactor)
+    ENDCAP_CONTROL.show()
+    reactor.run()
  

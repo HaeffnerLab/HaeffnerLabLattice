@@ -1,22 +1,29 @@
-import sys
+from PyQt4 import QtGui, QtCore, uic
+from twisted.internet.defer import inlineCallbacks
 import os
-from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-import labrad
 
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class DCONRF_CONTROL(QtGui.QWidget):
-    def __init__(self, server, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self, reactor, parent=None):
+        self.reactor = reactor
+        super(DCONRF_CONTROL, self).__init__(parent)
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
         path = os.path.join(basepath,'lattice/clients/qtui/dconrf.ui')
         uic.loadUi(path,self)
-        self.server = server
+        self.connect()
+   
+    @inlineCallbacks
+    def connect(self):
+        from labrad.wrappers import connectAsync
+        from labrad.types import Error
+        self.cxn = yield connectAsync()
+        self.server = yield self.cxn.dc_box
     	#connect functions
-        self.doubleSpinBox.setValue( self.server.getdcoffsetrf() )
+        value = yield self.server.getdcoffsetrf()
+        self.doubleSpinBox.setValue(value)
         self.justUpdated = False
         self.doubleSpinBox.valueChanged.connect(self.onNewValue)
         #start timer
@@ -27,16 +34,21 @@ class DCONRF_CONTROL(QtGui.QWidget):
     def onNewValue(self):
         self.justUpdated = True
     
+    @inlineCallbacks
     def sendToServer(self):
         if(self.justUpdated):
-            self.server.setdcoffsetrf(self.doubleSpinBox.value())
-            print 'DCONRF_CONTROL sending data'
+            value = self.doubleSpinBox.value()
+            yield self.server.setdcoffsetrf(value)
             self.justUpdated = False
-            
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
+             
 if __name__=="__main__":
-    cxn = labrad.connect()
-    server = cxn.dc_box
-    app = QtGui.QApplication(sys.argv)
-    icon = DCONRF_CONTROL(server)
-    icon.show()
-    app.exec_()
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    DCONRF_CONTROL = DCONRF_CONTROL(reactor)
+    DCONRF_CONTROL.show()
+    reactor.run()

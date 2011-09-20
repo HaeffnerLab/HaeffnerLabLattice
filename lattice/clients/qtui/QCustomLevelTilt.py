@@ -19,13 +19,7 @@ class QCustomLevelTilt(QtGui.QWidget):
         self.labelRight.setText(channelNames[1])
         self.levelRange = levelRange
         #set ranges
-        maxDifference = abs(levelRange[1] - levelRange[0])
-        self.spinLevel.setRange(*levelRange)
-        self.sliderLevel.setRange(100.*levelRange[0],100.*levelRange[1])
-        self.spinTilt.setRange(-maxDifference,maxDifference)
-        self.sliderTilt.setRange(-100.*maxDifference,100.*maxDifference)
-        self.valueLeft.setRange(*levelRange)
-        self.valueRight.setRange(*levelRange)
+        self.setRange(levelRange)
         self.dict = {'level':0, 'tilt':0}
         #connect functions
         self.sliderLevel.valueChanged.connect(self.sliderLevelChanged)
@@ -35,6 +29,14 @@ class QCustomLevelTilt(QtGui.QWidget):
         self.valueLeft.valueChanged.connect(self.outputChanged)
         self.valueRight.valueChanged.connect(self.outputChanged)
 
+    def setRange(self, levelRange):
+        maxDifference = abs(levelRange[1] - levelRange[0])
+        self.spinLevel.setRange(*levelRange)
+        self.sliderLevel.setRange(100.*levelRange[0],100.*levelRange[1])
+        self.spinTilt.setRange(-maxDifference,maxDifference)
+        self.sliderTilt.setRange(-100.*maxDifference,100.*maxDifference)
+        self.valueLeft.setRange(*levelRange)
+        self.valueRight.setRange(*levelRange)
     def setValues(self, one, two):
         self.disconnectAll()
         one = self.checkBounds(one)
