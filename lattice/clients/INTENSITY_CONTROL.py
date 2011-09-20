@@ -7,6 +7,7 @@ UpdateTime = 100 #in ms, how often data is checked for communication with the se
 class INTENSITY_CONTROL(QCustomSliderSpin):
     def __init__(self, reactor ,parent=None):
         super(INTENSITY_CONTROL, self).__init__('397 Intensity','mV',(0,2500),(0,2500),parent)
+        #self.frame = QtGui.QFrame(self)
         self.reactor = reactor
         self.connect()
     

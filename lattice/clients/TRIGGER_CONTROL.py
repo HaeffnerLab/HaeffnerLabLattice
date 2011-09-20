@@ -3,9 +3,10 @@ from twisted.internet.defer import inlineCallbacks
 
 SIGNALID = 378902
 
-class triggerWidget(QtGui.QWidget):
+class triggerWidget(QtGui.QFrame):
     def __init__(self, reactor, parent=None):
         super(triggerWidget, self).__init__(parent)
+        self.setFrameStyle(0x0001 | 0x0030)
         self.reactor = reactor
         self.connect()
         
