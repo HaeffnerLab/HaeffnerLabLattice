@@ -7,7 +7,7 @@ import labrad
 import COMPENSATION_CONTROL
 import ENDCAP_CONTROL
 import CAVITY_CONTROL
-import SHUTTER_CONTROL
+#import SHUTTER_CONTROL
 import PAULBOX_CONTROL
 import TRAPDRIVE_CONTROL
 import AOMRED_CONTROL
@@ -46,7 +46,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def loadGui(self,name):
         if name == 'dc_box':
             self.verticalLayoutDC.addWidget(ENDCAP_CONTROL.ENDCAP_CONTROL(self.LabRADcxn.dc_box))
-            self.verticalLayoutFreq_2.addWidget(SHUTTER_CONTROL.SHUTTER_CONTROL(self.LabRADcxn.dc_box))
+            #self.verticalLayoutFreq_2.addWidget(SHUTTER_CONTROL.SHUTTER_CONTROL(self.LabRADcxn.dc_box))
             self.verticalLayoutFreq_2.addWidget(INTENSITY_CONTROL.INTENSITY_CONTROL(self.LabRADcxn))
         elif name == 'compensation_box':
             self.verticalLayoutDC.addWidget(COMPENSATION_CONTROL.COMPENSATION_CONTROL(self.LabRADcxn.compensation_box))
