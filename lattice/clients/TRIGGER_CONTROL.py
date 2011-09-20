@@ -1,6 +1,8 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
+SIGNALID = 378902
+
 class triggerWidget(QtGui.QWidget):
     def __init__(self, reactor, parent=None):
         super(triggerWidget, self).__init__(parent)
@@ -31,7 +33,7 @@ class triggerWidget(QtGui.QWidget):
             initstate = yield self.server.get_state(name)
             button.setChecked(initstate)
             self.setButtonText(button, name)
-            button.toggled.connect(self.buttonConnection(name, button))
+            button.clicked.connect(self.buttonConnection(name, button))
             layout.addWidget(button,0,1 + order)
         #do same for trigger channels
         layout.addWidget(QtGui.QLabel('Triggers'),1,0)
@@ -57,7 +59,13 @@ class triggerWidget(QtGui.QWidget):
     
     @inlineCallbacks
     def setupListeners(self):
-        yield None
+        yield self.server.signal__switch_toggled(SIGNALID)
+        yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
+    
+    def followSignal(self, x, (switchName, state)):
+        button = self.d['Switches'][switchName]
+        button.setChecked(state)
+        self.setButtonText(button, switchName)
       
     def setButtonText(self, button, prefix):
         if button.isChecked():
@@ -67,6 +75,9 @@ class triggerWidget(QtGui.QWidget):
     
     def closeEvent(self, x):
         self.reactor.stop()
+    
+    def sizeHint(self):
+        return QtCore.QSize(100,100)
             
 if __name__=="__main__":
     a = QtGui.QApplication( [] )

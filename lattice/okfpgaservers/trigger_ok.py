@@ -20,7 +20,7 @@ timeout = 20
 """
 
 import ok
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
 from twisted.internet.defer import DeferredLock, returnValue
 from twisted.internet.threads import deferToThread
@@ -30,8 +30,11 @@ import time
 okDeviceID = 'Trigger'
 devicePollingPeriod = 10
 
+SIGNALID = 611051
+
 class TriggerFPGA(LabradServer):
     name = 'Trigger'
+    onNewUpdate = Signal(SIGNALID, 'signal: switch toggled', '(sb)')
     
     def initServer(self):
         self.inCommunication = DeferredLock()
@@ -43,6 +46,7 @@ class TriggerFPGA(LabradServer):
                      'Switches':{'866':[0x01,True, True], 'BluePI':[0x02,True, False], '397LocalHeating':[0x04,True,False]}
                      }
         self.initializeChannels()
+        self.listeners = set()
         
     def connectOKBoard(self):
         self.xem = None
@@ -136,6 +140,8 @@ class TriggerFPGA(LabradServer):
         yield deferToThread(self._switch, channel, state)
         yield self.inCommunication.release()
         self.dict['Switches'][channelName][2] = state
+        if not self.dict['Switches'][channelName][1]: state = not state #(if needed) reverse again for notification
+        self.notifyOtherListeners(c, (channelName, state))
     
     @setting(4, 'Get State', channelName = 's', returns = 'b')
     def getState(self, c, channelName):
@@ -160,9 +166,21 @@ class TriggerFPGA(LabradServer):
             if done: returnValue(True)
             yield deferToThread(time.sleep, 0.050)
         returnValue(False)
+        
+    def notifyOtherListeners(self, context, message):
+        """
+        Notifies all listeners except the one in the given context
+        """
+        notified = self.listeners.copy()
+        notified.remove(context.ID)
+        self.onNewUpdate(message, notified)     
             
-            
-            
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+    
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
                            
 
 if __name__ == "__main__":
