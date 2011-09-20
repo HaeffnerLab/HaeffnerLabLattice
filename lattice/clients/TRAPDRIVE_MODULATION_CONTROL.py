@@ -1,23 +1,35 @@
-import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-import labrad
+from PyQt4 import QtGui, QtCore
 from qtui.QCustomFreqPower import QCustomFreqPower
+from twisted.internet.defer import inlineCallbacks
 
 MinPower = -36 #dbM
 MaxPower = 0
 MinFreq = 0 #Mhz
 MaxFreq = 20
-UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class TRAPDRIVE_MODULATION_CONTROL(QCustomFreqPower):
-    def __init__(self,server, parent=None):
-        QCustomFreqPower.__init__( self, 'Trap Drive Modulation', (MinFreq,MaxFreq), (MinPower,MaxPower), parent )
-        self.server = server
+    def __init__(self, reactor, parent=None):
+        self.reactor = reactor
+        super(TRAPDRIVE_MODULATION_CONTROL,self).__init__('Trap Drive Modulation', parent)
+        self.setFreqRange((MinFreq, MaxFreq))
+        self.setPowerRange((MinPower,MaxPower))
+        self.connect()
+    
+    @inlineCallbacks
+    def connect(self):
+        from labrad.wrappers import connectAsync
+        from labrad.types import Error
+        self.cxn = yield connectAsync()
+        self.server = yield self.cxn.agilent_server
+        try:
+            yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0957::0x0407::MY44051933')
+        except Error:
+            self.setEnabled(False)
+            return
         #set initial values
-        initpower = server.GetPower()
-        initfreq = float(server.GetFreq())
-        initstate = server.GetState()
+        initpower = yield self.server.amplitude()
+        initfreq = yield self.server.frequency()
+        initstate = yield self.server.output()
         #set properties
         self.spinFreq.setDecimals(5)
         self.spinFreq.setSingleStep(10**-4) #set step size to 100HZ
@@ -26,47 +38,30 @@ class TRAPDRIVE_MODULATION_CONTROL(QCustomFreqPower):
         self.buttonSwitch.setChecked(initstate)
         self.setText(initstate)
         #connect functions
-        self.spinPower.valueChanged.connect(self.powerChanged)
-        self.spinFreq.valueChanged.connect(self.freqChanged) 
-        self.buttonSwitch.toggled.connect(self.switchChanged)
-        #keeping track of what's been updated
-        self.powerUpdated = False;
-        self.freqUpdated = False;
-        self.switchUpdated = False;
-        #start timer
-        self.timer = QtCore.QTimer(self)
-        self.connect(self.timer,QtCore.SIGNAL("timeout()"),self.sendToServer)
-        self.timer.start(UpdateTime)
-        
-    def powerChanged(self):
-        self.powerUpdated = True;
-	
-    def freqChanged(self):
-        self.freqUpdated = True
-
-    def switchChanged(self):
-      self.switchUpdated = True
-            
+        self.spinPower.valueChanged.connect(self.onPowerChange)
+        self.spinFreq.valueChanged.connect(self.onFreqChange) 
+        self.buttonSwitch.toggled.connect(self.onOutputChange)   
     
-    #if inputs are updated by user, send updated values to server
-    def sendToServer(self):
-        if(self.powerUpdated):
-            print 'RF_GEN_CONTRL_GUI sending new power'
-            self.server.SetPower(self.spinPower.value())
-            self.powerUpdated = False
-        if(self.freqUpdated):
-            print 'RF_GEN_CONTRL_GUI sending new frequency'
-            self.server.SetFreq(self.spinFreq.value())
-            self.freqUpdated = False
-        if(self.switchUpdated):
-            print 'RF_GEN_CONTRL_GUI sending new button'
-            self.server.SetState(int(self.buttonSwitch.isChecked()))
-            self.switchUpdated = False
+    @inlineCallbacks
+    def onOutputChange(self, state):
+        yield self.server.output(state)
+        
+    @inlineCallbacks
+    def onFreqChange(self, freq):
+        yield self.server.frequency(freq)
 
-if __name__=='__main__':
-    cxn = labrad.connect()
-    server = cxn.lattice_pc_agilent_33220a_server
-    app = QtGui.QApplication(sys.argv)
-    icon = TRAPDRIVE_MODULATION_CONTROL(server)
-    icon.show()
-    app.exec_()
+    @inlineCallbacks
+    def onPowerChange(self, power):
+        yield self.server.amplitude(power)
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
+
+if __name__=="__main__":
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    TRAPDRIVE_MODULATION_CONTROL = TRAPDRIVE_MODULATION_CONTROL(reactor)
+    TRAPDRIVE_MODULATION_CONTROL.show()
+    reactor.run()

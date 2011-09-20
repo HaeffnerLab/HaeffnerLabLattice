@@ -7,17 +7,7 @@ YAXIS = 'Y Axis'
 COLUMN = 66666
 MAP = 55555
 
-def run():
-    import sys
-    from PyQt4 import QtGui
-    a = QtGui.QApplication( [] )
-    import qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
-    from mainwindow import MainWindow
-    mainWindow = MainWindow()
-    reactor.callWhenRunning( mainWindow.show )
-    sys.exit( reactor.run() )
+from PyQt4 import QtGui
 
 def formatPath( pathList ):
     return ' -> '.join( dir if dir else 'Root' for dir in pathList ) if pathList else 'None'
@@ -36,4 +26,11 @@ def getSympyFunc( exp, sympyVars ):
         return False
 
 if __name__ == '__main__':
-    run()
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    from mainwindow import MainWindow
+    MainWindow = MainWindow(reactor)
+    MainWindow.show()
+    reactor.run()

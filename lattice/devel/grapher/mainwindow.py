@@ -13,7 +13,8 @@ from labradclient import connect, signals as lrSigs
 
 class MainWindow( QtGui.QMainWindow ):
 
-    def __init__( self ):
+    def __init__( self, reactor ):
+        self.reactor = reactor
         super( MainWindow, self ).__init__()
         self.initGui()
         connect()
@@ -22,7 +23,8 @@ class MainWindow( QtGui.QMainWindow ):
 
         dvWidget = self.dvWidget = DataVaultWidget( self )
         self.setCentralWidget( dvWidget )
-
+        
+        #### menu bar doesn't seem to work
         connectMenu = menuBar.addMenu( '&Grapher' )
         connectAction = self.connectAction = connectMenu.addAction( '&Connect' )
         connectAction.triggered.connect( lambda _: connect() )
@@ -38,3 +40,6 @@ class MainWindow( QtGui.QMainWindow ):
         lrSigs.connected.connect( lambda: selectDVAction.setEnabled( True ) )
         lrSigs.failed.connect( lambda: selectDVAction.setEnabled( False ) )
         lrSigs.disconnected.connect( lambda: selectDVAction.setEnabled( False ) )
+    
+    def closeEvent(self, x):
+        self.reactor.stop()

@@ -30,11 +30,13 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
         from COMPENSATION_CONTROL import COMPENSATION_CONTROL as compensationWidget
         from DCONRF_CONTROL import DCONRF_CONTROL as dconrfWidget
+        from TRAPDRIVE_MODULATION_CONTROL import TRAPDRIVE_MODULATION_CONTROL as trapModWidget
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(endcapWidget(reactor),0,0,1,2)
         gridLayout.addWidget(compensationWidget(reactor),1,0,1,2)
         gridLayout.addWidget(trapDriveWidget(reactor),2,0)
         gridLayout.addWidget(dconrfWidget(reactor),2,1)
+        gridLayout.addWidget(trapModWidget(reactor),3,0)
         widget.setLayout(gridLayout)
         return widget
     
