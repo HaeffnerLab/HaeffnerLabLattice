@@ -58,7 +58,7 @@ class SerialServer(LabradServer):
     name = '%LABRADNODE% Serial Server'
 
     def initServer(self):
-        self.portrange,self.prefix,self.portstring = self.getPlatformInfo()
+        self.portrange,self.prefix,self.portstring,self.message = self.getPlatformInfo()
         self.SerialPorts = []
         print 'Searching for COM ports:'
         for a in self.portrange:
@@ -67,7 +67,7 @@ class SerialServer(LabradServer):
                 ser = Serial(self.prefix + self.portstring.format(a))
                 ser.close()
             except SerialException, e:
-                if e.message.find('cannot find') >= 0:
+                if e.message.find(self.message) >= 0:
                     COMexists = False
             if COMexists:
                 self.SerialPorts += [self.portstring.format(a)]
@@ -82,13 +82,15 @@ class SerialServer(LabradServer):
             portrange = range(1,20)
             prefix = '\\\\.\\'
             portstring = 'COM{}'
+            message = 'cannot find'
         elif sys.platform.startswith('linux'):
             portrange = range(0,20)
             prefix = '/dev/'
             portstring = 'ttyUSB{}'
+            message = 'could not open'
         elif sys.platform.startswith('darwin'):
             raise Exception("Not Implemented on Mac")
-        return portrange,prefix,portstring
+        return portrange,prefix,portstring,message
 
     def expireContext(self, c):
         if 'PortObject' in c:
