@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from qtui.QCustomLevelTilt import QCustomLevelTilt
 from twisted.internet.defer import inlineCallbacks
 
+SIGNALID = 45366
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class COMPENSATION_CONTROL(QCustomLevelTilt):
@@ -16,6 +17,7 @@ class COMPENSATION_CONTROL(QCustomLevelTilt):
         from labrad.types import Error
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.compensation_box
+        yield self.setupListeners()
         range1 = yield self.server.getrange(1)
         range2 = yield self.server.getrange(2)
         MinLevel = max(range1[0],range2[0])
@@ -36,6 +38,19 @@ class COMPENSATION_CONTROL(QCustomLevelTilt):
         
     def inputHasUpdated(self):
         self.inputUpdated = True
+    
+    @inlineCallbacks
+    def setupListeners(self):
+        yield self.server.signal__channel_has_been_updated(SIGNALID)
+        yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
+    
+    def followSignal(self, x, (channel,voltage)):
+        if channel == 1:
+            two = self.valueRight.value()
+            self.setValues(voltage,two)
+        elif channel == 2:
+            one = self.valueLeft.value()
+            self.setValues(one,voltage)
 	
     @inlineCallbacks
     def sendToServer(self):
@@ -57,5 +72,3 @@ if __name__=="__main__":
     COMPENSATION_CONTROL = COMPENSATION_CONTROL(reactor)
     COMPENSATION_CONTROL.show()
     reactor.run()
-
- 

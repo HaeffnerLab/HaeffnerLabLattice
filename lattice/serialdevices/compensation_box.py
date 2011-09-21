@@ -19,6 +19,7 @@ from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, Ser
 from labrad.types import Error
 from twisted.internet import reactor
 import binascii
+from labrad.server import Signal
 
 PREC_BITS = 16.
 DAC_MAX = 2500.
@@ -27,12 +28,15 @@ TIMEOUT = 1.0 #time to wait for response from dc box
 RESP_STRING = 'r' #expected response from dc box after write
 ERROR_TIME = 1.0 #time to wait if correct response not received
 
+SIGNALID = 94976
+
 class CompensationBox( SerialDeviceServer ):
     name = 'Compensation Box'
     regKey = 'COMPBOX'
     port = None
     serNode = 'lattice-pc'
     timeout = TIMEOUT
+    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(wv)')
 
     @inlineCallbacks
     def initServer( self ):
@@ -62,6 +66,7 @@ class CompensationBox( SerialDeviceServer ):
                 print 'Check set up and restart serial server'
             else: raise
         yield self.populateDict()
+        self.listeners = set()
         self.free = True
     
     def createDict( self ):
@@ -183,6 +188,7 @@ class CompensationBox( SerialDeviceServer ):
         self.validateChannel( channel )
         self.validateVoltage( channel, voltage )
         self.tryToSend( channel, voltage )
+        self.notifyOtherListeners(c, (channel,voltage))
 
     @setting( 1 , channel = 'w: which electrode (1 or 2)', returns = 'v: voltage' )
     def getComp( self, c, channel ):
@@ -201,6 +207,14 @@ class CompensationBox( SerialDeviceServer ):
         self.validateChannel( channel )
         range = self.d[channel]['range']
         return range
+    
+    def notifyOtherListeners(self, context, chanInfo):
+        """
+        Notifies all listeners except the one in the given context
+        """
+        notified = self.listeners.copy()
+        notified.remove(context.ID)
+        self.onNewUpdate(chanInfo, notified)
 
     def seqToVoltage(self, channel, seq):
         (m,b) = self.d[channel]['calibration']
@@ -225,6 +239,13 @@ class CompensationBox( SerialDeviceServer ):
         numstr = binascii.unhexlify( hexrepr ) #converts ffff to ascii characters                                                                                                    
         comstring = str( channel ) + ',' + numstr
         return comstring
+    
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+    
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
 
 if __name__ == "__main__":
     from labrad import util

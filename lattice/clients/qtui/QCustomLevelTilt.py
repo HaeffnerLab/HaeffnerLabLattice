@@ -37,6 +37,7 @@ class QCustomLevelTilt(QtGui.QWidget):
         self.sliderTilt.setRange(-100.*maxDifference,100.*maxDifference)
         self.valueLeft.setRange(*levelRange)
         self.valueRight.setRange(*levelRange)
+        
     def setValues(self, one, two):
         self.disconnectAll()
         one = self.checkBounds(one)
