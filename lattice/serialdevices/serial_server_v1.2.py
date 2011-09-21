@@ -43,6 +43,7 @@ from serial import Serial
 from serial.serialutil import SerialException
 
 from time import sleep
+import sys
 
 class NoPortSelectedError(Error):
     """Please open a port first."""
@@ -57,22 +58,37 @@ class SerialServer(LabradServer):
     name = '%LABRADNODE% Serial Server'
 
     def initServer(self):
+        self.portrange,self.prefix,self.portstring = self.getPlatformInfo()
         self.SerialPorts = []
         print 'Searching for COM ports:'
-        for a in range(1,20):
+        for a in self.portrange:
             COMexists = True
             try:
-                ser = Serial('\\\\.\\COM%d' % a)
+                ser = Serial(self.prefix + self.portstring.format(a))
                 ser.close()
             except SerialException, e:
                 if e.message.find('cannot find') >= 0:
                     COMexists = False
             if COMexists:
-                self.SerialPorts += ['COM%d' % a]
-                print '  COM%d' %a
+                self.SerialPorts += [self.portstring.format(a)]
+                print self.portstring.format(a)
         if not len(self.SerialPorts):
             print '  none'
-
+    
+    def getPlatformInfo(self):
+        """Figures out if running on Windows or Linux and returns platform
+        dependent information"""
+        if sys.platform.startswith('win'):
+            portrange = range(1,20)
+            prefix = '\\\\.\\'
+            portstring = 'COM{}'
+        elif sys.platform.startswith('linux'):
+            portrange = range(0,20)
+            prefix = '/dev/'
+            portstring = 'ttyUSB{}'
+        elif sys.platform.startswith('darwin'):
+            raise Exception("Not Implemented on Mac")
+        return portrange,prefix,portstring
 
     def expireContext(self, c):
         if 'PortObject' in c:
@@ -109,7 +125,7 @@ class SerialServer(LabradServer):
         if port == 0:
             for i in range(len(self.SerialPorts)):
                 try:
-                    c['PortObject'] = Serial('\\\\.\\'+self.SerialPorts[i], timeout=0)
+                    c['PortObject'] = Serial(self.prefix+self.SerialPorts[i], timeout=0)
                     break
                 except SerialException:
                     pass
@@ -117,13 +133,13 @@ class SerialServer(LabradServer):
                 raise NoPortsAvailableError()
         else:
             try:
-                c['PortObject'] = Serial('\\\\.\\'+port, timeout=0)
+                c['PortObject'] = Serial(port, timeout=0)
             except SerialException, e:
                 if e.message.find('cannot find') >= 0:
                     raise Error(code=1, msg=e.message)
                 else:
                     raise Error(code=2, msg=e.message)
-        return c['PortObject'].portstr.replace('\\\\.\\','')
+        return c['PortObject'].portstr.replace(self.prefix,'')
 
 
     @setting(11, 'Close', returns=[''])
