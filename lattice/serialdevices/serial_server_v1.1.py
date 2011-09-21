@@ -17,7 +17,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Serial Server
-version = 1.1
+version = 1.2
 description = 
 instancename = %LABRADNODE% Serial Server
 
@@ -144,7 +144,7 @@ class SerialServer(LabradServer):
         """Flushes the Output Buffer of the current serial port"""
         ser = self.getPort(c)
         ser.flushOutput()
-                
+        
     @setting(20, 'Baudrate',
                  data=[': List baudrates',
                        'w: Set baudrate (0: query current)'],

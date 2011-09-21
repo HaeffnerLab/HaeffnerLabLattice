@@ -17,7 +17,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Serial Server
-version = 1.1
+version = 1.2
 description = 
 instancename = %LABRADNODE% Serial Server
 
@@ -132,8 +132,19 @@ class SerialServer(LabradServer):
         if 'PortObject' in c:
             c['PortObject'].close()
             del c['PortObject']
-
-
+    
+    @setting(12, 'flushInput', returns=[''])
+    def flushinput(self,c):
+        """Flushes the Input Buffer of the current serial port"""
+        ser = self.getPort(c)
+        ser.flushInput()
+        
+    @setting(13, 'flushOutput', returns=[''])
+    def flushoutput(self,c):
+        """Flushes the Output Buffer of the current serial port"""
+        ser = self.getPort(c)
+        ser.flushOutput()
+        
     @setting(20, 'Baudrate',
                  data=[': List baudrates',
                        'w: Set baudrate (0: query current)'],
