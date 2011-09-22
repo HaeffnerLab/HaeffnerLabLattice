@@ -4,15 +4,19 @@ from twisted.internet.defer import inlineCallbacks
 
 SIGNALID = 21345
 
-class COMPENSATION_LINESCAN_CONTROL(QtGui.QWidget):
-    def __init__(self, reactor,parent=None):
-        self.reactor = reactor
-        super(COMPENSATION_LINESCAN_CONTROL,self).__init__(parent)
+class uiContainerWidget(QtGui.QWidget):
+    def __init__(self, parent=None):
+        super(uiContainerWidget,self).__init__(parent)
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
         path = os.path.join(basepath,'lattice/clients/qtui/compensationlinescan.ui')
         uic.loadUi(path,self)
+
+class COMPENSATION_LINESCAN_CONTROL(uiContainerWidget):
+    def __init__(self, reactor,parent=None):
+        super(COMPENSATION_LINESCAN_CONTROL,self).__init__(parent)
+        self.reactor = reactor
         self.connect()
         
     @inlineCallbacks
