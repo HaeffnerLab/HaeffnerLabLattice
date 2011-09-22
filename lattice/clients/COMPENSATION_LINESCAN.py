@@ -56,7 +56,6 @@ class COMPENSATION_LINESCAN_CONTROL(QtGui.QWidget):
     def closeEvent(self, x):
         self.reactor.stop()
     
-
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor
