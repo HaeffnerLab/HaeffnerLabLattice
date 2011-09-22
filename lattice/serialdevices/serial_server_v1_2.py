@@ -135,7 +135,7 @@ class SerialServer(LabradServer):
                 raise NoPortsAvailableError()
         else:
             try:
-                c['PortObject'] = Serial(port, timeout=0)
+                c['PortObject'] = Serial(self.prefix + port, timeout=0)
             except SerialException, e:
                 if e.message.find('cannot find') >= 0:
                     raise Error(code=1, msg=e.message)
