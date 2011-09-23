@@ -1,3 +1,21 @@
+"""
+### BEGIN NODE INFO
+[info]
+name = HP Server
+version = 1.0
+description = 
+instancename = %LABRADNODE% HP Server
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from labrad.types import Error
 from twisted.internet import reactor

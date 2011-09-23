@@ -1,3 +1,22 @@
+"""
+### BEGIN NODE INFO
+[info]
+name = DC Box
+version = 1.0
+description = 
+instancename = DC Box
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
+
 '''
 Created on Jan 26, 2011
 

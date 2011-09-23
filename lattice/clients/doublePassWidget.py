@@ -12,10 +12,15 @@ class doublePassWidget(QtGui.QWidget):
         
     @inlineCallbacks
     def connect(self):
+
         from labrad.wrappers import connectAsync
         from labrad.types import Error
-        self.cxn = yield connectAsync()
-        self.server = yield self.cxn.double_pass
+        try:
+            self.cxn = yield connectAsync()
+            self.server = yield self.cxn.double_pass
+        except:
+            self.setEnabled(False)
+            return
         yield self.loadDict()
         yield self.setupListeners()
         yield self.initializeGUI()

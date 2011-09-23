@@ -12,6 +12,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+### BEGIN NODE INFO
+[info]
+name = Data Vault
+version = 2.3
+description = 
+instancename = Data Vault
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
 from __future__ import with_statement
 
 from labrad import types as T, util

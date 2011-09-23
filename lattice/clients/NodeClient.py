@@ -12,14 +12,15 @@ except:
 
 nodeDict = {'node_lattice_pc':
 				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','NormalPMTCountFPGA',
-				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','Trigger','NormalPMTFlow'],
+				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','Trigger','NormalPMTFlow','Double Pass',
+				'Compensation LineScan'],
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_lab_197':
 				['Paul Box','dataProcessor','TimeResolvedFPGA']
 			}
 
-for node in nodeDict.keys():
+for node in ['node_lab_197','node_lab_49','node_lattice_pc']: #sets the order of opening
 	#make sure all node servers are up
 	if not node in cxn.servers: print node + ' is not running'
 	else:
