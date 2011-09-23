@@ -1,10 +1,9 @@
 import sys
 from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-from qtui.QCustomFreqPower import QCustomFreqPower
+from QCustomFreqPower import QCustomFreqPower
 
 MinPower = -145 #dbM
-MaxPower = -13.5
+MaxPower = 24
 MinFreq = 190 #Mhz
 MaxFreq = 250
 
@@ -28,11 +27,11 @@ class RF_CONTROL(QCustomFreqPower):
         self.setText(initstate)
 
     def powerChanged(self):
-         self.server.amplitude(self.spinPower.value())
-	
+        self.server.amplitude(self.spinPower.value())
+        
     def freqChanged(self):
         self.server.frequency(self.spinFreq.value())
-	
+    
     def switchChanged(self):
         self.server.output(self.buttonSwitch.isChecked())
         
@@ -40,8 +39,8 @@ if __name__=="__main__":
     import labrad
     cxn = labrad.connect()
     server = cxn.rohdeschwarz_server
-    server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541')
+    server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543')
     app = QtGui.QApplication(sys.argv)
-    icon = RF_CONTROL(server, name = 'Heating Double Pass')
+    icon = RF_CONTROL(server, name = 'Local Probe Double Pass')
     icon.show()
     app.exec_()
