@@ -1,6 +1,5 @@
 Servers:
     spectrum analyzer server, then calibrate VCO
-    separate double pass server with signals / one if daring then select
     datavault: better memory management of large datasets , accept int32 , arbitrary data
     TimeResolvedFlow:
     properly add the compressed data / new folder / many traces?
