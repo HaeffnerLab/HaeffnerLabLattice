@@ -43,7 +43,7 @@ class TriggerFPGA(LabradServer):
         #the state written below represents the initial state of the server
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'866':[0x01,True, True], 'BluePI':[0x02,True, False], '397LocalHeating':[0x04,True,False]}
+                     'Switches':{'866':[0x01,True, True], 'radial':[0x02,True, False], 'axial':[0x04,True,False]}
                      }
         self.initializeChannels()
         self.listeners = set()

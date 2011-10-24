@@ -79,9 +79,9 @@ class doublePass(object):
         yield self.frequencyCalibPower(self.freq)
         returnValue ((self.freq, self.ampl))
         
-class global397(doublePass):
+class radialDP(doublePass):
     def __init__(self, name, cxn, context):
-        super(global397,self).__init__(name)
+        super(radialDP,self).__init__(name)
         self.selectFuncs(cxn, context)
     
     @inlineCallbacks
@@ -89,7 +89,7 @@ class global397(doublePass):
         self.server = cxn.rohdeschwarz_server
         self.context = context
         yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542', context = self.context)
-        self.freqRange = (95,125) #MHZ
+        self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,24) #dBM
         yield self.populateInfo()
         
@@ -112,9 +112,9 @@ class global397(doublePass):
     def freqToCalibAmpl(self, freq):
         return self.ampl 
 
-class probeLocal(doublePass):
+class axialDP(doublePass):
     def __init__(self, name, cxn, context):
-        super(probeLocal,self).__init__(name)
+        super(axialDP,self).__init__(name)
         self.selectFuncs(cxn, context)
     
     @inlineCallbacks
@@ -125,67 +125,37 @@ class probeLocal(doublePass):
         self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,24) #dBM
         yield self.populateInfo()
-        self.freqToCalibAmpl = yield self.setupCalibration(cxn)
+        #self.freqToCalibAmpl = yield self.setupCalibration(cxn)
         
-    @inlineCallbacks
-    def freqFunc(self, freq = None):
-        freq = yield self.server.frequency(freq, context = self.context)
-        returnValue(freq) 
-    
-    @inlineCallbacks
-    def amplFunc(self, ampl = None):
-        ampl = yield self.server.amplitude(ampl, context = self.context)
-        returnValue(ampl)
-    
-    @inlineCallbacks
-    def outputFunc(self, outp= None):
-        outp = yield self.server.output(outp, context = self.context)
-        returnValue(outp)    
-    
-    @inlineCallbacks
-    def setupCalibration(self, cxn):
-        from scipy.interpolate import interp1d
-        dv = cxn.data_vault
-        yield dv.cd(['','Calibrations'],True)
-        yield dv.open(62)
-        calibration = yield dv.get()
-        calibration = calibration.asarray
-        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
-        returnValue(func)
-        
-
-class heatLocal(doublePass):
-    def __init__(self, name, cxn, context):
-        super(heatLocal,self).__init__(name)
-        self.selectFuncs(cxn, context)
-    
-    @inlineCallbacks
-    def selectFuncs(self, cxn, context):
-        self.server = cxn.rohdeschwarz_server
-        self.context = context
-        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541', context = self.context)
-        self.freqRange = (190,250) #MHZ
-        self.amplRange = (-145,-13.5) #dBM
-        yield self.populateInfo()
-        
-    @inlineCallbacks
-    def freqFunc(self, freq = None):
-        freq = yield self.server.frequency(freq, context = self.context)
-        returnValue(freq) 
-    
-    @inlineCallbacks
-    def amplFunc(self, ampl = None):
-        ampl = yield self.server.amplitude(ampl, context = self.context)
-        returnValue(ampl)
-    
-    @inlineCallbacks
-    def outputFunc(self, outp= None):
-        outp = yield self.server.output(outp, context = self.context)
-        returnValue(outp)    
-    
-    #no calibration, that is no amplitude dependence on frequency
     def freqToCalibAmpl(self, freq):
         return self.ampl 
+        
+        
+    @inlineCallbacks
+    def freqFunc(self, freq = None):
+        freq = yield self.server.frequency(freq, context = self.context)
+        returnValue(freq) 
+    
+    @inlineCallbacks
+    def amplFunc(self, ampl = None):
+        ampl = yield self.server.amplitude(ampl, context = self.context)
+        returnValue(ampl)
+    
+    @inlineCallbacks
+    def outputFunc(self, outp= None):
+        outp = yield self.server.output(outp, context = self.context)
+        returnValue(outp)    
+    
+#    @inlineCallbacks
+#    def setupCalibration(self, cxn):
+#        from scipy.interpolate import interp1d
+#        dv = cxn.data_vault
+#        yield dv.cd(['','Calibrations'],True)
+#        yield dv.open(62)
+#        calibration = yield dv.get()
+#        calibration = calibration.asarray
+#        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
+#        returnValue(func)
 
 class doublePassServer( LabradServer ):
     name = 'Double Pass'
@@ -196,9 +166,8 @@ class doublePassServer( LabradServer ):
         self.listeners = set()
         
     def createDict(self):
-        self.d = {'global397':global397('global397',self.client, self.client.context()),
-                  'probeLocal':probeLocal('probeLocal',self.client, self.client.context()),
-                  'heatLocal':heatLocal('heatLocal',self.client, self.client.context())
+        self.d = {'radial':radialDP('radial',self.client, self.client.context()),
+                  'axial':axialDP('axial',self.client, self.client.context()),
                   }
         
     @setting(0, "Get Double Pass List", returns = '*s')
