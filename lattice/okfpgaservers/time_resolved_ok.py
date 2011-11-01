@@ -101,6 +101,7 @@ class TimeResolvedFPGA(LabradServer):
         
     def _singleReading(self, buflength):
         buf = '\x00'*buflength
+        self.waiting = True
         self.xem.ReadFromBlockPipeOut(0xa0,1024,buf)
         self.inRequest = False
         self.singleReadingDeferred.callback(buf)
