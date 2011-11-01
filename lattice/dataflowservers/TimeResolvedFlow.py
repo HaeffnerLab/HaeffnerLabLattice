@@ -107,6 +107,7 @@ class TimeResolvedFlow( LabradServer):
             yield self.trigger.trigger('PaulBox')
             (arrayLength, timeLength, timeResolution), measuredData = yield self.t.get_result_of_measurement()
             measuredData = measuredData.asarray
+            print 'measured time length', timeLength
             #measuredData =  numpy.array(measuredData.asarray, dtype=numpy.float_)#dv requires numpy_float_
             if measuredData.size:#if got a nonzero result
                 name = yield deferToThread(self.saveResult, measuredData, arrayLength, timeLength,timeResolution )
