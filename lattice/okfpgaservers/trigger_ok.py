@@ -154,7 +154,7 @@ class TriggerFPGA(LabradServer):
         return state
     
     @setting(5, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
-    def setCollectTime(self, c, timeout = 10):
+    def waitForPBDone(self, c, timeout = 10):
         """
         Returns true if Paul Box sequence has completed within a timeout period
         """
