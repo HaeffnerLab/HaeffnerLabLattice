@@ -10,13 +10,13 @@ from scriptLibrary import dvParameters
 
 #Global parameters
 comment = 'now testing together'
-iterations = 10
+iterations = 200
 experimentName = 'EnergyTransportv1'
 rawSaveDir = 'rawdata'
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv1.py'
 equilibration_time = 10.*10**3
-radial_heating_time = 150.*10**3
+radial_heating_time = 450.*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3

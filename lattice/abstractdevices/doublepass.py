@@ -92,6 +92,7 @@ class radialDP(doublePass):
         self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,-13.5) #dBM
         yield self.populateInfo()
+        self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
     @inlineCallbacks
     def freqFunc(self, freq = None):
@@ -107,6 +108,18 @@ class radialDP(doublePass):
     def outputFunc(self, outp= None):
         outp = yield self.server.output(outp, context = self.context)
         returnValue(outp)    
+    
+    @inlineCallbacks
+    def setupCalibration(self, cxn, context):
+        from scipy.interpolate import interp1d
+        dv = cxn.data_vault
+        dir = yield dv.cd(context = context)
+        yield dv.cd(['','Calibrations'],True, context = context)
+        yield dv.open(165, context = context)
+        calibration = yield dv.get(context = context)
+        calibration = calibration.asarray
+        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
+        returnValue(func)
     
     #no calibration, that is no amplitude dependence on frequency
     def freqToCalibAmpl(self, freq):
@@ -125,12 +138,11 @@ class axialDP(doublePass):
         self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,5) #dBM
         yield self.populateInfo()
-        #self.freqToCalibAmpl = yield self.setupCalibration(cxn)
+        self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
-    def freqToCalibAmpl(self, freq):
-        return self.ampl 
-        
-        
+#    def freqToCalibAmpl(self, freq):
+#        return self.ampl 
+    
     @inlineCallbacks
     def freqFunc(self, freq = None):
         freq = yield self.server.frequency(freq, context = self.context)
@@ -146,16 +158,17 @@ class axialDP(doublePass):
         outp = yield self.server.output(outp, context = self.context)
         returnValue(outp)    
     
-#    @inlineCallbacks
-#    def setupCalibration(self, cxn):
-#        from scipy.interpolate import interp1d
-#        dv = cxn.data_vault
-#        yield dv.cd(['','Calibrations'],True)
-#        yield dv.open(62)
-#        calibration = yield dv.get()
-#        calibration = calibration.asarray
-#        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
-#        returnValue(func)
+    @inlineCallbacks
+    def setupCalibration(self, cxn, context):
+        from scipy.interpolate import interp1d
+        dv = cxn.data_vault
+        dir = yield dv.cd(context = context)
+        yield dv.cd(['','Calibrations'],True, context = context)
+        yield dv.open(156, context = context)
+        calibration = yield dv.get(context = context)
+        calibration = calibration.asarray
+        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
+        returnValue(func)
 
 class doublePassServer( LabradServer ):
     name = 'Double Pass'
@@ -166,8 +179,8 @@ class doublePassServer( LabradServer ):
         self.listeners = set()
         
     def createDict(self):
-        self.d = {'radial':radialDP('radial',self.client, self.client.context()),
-                  'axial':axialDP('axial',self.client, self.client.context()),
+        self.d = {'axial':axialDP('axial',self.client, self.client.context()),
+                  'radial':radialDP('radial',self.client, self.client.context()),
                   }
         
     @setting(0, "Get Double Pass List", returns = '*s')

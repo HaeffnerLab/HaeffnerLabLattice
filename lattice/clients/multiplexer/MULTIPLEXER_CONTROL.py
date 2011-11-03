@@ -62,10 +62,14 @@ class multiplexerWidget(QtGui.QWidget):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
+        from labrad.types import Error
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.multiplexer_server
-        yield self.initializeGUI()
-        yield self.setupListeners()
+        try:
+            self.server = yield self.cxn.multiplexer_server
+            yield self.initializeGUI()
+            yield self.setupListeners()
+        except:
+            self.setEnabled(False)
         
     @inlineCallbacks
     def initializeGUI(self):
