@@ -3,13 +3,14 @@ class dataProcess():
     inputsRequired = None
     inputsOptional = None
     
-    def __init__(self, inputs = None):        
+    def __init__(self, inputs = None):
         self.makeInputDict()
         self.setInputs(inputs)
         self.confirmHaveInputs()
         self.initialize()
             
     def makeInputDict(self):
+        print self.inputsOptional
         self.inputDict = dict(self.inputsOptional)
         for req in self.inputsRequired:
             self.inputDict[req] = None

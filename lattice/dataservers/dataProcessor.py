@@ -23,11 +23,11 @@ timeout = 20
 from twisted.internet.defer import returnValue
 from labrad.server import LabradServer, setting
 from twisted.internet.threads import deferToThread
-#from timeResolvedFullFFT import timeResolvedFullFFT
+from timeResolvedFFT import timeResolvedFFT
 from timeResolvedBinning import timeResolvedBinning
 
 class dataProcessor( LabradServer ):
-    """
+    """s
     Server for Processing Data
     """
     name = 'dataProcessor'
@@ -39,7 +39,7 @@ class dataProcessor( LabradServer ):
         Sets up the information about all available tasks
         """
         self.processDict = {}
-        importedProcesses = [timeResolvedBinning]
+        importedProcesses = [timeResolvedBinning, timeResolvedFFT]
         for process in importedProcesses:
             self.processDict[process.name] = process
         

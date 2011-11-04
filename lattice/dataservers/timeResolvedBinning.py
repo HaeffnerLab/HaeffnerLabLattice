@@ -8,7 +8,7 @@ class timeResolvedBinning(dataProcess):
     """
     name = 'timeResolvedBinning'
     inputsRequired = ['timelength','resolution']
-    inputsOptional = [('bintime',100*10**-6)]
+    inputsOptional = []
     
     def initialize(self):
         self.bintime = self.inputDict['bintime']
@@ -22,8 +22,6 @@ class timeResolvedBinning(dataProcess):
         newdata = newdata.asarray
         nonZeroPositions = newdata[:,0]
         correspondingElements = newdata[:,1]
-        print nonZeroPositions
-        print correspondingElements
         #expanding compressed data to bit representation
         correspondingElements = map(self.converter , correspondingElements)
         #for every bit, calculate the time of photon arrival and add to appropriate bin
@@ -32,8 +30,6 @@ class timeResolvedBinning(dataProcess):
             for bitposition in byte.nonzero()[0]:
                 arrivalTime = (bytePosition * 16 + bitposition)*self.resolution
                 binNumber = np.floor(arrivalTime / self.bintime)
-                print self.result.shape
-                print binNumber
                 self.result[binNumber,1] += 1
                 
     def getResult(self):
@@ -42,6 +38,6 @@ class timeResolvedBinning(dataProcess):
     @staticmethod
     #goes from 255 to [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
     def converter(x):
-        str = bin(x)[2:].zfill(16)
-        l = [int(s) for s in str]
+        expr = bin(x)[2:].zfill(16)
+        l = [int(s) for s in expr]
         return np.array(l)
