@@ -1,24 +1,24 @@
 from dataProcess import dataProcess
 import numpy as np
 
-import matplotlib
-matplotlib.use('qt4agg')
-from matplotlib import pyplot
-
-class timeResolvedFFT(dataProcess):
+class timeResolvedFFTselected(dataProcess):
     """
-    Performs FFT of time resolved data. Saves the result as a graph.
-    @inputs: timelength is the timelength of the original trace where points are recorded with a certain resolution
+    Finds the fourier amplitudes at selected frequencies
     """
-    name = 'timeResolvedFFT'
-    inputsRequired = ['uncompressedArrByteLength','resolution']
+    name = 'timeResolvedFFTselected'
+    inputsRequired = ['uncompressedArrByteLength','resolution','needFreqs']
     inputsOptional = []
     
     def initialize(self):
         self.uncompressedLength16 = self.inputDict['uncompressedArrByteLength']
         self.resolution = self.inputDict['resolution']
-        self.freqs = None
+        self.freqs = self.inputDict['needFreqs']
         self.ampl = None
+        
+        
+        
+        self.timelength = self.inputDict['timelength']
+        self.resolution = self.inputDict['resolution']
         
     def processNewData(self, newdata):
         newdata = newdata.asarray

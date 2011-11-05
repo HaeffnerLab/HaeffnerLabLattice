@@ -3,6 +3,7 @@ path = os.path.join(labradPath,'lattice/scripts')
 import sys; sys.path.append(path)
 import labrad; cxn = labrad.connect()
 from scriptLibrary import paulsbox 
+import time
 
 iterations = 1
 #program pulse sequence for triggering time resolved
@@ -12,6 +13,13 @@ pboxDict = {
             }
 paulsbox.program(cxn.paul_box, pboxDict)
 recordTime = 0.33554432 
+#0.02097152
+#0.04194304
+#0.04194304
+#0.33554432 
+#0.16777216
+#0.02097152 
+#0.33554432 
 #0.16777216 #in seconds
 #0.02097152
 
@@ -28,14 +36,19 @@ for iteration in range(iterations):
     print 'now trigger'
     trigger.trigger('PaulBox')
     print 'now get result'
+    t1 = time.time()
     (arrayLength, timeLength, timeResolution), measuredData = trfpga.get_result_of_measurement()
+    print 'measurement took', time.time() - t1
     measuredData = measuredData.asarray
     if not dpInputSet:
         dp.set_inputs('timeResolvedFFT',[('uncompressedArrByteLength',arrayLength),('resolution',timeResolution)])
         dp.new_process('timeResolvedFFT')
         dpInputSet = True
+    print 'adding data'
+    t1 = time.time()
     dp.process_new_data('timeResolvedFFT', measuredData)
+    print 'getting result'
     dp.get_result('timeResolvedFFT')
-    
+    print 'processing took', time.time() - t1
 
 
