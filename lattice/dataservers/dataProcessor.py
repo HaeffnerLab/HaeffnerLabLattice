@@ -25,6 +25,7 @@ from labrad.server import LabradServer, setting
 from twisted.internet.threads import deferToThread
 from timeResolvedFFT import timeResolvedFFT
 from timeResolvedBinning import timeResolvedBinning
+from timeResolvedFFTselected import timeResolvedFFTselected
 
 class dataProcessor( LabradServer ):
     """s
@@ -39,7 +40,7 @@ class dataProcessor( LabradServer ):
         Sets up the information about all available tasks
         """
         self.processDict = {}
-        importedProcesses = [timeResolvedBinning, timeResolvedFFT]
+        importedProcesses = [timeResolvedBinning, timeResolvedFFT, timeResolvedFFTselected]
         for process in importedProcesses:
             self.processDict[process.name] = process
         

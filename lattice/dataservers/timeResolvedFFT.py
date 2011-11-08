@@ -35,7 +35,7 @@ class timeResolvedFFT(dataProcess):
         print int(self.uncompressedLength16)
         freqs = np.fft.fftfreq(int(self.uncompressedLength16 * 16), d = float(self.resolution))
         self.freqs = np.abs(freqs[0:(self.uncompressedLength16 * 16 /2) + 1])
-        self.power = fft * np.conjugate(fft) / totalCounts
+        self.power = np.abs(fft)**2  / totalCounts
         del(fft)
     
     def getResult(self):
@@ -49,10 +49,10 @@ class timeResolvedFFT(dataProcess):
         print 'saving'
         pyplot.plot(self.freqs, self.power)
         #pyplot.xlim([0,10000])
-        pyplot.xlim([100000,400000])
-#        pyplot.xlim([14.99880*10**6,14.99894*10**6])
+        #pyplot.xlim([14.9*10**6,15.1*10**6])
+        pyplot.xlim([14.99880*10**6,14.99894*10**6])
         #pyplot.ylim([0,600])
-        pyplot.ylim([0,100])
+        pyplot.ylim([0,1000])
         pyplot.savefig('liveFFT')
         pyplot.close()
         print 'done saving figure'

@@ -1,61 +1,55 @@
 from dataProcess import dataProcess
 import numpy as np
+import math
 
 class timeResolvedFFTselected(dataProcess):
     """
     Finds the fourier amplitudes at selected frequencies
     """
     name = 'timeResolvedFFTselected'
-    inputsRequired = ['uncompressedArrByteLength','resolution','needFreqs']
+    inputsRequired = ['uncompressedArrByteLength','resolution','needFrequency','AvgPointSide']
     inputsOptional = []
     
     def initialize(self):
         self.uncompressedLength16 = self.inputDict['uncompressedArrByteLength']
         self.resolution = self.inputDict['resolution']
-        self.freqs = self.inputDict['needFreqs']
-        self.ampl = None
-        
-        
-        
-        self.timelength = self.inputDict['timelength']
-        self.resolution = self.inputDict['resolution']
+        self.centerFreq = self.inputDict['needFrequency']
+        self.ptsAround = self.inputDict['AvgPointSide']
         
     def processNewData(self, newdata):
         newdata = newdata.asarray
         nonZeroPositions = newdata[:,0]
         correspondingElements = newdata[:,1]
+        arrivalList = []
         #expanding compressed data to bit representation
         correspondingElements = map(self.converter , correspondingElements)
-        self.uncompressedArr = np.zeros((self.uncompressedLength16, 16))
-        self.uncompressedArr[nonZeroPositions] = correspondingElements
-        self.uncompressedArr = self.uncompressedArr.flatten()
-        totalCounts = np.sum(self.uncompressedArr)
-        print totalCounts
-        fft = np.fft.rfft(self.uncompressedArr) #returns nice form, faster than fft for real inputs
-        print int(self.uncompressedLength16)
-        freqs = np.fft.fftfreq(int(self.uncompressedLength16 * 16), d = float(self.resolution))
-        self.freqs = np.abs(freqs[0:(self.uncompressedLength16 * 16 /2) + 1])
-        self.power = fft * np.conjugate(fft) / totalCounts
-        del(fft)
+        #for every bit, calculate the time of photon arrival (in seconds)
+        for byteNumber,bytePosition in enumerate(nonZeroPositions):
+            byte = correspondingElements[byteNumber]
+            for bitposition in byte.nonzero()[0]:
+                arrivalTime = (bytePosition * 16 + bitposition)*self.resolution
+                arrivalList.append(arrivalTime)
+        arrivalList = np.array(arrivalList)
+        totalCounts = len(arrivalList)
+        #now that we know when photons arrived, calculate fourier components at the desired frequencies (in Hz)
+        possibleFreqs = np.fft.fftfreq(int(self.uncompressedLength16 * 16), d = float(self.resolution))
+        freqResolution = abs(possibleFreqs[1]-possibleFreqs[0])
+        self.closestFreq = possibleFreqs[(np.abs(possibleFreqs- self.centerFreq)).argmin()]
+        self.freqList = self.closestFreq * np.ones(2 * self.ptsAround + 1) + freqResolution * np.arange(-self.ptsAround,self.ptsAround+1)
+        self.coeffMatrix = np.exp(-2 *math.pi * 1j *np.outer(arrivalList, self.freqList))
+        self.coeffArr = np.sum(self.coeffMatrix, 0)
+        self.powerArr = np.abs(self.coeffArr)**2 / totalCounts
+        
+#    def findTotalCounts(self,correspondingElements):
+#        totalCount = 0
+#        for element in correspondingElements:
+#            expanded = self.converter(element)
+#            totalCount += expanded.sum()
+#        return totalCount
     
     def getResult(self):
-        self.plotResult()
-        print 'in returning result'
-#        self.result = np.hstack((self.freqs,self.power))
-#        return self.result
-        return 0
-
-    def plotResult(self):
-        print 'saving'
-        pyplot.plot(self.freqs, self.power)
-        #pyplot.xlim([0,10000])
-        pyplot.xlim([100000,400000])
-#        pyplot.xlim([14.99880*10**6,14.99894*10**6])
-        #pyplot.ylim([0,600])
-        pyplot.ylim([0,100])
-        pyplot.savefig('liveFFT')
-        pyplot.close()
-        print 'done saving figure'
+        return np.array(self.powerArr)
+#        return float(self.totalCount)
         
     
     @staticmethod
