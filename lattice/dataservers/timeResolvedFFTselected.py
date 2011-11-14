@@ -48,7 +48,7 @@ class timeResolvedFFTselected(dataProcess):
 #        return totalCount
     
     def getResult(self):
-        return np.array(self.powerArr)
+        return np.vstack(np.array(self.freqList), np.array(self.powerArr))
 #        return float(self.totalCount)
         
     

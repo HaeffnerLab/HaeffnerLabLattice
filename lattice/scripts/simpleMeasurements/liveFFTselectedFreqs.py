@@ -12,7 +12,7 @@ pboxDict = {
             'nothing':1,
             }
 paulsbox.program(cxn.paul_box, pboxDict)
-recordTime = 0.04194304
+recordTime = 0.33554432
 #0.02097152
 #0.04194304
 #0.04194304
@@ -40,8 +40,8 @@ for iteration in range(iterations):
     (arrayLength, timeLength, timeResolution), measuredData = trfpga.get_result_of_measurement()
     print 'measurement took', time.time() - t1
     measuredData = measuredData.asarray
-    if not dpInputSet:
-        dp.set_inputs('timeResolvedFFTselected',[('uncompressedArrByteLength',arrayLength),('resolution',timeResolution),('needFrequency',15.0*10**6),('AvgPointSide',3)])
+        if not dpInputSet:
+        dp.set_inputs('timeResolvedFFTselected',[('uncompressedArrByteLength',arrayLength),('resolution',timeResolution),('needFrequency',14.99886*10**6),('AvgPointSide',10)])
         dp.new_process('timeResolvedFFTselected')
         dpInputSet = True
     print 'adding data'
@@ -49,7 +49,7 @@ for iteration in range(iterations):
     dp.process_new_data('timeResolvedFFTselected', measuredData)
     print 'getting result'
     result = dp.get_result('timeResolvedFFTselected')
-    print 'closest frequency', result
+    print 'result', result
     print 'processing took', time.time() - t1
 
 

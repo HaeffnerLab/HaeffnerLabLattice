@@ -8,7 +8,7 @@ class timeResolvedBinning(dataProcess):
     """
     name = 'timeResolvedBinning'
     inputsRequired = ['timelength','resolution']
-    inputsOptional = []
+    inputsOptional = [('bintime',100*10**-6)]
     
     def initialize(self):
         self.bintime = self.inputDict['bintime']
