@@ -1,8 +1,10 @@
-import sys; sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
+import os; labradPath = os.environ.get('LABRADPATH') 
+path = os.path.join(labradPath,'lattice/scripts')
+import sys; sys.path.append(path)
 import labrad
 import numpy
 import time
-import os
+
 from scriptLibrary import registry
 from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 

@@ -1,7 +1,6 @@
 #Created on Aug 08, 2011
 #@author: Michael Ramm, Haeffner Lab
 #Thanks for code ideas from Quanta Lab, MIT
-
 """
 ### BEGIN NODE INFO
 [info]
