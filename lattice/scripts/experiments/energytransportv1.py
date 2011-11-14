@@ -16,7 +16,7 @@ rawSaveDir = 'rawdata'
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv1.py'
 equilibration_time = 10.*10**3
-radial_heating_time = 450.*10**3
+radial_heating_time = 200.*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3

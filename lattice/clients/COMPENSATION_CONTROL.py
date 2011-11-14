@@ -8,7 +8,7 @@ UpdateTime = 100 #in ms, how often data is checked for communication with the se
 class COMPENSATION_CONTROL(QCustomLevelTilt):
     def __init__(self, reactor, parent=None):
         self.reactor = reactor
-        QCustomLevelTilt.__init__(self,'Compensation',['c1','c2'],(-100,100), parent)
+        QCustomLevelTilt.__init__(self,'Compensation',['c1','c2'],(-400,0), parent)
         self.connect()
     
     @inlineCallbacks

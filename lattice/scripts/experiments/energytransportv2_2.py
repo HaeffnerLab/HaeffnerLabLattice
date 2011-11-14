@@ -8,23 +8,23 @@ from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 
-''' Ability to perform a scan of a calibrated double pass'''
+''' Ability to perform a scan of double pass'''
 
 #Global parameters
-comment = 'have to do uncalibrated scan not enough pwoer to heat otherwise'
-iterations = 50
+comment = 'have to do uncalibrated scan not enough power to heat otherwise'
+iterations = 200
 experimentName = 'EnergyTransportv2'
 rawSaveDir = 'rawdata'
 #radial double pass scan
-freqmin = 250.0 #MHz
-freqmax = 190.0 #MHz
-freq_points = 9
+freqmin = 220.0 #MHz
+freqmax = 250.0 #MHz
+freq_points = 1
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv1.py'
 equilibration_time = 10.*10**3
-radial_heating_time = 300.*10**3
+radial_heating_time = 200.*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3
@@ -33,7 +33,7 @@ global_off_time = equilibration_time + radial_heating_time  + 50.*10**3
 record_after_heating = 100.*10**3
 recordTime = (record_866off_time + record_866on_time + 2 * shutter_delay_time + equilibration_time + radial_heating_time + record_after_heating)/10**6 #seconds
 #data processing on the fly
-binTime =100*10**-6 #seconds
+binTime =250*10**-6 #seconds
 
 globalDict = {
               'iterations':iterations,

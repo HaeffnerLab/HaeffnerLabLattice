@@ -11,20 +11,20 @@ from scriptLibrary import dvParameters
 ''' Ability to perform a scan of a calibrated double pass'''
 
 #Global parameters
-comment = 'now testing together'
+comment = 'calibrated scan'
 iterations = 200
 experimentName = 'EnergyTransportv2'
 rawSaveDir = 'rawdata'
 #radial double pass scan
-freqmin = 190.0 #MHz
-freqmax = 250.0 #MHz
+freqmin = 220.0 #MHz
+freqmax = 220.0 #MHz
 freq_points = 7
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv1.py'
 equilibration_time = 10.*10**3
-radial_heating_time = 450.*10**3
+radial_heating_time = 200.*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3
