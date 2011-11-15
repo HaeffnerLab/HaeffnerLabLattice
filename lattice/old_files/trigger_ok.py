@@ -43,7 +43,7 @@ class TriggerFPGA(LabradServer):
         #the state written below represents the initial state of the server
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'bluePI':[0x02,True, False],'866':[0x01,True, True], 'bluePI':[0x02,True, False], 'axial':[0x04,True,False],}
+                     'Switches':{'866':[0x01,True, True], 'bluePI':[0x02,True, False], 'axial':[0x04,True,False]}
                      }
         self.initializeChannels()
         self.listeners = set()
@@ -80,14 +80,14 @@ class TriggerFPGA(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
-#    def initializeChannels(self):
-#        for switchName in self.dict['Switches'].keys():
-#            channel = self.dict['Switches'][switchName][0]
-#            value = self.dict['Switches'][switchName][1]
-#            initialize = self.dict['Switches'][switchName][2]
-#            if initialize:
-#                print 'initializing {0} to {1}'.format(switchName, value)
-#                self._switch( channel, value)
+    def initializeChannels(self):
+        for switchName in self.dict['Switches'].keys():
+            channel = self.dict['Switches'][switchName][0]
+            value = self.dict['Switches'][switchName][1]
+            initialize = self.dict['Switches'][switchName][2]
+            if initialize:
+                print 'initializing {0} to {1}'.format(switchName, value)
+                self._switch( channel, value)
         
     def _isSequenceDone(self):
         self.xem.UpdateTriggerOuts()
@@ -96,12 +96,12 @@ class TriggerFPGA(LabradServer):
     def _trigger(self, channel):
         self.xem.ActivateTriggerIn(0x40, channel)
     
-#    def _switch(self, channel, value):
-#        if value:
-#            self.xem.SetWireInValue(0x00,channel,channel)
-#        else:
-#            self.xem.SetWireInValue(0x00,0x00,channel)
-#        self.xem.UpdateWireIns()
+    def _switch(self, channel, value):
+        if value:
+            self.xem.SetWireInValue(0x00,channel,channel)
+        else:
+            self.xem.SetWireInValue(0x00,0x00,channel)
+        self.xem.UpdateWireIns()
     
     @setting(0, 'Get Trigger Channels', returns = '*s')
     def getTriggerChannels(self, c):
@@ -156,7 +156,7 @@ class TriggerFPGA(LabradServer):
     @setting(5, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
     def waitForPBDone(self, c, timeout = 10):
         """
-        Returns true if Paul's Box sequence has completed within a timeout period
+        Returns true if Paul Box sequence has completed within a timeout period
         """
         requestCalls = int(timeout / 0.050 ) #number of request calls
         for i in range(requestCalls):
