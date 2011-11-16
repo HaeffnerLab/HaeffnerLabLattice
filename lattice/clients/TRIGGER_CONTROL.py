@@ -28,14 +28,42 @@ class triggerWidget(QtGui.QFrame):
         layout.addWidget(QtGui.QLabel('Switches'),0,0)
         switchNames = yield self.server.get_switching_channels()
         for order,name in enumerate(switchNames):
-            button = QtGui.QPushButton(name)
-            self.d['Switches'][name] = button
-            button.setCheckable(True)
+            #setting up physical container
+            groupBox = QtGui.QGroupBox(name) 
+            groupBoxLayout = QtGui.QVBoxLayout()
+            buttonOn = QtGui.QPushButton('ON')
+            buttonOn.setAutoExclusive(True)
+            buttonOn.setCheckable(True)
+            buttonOff = QtGui.QPushButton('OFF')
+            buttonOff.setCheckable(True)
+            buttonOff.setAutoExclusive(True)
+            buttonAuto = QtGui.QPushButton('Auto')
+            buttonAuto.setCheckable(True)
+            buttonAuto.setAutoExclusive(True)
+            groupBoxLayout.addWidget(buttonOn)
+            groupBoxLayout.addWidget(buttonOff)
+            groupBoxLayout.addWidget(buttonAuto)
+            groupBox.setLayout(groupBoxLayout)
+            #setting initial state
             initstate = yield self.server.get_state(name)
-            button.setChecked(initstate)
-            self.setButtonText(button, name)
-            button.clicked.connect(self.buttonConnection(name, button))
-            layout.addWidget(button,0,1 + order)
+            ismanual = initstate[0]
+            manstate = initstate[1]
+            if not ismanual:
+                buttonPB.setChecked(True)
+            else:
+                if manstate:
+                    buttonOn.setChecked(True)
+                else:
+                    buttonOff.setChecked(True)
+            #adding to dictionary for signal following
+            self.d['Switches'][name] = {}
+            self.d['Switches'][name]['ON'] = buttonOn
+            self.d['Switches'][name]['OFF'] = buttonOff
+            self.d['Switches'][name]['AUTO'] = buttonAuto
+            buttonOn.clicked.connect(self.buttonConnectionManualOn(name))
+            buttonOff.clicked.connect(self.buttonConnectionManualOff(name))
+            buttonAuto.clicked.connect(self.buttonConnectionAuto(name))
+            layout.addWidget(groupBox,0,1 + order)
         #do same for trigger channels
         layout.addWidget(QtGui.QLabel('Triggers'),1,0)
         triggerNames = yield self.server.get_trigger_channels()
@@ -45,11 +73,22 @@ class triggerWidget(QtGui.QFrame):
             self.d['Triggers'][name] = button
             layout.addWidget(button,1,1 + order)
     
-    def buttonConnection(self, name, button):
+    def buttonConnectionManualOn(self, name):
         @inlineCallbacks
         def func(state):
-            yield self.server.switch(name, state)
-            self.setButtonText(button, name)
+            yield self.server.switch_manual(name, True)
+        return func
+    
+    def buttonConnectionManualOff(self, name):
+        @inlineCallbacks
+        def func(state):
+            yield self.server.switch_manual(name, False)
+        return func
+    
+    def buttonConnectionAuto(self, name):
+        @inlineCallbacks
+        def func(state):
+            yield self.server.switch_auto(name)
         return func
     
     def triggerConnection(self, name):
@@ -64,16 +103,14 @@ class triggerWidget(QtGui.QFrame):
         yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
     
     def followSignal(self, x, (switchName, state)):
-        button = self.d['Switches'][switchName]
-        button.setChecked(state)
-        self.setButtonText(button, switchName)
-      
-    def setButtonText(self, button, prefix):
-        if button.isChecked():
-            button.setText('{} is ON'.format(prefix))
-        else:
-             button.setText('{} is OFF'.format(prefix))
-    
+        if state == 'Auto':
+            button = self.d['Switches'][switchName]['AUTO']
+        elif state == 'ManualOn':
+            button = self.d['Switches'][switchName]['ON']
+        elif state == 'ManualOff':
+            button = self.d['Switches'][switchName]['OFF']
+        button.setChecked(True)
+
     def closeEvent(self, x):
         self.reactor.stop()
     
