@@ -1,24 +1,6 @@
 #Created on Aug 13, 2011
 #@author: Michael Ramm, Haeffner Lab
 
-"""
-### BEGIN NODE INFO
-[info]
-name = NormalPMTCountFPGA
-version = 1.0
-description = 
-instancename = NormalPMTCountFPGA
-
-[startup]
-cmdline = %PYTHON% %FILE%
-timeout = 20
-
-[shutdown]
-message = 987654321
-timeout = 20
-### END NODE INFO
-"""
-
 import ok
 from labrad.server import LabradServer, setting
 from twisted.internet import reactor
