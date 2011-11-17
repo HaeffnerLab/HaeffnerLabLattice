@@ -49,7 +49,7 @@ class triggerWidget(QtGui.QFrame):
             ismanual = initstate[0]
             manstate = initstate[1]
             if not ismanual:
-                buttonPB.setChecked(True)
+                buttonAuto.setChecked(True)
             else:
                 if manstate:
                     buttonOn.setChecked(True)

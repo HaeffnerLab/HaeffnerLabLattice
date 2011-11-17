@@ -55,15 +55,15 @@ class TriggerFPGA(LabradServer):
                                      {'chan':       0x02,
                                       'ismanual':   True,
                                       'manstate':   True,
-                                      'maninv':     False,
+                                      'maninv':     True,
                                       'autoinv':    False
                                       },
                                 '866DP':
                                      {'chan':       0x04,
-                                      'ismanual':   True,
-                                      'manstate':   False,
-                                      'maninv':     False,
-                                      'autoinv':    True
+                                      'ismanual':   False,
+                                      'manstate':   True,
+                                      'maninv':     True,
+                                      'autoinv':    False
                                       },
                                 '110DP':
                                      {'chan':       0x08,
