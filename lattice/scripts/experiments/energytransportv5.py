@@ -11,7 +11,7 @@ from scriptLibrary import dvParameters
 '''Trying to measure speed of sound velocity with sequence v4'''
 #Global parameters
 comment = 'now testing together'
-iterations = 2000
+iterations = 20
 experimentName = 'EnergyTransportv3'
 rawSaveDir = 'rawdata'
 #Paul's Box Parameters
@@ -25,7 +25,7 @@ record_offset = 100.0
 recordAfterHeat = 500.0
 recordTime = (record_offset + recordAfterHeat) / 10**6
 #data processing on the fly
-binTime = 1.0 * 10**-6 #seconds
+binTime = 250.0 * 10**-6 #seconds
 
 
 globalDict = {

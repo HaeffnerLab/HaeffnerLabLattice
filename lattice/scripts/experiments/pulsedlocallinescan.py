@@ -12,20 +12,20 @@ from scriptLibrary import dvParameters
 experimentName = 'PulsedLocalLineScan'
 comment = 'no comment'
 rawSaveDir = 'rawdata'
-MIN_FREQ = 190.0 #MHZ
+NUM_STEP_FREQ = 2
+MIN_FREQ = 220.0 #MHZ
 MAX_FREQ = 250.0 #MHZ
-STEP_FREQ = 15#MHZ
-FreqScanList = numpy.arange(MIN_FREQ,MAX_FREQ + STEP_FREQ, STEP_FREQ)
+scanList = numpy.r_[MIN_FREQ:MAX_FREQ:complex(0,NUM_STEP_FREQ)]
 ##Timing for Paul's Box Sequence, all in microseconds
 pboxSequence = 'PulsedLocalLineScan.py' 
 number_of_pulses = 200.0
-shutter_deay_time = 20.*10**3 #microseconds
+shutter_delay_time = 20.*10**3 #microseconds
 heat_cool_delay = 100.0#microseconds
 radial_heating_time = 1.*10**3 #microseconds
 cooling_ax_time = 1.*10**3 #microseconds
 iterationsPerFreq = 1#### #how many traces to take at each frequency
 ##timing for time resolved recording
-recordTime =  (shutter_deay_time + number_of_pulses * (2 * heat_cool_delay + radial_heating_time + cooling_ax_time)) / 10**6 #in seconds
+recordTime =  (shutter_delay_time + number_of_pulses * (2 * heat_cool_delay + radial_heating_time + cooling_ax_time)) / 10**6 #in seconds
 #data processing on the fly
 binTime =50*10**-6
 #connect connect and define servers we'll be using
@@ -47,7 +47,7 @@ globalDict = {
 pboxDict = {
             'sequence':pboxSequence,
             'number_of_pulses':number_of_pulses,
-            'shutter_deay_time':shutter_deay_time,
+            'shutter_delay_time':shutter_delay_time,
             'heat_cool_delay':heat_cool_delay,
             'radial_heating_time':radial_heating_time,
             'cooling_ax_time':cooling_ax_time,
@@ -64,7 +64,8 @@ def initialize():
     for name in ['axial','radial']:
         dpass.select(name)
         dpass.output(True)
-        trigger.switch_auto(name)
+        trigger.switch_auto(name,False)
+    trigger.switch_auto('global',False)
     #create directory for file saving
     dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
     basedir = registry.getDataDirectory(reg)
@@ -79,7 +80,7 @@ def initialize():
 def sequence():
     dpass.select('radial')
     initfreq = dpass.frequency()
-    for freq in FreqScanList:
+    for freq in scanList:
         print 'frequency now {}'.format(freq)
         dpass.frequency(freq)
         dp.new_process('timeResolvedBinning')
@@ -111,7 +112,7 @@ def sequence():
         dvParameters.saveParameters(dv, globalDict)
         dvParameters.saveParameters(dv, pboxDict)
     print 'switching beams back into manual mode'
-    for name in ['axial','radial']:
+    for name in ['axial','radial','global']:
         trigger.switch_manual(name)
     dpass.frequency(initfreq)
     

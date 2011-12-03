@@ -11,20 +11,20 @@ from scriptLibrary import dvParameters
 ''' Ability to perform a scan of double pass'''
 
 #Global parameters
-comment = '5 ions'
-iterations = 200
+comment = '2 ions'
+iterations = 10
 experimentName = 'EnergyTransportv2'
 rawSaveDir = 'rawdata'
 #radial double pass scan
-freqmin = 250.0 #MHz
-freqmax = 210.0 #MHz
-freq_points = 5
+freqmin = 220.0 #MHz
+freqmax = 220.0 #MHz
+freq_points = 1
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv5.py'
 equilibration_time = 10.*10**3
-radial_heating_time = 100.0*10**3
+radial_heating_time =100.0*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3
@@ -74,7 +74,9 @@ def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
     #make sure manual override for the 397 local heating beam is off
-    trigger.switch('axial',False)
+    for name in ['global','radial','866DP']:
+        trigger.switch_auto(name,  False)
+    trigger.switch_auto('axial',  True)
     #make sure r&s synthesizers are on, and 
     for name in ['radial']:
         dpass.select(name)
@@ -117,6 +119,7 @@ def sequence():
             print 'now waiting to complete recooling'
             trigger.wait_for_pbox_completion()
             trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
+            time.sleep(2)
         print 'getting result and adding to data vault'
         binned = dp.get_result('timeResolvedBinning').asarray
         dv.new('binnedFlourescence freq {}'.format(radfreq),[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
@@ -128,9 +131,14 @@ def sequence():
         dvParameters.saveParameters(dv, globalDict)
         dvParameters.saveParameters(dv, pboxDict)
 
-
+def finalize():
+    for name in ['axial','radial','global']:
+        trigger.switch_manual(name)
+        
 print 'initializing measurement'
 initialize()
 print 'performing sequence'
 sequence()
+print 'finilizing'
+finalize()
 print 'DONE'
