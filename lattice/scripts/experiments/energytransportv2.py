@@ -109,7 +109,7 @@ def sequence():
             (arrayLength, timeLength, timeResolution), measuredData = trfpga.get_result_of_measurement()
             measuredData = measuredData.asarray
             infoarray = numpy.array([arrayLength,timeLength,timeResolution])
-            saveName = 'trace{}'.format(iteration)
+            saveName = 'trace{0}{1}'.format(iteration,radfreq)
             print 'now saving {}'.format(saveName)
             numpy.savez(saveName,measuredData, infoarray)
             print 'now adding to dataprocessing server'

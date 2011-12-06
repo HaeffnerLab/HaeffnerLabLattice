@@ -35,7 +35,7 @@ figure = pyplot.figure()
 figure.clf()
 
 t = time.time()
-dp.set_inputs('timeResolvedBinning',[('timelength',0.125),('resolution',5.*10**-9),('bintime',500*10**-6)])
+dp.set_inputs('timeResolvedBinning',[('timelength',0.125),('resolution',5.*10**-9),('bintime',0.5*10**-6)])
 
 for item,key in enumerate(keys[::3]): #::3
     print 'processing freq {}'.format(key)

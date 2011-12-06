@@ -90,7 +90,7 @@ class radialDP(doublePass):
         self.context = context
         yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542', context = self.context)
         self.freqRange = (190,250) #MHZ
-        self.amplRange = (-145,-13.5) #dBM
+        self.amplRange = (-145,7.0) #dBM
         yield self.populateInfo()
         self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         

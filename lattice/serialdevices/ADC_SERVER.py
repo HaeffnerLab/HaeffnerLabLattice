@@ -1,11 +1,29 @@
-#writetn by Michael Ramm, Haeffner lab, Nov 2011
+"""
+### BEGIN NODE INFO
+[info]
+name = ADCserver
+version = 1.1
+description = 
+instancename = ADCserver
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
+#written by Michael Ramm, Haeffner lab, Nov 2011
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from labrad.types import Error
 from twisted.internet.defer import returnValue
 
 PREC_BITS = 10.
 DAC_MAX = 1023.#mV
-VOLTAGE_MAX = 2500.#mv
+VOLTAGE_MAX = 2500.0 #mV
 RESPLENGTH = 5
 
 class ADCServer( SerialDeviceServer ):
@@ -36,7 +54,22 @@ class ADCServer( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
-        self.possibleChannels = range(1,9)
+        self.makeChannelDict()
+        
+    def makeChannelDict(self):
+        self.d = {'1':1,
+                  '2':2,
+                  '3':3,
+                  '4':4,
+                  '5':5,
+                  '6':6,
+                  '7':7,
+                  '8':8,
+                  '9':9,
+                  'global397':1,
+                  'axial':2,
+                  'radial':3
+                  }
     
     @inlineCallbacks
     def getVoltage( self, channel):
@@ -55,13 +88,14 @@ class ADCServer( SerialDeviceServer ):
         voltage = int(VOLTAGE_MAX * ( float(rawVoltage) ) /  DAC_MAX) 
         return voltage
     
-    @setting( 0 , channel = 'w: channel number', returns = 'v: voltage' )
+    @setting( 0 , channel = 's: channel', returns = 'v: voltage' )
     def measureChannel( self, c, channel):
         """
         Measures the voltage on the given channel
         """
-        if channel not in self.possibleChannels: raise Exception("Incorrect Channel")
-        voltage = yield self.getVoltage(channel)
+        if channel not in self.d.keys(): raise Exception("Incorrect Channel")
+        chanNumber = self.d[channel]
+        voltage = yield self.getVoltage(chanNumber)
         returnValue(voltage)
 
 if __name__ == "__main__":
