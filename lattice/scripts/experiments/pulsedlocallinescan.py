@@ -27,7 +27,12 @@ iterationsPerFreq = 1#how many traces to take at each frequency
 ##timing for time resolved recording
 recordTime =  (shutter_delay_time + number_of_pulses * (2 * heat_cool_delay + radial_heating_time + cooling_ax_time)) / 10**6 #in seconds
 #data processing on the fly
-binTime =50*10**-6
+binTime =50.0*10**-6
+binNumber = int(recordTime / binTime)
+binArray = binTime * range(binNumber + 1)
+binned = numpy.zeros(binNumber)
+heatCountsArray = numpy.zeros_like(scanList)
+coolCountsArray = numpy.zeros_like(scanList)
 #connect connect and define servers we'll be using
 cxn = labrad.connect()
 dv = cxn.data_vault
@@ -56,7 +61,25 @@ pboxDict = {
 parameters = Parameters(globalDict)
 parameters.addDict(pboxDict)
 parameters.printDict()
- 
+
+
+def extractHeatCoolCounts(timetags):
+    #uses knowledge of the pulse sequence timing to extract the total counts for heating and cooling cycles
+    cyclesStart = shutter_delay_time + heat_cool_delay
+    binEdges = [cyclesStart]
+    curStart = cyclesStart
+    for i in range(int(number_of_pulses)):
+        binEdges.append(curStart + radial_heating_time )
+        binEdges.append(curStart + radial_heating_time + heat_cool_delay )
+        binEdges.append(curStart + radial_heating_time + heat_cool_delay + cooling_ax_time )
+        curStart = curStart + radial_heating_time + heat_cool_delay + cooling_ax_time 
+    binned = numpy.histogram(timetags, binEdges)[0]
+    binned = binned.reshape((number_of_pulses,3))
+    summed = binned.sum(axis = 0)
+    heatCounts = summed[0]
+    coolCounts = summed[1]
+    return [heatCounts,coolCounts]
+    
 def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
@@ -76,31 +99,36 @@ def initialize():
 def sequence():
     dpass.select('radial')
     initfreq = dpass.frequency()
-    for freq in scanList:
+    for freqIteration,freq in enumerate(scanList):
         print 'frequency now {}'.format(freq)
         dpass.frequency(freq)
-        dp.new_process('timeResolvedBinning')
         for iteration in range(iterationsPerFreq):
             print 'recording trace {0} out of {1}'.format(iteration, iterationsPerFreq)
             trfpga.perform_time_resolved_measurement()
             trigger.trigger('PaulBox')
             timetags = trfpga.get_result_of_measurement().asarray
-            binned = numpy.histogram(timetags, bins, range, normed, weights, density)
-            
-
-
-
+            #add to binning of the entire sequence
+            newbinned = numpy.histogram(timetags, binArray )[0]
+            binned = binned + newbinned
+            #get counts for heating and cooling
+            newHeatCounts,newCoolCounts = extractHeatCoolCounts(timetags)
+            heatCountsArray[freqIteration] += newHeatCounts
+            coolCountsArray[freqIteration] += newCoolCounts
             trigger.wait_for_pbox_completion()
             trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
         print 'getting result and adding to data vault'
-        binned = dp.get_result('timeResolvedBinning').asarray
         dv.new('binnedFlourescence {}'.format(freq),[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
-        dv.add(binned)
-        measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']
-        measuredDict = dvParameters.measureParameters(cxn, measureList)
-        dvParameters.saveParameters(dv, measuredDict)
-        dvParameters.saveParameters(dv, globalDict)
-        dvParameters.saveParameters(dv, pboxDict)
+        data = numpy.vstack(binned, binArray[0:-1] ).transpose()
+        dv.add(data)
+    print 'adding line scan to data vault'
+    data = numpy.vstack(coolCountsArray, heatCountsArray,  scanList).transpose()
+    dv.new('lineScan',[('Freq', 'sec')], [('PMT counts','Counts','Heating'),('PMT counts','Counts','Cooling')] )
+    dv.add(data)
+    measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']
+    measuredDict = dvParameters.measureParameters(cxn, measureList)
+    dvParameters.saveParameters(dv, measuredDict)
+    dvParameters.saveParameters(dv, globalDict)
+    dvParameters.saveParameters(dv, pboxDict)
     print 'switching beams back into manual mode'
     for name in ['axial','radial','global']:
         trigger.switch_manual(name)
