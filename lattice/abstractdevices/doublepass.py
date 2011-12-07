@@ -68,6 +68,7 @@ class doublePass(object):
 
     @inlineCallbacks
     def frequencyCalibPower(self, freq):
+        if not self.calibDomain[0] <= freq <= self.calibDomain[1]: raise Exception ("Frequency out of range")
         yield self.frequency(freq)
         calibAmpl = self.freqToCalibAmpl(freq) + self.amplOffset
         yield self.amplitude(calibAmpl) 
@@ -90,7 +91,8 @@ class radialDP(doublePass):
         self.context = context
         yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542', context = self.context)
         self.freqRange = (190,250) #MHZ
-        self.amplRange = (-145,7.0) #dBM
+        self.amplRange = (-145,7.01) #dBM
+        self.calibDomain = (210,250) # domain where calibration is valid
         yield self.populateInfo()
         self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
@@ -114,16 +116,18 @@ class radialDP(doublePass):
         from scipy.interpolate import interp1d
         dv = cxn.data_vault
         dir = yield dv.cd(context = context)
-        yield dv.cd(['','Calibrations'],True, context = context)
-        yield dv.open(165, context = context)
+        yield dv.cd(['','Calibrations','Double Pass radial'], context = context)
+        yield dv.open(34, context = context)
         calibration = yield dv.get(context = context)
         calibration = calibration.asarray
+        domain = calibration[:,0]
+        self.calibDomain = (domain.min(), domain.max())
         func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
         returnValue(func)
     
     #no calibration, that is no amplitude dependence on frequency
-    def freqToCalibAmpl(self, freq):
-        return self.ampl 
+#    def freqToCalibAmpl(self, freq):
+#        return self.ampl 
 
 class axialDP(doublePass):
     def __init__(self, name, cxn, context):
@@ -136,7 +140,8 @@ class axialDP(doublePass):
         self.context = context
         yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543', context = self.context)
         self.freqRange = (190,250) #MHZ
-        self.amplRange = (-145,5) #dBM
+        self.amplRange = (-145,5.01) #dBM
+        self.calibDomain = (190,250)
         yield self.populateInfo()
         self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
@@ -163,8 +168,8 @@ class axialDP(doublePass):
         from scipy.interpolate import interp1d
         dv = cxn.data_vault
         dir = yield dv.cd(context = context)
-        yield dv.cd(['','Calibrations'],True, context = context)
-        yield dv.open(156, context = context)
+        yield dv.cd(['','Calibrations','Double Pass axial'],True, context = context)
+        yield dv.open(17, context = context)
         calibration = yield dv.get(context = context)
         calibration = calibration.asarray
         func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')

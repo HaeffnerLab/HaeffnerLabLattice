@@ -10,8 +10,8 @@ adc = cxn.adcserver
 
 #global variables
 CHANNEL = 'global397'
-RESOLUTION = .1 # seconds
-RECORDTIME = int(3600./RESOLUTION)  #1 hour with
+RESOLUTION = 10 # seconds
+RECORDTIME = int(24*3600./RESOLUTION)  #1 hour with
 
 #set up data vault
 dv.cd(['','QuickMeasurements','Power Monitoring'],True)

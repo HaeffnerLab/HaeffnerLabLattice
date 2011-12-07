@@ -2,11 +2,11 @@ import sys; sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scrip
 import labrad
 import numpy
 import time
-import os
 from scriptLibrary import registry
 from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
+
 ##Frequency Scan of Local Heating Beam
 """performing line scan with repeated pulses and heating and cooling"""
 experimentName = 'PulsedLocalLineScan'
@@ -23,7 +23,7 @@ shutter_delay_time = 20.*10**3 #microseconds
 heat_cool_delay = 100.0#microseconds
 radial_heating_time = 1.*10**3 #microseconds
 cooling_ax_time = 1.*10**3 #microseconds
-iterationsPerFreq = 1#### #how many traces to take at each frequency
+iterationsPerFreq = 1#how many traces to take at each frequency
 ##timing for time resolved recording
 recordTime =  (shutter_delay_time + number_of_pulses * (2 * heat_cool_delay + radial_heating_time + cooling_ax_time)) / 10**6 #in seconds
 #data processing on the fly
@@ -64,17 +64,13 @@ def initialize():
     for name in ['axial','radial']:
         dpass.select(name)
         dpass.output(True)
+    for name in ['axial','radial','global']:
         trigger.switch_auto(name,False)
-    trigger.switch_auto('global',False)
-    #create directory for file saving
-    dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
-    basedir = registry.getDataDirectory(reg)
-    directory = basedir + '\\' + rawSaveDir + '\\' + experimentName  + '\\' + dirappend
-    os.makedirs(directory)
-    os.chdir(directory)
     #set up dataprocessing inputs
     resolution = trfpga.get_resolution()
     dp.set_inputs('timeResolvedBinning',[('timelength',recordTime),('resolution',resolution),('bintime',binTime)])
+    #create data vault directory
+    dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
     dv.cd(['','Experiments', experimentName, dirappend], True )
     
 def sequence():
@@ -86,20 +82,14 @@ def sequence():
         dp.new_process('timeResolvedBinning')
         for iteration in range(iterationsPerFreq):
             print 'recording trace {0} out of {1}'.format(iteration, iterationsPerFreq)
-            print 'now perform measurement'
             trfpga.perform_time_resolved_measurement()
-            print 'now trigger'
             trigger.trigger('PaulBox')
-            print 'now get result'
-            (arrayLength, timeLength, timeResolution), measuredData = trfpga.get_result_of_measurement()
-            measuredData = measuredData.asarray
-            infoarray = numpy.array([arrayLength,timeLength,timeResolution])
-            saveName = 'trace{0}{1}'.format(iteration,freq)
-            print 'now saving {}'.format(saveName)
-            numpy.savez(saveName,measuredData, infoarray)
-            print 'now adding to dataprocessing server'
-            dp.process_new_data('timeResolvedBinning',measuredData)
-            print 'now waiting to complete recooling'
+            timetags = trfpga.get_result_of_measurement().asarray
+            binned = numpy.histogram(timetags, bins, range, normed, weights, density)
+            
+
+
+
             trigger.wait_for_pbox_completion()
             trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
         print 'getting result and adding to data vault'
