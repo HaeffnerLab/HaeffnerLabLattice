@@ -25,8 +25,8 @@ PORT = 8880
 directory = '/home/lattice/Desktop/sequencer2/PulseSequences/protected/'
 
 class script:
-    self.scriptname = ''
-    self.varlist = [];
+    scriptname = ''
+    varlist = [];
 
 class PaulBoxServer( LabradServer ):
     name = 'Paul Box'
