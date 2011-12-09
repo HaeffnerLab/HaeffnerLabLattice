@@ -111,19 +111,12 @@ class PaulBoxServer( LabradServer ):
     def getVariables(self, c, script):
         return self.db[script].varlist
     
-<<<<<<< HEAD
-    def stopServer(self):
-        self.sock.close()
-        print self.sock
-        print 'STOPPING!!!'
-=======
     @setting(3, 'Reload Scripts', returns = '')
     def reloadScripts(self, c):
         self.loadScripts()
     
     def stopServer(self):
         self.sock.close()
->>>>>>> a35c00bd811a66f4daa0b2d0b2bfe751bb918bf4
         
 if __name__ == "__main__":
     from labrad import util
