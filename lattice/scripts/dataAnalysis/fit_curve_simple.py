@@ -33,7 +33,7 @@ def fit(function, parameters, y, x = None):
     optimize.leastsq(f, p)
 #change directory and loading
 dv.cd(['','Experiments','EnergyTransportv2', '2011Dec07_1610_00'])
-dv.open(5)
+dv.open(1)
 data = dv.get().asarray
 x = data[:,0]
 y = data[:,1] / data[:,1].max()
