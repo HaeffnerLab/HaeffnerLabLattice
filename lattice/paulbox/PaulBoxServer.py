@@ -45,7 +45,8 @@ class PaulBoxServer( LabradServer ):
         Loads available scripts from the local folder
         """
         self.db = {}
-        for filename in os.listdir( directory ):
+        files = [f for f in os.listdir(directory) if f.lower().endswith('.py')]
+        for filename in files:
             path = directory + filename
             try:
                 fobj = open( path )
@@ -79,7 +80,7 @@ class PaulBoxServer( LabradServer ):
                         min_val = ''
                         max_val = ''
                     varlist.append( [var_name, var_type, default_val, min_val, max_val] )
-            return varlist
+        return varlist
     
     def _sendPB( self, toSend ):
         self.sock.sendall( toSend )
