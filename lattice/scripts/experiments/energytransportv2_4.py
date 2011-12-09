@@ -3,24 +3,27 @@ import labrad
 import numpy
 import time
 import os
+from scriptLibrary import registry
 from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 
-''' Ability to change heating detunings with the doulbe pass'''
+''' Same as 2_3 except runs pulse sequence EnergyTransportv6 which switches off the radial beam in the middle of the heating
+to confirm that the heating is caused by the laser and not an external source'''
 
 #Global parameters
 comment = '2 ions'
-iterations = 1
+iterations = 100
 experimentName = 'EnergyTransportv2'
+rawSaveDir = 'rawdata'
 #radial double pass scan
 freqmin = 220.0 #MHz
 freqmax = 250.0 #MHz
-freq_points = 2
+freq_points = 5
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
-pboxsequence = 'EnergyTransportv5.py'
+pboxsequence = 'EnergyTransportv6.py'
 equilibration_time = 10.*10**3
 radial_heating_time =200.0*10**3
 record_866off_time = 10.*10**3
@@ -33,13 +36,12 @@ global_off_time = equilibration_time + radial_heating_time  + 50.*10**3
 record_after_heating = 100.*10**3
 recordTime = (record_866off_time + record_866on_time + 2 * shutter_delay_time + equilibration_time + radial_heating_time + record_after_heating)/10**6 #seconds
 #data processing on the fly
-binTime =50.0*10**-6
-binNumber = int(recordTime / binTime)
-binArray = binTime * numpy.arange(binNumber + 1)
+binTime =250*10**-6 #seconds
 
 globalDict = {
               'iterations':iterations,
               'experimentName':experimentName,
+              'rawSaveDir':rawSaveDir,
               'scanRadfreqmin':freqmin,
               'scanRadfreqmax':freqmax,
               'scamRadfreqpts':freq_points,
@@ -66,9 +68,9 @@ dpass = cxn.double_pass
 trigger = cxn.trigger
 pbox = cxn.paul_box
 trfpga = cxn.timeresolvedfpga
-
-dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
-
+dp = cxn.dataprocessor
+reg = cxn.registry
+ 
 def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
@@ -80,12 +82,25 @@ def initialize():
     for name in ['radial']:
         dpass.select(name)
         dpass.output(True)
-    globalDict['resolution']=trfpga.get_resolution()
-    
+    #create directory for file saving
+    dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
+    basedir = registry.getDataDirectory(reg)
+    directory = basedir + '\\' + rawSaveDir + '\\' + experimentName  + '\\' + dirappend
+    os.mkdir(directory)
+    os.chdir(directory)
+    #set up dataprocessing inputs
+    resolution = trfpga.get_resolution()
+    dp.set_inputs('timeResolvedBinning',[('timelength',recordTime),('resolution',resolution),('bintime',binTime)])
+    #where to save into datavault
+    dv.cd(['','Experiments', experimentName, dirappend], True )
+    #make sure we are running in the calibrated mode
+#    dpass.select('radial')
+#    dpass.amplitude_offset(radOffset)
+
 def sequence():
-    binnedFlour = numpy.zeros(binNumber)
     for radfreq in freqList:
         #start new dataprocessing process
+        dp.new_process('timeResolvedBinning')
         dpass.frequency(radfreq)
         for iteration in range(iterations):
             print 'recording trace {0} out of {1} with frequency {2}'.format(iteration, iterations, radfreq)
@@ -94,25 +109,21 @@ def sequence():
             print 'now trigger'
             trigger.trigger('PaulBox')
             print 'now get result'
-            timetags = trfpga.get_result_of_measurement().asarray
-            #saving timetags
-            dv.cd(['','Experiments', experimentName, dirappend, 'timetags'],True )
-            dv.new('timetags {0} {1}'.format(radfreq,iteration),[('Time', 'sec')],[('PMT counts','Arb','Arb')] )
-            dv.add_parameter('frequency', radfreq)
-            dv.add_parameter('iteration',iteration)
-            ones = numpy.ones_like(timetags)
-            dv.add(numpy.vstack((timetags,ones)).transpose())
-            #add to binning of the entire sequence
-            newbinned = numpy.histogram(timetags, binArray )[0]
-            binnedFlour = binnedFlour + newbinned
+            (arrayLength, timeLength, timeResolution), measuredData = trfpga.get_result_of_measurement()
+            measuredData = measuredData.asarray
+            infoarray = numpy.array([arrayLength,timeLength,timeResolution])
+            saveName = 'trace{0}{1}'.format(iteration,radfreq)
+            print 'now saving {}'.format(saveName)
+            numpy.savez(saveName,measuredData, infoarray)
+            print 'now adding to dataprocessing server'
+            dp.process_new_data('timeResolvedBinning',measuredData)
             print 'now waiting to complete recooling'
             trigger.wait_for_pbox_completion()
             trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
         print 'getting result and adding to data vault'
-        dv.cd(['','Experiments', experimentName, dirappend] )
-        dv.new('binnedFlourescence'.format(radfreq),[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
-        data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
-        dv.add(data)
+        binned = dp.get_result('timeResolvedBinning').asarray
+        dv.new('binnedFlourescence freq {}'.format(radfreq),[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
+        dv.add(binned)
         print 'gathering parameters and adding them to data vault'
         measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']
         measuredDict = dvParameters.measureParameters(cxn, measureList)

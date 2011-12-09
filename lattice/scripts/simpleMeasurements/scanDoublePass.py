@@ -12,12 +12,12 @@ pmt = cxn.normalpmtflow
 
 #global variables
 DOUBLE_PASS = 'radial'; dp.select(DOUBLE_PASS)
-NUM_STEP_FREQ = 40
+NUM_STEP_FREQ = 20
 AVERAGE_POINTS = 5#how many output points to average
-MIN_FREQ = 210.0 #MHZ
+MIN_FREQ = 220.0 #MHZ
 MAX_FREQ = 250.0 #MHZ
 scanList = numpy.r_[MIN_FREQ:MAX_FREQ:complex(0,NUM_STEP_FREQ)]
-POWER = -13.5
+POWER = 7.0
 #set power and turn on
 dp.amplitude(POWER)
 dp.output(True)
