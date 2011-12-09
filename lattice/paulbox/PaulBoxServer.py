@@ -55,7 +55,7 @@ class PaulBoxServer( LabradServer ):
                 raise Exception( "Error while loading sequence:" + str( filename ) )
             newscript = script()
             newscript.scriptname = filename
-            newscript.varlist = parse_sequence( sequence_string )
+            newscript.varlist = self._parse_sequence( sequence_string )
             self.db[filename] = newscript
     
     def _parse_sequence(self , sequence_string):
