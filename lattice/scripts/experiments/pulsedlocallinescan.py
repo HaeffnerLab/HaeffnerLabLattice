@@ -11,7 +11,7 @@ from scriptLibrary import dvParameters
 """performing line scan with repeated pulses and heating and cooling"""
 experimentName = 'PulsedLocalLineScan'
 comment = 'no comment'
-NUM_STEP_FREQ = 30
+NUM_STEP_FREQ = 15
 MIN_FREQ = 220.0 #MHZ
 MAX_FREQ = 250.0 #MHZ
 scanList = numpy.r_[MIN_FREQ:MAX_FREQ:complex(0,NUM_STEP_FREQ)]

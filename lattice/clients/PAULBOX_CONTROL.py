@@ -30,6 +30,7 @@ class PAULBOX_CONTROL( QtGui.QWidget ):
         self.loadscriptnames()
 
     def loadscriptnames( self ):
+        self.pbox.reload_scripts()
         for name in self.pbox.get_available_scripts():
             self.scriptBox.addItem( name )
 
@@ -108,7 +109,6 @@ class PAULBOX_CONTROL( QtGui.QWidget ):
                 varvalue = str( self.floatvalsbox[i].value() )
                 varlist.append( ['FLOAT', varname, varvalue] )
         self.pbox.send_command( name, varlist )
-        print 'Paul Box Script Sent'
 
 if __name__=='__main__':
     cxn = labrad.connect()
