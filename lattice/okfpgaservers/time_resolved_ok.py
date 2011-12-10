@@ -1,23 +1,23 @@
 #Created on Aug 08, 2011
 #@author: Michael Ramm, Haeffner Lab
 #Thanks for code ideas from Quanta Lab, MIT
-#"""
-#### BEGIN NODE INFO
-#[info]
-#name = TimeResolvedFPGA
-#version = 2.0
-#description = 
-#instancename = TimeResolvedFPGA
-#
-#[startup]
-#cmdline = %PYTHON% %FILE%
-#timeout = 20
-#
-#[shutdown]
-#message = 987654321
-#timeout = 20
-#### END NODE INFO
-#"""
+'''
+### BEGIN NODE INFO
+[info]
+name = TimeResolvedFPGA
+version = 2.0
+description = 
+instancename = TimeResolvedFPGA
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+'''
 
 import ok
 from labrad.server import LabradServer, setting
