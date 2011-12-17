@@ -10,7 +10,7 @@ from scriptLibrary import dvParameters
 ''' Ability to change heating detunings with the doulbe pass'''
 
 #Global parameters
-comment = '2 ions'
+comment = '4 ions'
 iterations = 100
 experimentName = 'EnergyTransportv2'
 #radial double pass scan
@@ -22,7 +22,7 @@ freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
 pboxsequence = 'EnergyTransportv5.py'
 equilibration_time = 10.*10**3
-radial_heating_time =10.0*10**3
+radial_heating_time =100.0*10**3
 record_866off_time = 10.*10**3
 record_866on_time = 10.*10**3
 shutter_delay_time = 20.*10**3
@@ -33,7 +33,7 @@ global_off_time = equilibration_time + radial_heating_time  + 50.*10**3
 record_after_heating = 100.*10**3
 recordTime = (record_866off_time + record_866on_time + 2 * shutter_delay_time + equilibration_time + radial_heating_time + record_after_heating)/10**6 #seconds
 #data processing on the fly
-binTime =100.0*10**-6
+binTime =250.0*10**-6
 binNumber = int(recordTime / binTime)
 binArray = binTime * numpy.arange(binNumber + 1)
 
