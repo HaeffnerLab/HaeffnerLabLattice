@@ -5,7 +5,7 @@ import labrad; cxn = labrad.connect()
 from scriptLibrary import paulsbox 
 import numpy as np
 
-centerFreq = 15.00*10**6
+centerFreq = 199984#15.00*10**6
 ptsAround = 1
 recordTime = 0.5 #seconds
 iterations = 1000
@@ -26,18 +26,13 @@ dv = cxn.data_vault
 
 
 freqs = centerFreq + np.arange(-ptsAround,ptsAround + 1) * freqRes
-#def getFFTpwr(timetags):
-#    fft = np.zeros_like(freqs, dtype = np.complex)
-#    for k in range(freqs.size):
-#        fft[k] = np.dot(timetags,np.exp(-1.j*2.0*np.pi*freqs[k]*timetags))
-#        pwr = np.abs(fft)**2.0
-#    return pwr
 
 def getFFTpwr(timetags):
     mat = np.exp(-1.j*2.0*np.pi*np.outer(freqs, timetags))
     fft = mat.sum(axis=1)
     pwr = np.abs(fft)**2.0
-    pwr = pwr / timetags.size 
+    pwr = pwr / timetags.size
+    del(mat,fft)
     return pwr
 
 dv.cd(['','QuickMeasurements','FFTlive'],True)

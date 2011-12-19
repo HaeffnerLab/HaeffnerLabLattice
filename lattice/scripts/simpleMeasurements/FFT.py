@@ -5,10 +5,10 @@ import labrad; cxn = labrad.connect()
 from scriptLibrary import paulsbox 
 import numpy as np
 
-minFreq = 14.999*10**6 #Hz
-maxFreq = 15.001*10**6
+minFreq = 0.499*10**6 #Hz
+maxFreq = 0.501*10**6
 recordTime = 0.5 #seconds
-average = 1
+average = 5
 saveFFT = True
 #program pulse sequence for triggering time resolved
 pboxDict = {
@@ -26,17 +26,13 @@ dv = cxn.data_vault
 
 
 freqs = np.arange(minFreq,maxFreq,freqRes)
-#def getFFTpwr(timetags):
-#    fft = np.zeros_like(freqs, dtype = np.complex)
-#    for k in range(freqs.size):
-#        fft[k] = np.dot(timetags,np.exp(-1.j*2.0*np.pi*freqs[k]*timetags))
-#        pwr = np.abs(fft)**2.0
-#    return pwr
 
 def getFFTpwr(timetags):
     mat = np.exp(-1.j*2.0*np.pi*np.outer(freqs, timetags))
     fft = mat.sum(axis=1)
     pwr = np.abs(fft)**2.0
+    pwr = pwr / timetags.size
+    del(mat,fft)
     return pwr
 
 pwr = np.zeros_like(freqs)
