@@ -17,7 +17,7 @@ nodeDict = {'node_lattice_pc':
 			'node_lab_49':
 				['Serial Server', 'LaserDAC'],
 			'node_lab_197':
-				['Paul Box','dataProcessor','TimeResolvedFPGA']
+				['Paul Box','TimeResolvedFPGA']
 			}
 
 for node in ['node_lab_197','node_lab_49','node_lattice_pc']: #sets the order of opening
