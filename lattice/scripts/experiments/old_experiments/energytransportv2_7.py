@@ -7,15 +7,15 @@ from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 
-''' Ability to change heating detunings with the double pass'''
+''' Ability to change heating detunings with the doulbe pass'''
 
 #Global parameters
-comment = '4 ions'
+comment = '4 ions: axial calibrate'
 iterations = 100
 experimentName = 'EnergyTransportv2'
 #radial double pass scan
-freqmin = 220.0 #MHz
-freqmax = 220.0 #MHz
+freqmin = 250.0 #MHz
+freqmax = 250.0 #MHz
 freq_points = 1
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]

@@ -7,7 +7,7 @@ from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 
-''' Ability to change heating detunings with the double pass'''
+''' Ability to change heating detunings with the doulbe pass'''
 
 #Global parameters
 comment = '4 ions'
@@ -20,7 +20,7 @@ freq_points = 1
 radOffset = 0.0 #how much to offset calibrated radial power
 freqList =  numpy.r_[freqmin:freqmax:complex(0,freq_points)]
 #Paul's Box Parameters
-pboxsequence = 'EnergyTransportv5.py'
+pboxsequence = 'EnergyTransportv8.py'
 equilibration_time = 10.*10**3
 radial_heating_time =100.0*10**3
 record_866off_time = 10.*10**3
@@ -73,9 +73,9 @@ def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
     #make sure manual override for the 397 local heating beam is off
-    for name in ['global','radial','866DP']:
+    for name in ['global','axial','866DP']:
         trigger.switch_auto(name,  False)
-    trigger.switch_auto('axial',  True)
+    trigger.switch_auto('radial',  True)
     #make sure r&s synthesizers are on, and 
     for name in ['radial']:
         dpass.select(name)
