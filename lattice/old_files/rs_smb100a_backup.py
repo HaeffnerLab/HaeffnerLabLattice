@@ -75,20 +75,7 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
         if self.output != out:
             yield self.write('OUTput:STATe {}'.format(int(out)))
             self.output = out
-    
-    @inlineCallbacks
-    def activate_list_mode(self, state):
-        if state:
-            yield self.write("SOURce1:LIST:MODE STEP") #sets the step mode
-            yield self.write("SOURce1:LIST:TRIGger:SOURce EXT") #external triggering
-            yield self.write("SOURce1:FREQuency:MODE LIST") #activates step mode (output must be on)
-        else:
-            yield self.write("SOURce1:FREQuency:MODE CW")
-    
-    @inlineCallbacks
-    def reset_list(self):
-        yield self.write("SOURce1:LIST:RES")
-            
+
 class RohdeSchwarzServer(GPIBManagedServer):
     """Provides basic CW control for Rohde&Schwarz SMB100A RF Generators"""
     name = 'RohdeSchwarz Server'
@@ -118,19 +105,6 @@ class RohdeSchwarzServer(GPIBManagedServer):
         if os is not None:
             yield dev.setOutput(os)
         returnValue(dev.output)
-    
-    @setting(13,'Activate List Mode', state = 'b', returns = '')
-    def activate_list(self, c, state):
-        """Activate the List Mode"""
-        dev = self.selectedDevice(c)
-        yield dev.activate_list_mode(state)
-    
-    @setting(14,"Reset List", returns = '')
-    def reset_list(self, c):
-        """Reset the List for List Mode"""
-        dev = self.selectedDevice(c)
-        yield dev.reset_list()
-        
 
 __server__ = RohdeSchwarzServer()
 
