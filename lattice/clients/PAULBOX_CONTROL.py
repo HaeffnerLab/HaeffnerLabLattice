@@ -10,7 +10,6 @@ class script():
     
     def addFloat(self, name, value, min, max):
         self.floatDict[name] = [value, min, max]
-		
 
 class floatLayout():
     def __init__(self):
