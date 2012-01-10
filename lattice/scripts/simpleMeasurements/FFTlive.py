@@ -5,11 +5,11 @@ import labrad; cxn = labrad.connect()
 from scriptLibrary import paulsbox 
 import numpy as np
 
-centerFreq = 199984#15.00*10**6
-ptsAround = 1
+centerFreq = 14998860#15.00*10**6
+ptsAround = 2
 recordTime = 0.5 #seconds
-iterations = 1000
-average = 1
+iterations = 5
+average = 2
 #program pulse sequence for triggering time resolved
 pboxDict = {
             'sequence':'TimeResolvedTrigger.py',
@@ -17,7 +17,6 @@ pboxDict = {
             }
 paulsbox.program(cxn.paul_box, pboxDict)
 trfpga = cxn.timeresolvedfpga
-dp = cxn.dataprocessor
 trigger = cxn.trigger
 trfpga.set_time_length(recordTime)
 timeResolution = float(trfpga.get_resolution())

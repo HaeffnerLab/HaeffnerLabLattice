@@ -12,7 +12,7 @@ experimentName = 'PulsedLocalLineScan866'
 comment = 'no comment'
 iterations = 10
 pboxSequence = 'PulsedLocalLineScan866.py' 
-number_of_pulses = 40.0
+number_of_pulses = 41.0 #matches the number of steps in the RS LIST
 pulse_length = 10.0*10**3#micrseconds
 off_time = 2.0*10**3 #microseconds
 recordTime =  number_of_pulses * (pulse_length + off_time)  / (1.0*10**6) #in seconds
@@ -46,6 +46,7 @@ pboxDict = {
             'sequence':pboxSequence,
             'number_of_pulses':number_of_pulses,
             'off_time':off_time,
+            'pulse_length':pulse_length
             }
 
 parameters = Parameters(globalDict)
@@ -74,11 +75,9 @@ def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
     #make sure r&s synthesizers are on and go into auto mode
-    for name in ['axial','radial','repump']:
+    for name in ['repump']:
         dpass.select(name)
         dpass.output(True)
-    for name in ['axial','radial']:
-        trigger.switch_auto(name,False)
     for name in ['866DP']:
         trigger.switch_auto(name)
     dp866.activate_list_mode(True)
@@ -90,6 +89,7 @@ def sequence():
     for iteration in range(iterations):
         print 'iteration {}'.format(iteration)
         trfpga.perform_time_resolved_measurement()
+        dp866.reset_list() #should reset here 
         trigger.trigger('PaulBox')
         timetags = trfpga.get_result_of_measurement().asarray
         #saving timetags
