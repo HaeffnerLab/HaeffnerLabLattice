@@ -10,21 +10,19 @@ Opens previous datasets
 Overlays incoming data
 
 """
-
-import sys
 from PyQt4 import QtGui, QtCore
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from twisted.internet.defer import inlineCallbacks, returnValue
-
 import numpy as np
-from PyQt4.Qt import *
+
+from PyQt4.Qt import * 
 import time
 
 GraphRefreshTime = 100; # ms, how often plot updates
 scrollfrac = .75; # Data reaches this much of the screen before auto-scroll takes place
-DIRECTORY = 'Sine Curves' # Current working directory
+DIRECTORY = 'PMT Counts' # Current working directory
 MAXDATASETS = 50 # Maximum datasets the grapher will handle
 MAXDATASETSOVERLAY = 10 # Maximum number of datasets the grapher can overlay on one graph
 
@@ -144,6 +142,7 @@ class Qt4MplCanvas(FigureCanvas):
               
     # refresh the graph
     def timerEvent(self, evt):
+        print 'timer event', self
         for datasetToPlot in range(self.datasetCounter):
             self.drawPlot(Connections.datasetList[self.datasetsToPlot[datasetToPlot]].data, datasetToPlot)
         tstopupdate = time.clock()
@@ -276,7 +275,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         fitButton = QPushButton("Fit", self)
         fitButton.setGeometry(QRect(0, 0, 30, 30))
         fitButton.move(390, 32)
-        fitButton.connect(fitButton, SIGNAL("clicked()"), self.fitDataSignal)
+        fitButton.clicked.connect(self.fitDataSignal)
     
     # Variable in charge of identifying the state of the Overlay Checkbox
     def setOverlayCheckBoxState(self,x):
@@ -323,7 +322,7 @@ class ApplicationWindow(QtGui.QMainWindow):
     
     # handles toggling the autoscroll feature        
     def toggleAutoscroll(self, state):
-      
+
         if state == QtCore.Qt.Checked:
             self.qmc.setAutoscrollFlag(1)
             self.toggleFlag = 1
@@ -402,26 +401,24 @@ class ApplicationWindow(QtGui.QMainWindow):
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
-    def __init__(self):
+    def __init__(self, parent):
         QtGui.QMainWindow.__init__(self)
-                
+        self.parent = parent
         self.setWindowTitle("Live Grapher!")
-        self.main_widget = QtGui.QWidget(self)
-        
-        openButton = QPushButton("Open Dataset", self)
-        openButton.setGeometry(QRect(0, 0, 120, 30))
+        openButton = QtGui.QPushButton("Open Dataset", self)
+        #MR eventually change this to use a layout, or make this button go in a toolbar. 
+        openButton.setGeometry(QtCore.QRect(0, 0, 120, 30))
         openButton.move(41, 30)
-        openButton.connect(openButton, SIGNAL("clicked()"), self.load_plot)
+        openButton.clicked.connect(self.load_plot)
     
     # asks for a dataset to open if one wasn't opened already    
     def load_plot(self):
-    
-        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 
-        'Enter a dataset:')        
+        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a dataset:')        
         if ok:
+            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             dataset = int(text)
             print dataset
-            Connections.newDataset(dataset)
+            self.parent.newDataset(dataset)
   
 class CONNECTIONS():
     def __init__(self, reactor, parent=None):
@@ -434,7 +431,7 @@ class CONNECTIONS():
         self.winID = -1 # arrays start with 0
         self.overlayFlag = 0
         self.connect()
-        self.introWindow = FirstWindow()
+        self.introWindow = FirstWindow(self)
         self.introWindow.show()
     
     # connect to the data vault    
@@ -451,7 +448,7 @@ class CONNECTIONS():
     def setupListeners(self):               
         yield self.server.signal__new_dataset(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)
-        #yield self.cxn.data_vault.cd(DIRECTORY)
+        yield self.cxn.data_vault.cd(DIRECTORY)
         print 'now listening dataset'
     
     # new dataset signal
