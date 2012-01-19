@@ -1,5 +1,8 @@
 """
-Version 2.1
+Version 2.2
+
+Update: Will use central dictionary to relate ApplicationWindow IDs with Dataset IDs
+
 
 Features:
 
@@ -28,12 +31,14 @@ MAXDATASETSOVERLAY = 10 # Maximum number of datasets the grapher can overlay on 
 
 # NOTE!! The grapher can only see signals if the signals are created in the same directory that the grapher is in.
 
-class Dataset():
+class Dataset(QObject):
     """Class to handle incoming data and prepare them for plotting """
-    def __init__(self, cxn, context, dataset):
+    def __init__(self, cxn, context, dataset, datasetID):
+        QObject.__init__(self)
         self.cxn = cxn
         self.context = context # context of the first dataset in the window
         self.dataset = dataset
+        self.datasetID = datasetID
         self.cnt = 0
         self.openDataset(self.dataset, self.context)
         self.setupDataListener(self.context)
@@ -54,14 +59,9 @@ class Dataset():
 
     # new data signal
     def updateData(self,x,y):
-        x = str(x)
-        q = x[29]
-        r = x[33]
-        context = [int(q), int(r)]
-        context = tuple(context)
-        self.getPlotData(context)   
+        self.getPlotData(self.context)   
 
-    # Draws the plot with the available data
+    # Retrieves relevent plot data and sets important initial plot parameters
     @inlineCallbacks
     def getPlotData(self,context):
         if (self.cnt == 0): # initial plot setup
@@ -69,13 +69,17 @@ class Dataset():
             self.plotnum = yield self.getPlotnum(self.context) # number of things to plot
             self.plots = [[]]*self.plotnum
             self.indep = [[]]*self.plotnum
-            self.newPlotDataExists = True
-            
+            self.cnt = self.cnt + 1 # this wasn't here before, and it worked?
+            # send signal to Connections saying data is available for plotting
+            self.emit(SIGNAL("dataReady(int)"), self.datasetID)
+
         else: # take new data, append it to existing data
             newdatal = yield self.getData(context) 
             newdata = np.array(newdatal)
             self.data = np.append(self.data, newdata, 0)
-
+            # send signal to Connections saying data is available for plotting
+            self.emit(SIGNAL("dataReady(int)"), self.datasetID)
+        
     # returns the number of things to plot
     @inlineCallbacks
     def getPlotnum(self,context):
@@ -97,15 +101,12 @@ class Dataset():
         
 class Qt4MplCanvas(FigureCanvas):
     """Class to represent the FigureCanvas widget"""
-    def __init__(self, parent, dataset):    
+    def __init__(self, parent, datasetID):    
         
-        self.dataset = dataset
+        self.datasetID = datasetID
         self.cnt = 0
         self.autoscrollFlag = 0
         
-        # datasets overlaid on the same graph
-        self.datasetsToPlot = [None]*MAXDATASETSOVERLAY # max datasets to overlay (for now)
-        self.datasetsToPlot[0] = self.findDataset(self.dataset)
         self.datasetCounter = 1
         
         # instantiate figure
@@ -123,36 +124,22 @@ class Qt4MplCanvas(FigureCanvas):
         self.old_size = self.ax.bbox.width, self.ax.bbox.height
         self.ax_background = self.copy_from_bbox(self.ax.bbox)
         self.timer = self.startTimer(GraphRefreshTime)
-    
-    # finds which datasetObject corresponds to which dataset (used for overlaying multiple datasets)       
-    def findDataset(self, dataset):
-        for i in range(0, (Connections.datasetCounter + 1)):
-            if (Connections.datasetID[i] == dataset):
-                return i
-                break
-            else:
-                pass
-
-    # Creates a list of datasets to plot later
-    def overlayData(self,dataset):
-        print dataset
-        newDatasetToPlot = self.findDataset(dataset)
-        self.datasetsToPlot[self.datasetCounter] = newDatasetToPlot
-        self.datasetCounter = self.datasetCounter + 1
-              
-    # refresh the graph
-    def timerEvent(self, evt):
-        print 'timer event', self
-        for datasetToPlot in range(self.datasetCounter):
-            self.drawPlot(Connections.datasetList[self.datasetsToPlot[datasetToPlot]].data, datasetToPlot)
-        tstopupdate = time.clock()
+               
+#    # refresh the graph
+#    def timerEvent(self, evt):
+#        print 'timer event', self
+#        # stuff you want timed goes here
+#        self.drawPlot(self.datasetID)
+#        tstopupdate = time.clock()
 
     # plot the data
-    def drawPlot(self, data, datasetToPlot):
+    def drawPlot(self, datasetID):
+      
+        data = Connections.datasetList[datasetID].data
         
         if (self.cnt == 0): # initial variable setup
-            self.plots = Connections.datasetList[self.datasetsToPlot[datasetToPlot]].plots
-            self.indep = Connections.datasetList[self.datasetsToPlot[datasetToPlot]].indep
+            self.plots = Connections.datasetList[datasetID].plots
+            self.indep = Connections.datasetList[datasetID].indep
         else:
             pass
         
@@ -240,20 +227,21 @@ class Qt4MplCanvas(FigureCanvas):
 
 class ApplicationWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
-    def __init__(self, cxn, context, dataset, winID):
+    def __init__(self, cxn, context, dataset, winID, datasetID):
         self.toggleFlag = 0
         self.cxn = cxn
         self.context = context
         self.dataset = dataset
-        self.overlayCheckBoxState = 0
         self.winID = winID
+        self.datasetID = datasetID
+        self.overlayCheckBoxState = 0
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Live Grapher - Dataset " + str(self.dataset))
         self.main_widget = QtGui.QWidget(self)
         # create a vertical box layout widget
         vbl = QtGui.QVBoxLayout(self.main_widget)
         # instantiate our Matplotlib canvas widget
-        self.qmc = Qt4MplCanvas(self.main_widget, self.dataset)
+        self.qmc = Qt4MplCanvas(self.main_widget, self.datasetID)
         # instantiate the navigation toolbar
         ntb = NavigationToolbar(self.qmc, self.main_widget)
         vbl.addWidget(ntb)
@@ -286,30 +274,19 @@ class ApplicationWindow(QtGui.QMainWindow):
         if state == QtCore.Qt.Checked:
             self.overlayCheckBoxState = 1                
             # Tell Connections to stop making new windows for new datasets 
-            Connections.setOverlayFlag(1, self.winID)
+            Connections.setOverlayFlag(1)
         else: # box is not checked
-            if (len(Connections.windowsAskingForOverlay) == 0):
+            self.overlayCheckBoxState = 0
+            if (self.checkIfOtherWindowsWantOverlay() == False):
                 # Tell Connections to start making new windows for new datasets
-                Connections.setOverlayFlag(0, self.winID)
-            else: # Remove the window from the list of windows asking to be overlayed
-                self.overlayNotChecked()
+                Connections.setOverlayFlag(0)
     
-    # what to do if the checkbox is unchecked            
-    def overlayNotChecked(self):
-        self.windowElementToRemove = self.findOverlayWindow(self.winID)
-        del Connections.windowsAskingForOverlay[self.windowElementToRemove]
-        if (len(Connections.windowsAskingForOverlay) == 0):
-            # Tell Connections to start making new windows for new datasets
-            Connections.setOverlayFlag(0, self.winID)
-    
-    # finds which element in the windowsAskingForOverlay list corresponds to the window ID so it can be removed in overlayDataSignal
-    def findOverlayWindow(self, winID):
-        for i in range(len(Connections.windowsAskingForOverlay)):
-            if (Connections.windowsAskingForOverlay[i] == winID):
-                return i
-                break
-            else:
-                pass
+    def checkIfOtherWindowsWantOverlay(self):
+        for i in Connections.dwDict.values():
+            if i < MAXDATASETS: # since datasets being overlaid don't have a native window (so they're value is assigned to 10000)
+                if Connections.winlist[i].cb2.isChecked():
+                    return True
+        return False
             
     # instructs the graph to update the boundaries to fit all the data
     def fitDataSignal(self):
@@ -393,11 +370,10 @@ class ApplicationWindow(QtGui.QMainWindow):
     def closeEvent(self, event):
         if (self.overlayCheckBoxState == 1):
             # "uncheck" the overlay checkbox
-            self.overlayNotChecked()
+            self.cb2.toggle()
             # Then don't do anything else since this window closes anyway
         else:
             pass           
-           
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
@@ -425,10 +401,9 @@ class CONNECTIONS():
         self.reactor = reactor
         self.winlist = []
         self.datasetList = []
-        self.windowsAskingForOverlay = []
-        self.datasetCounter = -1 # arrays start with 0
-        self.datasetID = [None]*MAXDATASETS # max datasets (for now)
-        self.winID = -1 # arrays start with 0
+        self.datasetID = -1 # = [None]*MAXDATASETS # max datasets (for now)
+        self.winID = -1
+        self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.overlayFlag = 0
         self.connect()
         self.introWindow = FirstWindow(self)
@@ -460,41 +435,42 @@ class CONNECTIONS():
     # Creates a new dataset and gives it an ID for identifying later (Overlaying)
     @inlineCallbacks
     def newDataset(self, dataset):
-        self.datasetCounter = self.datasetCounter + 1
-        self.datasetID[self.datasetCounter] = dataset
+        self.datasetID = self.datasetID + 1 # the counter dictates the name of the dataset in the dictionary
         context = yield self.cxn.context()
-        self.datasetObject = Dataset(self.cxn, context, dataset)
-        self.datasetList.append(self.datasetObject)
+        self.datasetObject = Dataset(self.cxn, context, dataset, self.datasetID)
+        #Qobject.connect to signal goes here? will it automaticalyl keep track of many signals?
+        QObject.connect(self.datasetObject,SIGNAL("dataReady(int)"),self.drawThePlot) # Data might come in faster than it takes to open the graph window!
+        self.datasetList.append(self.datasetObject) # allow for mulitple Dataset objects at once
+        # no overlay management yet, so it'll always make a new window
         self.newGraph(dataset, context)
+    
+    def drawThePlot(self, datasetID):
+        if (self.dwDict[datasetID] < MAXDATASETS): # This will skip the datasets that do not have a native window
+            self.winlist[self.dwDict[datasetID]].qmc.drawPlot(datasetID)
+        
+        # if any overlay boxes are checked, draw the plots on them too!
+        for i in self.dwDict.values():
+            if i < MAXDATASETS: # since datasets being overlaid don't have a native window (so they're value is assigned to 10000)
+                if self.winlist[i].cb2.isChecked():
+                    self.winlist[i].qmc.drawPlot(datasetID)
+    
+    def setOverlayFlag(self,x):
+        self.overlayFlag = x          
     
     # create a new graph, also sets up a Window ID so that if a graph...
     # ... asks for plot Overlay, it can be identified
     def newGraph(self, dataset, context):
         if (self.overlayFlag == 0):
             self.winID = self.winID + 1
-            self.win = ApplicationWindow(self.cxn, context, dataset, self.winID)
+            self.win = ApplicationWindow(self.cxn, context, dataset, self.winID, self.datasetID)
             self.win.show()
-            self.winlist.append(self.win)
+            self.winlist.append(self.win) # allows for multiple windows (to handle each Dataset) at once
+            self.dwDict[self.datasetID] = self.winID
         else:
-            print 'no more new windows!'
-            # send the new dataset to each window asking for it (cycle through windows asking to be overlayed)
-            for i in range(len(self.windowsAskingForOverlay)):
-                self.winlist[self.windowsAskingForOverlay[i]].qmc.overlayData(dataset)
+            # Don't make a new graph window!
+            # But DO make a new datasetID in the dictionary
+            self.dwDict[self.datasetID] = MAXDATASETS
     
-    # In charge of turning Overlay on and off
-    def setOverlayFlag(self, x, winID):
-        self.overlayFlag = x
-        if (x == 1):
-            self.windowAskingForOverlay = winID
-            self.createListWindowsOverlaying(winID)
-        else:
-            pass
-
-    # If more than one window wants to overlay data, create a list so that newGraph() can...
-    # ...overlay data on multiple windows
-    def createListWindowsOverlaying(self, winID):
-        self.windowsAskingForOverlay.append(winID)
-
     # Quade!! Stop the reactor!
     @inlineCallbacks                  
     def closeEvent(self):
