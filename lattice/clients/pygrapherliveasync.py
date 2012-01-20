@@ -1,8 +1,5 @@
 """
-Version 2.2
-
-Update: Will use central dictionary to relate ApplicationWindow IDs with Dataset IDs
-
+Version 2.3
 
 Features:
 
@@ -20,7 +17,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 from twisted.internet.defer import inlineCallbacks, returnValue
 import numpy as np
 
-from PyQt4.Qt import * 
+from PyQt4.Qt import QObject 
 import time
 
 GraphRefreshTime = 100; # ms, how often plot updates
@@ -71,14 +68,14 @@ class Dataset(QObject):
             self.indep = [[]]*self.plotnum
             self.cnt = self.cnt + 1 # this wasn't here before, and it worked?
             # send signal to Connections saying data is available for plotting
-            self.emit(SIGNAL("dataReady(int)"), self.datasetID)
+            self.emit(QtCore.SIGNAL("dataReady(int)"), self.datasetID)
 
         else: # take new data, append it to existing data
             newdatal = yield self.getData(context) 
             newdata = np.array(newdatal)
             self.data = np.append(self.data, newdata, 0)
             # send signal to Connections saying data is available for plotting
-            self.emit(SIGNAL("dataReady(int)"), self.datasetID)
+            self.emit(QtCore.SIGNAL("dataReady(int)"), self.datasetID)
         
     # returns the number of things to plot
     @inlineCallbacks
@@ -103,15 +100,14 @@ class Qt4MplCanvas(FigureCanvas):
     """Class to represent the FigureCanvas widget"""
     def __init__(self, parent, datasetID):    
         
-        self.datasetID = datasetID
-        self.cnt = 0
-        self.autoscrollFlag = 0
-        
-        self.datasetCounter = 1
-        
         # instantiate figure
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
+
+        self.datasetID = datasetID
+        self.cnt = 0
+        self.autoscrollFlag = 0
+        #self.firstBoundaryUpdate = False
         
         # create plot 
         self.ax = self.fig.add_subplot(111)
@@ -119,7 +115,6 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.set_xlim(0, 75)# add constants
         self.ax.set_ylim(-1, 100)
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
-        self.ax.legend()
         self.draw()
         self.old_size = self.ax.bbox.width, self.ax.bbox.height
         self.ax_background = self.copy_from_bbox(self.ax.bbox)
@@ -131,15 +126,13 @@ class Qt4MplCanvas(FigureCanvas):
 #        # stuff you want timed goes here
 #        self.drawPlot(self.datasetID)
 #        tstopupdate = time.clock()
-
+       
     # plot the data
-    def drawPlot(self, datasetID):
-      
-        data = Connections.datasetList[datasetID].data
-        
+    def drawPlot(self, datasetID, data, plots, indep):
+              
         if (self.cnt == 0): # initial variable setup
-            self.plots = Connections.datasetList[datasetID].plots
-            self.indep = Connections.datasetList[datasetID].indep
+            self.plots = plots
+            self.indep = indep
         else:
             pass
         
@@ -160,6 +153,8 @@ class Qt4MplCanvas(FigureCanvas):
         self.indep[0] = data.transpose()[1]
         self.indep[1] = data.transpose()[2]
         self.indep[2] = data.transpose()[3]
+        
+        dep = np.arange(dep.size)
            
         # finds the maximum dependent variable value
         self.maxX = len(dep)
@@ -168,6 +163,7 @@ class Qt4MplCanvas(FigureCanvas):
             self.plots[0] = self.ax.plot(dep.tolist(),self.indep[0].tolist(),label = '866 ON',animated=True)
             self.plots[1] = self.ax.plot(dep.tolist(),self.indep[1].tolist(),label = '866 OFF', animated=True)
             self.plots[2] = self.ax.plot(dep.tolist(),self.indep[2].tolist(),label = 'Differential ', animated=True)
+            self.ax.legend()
             self.cnt = self.cnt + 1
             
         else: # add the new data
@@ -177,15 +173,15 @@ class Qt4MplCanvas(FigureCanvas):
     
         # flatten the data
         self.plots = self.flatten(self.plots)
-        
+               
         # draw
         self.ax.draw_artist(self.plots[0])
-        self.ax.draw_artist(self.plots[1])
+        self.ax.draw_artist(self.plots[1]) 
         self.ax.draw_artist(self.plots[2])
-    
+            
         # redraw the cached axes rectangle
         self.blit(self.ax.bbox)
-        
+                
         # check if the axes needs to be updated
         self.updateBoundary(data)
  
@@ -195,7 +191,8 @@ class Qt4MplCanvas(FigureCanvas):
  
     # if the screen has reached the scrollfraction limit, it will update the boundaries
     def updateBoundary(self, data):
-        if (self.autoscrollFlag == 1):
+        if (self.autoscrollFlag == 1): # or self.firstBoundaryUpdate == True):
+            #self.firstBoundaryUpdate == False
             cur = data.transpose()[0][-1]
             xmin, xmax = self.ax.get_xlim()
             xwidth = xmax - xmin
@@ -257,17 +254,13 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.cb1.stateChanged.connect(self.toggleAutoscroll)
         # checkbox to change boundaries
         self.cb2 = QtGui.QCheckBox('Overlay', self)
-        self.cb2.move(500, 40)
+        self.cb2.move(500, 35)
         self.cb2.stateChanged.connect(self.overlayDataSignal)
         # button to fit data on screen
-        fitButton = QPushButton("Fit", self)
-        fitButton.setGeometry(QRect(0, 0, 30, 30))
+        fitButton = QtGui.QPushButton("Fit", self)
+        fitButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         fitButton.move(390, 32)
         fitButton.clicked.connect(self.fitDataSignal)
-    
-    # Variable in charge of identifying the state of the Overlay Checkbox
-    def setOverlayCheckBoxState(self,x):
-        self.overlayCheckBoxState = x
         
     # Overlay Data
     def overlayDataSignal(self, state):
@@ -282,12 +275,14 @@ class ApplicationWindow(QtGui.QMainWindow):
                 Connections.setOverlayFlag(0)
     
     def checkIfOtherWindowsWantOverlay(self):
-        for i in Connections.dwDict.values():
-            if i < MAXDATASETS: # since datasets being overlaid don't have a native window (so they're value is assigned to 10000)
-                if Connections.winlist[i].cb2.isChecked():
+        self.overlaidWindows = []
+        for i in Connections.dwDict.keys():
+            values = Connections.dwDict[i]
+            for j in values:
+                if Connections.winlist[j].cb2.isChecked():
                     return True
-        return False
-            
+        return False        
+                   
     # instructs the graph to update the boundaries to fit all the data
     def fitDataSignal(self):
         if (self.toggleFlag == 1): # make sure autoscroll is off otherwise it will undo this operation
@@ -319,7 +314,7 @@ class ApplicationWindow(QtGui.QMainWindow):
     # about menu        
     def on_about(self):
         msg = """ Live Grapher for LabRad! """
-        QMessageBox.about(self, "About the demo", msg.strip())
+        QtGui.QMessageBox.about(self, "About the demo", msg.strip())
 
     # creates the menu
     def create_menu(self):        
@@ -353,16 +348,16 @@ class ApplicationWindow(QtGui.QMainWindow):
     def create_action(  self, text, slot=None, shortcut=None, 
                         icon=None, tip=None, checkable=False, 
                         signal="triggered()"):
-        action = QAction(text, self)
+        action = QtGui.QAction(text, self)
         if icon is not None:
-            action.setIcon(QIcon(":/%s.png" % icon))
+            action.setIcon(QtGui.QIcon(":/%s.png" % icon))
         if shortcut is not None:
             action.setShortcut(shortcut)
         if tip is not None:
             action.setToolTip(tip)
             action.setStatusTip(tip)
         if slot is not None:
-            self.connect(action, SIGNAL(signal), slot)
+            self.connect(action, QtCore.SIGNAL(signal), slot)
         if checkable:
             action.setCheckable(True)
         return action
@@ -401,8 +396,8 @@ class CONNECTIONS():
         self.reactor = reactor
         self.winlist = []
         self.datasetList = []
-        self.datasetID = -1 # = [None]*MAXDATASETS # max datasets (for now)
-        self.winID = -1
+        self.datasetID = -1 # ID number for Dataset objects (starts at 0)
+        self.winID = -1 # ID number for ApplicationWindow objects (starts at 0)
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.overlayFlag = 0
         self.connect()
@@ -438,39 +433,56 @@ class CONNECTIONS():
         self.datasetID = self.datasetID + 1 # the counter dictates the name of the dataset in the dictionary
         context = yield self.cxn.context()
         self.datasetObject = Dataset(self.cxn, context, dataset, self.datasetID)
-        #Qobject.connect to signal goes here? will it automaticalyl keep track of many signals?
-        QObject.connect(self.datasetObject,SIGNAL("dataReady(int)"),self.drawThePlot) # Data might come in faster than it takes to open the graph window!
+        QObject.connect(self.datasetObject,QtCore.SIGNAL("dataReady(int)"),self.drawThePlot) # Data might come in faster than it takes to open the graph window!
         self.datasetList.append(self.datasetObject) # allow for mulitple Dataset objects at once
-        # no overlay management yet, so it'll always make a new window
         self.newGraph(dataset, context)
     
     def drawThePlot(self, datasetID):
-        if (self.dwDict[datasetID] < MAXDATASETS): # This will skip the datasets that do not have a native window
-            self.winlist[self.dwDict[datasetID]].qmc.drawPlot(datasetID)
-        
-        # if any overlay boxes are checked, draw the plots on them too!
-        for i in self.dwDict.values():
-            if i < MAXDATASETS: # since datasets being overlaid don't have a native window (so they're value is assigned to 10000)
-                if self.winlist[i].cb2.isChecked():
-                    self.winlist[i].qmc.drawPlot(datasetID)
-    
+        windowsToDrawOn = self.dwDict[datasetID]
+        for i in windowsToDrawOn:
+            if self.winlist[i].qmc.cnt == 0: # in order to prevent sending plots and indep more than once
+                plots = self.datasetList[datasetID].plots
+                indep = self.datasetList[datasetID].indep
+                data = self.datasetList[datasetID].data
+                self.winlist[i].qmc.drawPlot(datasetID, data, plots, indep)
+            else:
+                plots = None
+                indep = None
+                data = self.datasetList[datasetID].data
+                self.winlist[i].qmc.drawPlot(datasetID, data, plots, indep)
+                
     def setOverlayFlag(self,x):
         self.overlayFlag = x          
     
     # create a new graph, also sets up a Window ID so that if a graph...
-    # ... asks for plot Overlay, it can be identified
+    # ... asks for plot Overlay, it can be id
     def newGraph(self, dataset, context):
         if (self.overlayFlag == 0):
             self.winID = self.winID + 1
             self.win = ApplicationWindow(self.cxn, context, dataset, self.winID, self.datasetID)
             self.win.show()
             self.winlist.append(self.win) # allows for multiple windows (to handle each Dataset) at once
-            self.dwDict[self.datasetID] = self.winID
+            self.dwDict[self.datasetID] = [self.winID]
         else:
             # Don't make a new graph window!
             # But DO make a new datasetID in the dictionary
-            self.dwDict[self.datasetID] = MAXDATASETS
+            self.dwDict[self.datasetID] = self.checkForOverlayingWindows()
     
+    # Cycles through the values in each key for checked Overlay boxes, returns the windows...
+    # ...with the overlay button checked
+    def checkForOverlayingWindows(self):
+        self.overlaidWindows = []
+        for i in self.dwDict.keys():
+            values = self.dwDict[i]
+            for j in values:
+                if self.winlist[j].cb2.isChecked():
+                    # skip duplicates
+                    if j in self.overlaidWindows:
+                        pass
+                    else:
+                        self.overlaidWindows.append(j)
+        return self.overlaidWindows
+            
     # Quade!! Stop the reactor!
     @inlineCallbacks                  
     def closeEvent(self):
