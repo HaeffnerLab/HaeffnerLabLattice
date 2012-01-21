@@ -1,5 +1,5 @@
 """
-Version 2.3
+Version 2.5
 
 Features:
 
@@ -23,8 +23,6 @@ import time
 GraphRefreshTime = 100; # ms, how often plot updates
 scrollfrac = .75; # Data reaches this much of the screen before auto-scroll takes place
 DIRECTORY = 'PMT Counts' # Current working directory
-MAXDATASETS = 50 # Maximum datasets the grapher will handle
-MAXDATASETSOVERLAY = 10 # Maximum number of datasets the grapher can overlay on one graph
 
 # NOTE!! The grapher can only see signals if the signals are created in the same directory that the grapher is in.
 
@@ -67,15 +65,15 @@ class Dataset(QObject):
             self.plots = [[]]*self.plotnum
             self.indep = [[]]*self.plotnum
             self.cnt = self.cnt + 1 # this wasn't here before, and it worked?
-            # send signal to Connections saying data is available for plotting
+            # send signal to Connections saying initial data is available for plotting
             self.emit(QtCore.SIGNAL("dataReady(int)"), self.datasetID)
 
         else: # take new data, append it to existing data
             newdatal = yield self.getData(context) 
-            newdata = np.array(newdatal)
-            self.data = np.append(self.data, newdata, 0)
+            self.newdata = np.array(newdatal)
+            self.data = np.append(self.data, self.newdata, 0)
             # send signal to Connections saying data is available for plotting
-            self.emit(QtCore.SIGNAL("dataReady(int)"), self.datasetID)
+            self.emit(QtCore.SIGNAL("newDataReady(int)"), self.datasetID)
         
     # returns the number of things to plot
     @inlineCallbacks
@@ -94,8 +92,7 @@ class Dataset(QObject):
             Data = yield self.cxn.data_vault.get(context = context)
         data = Data.asarray
         returnValue(data)
-
-        
+      
 class Qt4MplCanvas(FigureCanvas):
     """Class to represent the FigureCanvas widget"""
     def __init__(self, parent, datasetID):    
@@ -103,39 +100,45 @@ class Qt4MplCanvas(FigureCanvas):
         # instantiate figure
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
-
         self.datasetID = datasetID
         self.cnt = 0
-        self.autoscrollFlag = 0
-        #self.firstBoundaryUpdate = False
-        
+        self.autoscrollFlag = 0 
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
-        self.ax.set_xlim(0, 75)# add constants
+        self.ax.set_xlim(0, 500)# add constants
         self.ax.set_ylim(-1, 100)
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
-        self.draw()
+        #self.draw()
         self.old_size = self.ax.bbox.width, self.ax.bbox.height
         self.ax_background = self.copy_from_bbox(self.ax.bbox)
-        self.timer = self.startTimer(GraphRefreshTime)
+    
+    def setPlotParameters(self, indep, plots):
+        self.plots = plots
+        self.indep = indep
+   
+    def setInitialPlotData(self, data):
+        self.data = data
                
-#    # refresh the graph
-#    def timerEvent(self, evt):
-#        print 'timer event', self
-#        # stuff you want timed goes here
-#        self.drawPlot(self.datasetID)
-#        tstopupdate = time.clock()
+    def appendNewData(self, newdata):
+        self.data = np.append(self.data, newdata, 0)
+               
+    # refresh the graph
+    def timerEvent(self, evt):
+        #print 'timer event', self
+        # stuff you want timed goes here
+        self.drawPlot(self.datasetID)
+        tstopupdate = time.clock()
        
     # plot the data
-    def drawPlot(self, datasetID, data, plots, indep):
-              
+    def drawPlot(self, datasetID):
+                      
         if (self.cnt == 0): # initial variable setup
-            self.plots = plots
-            self.indep = indep
+            self.datasetID = datasetID
+            self.timer = self.startTimer(GraphRefreshTime)
         else:
             pass
-        
+                
         # have to redraw whole canvas if size changes
         current_size = self.ax.bbox.width, self.ax.bbox.height
         if self.old_size != current_size:
@@ -149,27 +152,30 @@ class Qt4MplCanvas(FigureCanvas):
             self.restore_region(self.ax_background, bbox=self.ax.bbox)
                     
         # update plot
-        dep = data.transpose()[0]
-        self.indep[0] = data.transpose()[1]
-        self.indep[1] = data.transpose()[2]
-        self.indep[2] = data.transpose()[3]
+        self.dep = self.data.transpose()[0]
+        self.indep[0] = self.data.transpose()[1]
+        self.indep[1] = self.data.transpose()[2]
+        self.indep[2] = self.data.transpose()[3]
         
-        dep = np.arange(dep.size)
-           
+        # Reassign dependent axis to smaller integers (in order to fit on screen)
+        self.dep = np.arange(self.dep.size)
+                  
         # finds the maximum dependent variable value
-        self.maxX = len(dep)
+        self.maxX = len(self.dep)
         
         if (self.cnt == 0): # initial label setup       
-            self.plots[0] = self.ax.plot(dep.tolist(),self.indep[0].tolist(),label = '866 ON',animated=True)
-            self.plots[1] = self.ax.plot(dep.tolist(),self.indep[1].tolist(),label = '866 OFF', animated=True)
-            self.plots[2] = self.ax.plot(dep.tolist(),self.indep[2].tolist(),label = 'Differential ', animated=True)
+            self.plots[0] = self.ax.plot(self.dep.tolist(),self.indep[0].tolist(),label = '866 ON',animated=True)
+            self.plots[1] = self.ax.plot(self.dep.tolist(),self.indep[1].tolist(),label = '866 OFF', animated=True)
+            self.plots[2] = self.ax.plot(self.dep.tolist(),self.indep[2].tolist(),label = 'Differential ', animated=True)
             self.ax.legend()
+            self.draw()
             self.cnt = self.cnt + 1
             
         else: # add the new data
-            self.plots[0].set_data(dep,self.indep[0])
-            self.plots[1].set_data(dep,self.indep[1])
-            self.plots[2].set_data(dep,self.indep[2])
+
+            self.plots[0].set_data(self.dep,self.indep[0])
+            self.plots[1].set_data(self.dep,self.indep[1])
+            self.plots[2].set_data(self.dep,self.indep[2])
     
         # flatten the data
         self.plots = self.flatten(self.plots)
@@ -183,7 +189,7 @@ class Qt4MplCanvas(FigureCanvas):
         self.blit(self.ax.bbox)
                 
         # check if the axes needs to be updated
-        self.updateBoundary(data)
+        self.updateBoundary(self.data)
  
     # toggle Autoscroll (updateBoundary)
     def setAutoscrollFlag(self, autoscrollFlag):
@@ -192,8 +198,7 @@ class Qt4MplCanvas(FigureCanvas):
     # if the screen has reached the scrollfraction limit, it will update the boundaries
     def updateBoundary(self, data):
         if (self.autoscrollFlag == 1): # or self.firstBoundaryUpdate == True):
-            #self.firstBoundaryUpdate == False
-            cur = data.transpose()[0][-1]
+            cur = self.dep.size
             xmin, xmax = self.ax.get_xlim()
             xwidth = xmax - xmin
             # if current x position exceeds certain x coordinate, update the screen
@@ -204,7 +209,7 @@ class Qt4MplCanvas(FigureCanvas):
                 self.draw()
         else:
             pass # since updateBoundary is called every time in drawPlot()
-    
+        
     # update boundaries to fit all the data                
     def fitData(self):
         xmin, xmax = self.ax.get_xlim()
@@ -366,6 +371,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         if (self.overlayCheckBoxState == 1):
             # "uncheck" the overlay checkbox
             self.cb2.toggle()
+            self.qmc.killTimer(self.qmc.timer)
             # Then don't do anything else since this window closes anyway
         else:
             pass           
@@ -434,22 +440,27 @@ class CONNECTIONS():
         context = yield self.cxn.context()
         self.datasetObject = Dataset(self.cxn, context, dataset, self.datasetID)
         QObject.connect(self.datasetObject,QtCore.SIGNAL("dataReady(int)"),self.drawThePlot) # Data might come in faster than it takes to open the graph window!
+        QObject.connect(self.datasetObject,QtCore.SIGNAL("newDataReady(int)"),self.drawNewDataOnPlot) # Data might come in faster than it takes to open the graph window!
         self.datasetList.append(self.datasetObject) # allow for mulitple Dataset objects at once
         self.newGraph(dataset, context)
     
     def drawThePlot(self, datasetID):
         windowsToDrawOn = self.dwDict[datasetID]
         for i in windowsToDrawOn:
-            if self.winlist[i].qmc.cnt == 0: # in order to prevent sending plots and indep more than once
-                plots = self.datasetList[datasetID].plots
-                indep = self.datasetList[datasetID].indep
-                data = self.datasetList[datasetID].data
-                self.winlist[i].qmc.drawPlot(datasetID, data, plots, indep)
-            else:
-                plots = None
-                indep = None
-                data = self.datasetList[datasetID].data
-                self.winlist[i].qmc.drawPlot(datasetID, data, plots, indep)
+            self.plots = self.datasetList[datasetID].plots
+            self.indep = self.datasetList[datasetID].indep
+            data = self.datasetList[datasetID].data
+            if self.winlist[i].qmc.cnt == 0:
+                self.winlist[i].qmc.setPlotParameters(self.plots, self.indep)
+            self.winlist[i].qmc.setInitialPlotData(data)
+            self.winlist[i].qmc.drawPlot(datasetID)
+    
+    def drawNewDataOnPlot(self, datasetID):
+        windowsToDrawOn = self.dwDict[datasetID]
+        for i in windowsToDrawOn:
+            newdata = self.datasetList[datasetID].newdata
+            self.winlist[i].qmc.appendNewData(newdata)
+            self.winlist[i].qmc.drawPlot(datasetID)
                 
     def setOverlayFlag(self,x):
         self.overlayFlag = x          
