@@ -92,6 +92,7 @@ class CanvasWidget(QWidget):
     """
     def __init__(self, parent):
         QWidget.__init__(self, parent)
+        self.parent = parent
         self.dataDict = {}
         self.itemDataDict = {}
         self.data = None 
@@ -166,15 +167,16 @@ class CanvasWidget(QWidget):
         self.itemDataDict[dataset][1].set_data(indep, y2)
         self.itemDataDict[dataset][2].set_data(indep, y3)
         
-        cur = indep.size
-        xmin, xmax = self.plot.get_axis_limits(2)
-        xwidth = xmax - xmin
-        # if current x position exceeds certain x coordinate, update the screen
-        if (cur > scrollfrac * xwidth + xmin):
-            xmin = cur - xwidth/4
-            xmax = xmin + xwidth
-            self.plot.set_axis_limits(2, xmin, xmax)
-    
+        if self.parent.cb1.isChecked():
+            cur = indep.size
+            xmin, xmax = self.plot.get_axis_limits(2)
+            xwidth = xmax - xmin
+            # if current x position exceeds certain x coordinate, update the screen
+            if (cur > scrollfrac * xwidth + xmin):
+                xmin = cur - xwidth/4
+                xmax = xmin + xwidth
+                self.plot.set_axis_limits(2, xmin, xmax)
+        
         # Update plot
         self.plot.replot()
         #---
@@ -201,8 +203,11 @@ class ApplicationWindow(QMainWindow):
         self.manager.add_plot(self.qmc.plot)
         #---
         # checkbox to change boundaries
+        self.cb1 = QtGui.QCheckBox('Autoscroll', self)
+        self.cb1.move(250, 28)
+        # checkbox to change boundaries
         self.cb2 = QtGui.QCheckBox('Overlay', self)
-        self.cb2.move(350, 25)      
+        self.cb2.move(350, 28)      
  
         #---Add toolbar and register manager tools
         toolbar = self.addToolBar("tools")
