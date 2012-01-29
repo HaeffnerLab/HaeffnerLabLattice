@@ -116,6 +116,11 @@ class CanvasWidget(QWidget):
         #---Create the plot widget:
         self.plot = CurvePlot(self)
         self.plot.set_antialiasing(True)
+        xaxis, yaxis = self.plot.get_active_axes()
+        #return [(dx, xaxis), (dy, yaxis)]
+        self.plot.set_axis_limits(2, 0, 500)
+        #print xaxis
+        
         #---
         
         vlayout = QVBoxLayout()
@@ -161,6 +166,15 @@ class CanvasWidget(QWidget):
         self.itemDataDict[dataset][1].set_data(indep, y2)
         self.itemDataDict[dataset][2].set_data(indep, y3)
         
+        cur = indep.size
+        xmin, xmax = self.plot.get_axis_limits(2)
+        xwidth = xmax - xmin
+        # if current x position exceeds certain x coordinate, update the screen
+        if (cur > scrollfrac * xwidth + xmin):
+            xmin = cur - xwidth/4
+            xmax = xmin + xwidth
+            self.plot.set_axis_limits(2, xmin, xmax)
+    
         # Update plot
         self.plot.replot()
         #---
@@ -202,152 +216,6 @@ class ApplicationWindow(QMainWindow):
             # Then don't do anything else since this window closes anyway
         else:
             pass  
-        
-        #---
-#class ApplicationWindow(QtGui.QMainWindow):
-#    """Creates the window for the new plot"""
-#    def __init__(self, cxn, context, dataset, indep):
-#        #self.doneMaking = Deferred()
-#        self.toggleFlag = 0
-#        self.cxn = cxn
-#        self.context = context
-#        self.dataset = dataset
-#        self.overlayCheckBoxState = 0
-#        QtGui.QMainWindow.__init__(self)
-#        self.setWindowTitle("Live Grapher - Dataset " + str(self.dataset))
-#        self.main_widget = QtGui.QWidget(self)
-#        # create a vertical box layout widget
-#        vbl = QtGui.QVBoxLayout(self.main_widget)
-#        # instantiate our Matplotlib canvas widget
-#        self.qmc = Qt4MplCanvas(self.main_widget)
-#        self.qmc.setPlotParameters(indep)
-#        # instantiate the navigation toolbar
-#        ntb = NavigationToolbar(self.qmc, self.main_widget)
-#        vbl.addWidget(ntb)
-#        vbl.addWidget(self.qmc)
-#        # set the focus on the main widget
-#        self.main_widget.setFocus()
-#        self.setCentralWidget(self.main_widget)
-#        # add menu
-#        self.create_menu()
-#        # checkbox to change boundaries
-#        self.cb1 = QtGui.QCheckBox('Autoscroll', self)
-#        self.cb1.move(290, 33)
-#        self.cb1.stateChanged.connect(self.toggleAutoscroll)
-#        # checkbox to change boundaries
-#        self.cb2 = QtGui.QCheckBox('Overlay', self)
-#        self.cb2.move(500, 35)
-#        self.cb2.stateChanged.connect(self.overlayDataSignal)
-#        # button to fit data on screen
-#        fitButton = QtGui.QPushButton("Fit", self)
-#        fitButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        fitButton.move(390, 32)
-#        fitButton.clicked.connect(self.fitDataSignal)
-#        #self.doneMaking.callback(True)
-#        
-#    # Overlay Data
-#    def overlayDataSignal(self, state):
-#        if state == QtCore.Qt.Checked:
-#            self.overlayCheckBoxState = 1                
-#        else: # box is not checked
-#            self.overlayCheckBoxState = 0
-#    
-#    def checkIfOtherWindowsWantOverlay(self):
-#        self.overlaidWindows = []
-#        for i in Connections.dwDict.keys():
-#            values = Connections.dwDict[i]
-#            for j in values:
-#                if Connections.j.cb2.isChecked():
-#                    return True
-#        return False        
-#                   
-#    # instructs the graph to update the boundaries to fit all the data
-#    def fitDataSignal(self):
-#        if (self.toggleFlag == 1): # make sure autoscroll is off otherwise it will undo this operation
-#            self.cb1.toggle()
-#            self.qmc.setAutoscrollFlag(0)
-#            self.qmc.fitData()
-#        else:
-#            self.qmc.fitData()
-#    
-#    # handles toggling the autoscroll feature        
-#    def toggleAutoscroll(self, state):
-#
-#        if state == QtCore.Qt.Checked:
-#            self.qmc.setAutoscrollFlag(1)
-#            self.toggleFlag = 1
-#        else:
-#            self.qmc.setAutoscrollFlag(0)
-#            self.toggleFlag = 0
-#
-#    # handles loading a new plot
-#    def load_plot(self): 
-#        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 
-#            'Enter a dataset:')
-#        if ok:
-#            dataset = int(text)
-#            print dataset
-#            Connections.newDataset(dataset)
-#    
-#    # about menu        
-#    def on_about(self):
-#        msg = """ Live Grapher for LabRad! """
-#        QtGui.QMessageBox.about(self, "About the demo", msg.strip())
-#
-#    # creates the menu
-#    def create_menu(self):        
-#        self.file_menu = self.menuBar().addMenu("&File")
-#        
-#        load_file_action = self.create_action("&Load plot",
-#            shortcut="Ctrl+L", slot=self.load_plot, 
-#            tip="Save the plot")
-#        quit_action = self.create_action("&Close Window", slot=self.close, 
-#            shortcut="Ctrl+Q", tip="Close the application")
-#        
-#        self.add_actions(self.file_menu, 
-#            (load_file_action, None, quit_action))
-#        
-#        self.help_menu = self.menuBar().addMenu("&Help")
-#        about_action = self.create_action("&About", 
-#            shortcut='F1', slot=self.on_about, 
-#            tip='About the demo')
-#        
-#        self.add_actions(self.help_menu, (about_action,))
-#
-#    # menu - related
-#    def add_actions(self, target, actions):
-#        for action in actions:
-#            if action is None:
-#                target.addSeparator()
-#            else:
-#                target.addAction(action)
-#
-#    # menu - related
-#    def create_action(  self, text, slot=None, shortcut=None, 
-#                        icon=None, tip=None, checkable=False, 
-#                        signal="triggered()"):
-#        action = QtGui.QAction(text, self)
-#        if icon is not None:
-#            action.setIcon(QtGui.QIcon(":/%s.png" % icon))
-#        if shortcut is not None:
-#            action.setShortcut(shortcut)
-#        if tip is not None:
-#            action.setToolTip(tip)
-#            action.setStatusTip(tip)
-#        if slot is not None:
-#            self.connect(action, QtCore.SIGNAL(signal), slot)
-#        if checkable:
-#            action.setCheckable(True)
-#        return action
-#    
-#    def closeEvent(self, event):
-#        #self.qmc.killTimer(self.qmc.timer)
-#        if (self.overlayCheckBoxState == 1):
-#            # "uncheck" the overlay checkbox
-#            self.cb2.toggle()
-#            # Then don't do anything else since this window closes anyway
-#        else:
-#            pass           
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
