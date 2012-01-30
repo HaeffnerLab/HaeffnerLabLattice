@@ -14,11 +14,13 @@ from PyQt4 import QtGui, QtCore
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
-from twisted.internet.defer import inlineCallbacks, returnValue
-import numpy as np
+from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
+from twisted.internet.task import LoopingCall
+from twisted.internet.threads import deferToThread
+import numpy as np 
 import time
 
-GraphRefreshTime = 100; # ms, how often plot updates
+GraphRefreshTime = .1; # s, how often plot updates
 scrollfrac = .75; # Data reaches this much of the screen before auto-scroll takes place
 DIRECTORY = 'PMT Counts' # Current working directory
 
@@ -29,23 +31,18 @@ class Dataset(QtCore.QObject):
     """Class to handle incoming data and prepare them for plotting """
     def __init__(self, cxn, context, dataset):
         super(Dataset, self).__init__()
+        self.accessingData = DeferredLock()
         self.cxn = cxn
         self.context = context # context of the first dataset in the window
         self.dataset = dataset
         self.data = None
-        self.setup()
         self.setupDataListener(self.context)
         
-    @inlineCallbacks
-    def setup(self):
-        yield self.openDataset(self.dataset, self.context)
-        self.indep = yield self.setIndepVariables()
-    
     # open dataset in order to listen for new data signals in current context        
     @inlineCallbacks
-    def openDataset(self, dataset, context):
-        yield self.cxn.data_vault.cd(DIRECTORY, context = context)
-        yield self.cxn.data_vault.open(dataset, context = context)
+    def openDataset(self):
+        yield self.cxn.data_vault.cd(DIRECTORY, context = self.context)
+        yield self.cxn.data_vault.open(self.dataset, context = self.context)
         
     # sets up the listener for new data
     @inlineCallbacks
@@ -58,19 +55,20 @@ class Dataset(QtCore.QObject):
     def updateData(self,x,y):
         self.getData(self.context)
       
-    # returns the number of things to plot
-    @inlineCallbacks
-    def getPlotnum(self,context):
-        variables = yield self.cxn.data_vault.variables(context = context)
-        plotNum = len(variables[1])
-        returnValue(plotNum) 
+#    # returns the number of things to plot
+#    @inlineCallbacks
+#    def getPlotnum(self,context):
+#        variables = yield self.cxn.data_vault.variables(context = context)
+#        plotNum = len(variables[1])
+#        returnValue(plotNum) 
     
     @inlineCallbacks
     def setIndepVariables(self):
-        plotnum = yield self.getPlotnum(self.context)
+        variables = yield self.cxn.data_vault.variables(context = self.context)
+        plotnum = len(variables[1])
         indep = [[]]*plotnum
         returnValue(indep)
-   
+
     # returns the current data
     @inlineCallbacks
     def getData(self,context):
@@ -78,11 +76,18 @@ class Dataset(QtCore.QObject):
         if (self.data == None):
             self.data = Data.asarray
         else:
+            yield self.accessingData.acquire()         
             self.data = np.append(self.data, Data.asarray, 0)
-
+            self.accessingData.release()
+        
+    @inlineCallbacks
     def emptyDataBuffer(self):
+        print 'in empty, waiting to acquire'
+        yield self.accessingData.acquire()
         del(self.data)
         self.data = None
+        print 'self data should be none now'
+        self.accessingData.release()
       
 class Qt4MplCanvas(FigureCanvas):
     """Class to represent the FigureCanvas widget"""
@@ -100,7 +105,7 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.set_xlim(0, 500)# add constants
         self.ax.set_ylim(-1, 100)
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
-        #self.draw()
+        self.draw()
         self.old_size = self.ax.bbox.width, self.ax.bbox.height
         self.ax_background = self.copy_from_bbox(self.ax.bbox)
     
@@ -117,6 +122,10 @@ class Qt4MplCanvas(FigureCanvas):
             self.dataDict[dataset] = data
         else:
             self.dataDict[dataset] = np.append(self.dataDict[dataset], data, 0)
+    
+    def refreshPlots(self):
+        self.draw()
+        self.blit(self.ax.bbox)
        
     # plot the data
     def drawPlot(self, dataset):
@@ -213,7 +222,8 @@ class Qt4MplCanvas(FigureCanvas):
 
 class ApplicationWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
-    def __init__(self, cxn, context, dataset):
+    def __init__(self, cxn, context, dataset, indep):
+        #self.doneMaking = Deferred()
         self.toggleFlag = 0
         self.cxn = cxn
         self.context = context
@@ -226,6 +236,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         vbl = QtGui.QVBoxLayout(self.main_widget)
         # instantiate our Matplotlib canvas widget
         self.qmc = Qt4MplCanvas(self.main_widget)
+        self.qmc.setPlotParameters(indep)
         # instantiate the navigation toolbar
         ntb = NavigationToolbar(self.qmc, self.main_widget)
         vbl.addWidget(ntb)
@@ -248,6 +259,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         fitButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         fitButton.move(390, 32)
         fitButton.clicked.connect(self.fitDataSignal)
+        #self.doneMaking.callback(True)
         
     # Overlay Data
     def overlayDataSignal(self, state):
@@ -377,9 +389,9 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def __init__(self, reactor, parent=None):
         super(CONNECTIONS, self).__init__()
         self.reactor = reactor
-        self.timers = []
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.connect()
+        self.startTimer()
         self.introWindow = FirstWindow(self)
         self.introWindow.show()
 
@@ -408,51 +420,53 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     @inlineCallbacks
     def newDataset(self, dataset):
         context = yield self.cxn.context()
-        self.datasetObject = Dataset(self.cxn, context, dataset)
+        datasetObject = Dataset(self.cxn, context, dataset)
+        yield datasetObject.openDataset()
+        indep = yield datasetObject.setIndepVariables()
         #if windows request the overlay, update those. else, create a new window.
         overlayWindows = self.getOverlayingWindows()
         if overlayWindows:
-            self.dwDict[self.datasetObject] = overlayWindows
-            self.startDrawing(self.datasetObject)
+            self.dwDict[datasetObject] = overlayWindows
             for window in overlayWindows:
                 window.qmc.initializeDataset(dataset)
         else:
-            win = self.newGraph(dataset, context) 
-            self.dwDict[self.datasetObject] = [win]
+            win = self.newGraph(dataset, context, indep)
+            #yield win.doneMaking
+            yield deferToThread(time.sleep,.01)
+            self.dwDict[datasetObject] = [win]
             win.qmc.initializeDataset(dataset)
-            self.startDrawing(self.datasetObject)
+            #del(indep)
+            #win.qmc.setPlotParameters()
+            #win.qmc.refreshPlots()
+
             
-    def startDrawing(self, datasetObject): 
-        self.timer = self.startTimer(GraphRefreshTime)
-        self.timers.append(self.timer)
-        # Note: QTimerEvent.timerID should keep track of them?  
+    def startTimer(self): 
+        lc = LoopingCall(self.timerEvent)
+        lc.start(GraphRefreshTime)
         
-    def timerEvent(self, evt):
+    @inlineCallbacks
+    def timerEvent(self):
+        updatedWindows = set()
         for datasetObject in self.dwDict.keys():
         # stuff you want timed goes here
-            if (datasetObject.data == None):
-                windowsToDrawOn = self.dwDict[datasetObject]
-                for i in windowsToDrawOn:
-                    i.qmc.drawPlot(datasetObject.dataset)
-            else:
+            if (datasetObject.data != None):
                 #print self.datasetObject.data
                 windowsToDrawOn = self.dwDict[datasetObject]
-                self.indep = self.datasetObject.indep
                 data = datasetObject.data
-                datasetObject.emptyDataBuffer()
+                yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
-                    if i.qmc.cnt == 0:
-                        i.qmc.setPlotParameters(self.indep)
                     i.qmc.setPlotData(datasetObject.dataset, data)
-                    i.qmc.drawPlot(datasetObject.dataset)
-        tstopupdate = time.clock() 
+                    updatedWindows.add((i,datasetObject.dataset))
+        for window,dataset in updatedWindows:
+            window.qmc.drawPlot(dataset)
 
     
     # create a new graph, also sets up a Window ID so that if a graph...
     # ... asks for plot Overlay, it can be id
-    def newGraph(self, dataset, context):
-        win = ApplicationWindow(self.cxn, context, dataset)
+    def newGraph(self, dataset, context, indep):
+        win = ApplicationWindow(self.cxn, context, dataset, indep)
         win.show()
+        #time.sleep(2)
         return win
     
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
