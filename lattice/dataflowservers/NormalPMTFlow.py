@@ -22,6 +22,8 @@ timeout = 20
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet.defer import Deferred, returnValue, inlineCallbacks, DeferredLock
 from twisted.internet import reactor
+from twisted.internet.threads import deferToThread
+import time
 
 SIGNALID = 331483
 
@@ -191,6 +193,7 @@ class NormalPMTFlow( LabradServer):
     @inlineCallbacks
     def _programPBOXDiff(self):
         yield self.pbox.send_command('DifferentialPMTCount.py',[['FLOAT','CountingInterval',str(10**6 * self.collectTimes['Differential'])]])
+        yield deferToThread(time.sleep,.2) #give it enough time to finish programming
         yield self.trigger.trigger('PaulBox')
     
     @inlineCallbacks

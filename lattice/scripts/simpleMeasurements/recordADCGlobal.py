@@ -8,7 +8,7 @@ adc = cxn.adcserver
 
 #global variables
 CHANNEL = 'global397'
-RESOLUTION = 10 # seconds
+RESOLUTION = 5 # seconds
 RECORDTIME = int(24*3600./RESOLUTION) #24 hours recording
 
 #set up data vault
