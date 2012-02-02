@@ -17,7 +17,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Data Vault
-version = 2.3
+version = 2.31
 description = 
 instancename = Data Vault
 
@@ -342,6 +342,7 @@ class Session( object ):
 
         # notify listeners about the new dataset
         self.parent.onNewDataset( name, self.listeners )
+        self.parent.onNewDatasetDir((name, self.dir), self.listeners) ####MR
         return dataset
 
     def openDataset( self, name ):
@@ -887,6 +888,7 @@ class DataVault( LabradServer ):
     # session signals
     onNewDir = Signal( 543617, 'signal: new dir', 's' )
     onNewDataset = Signal( 543618, 'signal: new dataset', 's' )
+    onNewDatasetDir = Signal(543623, 'singal: new dataset dir', '(s,s)')
     onTagsUpdated = Signal( 543622, 'signal: tags updated', '*(s*s)*(s*s)' )
 
     # dataset signals
