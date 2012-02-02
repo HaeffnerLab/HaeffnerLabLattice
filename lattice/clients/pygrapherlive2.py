@@ -14,7 +14,7 @@ import labrad
 ##TODO5:be able to pick name of the datasezt QListBox/QListView, check which lines are plotted
 ##TODO6;clean up code, add intro, upload to sourceforge
 
-GraphRefreshTime = 100; #ms, how often plot updates
+GraphRefreshTime = 1000; #ms, how often plot updates
 #SEE TODO2,TODO3
 MaxDataPointsLive = 5000;
 scrollfrac = .75; #data reaches this much of the screen before auto-scroll takes place
@@ -113,11 +113,12 @@ class Qt4MplCanvas(FigureCanvas):
 		self.cnt += 1
 	#provides dynamic scrolling of data on the screen
 	def updateBoundary(self):
-                cur = self.data.transpose()[0][-1]
+		cur = self.data.transpose()[0][-1]
 		xmin, xmax = self.ax.get_xlim()
 		xwidth = xmax - xmin
 		# if current x position exceeds certain x coordinate, update the screen
 		if (cur > scrollfrac * xwidth + xmin):
+			print 'redrawing'
 			xmin = cur - xwidth/4
 			xmax = xmin + xwidth
 			self.ax.set_xlim(xmin, xmax)
