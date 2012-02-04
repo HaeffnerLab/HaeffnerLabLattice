@@ -90,7 +90,9 @@ class TimeResolvedFPGA(LabradServer):
         yield deferToThread(self._resetBoard)
         reactor.callLater(0, self.doSingleReading, buflength)
         #delay to make sure the previous command got to the  ReadFromBlockPipeOut line and FPGA is ready to be triggered
-        yield deferToThread(time.sleep, 0.020) 
+        #this may not be elegant but is necessary becase the FPGA buffer is smaller than the transfer amoutn
+        #so unless this call is made before data acquasition, some data may be lost
+        yield deferToThread(time.sleep, 0.100)  
     
     @inlineCallbacks
     def doSingleReading(self, buflength):

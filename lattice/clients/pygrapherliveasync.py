@@ -1,5 +1,5 @@
 """
-Version 2.8
+Version 2.9
 
 Assumptions: number of axes of data doesn't change per dataset
 
@@ -25,19 +25,19 @@ import time
 
 GraphRefreshTime = .1; # s, how often plot updates
 scrollfrac = .75; # Data reaches this much of the screen before auto-scroll takes place
-DIRECTORY = 'PMT Counts' # Current working directory
 
 # NOTE!! The grapher can only see signals if the signals are created in the same directory that the grapher is in.
 
 class Dataset(QtCore.QObject):
     
     """Class to handle incoming data and prepare them for plotting """
-    def __init__(self, cxn, context, dataset):
+    def __init__(self, cxn, context, dataset, directory):
         super(Dataset, self).__init__()
         self.accessingData = DeferredLock()
         self.cxn = cxn
         self.context = context # context of the first dataset in the window
         self.dataset = dataset
+        self.directory = directory
         self.data = None
         self.hasPlotParameter = 0
         self.cnt = 0
@@ -46,7 +46,7 @@ class Dataset(QtCore.QObject):
     # open dataset in order to listen for new data signals in current context        
     @inlineCallbacks
     def openDataset(self):
-        yield self.cxn.data_vault.cd(DIRECTORY, context = self.context)
+        yield self.cxn.data_vault.cd(self.directory, context = self.context)
         yield self.cxn.data_vault.open(self.dataset, context = self.context)
         
     @inlineCallbacks
@@ -99,10 +99,11 @@ class sampleWidget(QtGui.QWidget):
 
 class ApplicationWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
-    def __init__(self, cxn, context, dataset, winID):
+    def __init__(self, cxn, context, dataset, directory, winID):
         self.cxn = cxn
         self.context = context
         self.dataset = dataset
+        self.directory = directory
         self.winID = winID
         self.manuallyLoaded = True
         QtGui.QMainWindow.__init__(self)
@@ -150,12 +151,16 @@ class ApplicationWindow(QtGui.QMainWindow):
     
     # handles loading a new plot
     def load_plot(self): 
-        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 
-            'Enter a dataset:')
+        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a dataset:')        
         if ok:
+            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             dataset = int(text)
-            Connections.newDataset(dataset, self.manuallyLoaded)
-    
+        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory:')        
+        if ok:
+            directory = str(text2)
+            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
+            self.parent.newDataset(dataset, directory, self.manuallyLoaded)
+     
     # about menu        
     def on_about(self):
         msg = """ Live Grapher for LabRad! """
@@ -230,13 +235,14 @@ class Qt4MplCanvas(FigureCanvas):
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
-        self.ax.set_xlim(0, 500)# add constants
+        #self.ax.set_xlim(1324330000.0, 1324340000.0)# add constants
+        self.ax.set_xlim(0, 500)
         self.ax.set_ylim(-1, 100)
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
         self.draw()
         self.old_size = self.ax.bbox.width, self.ax.bbox.height
         
-        (self.xmin,self.xmax),(self.ymin,self.ymax) = self.ax.get_xlim(), self.ax.get_ylim()
+        #(self.xmin,self.xmax),(self.ymin,self.ymax) = self.ax.get_xlim(), self.ax.get_ylim()
         
         self.background = self.copy_from_bbox(self.ax.bbox)
 
@@ -245,37 +251,35 @@ class Qt4MplCanvas(FigureCanvas):
         self.autoscrollFlag = autoscrollFlag
          
     # Initialize a place in the dictionary for the dataset
-    def initializeDataset(self, dataset):
-        self.dataDict[dataset] = None
+    def initializeDataset(self, dataset, directory):
+        self.dataDict[dataset, directory] = None
    
-    def setPlotData(self, dataset, data):
-        if (self.dataDict[dataset] == None):# first iteration
-            self.dataDict[dataset] = data
+    def setPlotData(self, dataset, directory, data):
+        if (self.dataDict[dataset, directory] == None):# first iteration
+            self.dataDict[dataset, directory] = data
             NumberOfDependentVariables = data.shape[1] - 1
+#            xmin = data.transpose()[0][0]
+#            Data = data.transpose()[0].tolist()
+#            Data.reverse()
+#            xmax = Data[0]
+#            print xmin, xmax
+#            self.ax.set_xlim(xmin, xmax)
+            # Assuming the first colum is x values
+            
             # set up independent axis, dependent axes for data, and dependent axes for plot
             # a.k.a independent variable, dependent variables, plots
-            self.plotDict[dataset] = [[], [[]]*NumberOfDependentVariables, [[]]*NumberOfDependentVariables]
+            self.plotDict[dataset, directory] = [[], [[]]*NumberOfDependentVariables, [[]]*NumberOfDependentVariables]
             for i in range(NumberOfDependentVariables):
                 label = 'y: ' + str(i)
-                self.plotDict[dataset][2][i] = self.ax.plot(self.plotDict[dataset][0],self.plotDict[dataset][1][i],label = label,animated=True)
-#            # set up labels here, right now this is lattice-specific
-#            self.plotDict[dataset][2][0] = self.ax.plot(self.plotDict[dataset][0],self.plotDict[dataset][1][0],label = '866 ON',animated=True)
-#            self.plotDict[dataset][2][1] = self.ax.plot(self.plotDict[dataset][0],self.plotDict[dataset][1][1],label = '866 OFF', animated=True)
-#            self.plotDict[dataset][2][2] = self.ax.plot(self.plotDict[dataset][0],self.plotDict[dataset][1][2],label = 'Differential ', animated=True)
-#            self.indep = []
-#            self.dep = [[]]*self.NumberOfDependentVariables
-#            self.plots = [[]]*self.NumberOfDependentVariables
-#            self.plots[0] = self.ax.plot(self.indep,self.dep[0],label = '866 ON',animated=True)
-#            self.plots[1] = self.ax.plot(self.indep,self.dep[1],label = '866 OFF', animated=True)
-#            self.plots[2] = self.ax.plot(self.indep,self.dep[2],label = 'Differential ', animated=True)
+                self.plotDict[dataset, directory][2][i] = self.ax.plot(self.plotDict[dataset, directory][0],self.plotDict[dataset, directory][1][i],label = label,animated=True)
             self.ax.legend()
             self.draw()            
         else:
-            self.dataDict[dataset] = np.append(self.dataDict[dataset], data, 0) 
+            self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0) 
     
     # plot the data
-    def drawPlot(self, dataset):
-        data = self.dataDict[dataset]
+    def drawPlot(self, dataset, directory):
+        data = self.dataDict[dataset, directory]
         
         # note: this will work for slow datasets, need to make sure...
         #...self.plotDict[dataset][1] is not an empty set 
@@ -285,28 +289,30 @@ class Qt4MplCanvas(FigureCanvas):
             NumberOfDependentVariables = data.shape[1] - 1
 
             # update plot
-            self.plotDict[dataset][0] = data.transpose()[0]
+            self.plotDict[dataset, directory][0] = data.transpose()[0]
             for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset][1][i] = data.transpose()[i+1] # in data, the y axes start with the second column
+                self.plotDict[dataset, directory][1][i] = data.transpose()[i+1] # in data, the y axes start with the second column
     
             # Reassign dependent axis to smaller integers (in order to fit on screen)
-            self.plotDict[dataset][0] = np.arange(self.plotDict[dataset][0].size)
+            self.plotDict[dataset, directory][0] = np.arange(self.plotDict[dataset, directory][0].size)
+            
+            self.xmin,self.xmax = self.ax.get_xlim()
                       
             # finds the maximum dependent variable value
-            self.maxX = len(self.plotDict[dataset][1])
+            self.maxX = len(self.plotDict[dataset, directory][1])
             
-            self.plotDict[dataset][2] = self.flatten(self.plotDict[dataset][2])
+            self.plotDict[dataset, directory][2] = self.flatten(self.plotDict[dataset, directory][2])
             for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset][2][i].set_data(self.plotDict[dataset][0],self.plotDict[dataset][1][i])
-                self.ax.draw_artist(self.plotDict[dataset][2][i])
+                self.plotDict[dataset, directory][2][i].set_data(self.plotDict[dataset, directory][0],self.plotDict[dataset, directory][1][i])
+                self.ax.draw_artist(self.plotDict[dataset, directory][2][i])
             self.blit(self.ax.bbox)
             
-            self.updateBoundary(dataset)
+            self.updateBoundary(dataset, directory)
  
     # if the screen has reached the scrollfraction limit, it will update the boundaries
-    def updateBoundary(self, dataset):
+    def updateBoundary(self, dataset, directory):
         if (self.autoscrollFlag == 1): 
-            cur = self.plotDict[dataset][0].size
+            cur = self.plotDict[dataset, directory][0].size
             xmin, xmax = self.ax.get_xlim()
             xwidth = xmax - xmin
             # if current x position exceeds certain x coordinate, update the screen
@@ -354,7 +360,11 @@ class FirstWindow(QtGui.QMainWindow):
         if ok:
             #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             dataset = int(text)
-            self.parent.newDataset(dataset, self.manuallyLoaded)
+        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory:')        
+        if ok:
+            directory = str(text2)
+            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
+            self.parent.newDataset(dataset, directory, self.manuallyLoaded)
   
 class CONNECTIONS(QtGui.QGraphicsObject):
     def __init__(self, reactor, parent=None):
@@ -382,57 +392,59 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # set up dataset listener    
     @inlineCallbacks
     def setupListeners(self):               
-        yield self.server.signal__new_dataset(99999)#, context = context)
+        yield self.server.signal__new_dataset_dir(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)
-        yield self.cxn.data_vault.cd(DIRECTORY)
+        #yield self.cxn.data_vault.cd(DIRECTORY)
         
     # new dataset signal
     def updateDataset(self,x,y):
-        dataset = int(y[1:5])
-        print x, y
+        print y
+        dataset = int(y[0][0:5])
+        directory = str(y[1][1])
+        print directory
         manuallyLoaded = False
         print dataset
-        self.newDataset(dataset, manuallyLoaded)
+        self.newDataset(dataset, directory, manuallyLoaded)
  
     # Creates a new dataset and gives it an ID for identifying later (Overlaying)
     @inlineCallbacks
-    def newDataset(self, dataset, manuallyLoaded):
+    def newDataset(self, dataset, directory, manuallyLoaded):
         context = yield self.cxn.context()
-        datasetObject = Dataset(self.cxn, context, dataset)
+        datasetObject = Dataset(self.cxn, context, dataset, directory)
         yield datasetObject.openDataset()
         
         if (manuallyLoaded == True):
-            self.prepareDataset(datasetObject, dataset, context)
+            self.prepareDataset(datasetObject, dataset, directory, context)
         else:        
             hasPlotParameter = yield datasetObject.listenForPlotParameter()
             if (hasPlotParameter == 1):
-                self.prepareDataset(datasetObject, dataset, context)
+                self.prepareDataset(datasetObject, dataset, directory, context)
             else:
                 # This data is not for plotting
                 del datasetObject
 
     @inlineCallbacks
-    def prepareDataset(self, datasetObject, dataset, context):
+    def prepareDataset(self, datasetObject, dataset, directory, context):
         #yield datasetObject.setupDataListener(context)
         #if windows request the overlay, update those. else, create a new window.
         overlayWindows = self.getOverlayingWindows()
         if overlayWindows:
             self.dwDict[datasetObject] = overlayWindows
             for window in overlayWindows:
-                window.qmc.initializeDataset(dataset)
+                window.qmc.initializeDataset(dataset, directory)
         else:
-            win = self.newGraph(dataset, context, self.windowIDCounter)
+            win = self.newGraph(dataset, directory, context, self.windowIDCounter)
             #yield win.doneMaking
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
             self.winDict[self.windowIDCounter] = win
             self.windowIDCounter = self.windowIDCounter + 1
-            win.qmc.initializeDataset(dataset) 
+            win.qmc.initializeDataset(dataset, directory) 
 
     # create a new graph, also sets up a Window ID so that if a graph...
     # ... asks for plot Overlay, it can be id
-    def newGraph(self, dataset, context, winID):
-        win = ApplicationWindow(self.cxn, context, dataset, winID)
+    def newGraph(self, dataset, directory, context, winID):
+        win = ApplicationWindow(self.cxn, context, dataset, directory, winID)
         win.show()
         return win
             
@@ -450,9 +462,9 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 data = datasetObject.data
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
-                    i.qmc.setPlotData(datasetObject.dataset, data)
+                    i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
             for i in windowsToDrawOn:
-                i.qmc.drawPlot(datasetObject.dataset)
+                i.qmc.drawPlot(datasetObject.dataset, datasetObject.directory)
     
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
     # ...with the overlay button checked
