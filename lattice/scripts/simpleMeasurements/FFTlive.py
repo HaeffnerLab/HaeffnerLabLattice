@@ -5,11 +5,11 @@ import labrad; cxn = labrad.connect()
 from scriptLibrary import paulsbox 
 import numpy as np
 
-centerFreq = 14998860#15.00*10**6
-ptsAround = 2
+centerFreq = 14998866#15.00*10**6
+ptsAround = 4
 recordTime = 0.5 #seconds
-iterations = 5
-average = 2
+iterations = 50
+average = 3
 #program pulse sequence for triggering time resolved
 pboxDict = {
             'sequence':'TimeResolvedTrigger.py',
@@ -34,12 +34,15 @@ def getFFTpwr(timetags):
     del(mat,fft)
     return pwr
 
+import time
+
 dv.cd(['','QuickMeasurements','FFTlive'],True)
 dv.new('FFT',[('time', 'arb')], [('Power','Arb','Arb')] )
 for i in range(iterations):
     pwr = np.zeros_like(freqs)
     for j in range(average):
         trfpga.perform_time_resolved_measurement()
+        time.sleep(.1)
         trigger.trigger('PaulBox')
         timetags = trfpga.get_result_of_measurement().asarray
         pwr += getFFTpwr(timetags)

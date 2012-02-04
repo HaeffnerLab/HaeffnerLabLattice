@@ -53,8 +53,10 @@ class compLineScan( LabradServer ):
     @inlineCallbacks
     def setAmplitudeRange(self):
         centerc1, centerc2 = yield self.getCenterPosition()
+        print 'center', centerc1, centerc2
         maxAmplitude = min(self.rangec1[1] - centerc1, self.rangec2[1] - centerc2)
         minAmplitude = min(self.rangec1[0] - centerc1, self.rangec2[0] - centerc2)
+        print 'amplitude', minAmplitude, maxAmplitude
         self.amplitudeRange = (minAmplitude,maxAmplitude)
     
     @inlineCallbacks
@@ -106,6 +108,7 @@ class compLineScan( LabradServer ):
         (centerc1,centerc2) = yield self.getCenterPosition()
         newc1 = centerc1 + amplitude * math.cos(self.angle * math.pi / 180.)
         newc2 = centerc2 + amplitude * math.sin(self.angle * math.pi / 180.)
+        print 'new set', newc1, newc2
         yield self.server.setcomp(1, newc1)
         yield self.server.setcomp(2, newc2)
         self.amplitude = amplitude

@@ -68,7 +68,7 @@ class NormalPMTFlow( LabradServer):
     
     @inlineCallbacks
     def addParameters(self):
-        yield None
+        yield self.dv.add_parameter('plotLive',True)
     
     @setting(0, 'Set Save Folder', folder = '*s', returns = '')
     def setSaveFolder(self,c , folder):

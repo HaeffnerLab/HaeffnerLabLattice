@@ -8,7 +8,7 @@ import numpy as np
 minFreq = 14.9985*10**6#14.99885*10**6 #Hz
 maxFreq = 14.9990*10**6#14.99887*10**6
 recordTime = 0.5 #seconds
-average =3
+average = 20
 saveFFT = True
 #program pulse sequence for triggering time resolved
 pboxDict = {
@@ -34,12 +34,18 @@ def getFFTpwr(timetags):
     del(mat,fft)
     return pwr
 
+import time####
+
 pwr = np.zeros_like(freqs)
 for i in range(average):
     print i
     trfpga.perform_time_resolved_measurement()
+    time.sleep(.2)
+    print 'now trigger'
     trigger.trigger('PaulBox')
+    print 'now get result'
     timetags = trfpga.get_result_of_measurement().asarray
+    print 'got timetags'
     pwr += getFFTpwr(timetags)
 if saveFFT:
     dv.cd(['','QuickMeasurements','FFT'],True)

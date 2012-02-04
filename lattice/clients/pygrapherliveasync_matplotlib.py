@@ -52,6 +52,16 @@ class Dataset(QtCore.QObject):
     # new data signal
     def updateData(self,x,y):
         self.getData(self.context)
+    
+    def waitfor(self):
+        #set up a timer
+        #start looping call
+            #check if timer expired - then return False
+            try:
+                data_vault.get('plot')
+            except:
+                pass
+            #if this paramter exists return True
       
 #    # returns the number of things to plot
 #    @inlineCallbacks
@@ -139,6 +149,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         context = yield self.cxn.context()
         datasetObject = Dataset(self.cxn, context, dataset)
         yield datasetObject.openDataset()
+        answer = yield datasatObjcet.waitforparameter()
+        if answer:
+            pass
+        else:
+            #datasetObject.close()
+            #del(datasetObject)
+        #subscribe to signal
+        #create a new one shot timer
+        
+        
         #if windows request the overlay, update those. else, create a new window.
         overlayWindows = self.getOverlayingWindows()
         if overlayWindows:
@@ -160,7 +180,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         
     @inlineCallbacks
     def timerEvent(self):
-        newDataWindows = set()
+#        newDataWindows = set()
         for datasetObject in self.dwDict.keys():
         # stuff you want timed goes here
             if (datasetObject.data != None):
@@ -170,16 +190,18 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
                     i.qmc.setPlotData(datasetObject.dataset, data)
-                    newDataWindows.add((i,datasetObject.dataset))
-        for window,dataset in newDataWindows:
-            window.qmc.drawPlot(dataset)
-        windowlist = set()
-        for l in self.dwDict.values():
-            for window in l:
-                windowlist.add(window)
-        noDataWindows = windowlist.difference(newDataWindows)
-        for window in noDataWindows:
-            window.qmc.refreshPlot()
+        
+        
+##                    newDataWindows.add((i,datasetObject.dataset))
+#        for window,dataset in newDataWindows:
+#            window.qmc.drawPlot(dataset)
+#        windowlist = set()
+#        for l in self.dwDict.values():
+#            for window in l:
+#                windowlist.add(window)
+#        noDataWindows = windowlist.difference(newDataWindows)
+#        for window in noDataWindows:
+#            window.qmc.refreshPlot()
 
     
     # create a new graph, also sets up a Window ID so that if a graph...
