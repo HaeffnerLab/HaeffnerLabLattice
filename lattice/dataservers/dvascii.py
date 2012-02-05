@@ -342,7 +342,7 @@ class Session( object ):
 
         # notify listeners about the new dataset
         self.parent.onNewDataset( name, self.listeners )
-        self.parent.onNewDatasetDir((name, self.path), self.listeners) ####MR
+        ####self.parent.onNewDatasetDir((name, self.path), self.listeners) ####MR
         return dataset
 
     def openDataset( self, name ):
@@ -854,7 +854,8 @@ class DataVault( LabradServer ):
                 raw_input()
                 sys.exit()
         # create root session
-        root = Session( [''], self )
+        ####root = Session( [''], self ) ####MK
+        self.root = Session( [''], self )
 
     def initContext( self, c ):
         # start in the root session
@@ -988,6 +989,7 @@ class DataVault( LabradServer ):
         if len( dtype ) != 1 or dtype not in 'fs': raise TypeError( "dtype keyword only accepts 'f' or 's'" )
         session = self.getSession( c )
         dataset = session.newDataset( name or 'untitled', independents, dependents, dtype )
+        self.onNewDatasetDir((dataset.name, session.path), self.root.listeners) ####MR
         c['dataset'] = dataset.name # not the same as name; has number prefixed
         c['filepos'] = 0 # start at the beginning
         c['commentpos'] = 0
