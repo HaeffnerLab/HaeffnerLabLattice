@@ -62,8 +62,8 @@ class TriggerFPGA(LabradServer):
                                      {'chan':       0x04,
                                       'ismanual':   False,
                                       'manstate':   True,
-                                      'maninv':     False,#used to be true with homebuilt amp
-                                      'autoinv':    True, #used to be false with homebuilt amp
+                                      'maninv':     False,
+                                      'autoinv':    True,
                                       },
                                 '110DP':
                                      {'chan':       0x08,
