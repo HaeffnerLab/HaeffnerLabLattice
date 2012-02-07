@@ -10,14 +10,15 @@ from scriptLibrary import dvParameters
 '''Rf Heating'''
 #Global parameters
 comment = 'using radial channel for rf heating'
-iterations = 3
+iterations = 1000
 experimentName = 'RFheat'
 #Paul's Box Parameters
 pboxsequence = 'RFheat.py'
 start_rf = 0.0
-rf_duration = 200.*10**3
+rf_duration = 60.*10**3
 record_866off_time = 5*10**3
-recordTime = (start_rf + rf_duration + 2 * record_866off_time) / 10**6
+recordTime = (start_rf + 40.*10**3 + rf_duration + 2 * record_866off_time) / 10**6
+#recordTime = (1 * record_866off_time) / 10**6
 #data processing on the fly
 binTime =200.0*10**-6
 binNumber = int(recordTime / binTime)
@@ -52,8 +53,8 @@ def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
     #make sure manual overrides are off
-    for name in ['global','radial','866DP']:
-        trigger.switch_auto(name,  False)
+    trigger.switch_auto('radial',  False)
+    trigger.switch_auto('866DP',  True)
     #make sure r&s synthesizers are on
     #for name in ['axial','radial']:
      #   dpass.select(name)
@@ -83,6 +84,8 @@ def sequence():
         print 'now waiting to complete the sequence'
         trigger.wait_for_pbox_completion()
         trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
+        print 'now sleeping'
+        time.sleep(.2)
     print 'getting result and adding to data vault'
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
@@ -95,7 +98,7 @@ def finalize():
     dvParameters.saveParameters(dv, measuredDict)
     dvParameters.saveParameters(dv, globalDict)
     dvParameters.saveParameters(dv, pboxDict)
-    for name in ['radial','global']:
+    for name in ['radial']:
         trigger.switch_manual(name)
         
 print 'initializing measurement'
