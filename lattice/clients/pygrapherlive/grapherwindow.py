@@ -74,9 +74,9 @@ class GrapherWindow(QtGui.QMainWindow):
         if ok:
             #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             dataset = int(text)
-        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory:')        
+        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory in labrad format:')        
         if ok:
-            directory = str(text2)
+            directory = tuple(eval(str(text2)))
             #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             self.parent.newDataset(dataset, directory, self.manuallyLoaded)
      
@@ -158,8 +158,8 @@ class FirstWindow(QtGui.QMainWindow):
         if ok:
             #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             dataset = int(text)
-        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory:')        
+        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory in labrad format:')        
         if ok:
-            directory = str(text2)
+            directory = tuple(eval(str(text2)))
             #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
             self.parent.newDataset(dataset, directory, self.manuallyLoaded)

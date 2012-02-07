@@ -75,3 +75,13 @@ class Dataset(QtCore.QObject):
         del(self.data)
         self.data = None
         self.accessingData.release()
+    
+    @inlineCallbacks
+    def getYLabels(self):
+        labels = []
+        variables = yield self.cxn.data_vault.variables(context = self.context)
+        for i in range(len(variables[1])):
+            labels.append(variables[1][i][1])
+        returnValue(labels)
+            
+        

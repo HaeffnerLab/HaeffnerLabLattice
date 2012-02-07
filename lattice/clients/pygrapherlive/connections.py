@@ -54,8 +54,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         super(CONNECTIONS, self).__init__()
         self.reactor = reactor
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
-        self.winDict = {}
-        self.windowIDCounter = 0
         self.connect()
         self.startTimer()
         self.introWindow = FirstWindow(self)
@@ -93,13 +91,14 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         context = yield self.cxn.context() # create a new context
         datasetObject = Dataset(self.cxn, context, dataset, directory)
         yield datasetObject.openDataset()
-        # if the dataset was loaded manually, it does not requre the 'plotLive' parameter 
+        datasetLabels = yield datasetObject.getYLabels()
+        # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
         if (manuallyLoaded == True):
-            self.prepareDataset(datasetObject, dataset, directory, context)
+            self.prepareDataset(datasetObject, dataset, directory, datasetLabels, context)
         else:        
             hasPlotParameter = yield datasetObject.listenForPlotParameter()
             if (hasPlotParameter == True):
-                self.prepareDataset(datasetObject, dataset, directory, context)
+                self.prepareDataset(datasetObject, dataset, directory, datasetLabels, context)
             else:
                 # This data is not for plotting. Remove it.
                 # There should be a cleaner way of doing this
@@ -107,18 +106,18 @@ class CONNECTIONS(QtGui.QGraphicsObject):
 
     # Prepare the dataset for plotting
     @inlineCallbacks
-    def prepareDataset(self, datasetObject, dataset, directory, context):
+    def prepareDataset(self, datasetObject, dataset, directory, datasetLabels, context):
         #if windows request overlay, update those. else, create a new window.
         overlayWindows = self.getOverlayingWindows()
         if overlayWindows:
             self.dwDict[datasetObject] = overlayWindows
             for window in overlayWindows:
-                window.qmc.initializeDataset(dataset, directory)
+                window.qmc.initializeDataset(dataset, directory, datasetLabels)
         else:
             win = self.newGraph(dataset, directory, context)
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
-            win.qmc.initializeDataset(dataset, directory) 
+            win.qmc.initializeDataset(dataset, directory, datasetLabels) 
 
     # create a new graph window
     def newGraph(self, dataset, directory, context):
