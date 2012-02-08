@@ -25,6 +25,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
 
+MAXDATASETSIZE = 10000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .95; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0
@@ -48,8 +49,8 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
         self.ax.set_xlim(0, 1)
-#        self.ax.set_ylim(-1, 1)
-        self.ax.set_ylim(-1, 100)
+        self.ax.set_ylim(-1, 1)
+#        self.ax.set_ylim(-1, 100)
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
         #self.draw()
                 
@@ -67,13 +68,22 @@ class Qt4MplCanvas(FigureCanvas):
             NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
             # find the smallest x value, this will be the left boundary
             self.initialxmin = data.transpose()[INDEPENDENT][0]
-#            self.initialymin = None
-#            for i in range(NumberOfDependentVariables):
-#                initialYTemp = data.transpose()[i + 1][-1]
-#                if (self.initialymin == None):
-#                    self.initialymin = initialYTemp
-#                elif (initialYTemp < self.initialymin):
-#                    self.initialymin = initialYTemp
+            initialymin = None
+            for i in range(NumberOfDependentVariables):
+                initialYMinTemp = data.transpose()[i + 1][-1]
+                if (initialymin == None):
+                    initialymin = initialYMinTemp
+                elif (initialYMinTemp < initialymin):
+                    initialymin = initialYMinTemp - .1*initialYMinTemp 
+            initialymax = None
+            for i in range(NumberOfDependentVariables):
+                initialYMaxTemp = data.transpose()[i + 1][-1]
+                if (initialymax == None):
+                    initialymax = initialYMaxTemp
+                elif (initialYMaxTemp > initialymax):
+                    initialymax = initialYMaxTemp + .1*initialYMinTemp
+            
+            self.ax.set_ylim(initialymin,initialymax)
             # set up independent axis, dependent axes for data, and dependent axes for plot
             # a.k.a independent variable, dependent variables, plots
             self.plotDict[dataset, directory] = [[], [[]]*NumberOfDependentVariables, [[]]*NumberOfDependentVariables]
@@ -85,13 +95,18 @@ class Qt4MplCanvas(FigureCanvas):
             self.draw()
         else:
             # append the new data
-            self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0) 
+            self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0)
+            # check the size of the dataset, if too big, delete stuff
+            if (self.dataDict[dataset, directory].shape[0] > MAXDATASETSIZE):
+                numberOfRowsToDelete = data.shape[0]
+                self.dataDict[dataset, directory] = np.delete(self.dataDict[dataset, directory], range(numberOfRowsToDelete), 0) 
+                self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
     
     # plot the data
     def drawPlot(self, dataset, directory):
         
         data = self.dataDict[dataset, directory]
-        
+               
         # note: this will work for slow datasets, need to make sure...
         #...self.plotDict[dataset][1] is not an empty set 
         
@@ -109,18 +124,6 @@ class Qt4MplCanvas(FigureCanvas):
                                
             # finds the maximum independent variable value
             self.maxX = self.plotDict[dataset, directory][INDEPENDENT][-1]
-#            self.currentYMax = None
-#            self.currentYMin = None
-#            for i in range(NumberOfDependentVariables):
-#                currentYTemp = self.plotDict[dataset, directory][DEPENDENT][i][-1]
-#                if (self.currentYMax == None):
-#                    self.currentYMax = currentYTemp
-#                elif (currentYTemp > self.currentYMax):
-#                    self.currentYMax = currentYTemp
-#                if (self.currentYMin == None):
-#                    self.currentYMin = currentYTemp
-#                elif (currentYTemp < self.currentYMin):
-#                    self.currentYMin = currentYTemp
              
             # flatten the data
             self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][2])
@@ -149,37 +152,20 @@ class Qt4MplCanvas(FigureCanvas):
                 xmax = xmin + xwidth
                 self.ax.set_xlim(xmin, xmax)
                 self.draw()
-#            if (self.currentYMax > SCROLLFRACTION * ywidth + ymin):
-#                ymin = self.currentYMax - ywidth/4
-#                ymax = ymin + ywidth
-#                self.ax.set_ylim(ymin, ymax)
-#                self.draw()
             
         elif self.appWindowParent.cb3.isChecked():
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 self.autofitDataX()
-#            if (self.currentYMax > SCROLLFRACTION * ywidth + ymin):
-#                self.autofitDataY()
-#            elif(self.currentYMin < SCROLLFRACTION * ywidth - ymin):
-#                self.autofitDataY
                 
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self):
         newmaxX = (SCALEFACTOR*(self.maxX - self.initialxmin) + self.initialxmin)
-        if (self.initialxmin < newmaxX):
+        if (self.initialxmin != newmaxX):
             self.ax.set_xlim(self.initialxmin, newmaxX)# + .4*(maxX - self.initialxmin))
             self.draw()
-
-#    def autofitDataY(self):
-#        newmaxY = (SCALEFACTOR*(self.currentYMax - self.initialymin) + self.initialymin)
-#        print self.initialymin
-#        print self.currentYMin
-#        newminY = (self.initialymin - SCALEFACTOR*(self.currentYMin - self.initialymin))
-#        print newminY
-#        if (self.initialymin < newmaxY):
-#            self.ax.set_ylim(newminY, newmaxY)# + .4*(maxX - self.initialxmin))
-#            self.draw()
-
+        elif (self.initialxmin == newmaxX):
+            self.ax.set_xlim(self.initialxmin - .00000001*(self.initialxmin), self.initialxmin + .00000001*(self.initialxmin))# + .4*(maxX - self.initialxmin))
+            self.draw()            
     
     # update boundaries to fit all the data                
     def fitData(self):
