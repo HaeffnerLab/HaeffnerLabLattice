@@ -156,6 +156,7 @@ class GrapherWindow(QtGui.QMainWindow):
         # Remove this window from the dictionary so that no datasets...
         # ... are drawn to this window
         self.parent.removeWindowFromDictionary(self)
+        self.parent.removeWindowFromWinList(self)
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""

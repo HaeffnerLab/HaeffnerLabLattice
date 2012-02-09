@@ -54,6 +54,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         super(CONNECTIONS, self).__init__()
         self.reactor = reactor
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
+        self.winList = []
         self.connect()
         self.startTimer()
 
@@ -74,16 +75,31 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     @inlineCallbacks
     def setupListeners(self):               
         yield self.server.signal__new_dataset_dir(99999)#, context = context)
-        yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)
+        yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)    
+        yield self.server.signal__new_directory(77777)#, context = context)
+        yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
+
+    def addDirItem(self,x,y):
+        #directory = tuple(eval(str(y))) 
+        self.introWindow.datavaultwidget.populateList()
+        for i in self.winList:
+            i.datavaultwidget.populateList()
            
     # new dataset signal
     def updateDataset(self,x,y):
         dataset = int(y[0][0:5]) # retrieve dataset number
         directory = y[1] # retrieve directory
+        itemLabel = y[0]
+        self.addDatasetItem(itemLabel, directory)
         print directory
         print dataset
         manuallyLoaded = False # ensure that this dataset was not loaded manually
         self.newDataset(dataset, directory, manuallyLoaded)
+ 
+    def addDatasetItem(self, itemLabel, directory):
+        self.introWindow.datavaultwidget.addDatasetItem(itemLabel, directory)
+        for i in self.winList:
+            i.datavaultwidget.addDatasetItem(itemLabel, directory)
  
     # Creates a new Dataset object and checks if it has the 'plotLive' parameter
     @inlineCallbacks
@@ -122,6 +138,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # create a new graph window
     def newGraph(self, context):
         win = GrapherWindow(self, context)
+        self.winList.append(win)
         win.show()
         return win
             
@@ -167,3 +184,9 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             for j in values:
                 if j == win:
                     self.dwDict[i].remove(j)
+                    
+    # Datavault widgets no longer need to be updated
+    def removeWindowFromWinList(self, win):
+        for i in self.winlist:
+            if i == win:
+                self.winlist.remove(i)

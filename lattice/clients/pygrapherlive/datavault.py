@@ -42,6 +42,9 @@ class DataVaultWidget(QtGui.QListWidget):
             self.datasets.sort()
         return self.datasets
 
+    def addDatasetItem(self, itemLabel, directory):
+        if (directory == self.currentDirectory):
+            self.addItem(itemLabel)
 
 #        # configure the items list
 #        self.setViewMode(QtGui.QListView.IconMode)

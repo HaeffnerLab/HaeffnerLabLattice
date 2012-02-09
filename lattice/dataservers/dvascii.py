@@ -888,8 +888,9 @@ class DataVault( LabradServer ):
 
     # session signals
     onNewDir = Signal( 543617, 'signal: new dir', 's' )
+    onNewDirectory = Signal( 543624, 'signal: new directory', 's' ) ####MK
     onNewDataset = Signal( 543618, 'signal: new dataset', 's' )
-    onNewDatasetDir = Signal(543623, 'signal: new dataset dir', '(s,?)')
+    onNewDatasetDir = Signal(543623, 'signal: new dataset dir', '(s,?)') ####MR
     onTagsUpdated = Signal( 543622, 'signal: tags updated', '*(s*s)*(s*s)' )
 
     # dataset signals
@@ -964,6 +965,7 @@ class DataVault( LabradServer ):
         if name == '':
             raise EmptyNameError()
         path = c['path'] + [name]
+        self.onNewDirectory(str(path), self.root.listeners) ####MK
         if Session.exists( path ):
             raise DirectoryExistsError( path )
         sess = Session( path, self ) # make the new directory
