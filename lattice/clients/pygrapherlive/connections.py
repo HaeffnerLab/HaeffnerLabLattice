@@ -69,12 +69,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         yield self.setupListeners()
         print 'Connection established: now listening dataset.'
 
-    
     # set up dataset listener    
     @inlineCallbacks
     def setupListeners(self):               
         yield self.server.signal__new_dataset_dir(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)
+    
+    @inlineCallbacks
+    def getFileList(self):
+        fileList = yield self.server.dir()
+        returnValue(fileList)
         
     # new dataset signal
     def updateDataset(self,x,y):

@@ -5,6 +5,7 @@ The plot and all relevant plot options are managed by the Grapher Window.
 from PyQt4 import QtGui, QtCore
 from canvas import Qt4MplCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from datavault import DataVaultWidget
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
@@ -17,38 +18,58 @@ class GrapherWindow(QtGui.QMainWindow):
         self.manuallyLoaded = True
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Live Grapher - Dataset " + str(self.dataset))
-        #self.main_widget = sampleWidget()
         self.main_widget = QtGui.QWidget(self)     
+        self.setCentralWidget(self.main_widget)
         # create a vertical box layout widget
-        vbl = QtGui.QVBoxLayout(self.main_widget)
+        vbl = QtGui.QVBoxLayout()
+        #vbl.addStretch(1)
         # instantiate our Matplotlib canvas widget
         self.qmc = Qt4MplCanvas(self.main_widget, self)
         # instantiate the navigation toolbar
         ntb = NavigationToolbar(self.qmc, self.main_widget)
+
         vbl.addWidget(ntb)
         vbl.addWidget(self.qmc)
+
+        hbl = QtGui.QHBoxLayout(self.main_widget)
+        self.datavaultwidget = DataVaultWidget(self)
+        self.datavaultwidget.populateList()
+        #self.datavaultwidget.show()
+        hbl.addWidget(self.datavaultwidget)
+        hbl.addLayout(vbl)
+#        
+#        self.main_widget.setLayout(hbl)
+        
+
         # set the focus on the main widget
         self.main_widget.setFocus()
-        self.setCentralWidget(self.main_widget)
         # add menu
         self.create_menu()
         # checkbox to change boundaries
         self.cb1 = QtGui.QCheckBox('AutoScroll', self)
-        self.cb1.move(290, 23)
+        #self.cb1.move(290, 23)
         self.cb1.clicked.connect(self.autoscrollSignal) 
         # checkbox to overlay new dataset
         self.cb2 = QtGui.QCheckBox('Overlay', self)
-        self.cb2.move(500, 35)
+        #self.cb2.move(500, 35)
         # checkbox to toggle AutoFit
         self.cb3 = QtGui.QCheckBox('AutoFit', self)
-        self.cb3.move(290, 39)
+        #self.cb3.move(290, 39)
         self.cb3.toggle()
         self.cb3.clicked.connect(self.autofitSignal) 
         # button to fit data on screen
         fitButton = QtGui.QPushButton("Fit", self)
         fitButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        fitButton.move(390, 32)
-        fitButton.clicked.connect(self.fitDataSignal) 
+        #fitButton.move(390, 32)
+        fitButton.clicked.connect(self.fitDataSignal)
+        
+        buttonBox = QtGui.QHBoxLayout()
+        buttonBox.addWidget(self.cb1) 
+        buttonBox.addWidget(self.cb2) 
+        buttonBox.addWidget(self.cb3) 
+        buttonBox.addWidget(fitButton) 
+        
+        vbl.addLayout(buttonBox)
 
     # when the autoFit button is checked, it will uncheck the autoscroll button
     def autofitSignal(self):
