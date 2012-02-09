@@ -56,8 +56,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.connect()
         self.startTimer()
-        self.introWindow = FirstWindow(self)
-        self.introWindow.show()
 
     # connect to the data vault    
     @inlineCallbacks    
@@ -67,6 +65,9 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.data_vault
         yield self.setupListeners()
+        context = yield self.cxn.context() # create a new context
+        self.introWindow = FirstWindow(self, context)
+        self.introWindow.show()
         print 'Connection established: now listening dataset.'
 
     # set up dataset listener    
@@ -74,12 +75,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def setupListeners(self):               
         yield self.server.signal__new_dataset_dir(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)
-    
-    @inlineCallbacks
-    def getFileList(self):
-        fileList = yield self.server.dir()
-        returnValue(fileList)
-        
+           
     # new dataset signal
     def updateDataset(self,x,y):
         dataset = int(y[0][0:5]) # retrieve dataset number
@@ -118,14 +114,14 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             for window in overlayWindows:
                 window.qmc.initializeDataset(dataset, directory, datasetLabels)
         else:
-            win = self.newGraph(dataset, directory, context)
+            win = self.newGraph(context)
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
             win.qmc.initializeDataset(dataset, directory, datasetLabels) 
 
     # create a new graph window
-    def newGraph(self, dataset, directory, context):
-        win = GrapherWindow(self, self.cxn, context, dataset, directory)
+    def newGraph(self, context):
+        win = GrapherWindow(self, context)
         win.show()
         return win
             

@@ -9,15 +9,12 @@ from datavault import DataVaultWidget
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
-    def __init__(self, parent, cxn, context, dataset, directory):
+    def __init__(self, parent, context):
         self.parent = parent
-        self.cxn = cxn
         self.context = context
-        self.dataset = dataset
-        self.directory = directory
         self.manuallyLoaded = True
         QtGui.QMainWindow.__init__(self)
-        self.setWindowTitle("Live Grapher - Dataset " + str(self.dataset))
+        self.setWindowTitle("Live Grapher")
         self.main_widget = QtGui.QWidget(self)     
         self.setCentralWidget(self.main_widget)
         # create a vertical box layout widget
@@ -32,7 +29,7 @@ class GrapherWindow(QtGui.QMainWindow):
         vbl.addWidget(self.qmc)
 
         hbl = QtGui.QHBoxLayout(self.main_widget)
-        self.datavaultwidget = DataVaultWidget(self)
+        self.datavaultwidget = DataVaultWidget(self, self.context)
         self.datavaultwidget.populateList()
         #self.datavaultwidget.show()
         hbl.addWidget(self.datavaultwidget)
@@ -162,25 +159,16 @@ class GrapherWindow(QtGui.QMainWindow):
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
-    def __init__(self, parent):
+    def __init__(self, parent, context):
         QtGui.QMainWindow.__init__(self)
         self.parent = parent
+        self.context = context
         self.manuallyLoaded = True
         self.setWindowTitle("Live Grapher!")
-        openButton = QtGui.QPushButton("Open Dataset", self)
-        #MR eventually change this to use a layout, or make this button go in a toolbar. 
-        openButton.setGeometry(QtCore.QRect(0, 0, 120, 30))
-        openButton.move(41, 30)
-        openButton.clicked.connect(self.load_plot)
-    
-    # asks for a dataset to open if one wasn't opened already    
-    def load_plot(self):
-        text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a dataset:')        
-        if ok:
-            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
-            dataset = int(text)
-        text2, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a directory in labrad format:')        
-        if ok:
-            directory = tuple(eval(str(text2)))
-            #MR some type checking that is must be an integer. This won't be necessary when we switch to the browser.
-            self.parent.newDataset(dataset, directory, self.manuallyLoaded)
+        self.main_widget = QtGui.QWidget(self)     
+        self.setCentralWidget(self.main_widget)        
+        hbl = QtGui.QHBoxLayout(self.main_widget)
+        self.datavaultwidget = DataVaultWidget(self, context)
+        self.datavaultwidget.populateList()
+        #self.datavaultwidget.show()
+        hbl.addWidget(self.datavaultwidget)

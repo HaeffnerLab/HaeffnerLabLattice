@@ -58,6 +58,7 @@ class Qt4MplCanvas(FigureCanvas):
     
     # Initialize a place in the dictionary for the dataset
     def initializeDataset(self, dataset, directory, labels):
+        print directory
         self.dataDict[dataset, directory] = None
         self.datasetLabelsDict[dataset, directory] = labels 
    
