@@ -1,4 +1,4 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
 from twisted.internet.task import LoopingCall
 from twisted.internet.threads import deferToThread
@@ -76,8 +76,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def setupListeners(self):               
         yield self.server.signal__new_dataset_dir(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)    
-        yield self.server.signal__new_directory(77777)#, context = context)
-        yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
+        #yield self.server.signal__new_directory(77777)#, context = context)
+        #yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
 
     def addDirItem(self,x,y):
         #directory = tuple(eval(str(y))) 
@@ -129,11 +129,13 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             self.dwDict[datasetObject] = overlayWindows
             for window in overlayWindows:
                 window.qmc.initializeDataset(dataset, directory, datasetLabels)
+                window.createDatasetCheckbox(dataset, directory) 
         else:
             win = self.newGraph(context)
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
-            win.qmc.initializeDataset(dataset, directory, datasetLabels) 
+            win.qmc.initializeDataset(dataset, directory, datasetLabels)
+            win.createDatasetCheckbox(dataset, directory) 
 
     # create a new graph window
     def newGraph(self, context):
@@ -151,16 +153,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     @inlineCallbacks
     def timerEvent(self):
         for datasetObject in self.dwDict.keys():
-        # stuff you want timed goes here
             windowsToDrawOn = self.dwDict[datasetObject]
             if (datasetObject.data != None):
-                #print self.datasetObject.data
                 data = datasetObject.data
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
                     i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
             for i in windowsToDrawOn:
-                i.qmc.drawPlot(datasetObject.dataset, datasetObject.directory)
+                # if dataset is intended to be drawn (a checkbox governs this)
+                if i.datasetCheckboxes[datasetObject.dataset, datasetObject.directory].isChecked():
+                    i.qmc.drawPlot(datasetObject.dataset, datasetObject.directory)
     
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
     # ...with the overlay button checked
@@ -187,6 +189,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                     
     # Datavault widgets no longer need to be updated
     def removeWindowFromWinList(self, win):
-        for i in self.winlist:
+        for i in self.winList:
             if i == win:
-                self.winlist.remove(i)
+                self.winList.remove(i)

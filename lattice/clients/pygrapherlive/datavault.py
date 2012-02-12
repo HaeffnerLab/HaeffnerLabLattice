@@ -14,11 +14,12 @@ class DataVaultWidget(QtGui.QListWidget):
     @inlineCallbacks
     def populateList(self):
         self.clear()
-        self.addItem('..')
-        self.fileList = yield self.parent.parent.server.dir(context = self.context)
         self.currentDirectory = yield self.parent.parent.server.cd(context = self.context)
         self.currentDirectory = tuple(eval(str(self.currentDirectory)))
-            
+        self.addItem(str(self.currentDirectory))
+        self.addItem('..')
+        self.fileList = yield self.parent.parent.server.dir(context = self.context)
+           
         # add sorted directories
         for i in self.sortDirectories():
             self.addItem(i)
@@ -77,14 +78,14 @@ class DataVaultWidget(QtGui.QListWidget):
         button = event.button()
         item = self.itemAt(event.x(), event.y())
         if item:
-            if (item == self.item(0)):
+            if (item == self.item(1)):
                 self.changeDirectory(1)
             elif (str(item.text()) in self.directories):
                 # select the item we clicked
                 self.setCurrentItem(item)
                 if button == 1:
                     self.changeDirectory(str(item.text()))
-            else:
+            elif (str(item.text()) in self.datasets):
                 itemText = item.text()
                 dataset = int(str(itemText)[0:5]) # retrieve dataset number
                 manuallyLoaded = True

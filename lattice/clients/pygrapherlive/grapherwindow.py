@@ -12,31 +12,50 @@ class GrapherWindow(QtGui.QMainWindow):
     def __init__(self, parent, context):
         self.parent = parent
         self.context = context
+        self.datasetCheckboxes = {}
+        self.datasetCheckboxCounter = 0
         self.manuallyLoaded = True
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Live Grapher")
         self.main_widget = QtGui.QWidget(self)     
         self.setCentralWidget(self.main_widget)
         # create a vertical box layout widget
-        vbl = QtGui.QVBoxLayout()
+        grapherLayout = QtGui.QVBoxLayout()
         #vbl.addStretch(1)
         # instantiate our Matplotlib canvas widget
         self.qmc = Qt4MplCanvas(self.main_widget, self)
         # instantiate the navigation toolbar
         ntb = NavigationToolbar(self.qmc, self.main_widget)
 
-        vbl.addWidget(ntb)
-        vbl.addWidget(self.qmc)
+        # Layout that involves the canvas, toolbar, graph options...etc.
+        grapherLayout.addWidget(ntb)
+        grapherLayout.addWidget(self.qmc)
 
-        hbl = QtGui.QHBoxLayout(self.main_widget)
+        # Main horizontal layout
+        mainLayout = QtGui.QHBoxLayout(self.main_widget)
         self.datavaultwidget = DataVaultWidget(self, self.context)
+        self.datavaultwidget.setMaximumWidth(180)
         self.datavaultwidget.populateList()
-        #self.datavaultwidget.show()
-        hbl.addWidget(self.datavaultwidget)
-        hbl.addLayout(vbl)
-#        
-#        self.main_widget.setLayout(hbl)
+        # Add the datavault widget
+#        mainLayout.addWidget(self.datavaultwidget)
+        # Layout that controls datasets
+        datasetLayout = QtGui.QVBoxLayout() 
+        datasetLayout.addWidget(self.datavaultwidget)
+
+        mainLayout.addLayout(datasetLayout)
+        mainLayout.addLayout(grapherLayout)
         
+        # Layout for keeping track of datasets on a graph
+        #self.datasetCheckboxLayout = QtGui.QVBoxLayout()
+        #mainLayout.addLayout(self.datasetCheckboxLayout)
+        self.datasetCheckboxListWidget = QtGui.QListWidget()
+        self.datasetCheckboxListWidget.setMaximumWidth(180)
+        datasetLayout.addWidget(self.datasetCheckboxListWidget)
+        #self.datasetCheckboxLayout.addWidget(self.datasetCheckboxListWidget)
+        #self.datasetCheckboxModel = QtGui.QStandardItemModel() 
+        #view = QtGui.QListView()
+        #view.setModel(self.datasetCheckboxModel)       
+        #self.datasetCheckboxLayout.addWidget(view)
 
         # set the focus on the main widget
         self.main_widget.setFocus()
@@ -60,13 +79,34 @@ class GrapherWindow(QtGui.QMainWindow):
         #fitButton.move(390, 32)
         fitButton.clicked.connect(self.fitDataSignal)
         
+        # Layout that controls graph options
         buttonBox = QtGui.QHBoxLayout()
         buttonBox.addWidget(self.cb1) 
-        buttonBox.addWidget(self.cb2) 
-        buttonBox.addWidget(self.cb3) 
+        buttonBox.addWidget(self.cb3)
+        buttonBox.addWidget(self.cb2)  
         buttonBox.addWidget(fitButton) 
         
-        vbl.addLayout(buttonBox)
+        grapherLayout.addLayout(buttonBox)
+
+    # adds a checkbox when a new dataset is overlaid on the graph
+    def createDatasetCheckbox(self, dataset, directory):
+#        datasetCheckbox = QtGui.QStandardItem(str(dataset) + ' ' + str(directory[-1])) #QtGui.QCheckBox(str(dataset) + ' ' + str(directory), self)
+#        datasetCheckbox.setCheckable(True)
+#        datasetCheckbox.setCheckState(QtCore.Qt.Checked)
+        datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]), self)
+        datasetCheckbox.toggle()
+        datasetCheckbox.clicked.connect(self.datasetCheckboxSignal)
+        self.datasetCheckboxes[dataset, directory] = datasetCheckbox
+        self.datasetCheckboxListWidget.addItem('')
+        self.datasetCheckboxListWidget.setItemWidget(self.datasetCheckboxListWidget.item(self.datasetCheckboxCounter), datasetCheckbox)
+        self.datasetCheckboxCounter = self.datasetCheckboxCounter + 1
+
+#        self.datasetCheckboxes
+#        self.datasetCheckboxModel.appendRow(datasetCheckbox)
+
+    def datasetCheckboxSignal(self):
+        #self.qmc.ax.legend()
+        self.qmc.draw()
 
     # when the autoFit button is checked, it will uncheck the autoscroll button
     def autofitSignal(self):
