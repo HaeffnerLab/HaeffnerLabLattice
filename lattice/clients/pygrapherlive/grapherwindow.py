@@ -106,6 +106,7 @@ class GrapherWindow(QtGui.QMainWindow):
 
     def datasetCheckboxSignal(self):
         #self.qmc.ax.legend()
+        self.qmc.drawLegend()
         self.qmc.draw()
 
     # when the autoFit button is checked, it will uncheck the autoscroll button

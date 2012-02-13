@@ -91,7 +91,9 @@ class Qt4MplCanvas(FigureCanvas):
             for i in range(NumberOfDependentVariables):
                 label = self.datasetLabelsDict[dataset, directory][i]
                 self.plotDict[dataset, directory][PLOTS][i] = self.ax.plot(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i],label = label,animated=True)
-            self.ax.legend()
+            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
+            #self.ax.legend()
+            self.drawLegend()
             self.draw()
         else:
             # append the new data
@@ -102,6 +104,17 @@ class Qt4MplCanvas(FigureCanvas):
                 self.dataDict[dataset, directory] = np.delete(self.dataDict[dataset, directory], range(numberOfRowsToDelete), 0) 
                 self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
     
+    def drawLegend(self):
+#        handles, labels = self.ax.get_legend_handles_labels()
+        handles = []
+        labels = []
+        for dataset,directory in self.appWindowParent.datasetCheckboxes.keys():
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                for i in self.plotDict[dataset, directory][PLOTS]:
+                    handles.append(i)
+                    labels.append(i.get_label())
+        self.ax.legend(handles, labels)
+        
     # plot the data
     def drawPlot(self, dataset, directory):
         
@@ -126,7 +139,7 @@ class Qt4MplCanvas(FigureCanvas):
             self.maxX = self.plotDict[dataset, directory][INDEPENDENT][-1]
              
             # flatten the data
-            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][2])
+            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
             
             # draw the plots onto the canvas and blit them into view
             for i in range(NumberOfDependentVariables):
