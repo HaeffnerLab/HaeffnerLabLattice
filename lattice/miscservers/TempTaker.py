@@ -21,7 +21,6 @@ Ch = 16; # written for 16 incoming chaneels
 ControlCh = 4 #number of controlled rooms
 ControlledValves = 8 # number of valves
 
-a = 3.3540154E-03; b = 2.5627725E-04; c = 2.0829210E-06 ; d = 7.3003206E-08 # coeffs for voltage to T conversion info from thermistor datasheet
 V0 = 6.95 #volts on the voltage reference
 #corresponding channels
 Table1=8;Table2=5;Table3=1;Table4=6;Table5=9;SupplyBigRoom=14;SupplyLaserRoom=16;SupplySmallRoom=11;ColdWaterSmallRoom=15;ColdWaterBigRoom=15;ColdWaterLaserRoom=15;HotWaterSmallRoom=13;HotWaterBigRoom=13;HotWaterLaserRoom=13;
@@ -336,51 +335,6 @@ class DataAcquisition():
 			time.sleep(DataFreq)
 			curTempArr = self.readTemp(ser)
 		return curTempArr
-	
-class RunningAverage():
-	def __init__(self):
-		self.RunningAvgNum = RunningAvgNum
-		self.historyArr = zeros([self.RunningAvgNum,Ch])
-		self.binfull = 0
-		self.historyCounter = 0
-		self.printintro()
-	def printintro(self):
-		print '\n' + 'Filling up history for ' + str(self.RunningAvgNum) +' seconds \n'
-	def printbinfull(self):
-		print 'Running Average Operational'
-	def addNumber(self,newnumber):
-		self.historyArr[self.historyCounter,:] = newnumber #updates history by cycling through rows of historyArr and replacing old data with readTemp
-		self.historyCounter = (self.historyCounter + 1) % self.RunningAvgNum
-		if(self.historyCounter == 0):
-			if(self.binfull == 0):
-				self.printbinfull()
-			self.binfull = 1
-	def getAverage(self):
-		if(self.binfull): #if bin is full, take the mean
-			average = mean(self.historyArr,axis=0) #current temperature is the average of the columns of the history array	
-		else: #if bin is not filled, return mean of existing elements
-			average =  sum(self.historyArr[0:(self.historyCounter+1),:],axis=0)/(self.historyCounter)
-		return average
-		
-class ManualController():
-	def __init__(self):
-		if(os.path.isfile(mancontrolfile)):#if file exists open it in read mode
-			pass
-		else: #if file doesn't exist, create it
-			self.FILE =  open(mancontrolfile,"w");
-			pickle.dump(0,self.FILE) #indicates automatic control, 1 is manual
-			pickle.dump(zeros(ControlledValves).tolist(),self.FILE)
-			self.FILE.close()
-		self.modtime = os.path.getmtime(mancontrolfile)
-		self.valves = zeros(ControlledValves)
-	def isControlManual(self):
-		self.FILE =  open(mancontrolfile,"r");
-		self.mancontrol = pickle.load(self.FILE)
-		self.valves = array(pickle.load(self.FILE))
-		self.FILE.close()
-		return self.mancontrol
-	def ManualValvePos(self):
-		return self.valves
 	
 class AlarmChecker():
 	def __init__(self):
