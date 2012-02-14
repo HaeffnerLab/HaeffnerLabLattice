@@ -76,8 +76,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def setupListeners(self):               
         yield self.server.signal__new_dataset_dir(99999)#, context = context)
         yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)    
-        #yield self.server.signal__new_directory(77777)#, context = context)
-        #yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
+        yield self.server.signal__new_directory(77777)#, context = context)
+        yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
 
     def addDirItem(self,x,y):
         #directory = tuple(eval(str(y))) 

@@ -153,6 +153,17 @@ class Qt4MplCanvas(FigureCanvas):
     # if the screen has reached the scrollfraction limit, it will update the boundaries
     def updateBoundary(self, dataset, directory, NumberOfDependentVariables):
         currentX = self.plotDict[dataset, directory][INDEPENDENT][-1]
+        currentYmax = None
+        currentYmin = None
+        for i in range(NumberOfDependentVariables):
+            if (currentYmax == None):
+                currentYmax = self.plotDict[dataset, directory][DEPENDENT][i][-1]
+                currentYmin = self.plotDict[dataset, directory][DEPENDENT][i][-1]
+            else:
+                if (self.plotDict[dataset, directory][DEPENDENT][i][-1] > currentYmax):
+                    currentYmax = self.plotDict[dataset, directory][DEPENDENT][i][-1]
+                elif ((self.plotDict[dataset, directory][DEPENDENT][i][-1] < currentYmin)):
+                    currentYmin = self.plotDict[dataset, directory][DEPENDENT][i][-1]
         xmin, xmax = self.ax.get_xlim()
         xwidth = xmax - xmin
         ymin, ymax = self.ax.get_ylim()
@@ -169,21 +180,75 @@ class Qt4MplCanvas(FigureCanvas):
         elif self.appWindowParent.cb3.isChecked():
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 self.autofitDataX()
-                
+            if (currentYmax > SCROLLFRACTION * ywidth + ymin):
+                self.autofitDataY()
+            elif (currentYmin < (1 - SCROLLFRACTION) * ywidth + ymin):
+                self.autofitDataY()
+    
+    def fitDataX(self):
+        xmin = None
+        xmax = None
+        for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                for i in self.plotDict[dataset, directory][INDEPENDENT]:
+                    if (xmin == None):
+                        xmin = i
+                        xmax = i
+                    else:
+                        if i < xmin:
+                            xmin = i
+                        elif i > xmax:
+                            xmax = i        
+        return xmin, xmax
+    
+    def fitDataY(self):
+        ymin = None
+        ymax = None
+        for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                for i in range(len(self.plotDict[dataset, directory][DEPENDENT])):
+                    for j in self.plotDict[dataset, directory][DEPENDENT][i]:
+                        if (ymin == None):
+                            ymin = i
+                            ymax = i
+                        else:
+                            if j < ymin:
+                                ymin = j
+                            elif j > ymax:
+                                ymax = j
+        return ymin, ymax
+
+    def autofitDataY(self):
+        ymin, ymax = self.fitDataY() 
+        newmaxY = (SCALEFACTOR*(ymax - ymin) + ymin)
+        newminY = (ymax - SCALEFACTOR*(ymax - ymin))
+        self.ax.set_ylim(newminY, newmaxY)
+        self.draw()
+    
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self):
-        newmaxX = (SCALEFACTOR*(self.maxX - self.initialxmin) + self.initialxmin)
-        if (self.initialxmin != newmaxX):
-            self.ax.set_xlim(self.initialxmin, newmaxX)# + .4*(maxX - self.initialxmin))
-            self.draw()
-        elif (self.initialxmin == newmaxX):
-            self.ax.set_xlim(self.initialxmin - .00000001*(self.initialxmin), self.initialxmin + .00000001*(self.initialxmin))# + .4*(maxX - self.initialxmin))
-            self.draw()            
+        xmin, xmax = self.fitDataX() 
+        newmaxX = (SCALEFACTOR*(xmax - xmin) + xmin)
+        self.ax.set_xlim(xmin, newmaxX)
+        self.draw()
+#        newmaxX = (SCALEFACTOR*(self.maxX - self.initialxmin) + self.initialxmin)
+#        if (self.initialxmin != newmaxX):
+#            self.ax.set_xlim(self.initialxmin, newmaxX)# + .4*(maxX - self.initialxmin))
+#            self.draw()
+#        elif (self.initialxmin == newmaxX):
+#            self.ax.set_xlim(self.initialxmin - .00000001*(self.initialxmin), self.initialxmin + .00000001*(self.initialxmin))# + .4*(maxX - self.initialxmin))
+#            self.draw()            
     
     # update boundaries to fit all the data                
+    
     def fitData(self):
-        self.ax.set_xlim(self.initialxmin, self.maxX)
+        xmin, xmax = self.fitDataX()
+        self.ax.set_xlim(xmin, xmax)
+        ymin, ymax = self.fitDataY()
+        self.ax.set_ylim(ymin, ymax)
         self.draw()
+        #self.ax.set_xlim(self.initialxmin, self.maxX)
+        #self.draw()
 
     # to flatten lists (for some reason not built in)
     def flatten(self,l):
