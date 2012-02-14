@@ -8,6 +8,7 @@ def scanCavity(cxn, ch, resolution, min, max, average, delay = .1):
     dv.cd(['','CavityScans'],True)
     dv.new('Cavity Scan {}'.format(ch),[('Cavity Voltage', 'mV')], [('PMT Counts','Counts','Counts')] )
     dv.add_parameter('cavity channel', ch)
+    dv.add_parameter('plotLive',True)
     if ch not in ld.getchannelnames(): raise Exception('{} channel not available'.format(ch))
     initvalue = ld.getvoltage(ch)    
     print 'moving cavity {} to minimum position'.format(ch)

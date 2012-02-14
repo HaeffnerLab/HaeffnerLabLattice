@@ -90,6 +90,7 @@ def sequence():
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
     data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
     dv.add(data)
+    dv.add_parameter('plotLive',True)
 
 def finalize():
     measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']

@@ -15,6 +15,7 @@ for channel in [1]:
 #set up data vault structure
 dv.cd(['','QuickMeasurements'],True)
 dv.new('Magnetic Field Flux Gate',[('Time', 'sec')], [('B field','Gauss','Axis 1'), ('B field','Gauss','Axis 2')] )
+dv.add_parameter('plotLive',True)
 #record
 def FreqToBField(freq):
     """Takes period of oscillation in Hz and Converts to Gauss using a linear relationship"""

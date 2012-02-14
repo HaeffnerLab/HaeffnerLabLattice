@@ -130,6 +130,7 @@ def sequence():
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('lineScan',[('Freq', 'sec')], [('PMT counts','Heating','Counts'),('PMT counts','Cooling','Counts')] )
     dv.add(data)
+    dv.add_parameter('plotLive',True)
     measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']
     measuredDict = dvParameters.measureParameters(cxn, measureList)
     dvParameters.saveParameters(dv, measuredDict)
