@@ -6,12 +6,14 @@ from PyQt4 import QtGui, QtCore
 from canvas import Qt4MplCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from datavault import DataVaultWidget
+import time
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
     def __init__(self, parent, context):
         self.parent = parent
         self.context = context
+        self.parameterWindows = {}
         self.datasetCheckboxes = {}
         self.datasetCheckboxCounter = 0
         self.manuallyLoaded = True
@@ -37,7 +39,6 @@ class GrapherWindow(QtGui.QMainWindow):
         self.datavaultwidget.setMaximumWidth(180)
         self.datavaultwidget.populateList()
         # Add the datavault widget
-#        mainLayout.addWidget(self.datavaultwidget)
         # Layout that controls datasets
         datasetLayout = QtGui.QVBoxLayout() 
         datasetLayout.addWidget(self.datavaultwidget)
@@ -46,16 +47,10 @@ class GrapherWindow(QtGui.QMainWindow):
         mainLayout.addLayout(grapherLayout)
         
         # Layout for keeping track of datasets on a graph
-        #self.datasetCheckboxLayout = QtGui.QVBoxLayout()
-        #mainLayout.addLayout(self.datasetCheckboxLayout)
         self.datasetCheckboxListWidget = QtGui.QListWidget()
         self.datasetCheckboxListWidget.setMaximumWidth(180)
         datasetLayout.addWidget(self.datasetCheckboxListWidget)
-        #self.datasetCheckboxLayout.addWidget(self.datasetCheckboxListWidget)
-        #self.datasetCheckboxModel = QtGui.QStandardItemModel() 
-        #view = QtGui.QListView()
-        #view.setModel(self.datasetCheckboxModel)       
-        #self.datasetCheckboxLayout.addWidget(view)
+
 
         # set the focus on the main widget
         self.main_widget.setFocus()
@@ -90,9 +85,6 @@ class GrapherWindow(QtGui.QMainWindow):
 
     # adds a checkbox when a new dataset is overlaid on the graph
     def createDatasetCheckbox(self, dataset, directory):
-#        datasetCheckbox = QtGui.QStandardItem(str(dataset) + ' ' + str(directory[-1])) #QtGui.QCheckBox(str(dataset) + ' ' + str(directory), self)
-#        datasetCheckbox.setCheckable(True)
-#        datasetCheckbox.setCheckState(QtCore.Qt.Checked)
         datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]), self)
         datasetCheckbox.toggle()
         datasetCheckbox.clicked.connect(self.datasetCheckboxSignal)
@@ -118,7 +110,7 @@ class GrapherWindow(QtGui.QMainWindow):
     def autoscrollSignal(self):
         if (self.cb3.isChecked()):
             self.cb3.toggle()
-                   
+
     # instructs the graph to update the boundaries to fit all the data
     def fitDataSignal(self):
         if (self.cb1.isChecked()): # makes sure autoscroll is off otherwise it will undo this operation
@@ -127,6 +119,15 @@ class GrapherWindow(QtGui.QMainWindow):
             self.cb3.toggle()
         self.qmc.fitData()
     
+    def newParameterWindow(self, dataset, directory):
+        win = ParameterWindow(self, dataset, directory)
+        win.show()
+        self.parameterWindows[dataset, directory] = win
+
+    def getParameters(self, dataset, directory):
+        parameters = self.parent.getParameters(dataset, directory)
+        return parameters                   
+
     # handles loading a new plot
     def load_plot(self): 
         text, ok = QtGui.QInputDialog.getText(self, 'Open Dataset', 'Enter a dataset:')        
@@ -205,6 +206,7 @@ class FirstWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.parent = parent
         self.context = context
+        self.parameterWindows = {}
         self.manuallyLoaded = True
         self.setWindowTitle("Live Grapher!")
         self.main_widget = QtGui.QWidget(self)     
@@ -214,3 +216,40 @@ class FirstWindow(QtGui.QMainWindow):
         self.datavaultwidget.populateList()
         #self.datavaultwidget.show()
         hbl.addWidget(self.datavaultwidget)
+        
+    def newParameterWindow(self, dataset, directory):
+        win = ParameterWindow(self, dataset, directory)
+        win.show()
+        self.parameterWindows[dataset, directory] = win
+
+    def getParameters(self, dataset, directory):
+        parameters = self.parent.getParameters(dataset, directory)
+        return parameters                   
+
+
+class ParameterWindow(QtGui.QMainWindow):
+    """Creates the dataset-specific parameter window"""
+
+    def __init__(self, parent, dataset, directory):
+        QtGui.QMainWindow.__init__(self)
+        self.parent = parent
+        self.dataset = dataset
+        self.directory = directory
+        self.setWindowTitle(str(dataset) + " " + str(directory))
+        self.main_widget = QtGui.QWidget(self)
+        self.setCentralWidget(self.main_widget)     
+        mainLayout = QtGui.QVBoxLayout(self.main_widget) 
+        self.parameterListWidget = QtGui.QListWidget()
+        mainLayout.addWidget(self.parameterListWidget)
+        self.populateList()
+        self.startTimer(30000)
+    
+    def timerEvent(self, evt):
+        self.populateList()
+        tstartupdate = time.clock()
+    
+    def populateList(self):
+        self.parameters = self.parent.getParameters(self.dataset, self.directory)
+        self.parameterListWidget.clear()
+        for i in self.parameters:
+            self.parameterListWidget.addItem(str(i))

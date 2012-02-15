@@ -28,25 +28,41 @@ class Dataset(QtCore.QObject):
         self.cnt = 0
         self.setupDataListener(self.context)
         
+    @inlineCallbacks
+    def checkForPlotParameter(self):
+        self.parameters = yield self.cxn.data_vault.get_parameters(context = self.context)
+        if (self.parameters != None):
+            for (parameterName, value) in self.parameters:
+                if (str(parameterName) == 'plotLive'):
+                    self.hasPlotParameter = True
+                    
     # open dataset in order to listen for new data signals in current context        
     @inlineCallbacks
-    def openDataset(self):
-        yield self.cxn.data_vault.cd(self.directory, context = self.context)
-        yield self.cxn.data_vault.open(self.dataset, context = self.context)
+    def openDataset(self, context):
+        yield self.cxn.data_vault.cd(self.directory, context = context)
+        yield self.cxn.data_vault.open(self.dataset, context = context)
+    
+    @inlineCallbacks
+    def setupParameterListener(self, context):
+        yield self.cxn.data_vault.signal__new_parameter(66666, context = context)
+        yield self.cxn.data_vault.addListener(listener = self.updateParameter, source = None, ID = 66666, context = context)
     
     # Over 60 seconds, check if the dataset has the appropriate 'plotLive' parameter            
     @inlineCallbacks
     def listenForPlotParameter(self):
         for i in range(120):
-            parameters = yield self.cxn.data_vault.get_parameters(context = self.context)
-            if (parameters != None):
-                for (parameterName, value) in parameters:
-                    if (str(parameterName) == 'plotLive'):
-                        self.hasPlotParameter = True
-                        returnValue(self.hasPlotParameter)
+            if (self.hasPlotParameter == True):
+                returnValue(self.hasPlotParameter)
             yield deferToThread(time.sleep, .5)
         returnValue(self.hasPlotParameter)
             
+    def updateParameter(self, x, y):
+        if (self.hasPlotParameter == False):
+            self.hasPlotParameter = True
+        self.checkForPlotParameter()
+
+        #append whatever to self.parameters
+    
     # sets up the listener for new data
     @inlineCallbacks
     def setupDataListener(self, context):

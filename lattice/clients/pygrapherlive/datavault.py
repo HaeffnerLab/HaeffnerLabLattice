@@ -79,18 +79,24 @@ class DataVaultWidget(QtGui.QListWidget):
         item = self.itemAt(event.x(), event.y())
         if item:
             if (item == self.item(1)):
-                self.changeDirectory(1)
+                if (button == 1):
+                    self.changeDirectory(1)
             elif (str(item.text()) in self.directories):
                 # select the item we clicked
                 self.setCurrentItem(item)
-                if button == 1:
+                if (button == 1):
                     self.changeDirectory(str(item.text()))
             elif (str(item.text()) in self.datasets):
                 itemText = item.text()
                 dataset = int(str(itemText)[0:5]) # retrieve dataset number
-                manuallyLoaded = True
-                self.parent.parent.newDataset(dataset, self.currentDirectory, manuallyLoaded)
-#        if button == 2:
-#            print 'RIGHT CLICK'
+                if (button == 1):
+                    manuallyLoaded = True
+                    self.parent.parent.newDataset(dataset, self.currentDirectory, manuallyLoaded)       
+                elif (button == 2):
+                    #keys = self.parent.parent.datasetDict.keys()    
+                    if self.parent.parent.datasetDict.has_key((dataset, self.currentDirectory)):
+                        self.parent.newParameterWindow(dataset, self.currentDirectory)
+                    
+
 
 
