@@ -54,6 +54,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         super(CONNECTIONS, self).__init__()
         self.reactor = reactor
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
+        self.datasetDict = {} # dictionary relating a Dataset object with the dataset and directory 
         self.winList = []
         self.connect()
         self.startTimer()
@@ -106,7 +107,10 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def newDataset(self, dataset, directory, manuallyLoaded):
         context = yield self.cxn.context() # create a new context
         datasetObject = Dataset(self.cxn, context, dataset, directory)
-        yield datasetObject.openDataset()
+        self.datasetDict[dataset, directory] = datasetObject
+        yield datasetObject.openDataset(context)
+        yield datasetObject.setupParameterListener(context)
+        yield datasetObject.checkForPlotParameter()
         datasetLabels = yield datasetObject.getYLabels()
         # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
         if (manuallyLoaded == True):
@@ -178,6 +182,10 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                     else:
                         self.overlaidWindows.append(j)
         return self.overlaidWindows
+    
+    def getParameters(self, dataset, directory):
+        parameters = self.datasetDict[dataset, directory].parameters
+        return parameters
     
     # Datasets no longer need to be drawn on closed windows
     def removeWindowFromDictionary(self, win):
