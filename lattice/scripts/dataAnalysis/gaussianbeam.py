@@ -74,4 +74,29 @@ width_y : %.1f""" %(x, y, width_x, width_y),
         fontsize=16, horizontalalignment='right',
         verticalalignment='bottom', transform=ax.transAxes)
 
+xValuesIndep = range(imageArrayRows)
+yValuesIndep = range(imageArrayColumns)
+
+# x values Gaussian
+xGaussianDep = []
+for i in range(imageArrayRows):
+    xGaussianDep.append(height*exp(-(((y-i)/width_y)**2)))
+
+yGaussianDep = []
+for i in range(imageArrayColumns):
+    yGaussianDep.append(height*exp(-(((x-i)/width_x)**2)))
+                        
+
+# plot the lines
+plt.figure(2)
+plt.title('X direction')
+plt.subplot(111)
+plt.plot(xValuesIndep, data[int(x), :], xValuesIndep, xGaussianDep)
+plt.figure(3)
+plt.title('Y direction')
+plt.subplot(111)
+plt.plot(yValuesIndep, data[:, int(y)], yValuesIndep, yGaussianDep)
 show()
+
+
+
