@@ -18,13 +18,16 @@ class Sequence():
     def __init__(self):
         self.channelDict = hardwareConfiguration.channelDict
         self.switchingTimes = {0:0} #dictionary in the form time:which channels to swtich
+        self.seqEnd = 0
     
     def addTTLPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
         if not channel in self.channelDict.keys(): raise Exception("Unknown Channel {}".format(channel))
         if not (MIN_SEQUENCE <= start,start + duration <= MAX_SEQUENCE): raise Exception ("Boundaries are out of range")
+        if not duration >= timeResolution: raise Exception ("Incorrect duration") 
         hardwareAddr = self.channelDict[channel]
         for t in [start, start+duration]: self._addNewSwitch(self.secToStep(t), hardwareAddr)
+        self.seqEnd = max(self.seqEnd, self.secToStep(start + duration))
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
@@ -43,8 +46,13 @@ class Sequence():
         else:
             self.switchingTimes[time] = 2**addr
     
+    def _addLast(self):
+        """adds the terminating pulse to the sequence"""
+        self._addNewSwitch(self.seqEnd, 0)
+        
     def progRepresentation(self):
         """Returns the representation of the sequence for programming the FPGA"""
+        self._addLast()
         rep = ''
         for key,channels in sorted(self.switchingTimes.iteritems()):
             rep = rep + self.numToHex(key) + self.numToHex(channels)
@@ -57,6 +65,7 @@ class Sequence():
     
 seq = Sequence()
 seq.addTTLPulse('testChannel', start = 0, duration = 1e-3)
+seq.addTTLPulse('testChannel', start = 1, duration = 1e-3)
 
 import labrad
 cxn = labrad.connect()
