@@ -5,7 +5,8 @@ from pylab import *
 from numpy import *
 from scipy import optimize
 
-IMG = 'a.png'
+#IMG = str('c:/Users/lattice/Desktopb.png')
+IMG = raw_input("enter path to image: ")
 imageArray = plt.imread(IMG)
 #convert RGB to intensity
 intensityArray = 0.2989 * imageArray[:,:,0] + 0.5870 * imageArray[:,:,1] + 0.1140 * imageArray[:,:,2]
@@ -27,9 +28,9 @@ def moments(data):
     x = (X*data).sum()/total
     y = (Y*data).sum()/total
     col = data[:, int(y)]
-    width_x = sqrt(abs((arange(col.size)-y)**2*col).sum()/col.sum())
+    width_x = sqrt(abs((arange(col.size)-x)**2*col).sum()/col.sum())
     row = data[int(x), :]
-    width_y = sqrt(abs((arange(row.size)-x)**2*row).sum()/row.sum())
+    width_y = sqrt(abs((arange(row.size)-y)**2*row).sum()/row.sum())
     height = data.max()
     offset = data.min()
     return height, x, y, width_x, width_y, offset
@@ -42,10 +43,10 @@ def fitgaussian(data):
     p, success = optimize.leastsq(errorfunction, params)
     return p
 
-plt.matshow(intensityArray, cmap=cm.gist_earth_r)
+plt.matshow(intensityArray, cmap=cm.hot)#earth_r)
 params = fitgaussian(intensityArray)
 fit = gaussian(*params)
-contour(fit(*indices(intensityArray.shape)), cmap=cm.copper)
+contour(fit(*indices(intensityArray.shape)), cmap=cm.binary)
 ax = gca()
 (height, x_center, y_center, width_x, width_y, offset) = params
 
