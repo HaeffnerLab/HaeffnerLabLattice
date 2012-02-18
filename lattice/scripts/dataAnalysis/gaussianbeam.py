@@ -5,31 +5,19 @@ from pylab import *
 from numpy import *
 from scipy import optimize
 
-IMG = raw_input("Enter the filename of the image to analyze (png): ")
-IMG = str(IMG)
+#IMG = str('c:/Users/lattice/Desktopb.png')
+IMG = raw_input("enter path to image: ")
 imageArray = plt.imread(IMG)
-
-imageArrayRows = imageArray.shape[0]
-imageArrayColumns = imageArray.shape[1]
-
-intensityArray = [[np.float64(0)]*imageArrayColumns] * imageArrayRows
-intensityArray = np.array(intensityArray)
-
-print 'processing image'
-for row in range(imageArrayRows):
-    for col in range(imageArrayColumns):
-        intensity = imageArray[row, col][0]*0.2989 + imageArray[row, col][1]*0.5870 + imageArray[row, col][2]*0.1140
-        intensityArray[row, col] = np.float64(intensity)
+#convert RGB to intensity
+intensityArray = 0.2989 * imageArray[:,:,0] + 0.5870 * imageArray[:,:,1] + 0.1140 * imageArray[:,:,2]
 
 print 'image processed, size: ' + str(intensityArray.shape) 
 
-
-def gaussian(height, center_x, center_y, width_x, width_y):
+def gaussian(height, center_x, center_y, width_x, width_y, offset):
     """Returns a gaussian function with the given parameters"""
     width_x = float(width_x)
     width_y = float(width_y)
-    return lambda x,y: height*exp(
-                -(((center_x-x)/width_x)**2+((center_y-y)/width_y)**2)/2)
+    return lambda x,y: offset + height*exp(-(((center_x-x)/width_x)**2+((center_y-y)/width_y)**2)/2)
 
 def moments(data):
     """Returns (height, x, y, width_x, width_y)
@@ -40,63 +28,53 @@ def moments(data):
     x = (X*data).sum()/total
     y = (Y*data).sum()/total
     col = data[:, int(y)]
-    width_x = sqrt(abs((arange(col.size)-y)**2*col).sum()/col.sum())
+    width_x = sqrt(abs((arange(col.size)-x)**2*col).sum()/col.sum())
     row = data[int(x), :]
-    width_y = sqrt(abs((arange(row.size)-x)**2*row).sum()/row.sum())
+    width_y = sqrt(abs((arange(row.size)-y)**2*row).sum()/row.sum())
     height = data.max()
-    return height, x, y, width_x, width_y
+    offset = data.min()
+    return height, x, y, width_x, width_y, offset
 
 def fitgaussian(data):
     """Returns (height, x, y, width_x, width_y)
     the gaussian parameters of a 2D distribution found by a fit"""
     params = moments(data)
-    errorfunction = lambda p: ravel(gaussian(*p)(*indices(data.shape)) -
-                                 data)
+    errorfunction = lambda p: ravel(gaussian(*p)(*indices(data.shape)) - data)
     p, success = optimize.leastsq(errorfunction, params)
     return p
 
-data = intensityArray.transpose()
-
-matshow(data, cmap=cm.gist_earth_r)
-
-params = fitgaussian(data)
+plt.matshow(intensityArray, cmap=cm.hot)#earth_r)
+params = fitgaussian(intensityArray)
 fit = gaussian(*params)
-
-contour(fit(*indices(data.shape)), cmap=cm.copper)
+contour(fit(*indices(intensityArray.shape)), cmap=cm.binary)
 ax = gca()
-(height, x, y, width_x, width_y) = params
+(height, x_center, y_center, width_x, width_y, offset) = params
 
-text(0.95, 0.05, """
+text(0.95, 0.05, ''''
 x : %.1f
 y : %.1f
 width_x : %.1f
-width_y : %.1f""" %(x, y, width_x, width_y),
-        fontsize=16, horizontalalignment='right',
-        verticalalignment='bottom', transform=ax.transAxes)
+width_y : %.1f
+offset : %.1f
+'''%(x_center, y_center, width_x, width_y, offset),
+fontsize=16, horizontalalignment='right',
+verticalalignment='bottom', transform=ax.transAxes)
 
-xValuesIndep = range(imageArrayRows)
-yValuesIndep = range(imageArrayColumns)
+x = np.arange(intensityArray.shape[0])
+xfit = fit(x,y_center)
+xvals = intensityArray[:,int(y_center)]
+y = np.arange(intensityArray.shape[1])
+yfit = fit(x_center,y)
+yvals = intensityArray[int(x_center),:]
 
-# x values Gaussian
-xGaussianDep = []
-for i in range(imageArrayRows):
-    xGaussianDep.append(height*exp(-(((y-i)/width_y)**2)))
-
-yGaussianDep = []
-for i in range(imageArrayColumns):
-    yGaussianDep.append(height*exp(-(((x-i)/width_x)**2)))
-                        
-
-# plot the lines
 plt.figure(2)
 plt.title('X direction')
 plt.subplot(111)
-plt.plot(xValuesIndep, data[int(x), :], xValuesIndep, xGaussianDep)
+plt.plot(x, xvals, x, xfit)
 plt.figure(3)
 plt.title('Y direction')
 plt.subplot(111)
-plt.plot(yValuesIndep, data[:, int(y)], yValuesIndep, yGaussianDep)
+plt.plot(y, yvals, y, yfit)
+
 show()
-
-
 

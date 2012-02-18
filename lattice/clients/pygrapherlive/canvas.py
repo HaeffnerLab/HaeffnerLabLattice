@@ -96,7 +96,7 @@ class Qt4MplCanvas(FigureCanvas):
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in self.plotDict[dataset, directory][PLOTS]:
                     handles.append(i)
-                    labels.append(str(dataset) + ' ' + i.get_label())
+                    labels.append(str(dataset) + ' - ' + i.get_label())
         self.ax.legend(handles, labels)
         
     # plot the data
