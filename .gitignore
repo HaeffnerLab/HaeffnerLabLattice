@@ -8,3 +8,4 @@ Errors.log
 .pydevproject
 *.pyc
 .recent.ini
+.DS_store
