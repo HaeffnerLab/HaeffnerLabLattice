@@ -41,7 +41,7 @@ class cavityWidget(QtGui.QWidget):
     def connect(self):
         from labrad.wrappers import connectAsync
         from labrad.types import Error
-        self.cxn = yield connectAsync()
+        self.cxn = yield connectAsync('192.168.169.49', password = 'S12D52')
         self.server = yield self.cxn.laserdac
         self.registry = yield self.cxn.registry
         yield self.loadDict()
@@ -102,9 +102,9 @@ class cavityWidget(QtGui.QWidget):
         yield self.registry.cd(['','Clients','Cavity Control'],True)
         try:
             range = yield self.registry.get(rangeName)
-        except Error, e:
-            if e.code is 21:
-                range = [0,2500] #default min and max levels
+        except:
+            print 'problem with acquiring range from registry'
+            range = [0,2500]
         returnValue( range )
     
     #if inputs are updated by user, send the values to server
