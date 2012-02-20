@@ -20,6 +20,8 @@ from labrad.server import LabradServer, setting
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import LoopingCall
 import numpy
+
+
 #store PID, integrator in the registry
 class AlarmChecker():
 
@@ -59,14 +61,18 @@ class PIDcontroller:
 class AC_Server( LabradServer ):
     name = 'AC Server'
     updateRate = 1.0 #seconds
-    
+        
     @inlineCallbacks
     def initServer( self ):
+        self.daq = DataAcquisition()
+        self.channels = self.daq.channels
+        self.averager = RunningAverage(self.channels, averageNumber = 12)
         self.manualOverwrite = False
         self.manualPositions = None####
         self.PIDparams =[0,0,0]####get from registry
         self.inControl = LoopingCall(self.control)
         self.inControl.start(self.updateRate)
+        self.daqErrors = 0
         yield None
 
     @setting(0, 'Manual Override', enable = 'b', valvePositions = '*v')
@@ -80,19 +86,31 @@ class AC_Server( LabradServer ):
         """Allows to view or to set the PID parameters"""
         if PID is None: return self.PID
         self.PIDparams = PID
-    temperatures
+
     @setting(2, 'Reset Integrator')
     def resetIntegrator(self, c):
         pass
     
     @inlineCallbacks
     def control(self):
-        import time
-        print time.time()
-        #try:temperatures = yield getTemp
-        #keep track of errors during reading
-
-
+        try:
+            temps = yield self.daq.getTemperatures()
+        except: #put error type
+            self.daqErros += 1
+            yield self.checkMaxErrors()
+        else:
+            self.averager.add(temps)
+            temps = self.averager.getAverage()
+            
+    
+    @inlineCallbacks
+    def checkMaxErrors(self):
+        """checks how many errors have occured in sends out a notification email"""
+        if self.daqErrors >  self.maxDaqErrors:
+            print "TOO MANY DAQ ERRORS"
+            #yield self.emailer.send()...
+            self.daqErrors = 0
+    
 class DataAcquisition():
     channels = 16
     hardwareGain = numpy.array([15,15,15,15,15,15,15,15,15,15,15,15,5,15,5,15]) #channels 13 and 15 (or 12,14 counting from 0) have less gain for expanded range
@@ -114,9 +132,8 @@ class DataAcquisition():
         dV = (15./self.hardwareGain)*(Vin/1.2 - 1) #when G = 15 (most channels) dV of 2.4 corresponds to bridge voltage of 1 and dV of 0 is bridge voltage of -1     
                     #G = 5 for low res channels for cold water, hot water supply
                     #G is determines by INA114 gain resistor
-        R = (dV/V0 +.5) / (- dV/V0 + .5) * 10 #convert bridge voltage to R in kohms
-        T = 1/(a + b*math.log(R/10.) + c * pow(math.log(R/10.),2) + d * pow(math.log(R/10.),3)) #consult datasheet for this
-        TempC = round(T - 273.15,2) #Kelvin to C
+        R = (dV/self.V0 +.5) / (- dV/self.V0 + .5) * 10 #convert bridge voltage to R in kohms
+        TempC = self.thermistor.resToTemp(R)
         return TempC
     
     @inlineCallbacks
@@ -136,7 +153,6 @@ class thermistor():
     b = 2.5627725e-04 
     c = 2.0829210e-06
     d = 7.3003206e-08
-    V0 = 6.95 #volts on the voltage reference
     
     def resToTemp(self, R):
         '''takes the resistance R in Kohms and converts this to temperature in Celcius'''
