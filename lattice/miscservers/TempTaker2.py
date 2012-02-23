@@ -96,6 +96,7 @@ class AC_Server( LabradServer ):
         self.emailer = self.client.emailer
         yield self.emailer.set_recipients(['micramm@gmail.com']) # set this later
         self.alarmChecker = AlarmChecker(self.emailer, self.channelDict)
+        self.responseCalc = ResponseCalculator()
         #stting up constants
         self.manualOverwrite = False
         self.manualPositions = None####
@@ -117,7 +118,8 @@ class AC_Server( LabradServer ):
         """Allows to view or to set the PID parameters"""
         if PID is None: return self.PID
         self.PIDparams = PID
-
+        ###
+        
     @setting(2, 'Reset Integrator')
     def resetIntegrator(self, c):
         pass
@@ -144,56 +146,37 @@ class AC_Server( LabradServer ):
             self.inControl.stop()
     
 class ResponseCalculator():
-    def __init__(self):
-        self.lastErrSigArr = zeros(Ch) #initial vale of lastErrorSignal, used to disable Diff gain for the first time
-        self.loadExternalParams()    
-    def loadExternalParams(self):
-        if(os.path.isfile(integfile)):#if integ file exists (with information about last integration), open it in read/write mode and read in last integrator setting
-            self.INTEGFILE =  open(integfile,"r+");
-            self.integralerrorSigArr = array(pickle.load(self.INTEGFILE))
-        else: #if file does not exist, create it and specify initial integrator parameters.
-            self.INTEGFILE =  open(integfile,"w");
-            self.integralerrorSigArr = zeros(Ch)
-        if(os.path.isfile(pifile)): #if file exists, load the PI parameters
-            self.PIFILE = open(pifile,"r+")
-            self.P = array(pickle.load(self.PIFILE))
-            self.I = array(pickle.load(self.PIFILE))
-            self.D = array(pickle.load(self.PIFILE))
-            self.PIFILE.close()
-        else:
-            self.PIFILE = open(pifile,"w") #if file doesn't not exist, create it
-            #proportionality constant for PID in the format [#144 big room / #140 small room / #144B Laser Room / #144A office]
-            self.P = array([-15,-15,-15,-0])
-            self.I = array([-.1,-.1,-.1,-0])
-            self.D = array([-40,-40,-40,0])
-            pickle.dump(self.P.tolist(),self.PIFILE)
-            pickle.dump(self.I.tolist(),self.PIFILE)
-            pickle.dump(self.D.tolist(),self.PIFILE)
-            self.PIFILE.close()
-        self.PImodtime = os.path.getmtime(pifile) #time when pifile is last modified
-    def updateExternalPIDParams(self):
-        if(os.path.getmtime(pifile) != self.PImodtime): #if PI parmeters have been modified externally, update them
-            self.PIFILE = open(pifile, 'r')
-            self.P = array(pickle.load(self.PIFILE))
-            self.I = array(pickle.load(self.PIFILE))
-            self.D = array(pickle.load(self.PIFILE))
-            self.PIFILE.close()
-            self.PImodtime = os.path.getmtime(pifile)
-            print("new P,I,D parameters are")
-            print self.P
-            print self.I
-            print self.D
-            
-    def getResponse(self):
-        return [self.PIDresponseArr,self.valvesignalArr]
     
-    def calculateResponse(self, curTempArr):
-        self.errorSigArr = self.finderrorSig(curTempArr)
+    IntegrationMin = -500*5; #limit on how small integration response can get, modified later with I-gain and thus more than the max control signal makes not much sense, the 20 comes from the estimated cooling power rescaling (SetPoint-2)
+    IntegrationMax = 700*5; #limit on how big integration response can get, modified later with the I-gain, the 60 comes from the estimated heating power rescaling
+    
+    def __init__(self, channels, (P,I,D), setpoints, integrated = None):
+        self.lastErrSigArr = numpy.zeros(channels)
+        self.P = P
+        self.I = I
+        self.D = D
+        self.setpoints = setpoints
+    
+    def updateGains(self, (P,I,D)):
+        #constants for PID in the format [big room , small room , laser room]
+        self.P = P
+        self.I = I
+        self.D = D
+    
+    def calculateResponse(self, temp):
+        error = temp - setpoint
+        
         self.integralerrorSigArr = self.calcintegrator(self.integralerrorSigArr, self.errorSigArr)
         self.saveIntegralError(self.integralerrorSigArr)
         self.PIDresponseArr = self.findPIDresponse(self.errorSigArr, self.integralerrorSigArr,self.lastErrSigArr) 
         self.lastErrSigArr= self.errorSigArr
         self.valvesignalArr = self.CalcValveSignal(self.PIDresponseArr, curTempArr)
+
+    
+    def getResponse(self):
+        return [self.PIDresponseArr,self.valvesignalArr]
+    
+    
         
     def saveIntegralError(self,integError):
         #print integError
@@ -202,9 +185,7 @@ class ResponseCalculator():
         self.INTEGFILE.truncate() 
 
         
-    def finderrorSig(self, CurTemp): #takes array with current temperatures and finds the error signal array
-        error = CurTemp - SetPoint
-        return error
+ 
         
     def calcintegrator(self,oldArr, newArr):
         TotalArr = oldArr + newArr

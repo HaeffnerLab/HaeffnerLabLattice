@@ -51,9 +51,6 @@ hysteresis = [ 22, 12, 2, 7, 22, 12, 0, 0]  # smlroom (cold, hot), bigroom (cold
 #hysteresis = [ 14, 12, 2, 7, 17, 12, 0, 0]  # working well
 #hysteresis = [ 12, 20, 3, 13, 35, 25, 0, 0]
 
-IntegrationMin = -500*5; #limit on how small integration response can get, modified later with I-gain and thus more than the max control signal makes not much sense, the 20 comes from the estimated cooling power rescaling (SetPoint-2)
-IntegrationMax = 700*5; #limit on how big integration response can get, modified later with the I-gain, the 60 comes from the estimated heating power rescaling
-
 DiffMax = 20000000
 
 PropActionThreshold = 0.0;  # Set proportional feedback to 0 if correction would smaller than this value, units are in temperature deviation [K]; prevents some noise on control when having high P-gain.
