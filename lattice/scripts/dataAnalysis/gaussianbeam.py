@@ -5,11 +5,18 @@ from pylab import *
 from numpy import *
 from scipy import optimize
 
-#IMG = str('c:/Users/lattice/Desktopb.png')
-IMG = raw_input("enter path to image: ")
+IMG = str('C:\Users\lattice\Desktop\Image001.png')
+#IMG = raw_input("enter path to image: ")
 imageArray = plt.imread(IMG)
 #convert RGB to intensity
-intensityArray = 0.2989 * imageArray[:,:,0] + 0.5870 * imageArray[:,:,1] + 0.1140 * imageArray[:,:,2]
+R = 0.2989 * imageArray[:,:,0]
+G = 0.5870 * imageArray[:,:,1]
+B = 0.1140 * imageArray[:,:,2]
+
+R = 0.2989 * imageArray[100:200,:,0]
+G = 0.5870 * imageArray[100:200,:,1]
+B = 0.1140 * imageArray[100:200,:,2]
+intensityArray = R+G+B
 
 print 'image processed, size: ' + str(intensityArray.shape) 
 
@@ -59,6 +66,14 @@ offset : %.1f
 '''%(x_center, y_center, width_x, width_y, offset),
 fontsize=16, horizontalalignment='right',
 verticalalignment='bottom', transform=ax.transAxes)
+
+print (x_center, y_center, width_x, width_y, offset)
+
+waist_x = width_x * 8.5 * 1.41 #8.5 microns per pixel, divided by sqrt(2) for wait definition
+waist_y = width_y * 8.5 * 1.41
+
+print 'waists', waist_x, waist_y
+print 'diameters', 2 * waist_x, 2 * waist_y
 
 x = np.arange(intensityArray.shape[0])
 xfit = fit(x,y_center)
