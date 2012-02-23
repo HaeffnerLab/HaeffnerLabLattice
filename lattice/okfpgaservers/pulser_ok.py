@@ -63,7 +63,7 @@ class Pulser(LabradServer):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/okfpgaservers/pulser.bit')
+        path = os.path.join(basepath,'lattice/okfpgaservers/photon.bit')
         prog = xem.ConfigureFPGA(path)
         if prog: raise("Not able to program FPGA")
         pll = ok.PLL22150()
@@ -71,20 +71,30 @@ class Pulser(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
-    @setting(0, "Program Sequence", sequence = '?', returns = '')
+    @setting(0, "Program Sequence", sequence = 's', returns = '')
     def programSequence(self, c, sequence):
         """
         Programs Pulser with the given sequence.
         """
         if self.xem is None: raise('Board not connected')
-        parsedSequence = sequence.progRepresentation()
+        parsedSequence = sequence#.progRepresentation()
         yield self.inCommunication.acquire()
-        yield deferToThread(self._programBoard, parsedSequence)      
+        yield deferToThread(self._programBoard, parsedSequence)    
         self.inCommunication.release()
     
+    @setting(1, "Start Infinite", returns = '')
+    def startInfinite(self,c):
+        sequence = self.c.get('sequence')
+        if not sequence: raise Exception ("No Programmed Sequence")
+        
+    
     def _programBoard(self, sequence):
-        self.xem.WriteToBlockPipeIn('0xaa',1024, sequence)#address?
+        self.xem.WriteToBlockPipeIn(0x80, 2, sequence)
   
+    def _startInfinite(self):
+        self.xem.SetWireInValue(0x00,0x03)
+        self.xem.UpdateWireIns()
+
 if __name__ == "__main__":
     from labrad import util
     util.runServer( Pulser() )

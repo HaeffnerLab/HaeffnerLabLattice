@@ -57,13 +57,19 @@ class Sequence():
         return numpy.fromstring(rep, dtype = numpy.uint16)
     
 seq = Sequence()
-seq.addTTLPulse('testChannel', start = 0, duration = 1e-3)
-seq.addTTLPulse('testChannel', start = 1, duration = 1e-3)
+seq.addTTLPulse('testChannel', start = 0, duration = 1)
+seq.addTTLPulse('testChannel', start = 2, duration = 1)
+print seq.humanRepresentation()
+
+buf1 = "\x00\x00\x00\x00\x00\x00\x01\x00"
+buf2 = "\x20\x00\x00\x00\x00\x00\x02\x00"
+buf3 = "\x40\x00\x00\x00\x00\x00\x04\x00"
 
 import labrad
 cxn = labrad.connect()
 pulser = cxn.pulser
-pulser.program_sequence(seq)
+#pulser.program_sequence(seq.progRepresentation())
+pulser.program_sequence(buf1 + buf2 + buf3)
 
 #print seq.switchingTimes
 #print seq.humanRepresentation()
