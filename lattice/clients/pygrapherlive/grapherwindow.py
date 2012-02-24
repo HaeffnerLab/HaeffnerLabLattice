@@ -83,6 +83,12 @@ class GrapherWindow(QtGui.QMainWindow):
         
         grapherLayout.addLayout(buttonBox)
 
+    def setIdleTitle(self, idle):
+        if (idle == True):
+            self.setWindowTitle("Live Grapher - (Idle)")
+        else:
+            self.setWindowTitle("Live Grapher")
+
     # adds a checkbox when a new dataset is overlaid on the graph
     def createDatasetCheckbox(self, dataset, directory):
         datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]), self)

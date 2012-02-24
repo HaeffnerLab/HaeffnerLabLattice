@@ -42,7 +42,9 @@ class Qt4MplCanvas(FigureCanvas):
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
         self.appWindowParent = appWindowParent      
-        self.cnt = 0
+        self.idleCounter = 0
+        self.idle = False
+        self.timer = self.startTimer(100)
         self.dataDict = {}
         self.datasetLabelsDict = {}
         self.plotDict = {}
@@ -53,6 +55,19 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.set_autoscale_on(False) # disable figure-wide autoscale
                 
         self.background = self.copy_from_bbox(self.ax.bbox)
+        self.cidpress = self.mpl_connect('draw_event', self.on_draw)
+    
+    # This will check every 100milliseconds if the graph is idle or not.
+    def timerEvent(self, event):
+        if (self.idleCounter > 300):
+            self.idle = True
+        else:
+            self.idle = False 
+        self.idleCounter = self.idleCounter + 1 
+        
+    # Reset the idle counter, since drawing no longer makes the graph idle
+    def on_draw(self, event):
+        self.idleCounter = 0
     
     # Initialize a place in the dictionary for the dataset
     def initializeDataset(self, dataset, directory, labels):
@@ -62,6 +77,7 @@ class Qt4MplCanvas(FigureCanvas):
     # retrieve and store the new data from Connections
     def setPlotData(self, dataset, directory, data):
         if (self.dataDict[dataset, directory] == None):# first iteration
+            self.idleCounter = 0
             self.dataDict[dataset, directory] = data
             NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
             # set up independent axis, dependent axes for data, and dependent axes for plot
@@ -80,6 +96,7 @@ class Qt4MplCanvas(FigureCanvas):
             self.drawLegend()
             self.draw()
         else:
+            self.idleCounter = 0
             # append the new data
             self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0)
             # check the size of the dataset, if too big, delete stuff
@@ -101,39 +118,45 @@ class Qt4MplCanvas(FigureCanvas):
         
     # plot the data
     def drawPlot(self, dataset, directory):
-        
-        data = self.dataDict[dataset, directory]
-               
-        # note: this will work for slow datasets, need to make sure...
-        #...self.plotDict[dataset][1] is not an empty set 
-        
-        if (data != None):
-         
-            NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
-
-            # update the data points
-            self.plotDict[dataset, directory][INDEPENDENT] = data.transpose()[INDEPENDENT]
-            for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset, directory][DEPENDENT][i] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
-    
-            # Reassign dependent axis to smaller integers (in order to fit on screen)
-            #self.plotDict[dataset, directory][0] = np.arange(self.plotDict[dataset, directory][0].size)
-                               
-            # finds the maximum independent variable value
-            self.maxX = self.plotDict[dataset, directory][INDEPENDENT][-1]
+        if (self.idle == True):       
+            # set the window title to idle
+            self.appWindowParent.setIdleTitle(True)
+            pass
+        else:
+            self.appWindowParent.setIdleTitle(False)    
+            data = self.dataDict[dataset, directory]
+                   
+            # note: this will work for slow datasets, need to make sure...
+            #...self.plotDict[dataset][1] is not an empty set 
+            
+            if (data != None):
              
-            # flatten the data
-            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
-            
-            # draw the plots onto the canvas and blit them into view
-            for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset, directory][PLOTS][i].set_data(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i])
-                self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
-            self.blit(self.ax.bbox)
-            
-            # check to see if the boundary needs updating
-            self.updateBoundary(dataset, directory, NumberOfDependentVariables)
- 
+                NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
+    
+                # update the data points
+                self.plotDict[dataset, directory][INDEPENDENT] = data.transpose()[INDEPENDENT]
+                for i in range(NumberOfDependentVariables):
+                    self.plotDict[dataset, directory][DEPENDENT][i] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
+        
+                # Reassign dependent axis to smaller integers (in order to fit on screen)
+                #self.plotDict[dataset, directory][0] = np.arange(self.plotDict[dataset, directory][0].size)
+                                   
+                # finds the maximum independent variable value
+                self.maxX = self.plotDict[dataset, directory][INDEPENDENT][-1]
+                 
+                # flatten the data
+                self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
+                
+                # draw the plots onto the canvas and blit them into view
+                for i in range(NumberOfDependentVariables):
+                    self.plotDict[dataset, directory][PLOTS][i].set_data(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i])
+                    self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                self.blit(self.ax.bbox)
+                
+                # check to see if the boundary needs updating
+                self.updateBoundary(dataset, directory, NumberOfDependentVariables)
+
+     
     # if the screen has reached the scrollfraction limit, it will update the boundaries
     def updateBoundary(self, dataset, directory, NumberOfDependentVariables):
         

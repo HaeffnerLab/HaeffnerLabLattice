@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
 from twisted.internet.task import LoopingCall
 from twisted.internet.threads import deferToThread
+from twisted.internet.error import ConnectionRefusedError
 from grapherwindow import FirstWindow, GrapherWindow
 from dataset import Dataset
 import time
@@ -56,7 +57,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.datasetDict = {} # dictionary relating a Dataset object with the dataset and directory 
         self.winList = []
-        self.connect()
+        self.connect()               
         self.startTimer()
 
     # connect to the data vault    
@@ -71,6 +72,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.introWindow = FirstWindow(self, context)
         self.introWindow.show()
         print 'Connection established: now listening dataset.'
+
 
     # set up dataset listener    
     @inlineCallbacks
