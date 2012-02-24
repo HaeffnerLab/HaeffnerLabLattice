@@ -45,6 +45,7 @@ class hardwareConfiguration():
                    '6':6,
                    '7':7,
                    '8':8,
+                   '31':31,
                    'testChannel':0
                    }
 
@@ -138,14 +139,15 @@ class Pulser(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addTTLPulse(hardwareAddr, start, duration)
     
-    @setting(5, "Human Readable", returns = '*v')
+    @setting(5, "Human Readable", returns = '*2s')
     def humanReadable(self, c):
         """
         Returns a readable form of the programmed sequence for debugging
         """
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
-        return numpy.array(sequence.humanRepresentation(), dtype = numpy.float)
+        ans = sequence.humanRepresentation()
+        return ans.tolist()
     
     def _programBoard(self, sequence):
         self.xem.WriteToBlockPipeIn(0x80, 2, sequence)
@@ -180,7 +182,7 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
-        return int( sec // timeResolution) 
+        return int( sec / timeResolution) 
     
     def numToHex(self, number):
         '''converts the number to the hex representation for a total of 32 bits
@@ -203,19 +205,30 @@ class Sequence():
         lastChannels = numpy.zeros(channelTotal)
         powerArray = 2**numpy.arange(channelTotal, dtype = numpy.uint64)
         for key,newChannels in sorted(self.switchingTimes.iteritems()):
-            channels = lastChannels + newChannels
+            channels = lastChannels + newChannels #computes the action of switching on the state
             if (channels < 0).any(): raise Exception ('Trying to switch off channel that is not already on')
             channelInt = numpy.dot(channels,powerArray)
-            rep = rep + self.numToHex(key) + self.numToHex(channelInt)
+            rep = rep + self.numToHex(key) + self.numToHex(channelInt) #converts the new state to hex and adds it to the sequence
             lastChannels = channels
         rep = rep + 2*self.numToHex(0) #adding termination
         return rep
     
     def humanRepresentation(self):
-        """Returns the human version of the sequence for FPGA for debugging"""
+        """Returns the human readable version of the sequence for FPGA for debugging"""
         rep = self.progRepresentation()
-        return numpy.fromstring(rep, dtype = numpy.uint16)
-    
+        arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
+        arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large number
+        arr = arr.reshape(-1,4)
+        times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolution
+        channels = ( 65536  *  arr[:,2] + arr[:,3])
+        
+        def expandChannel(ch):
+            '''function for getting the binary representation, i.e 2**32 is 1000...0'''
+            return bin(ch)[2:].zfill(32)
+        
+        channels = map(expandChannel,channels)
+        return numpy.vstack((times,channels)).transpose()
+     
 if __name__ == "__main__":
     from labrad import util
     util.runServer( Pulser() )
