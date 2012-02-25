@@ -57,8 +57,22 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.datasetDict = {} # dictionary relating a Dataset object with the dataset and directory 
         self.winList = []
-        self.connect()               
+        self.attemptLabRadConnect()               
         self.startTimer()
+
+    def attemptLabRadConnect(self):
+        from labrad.errors import LoginFailedError
+        deferred = self.connect()
+        def handleLabRadError(failure):
+            #print failure.trap(ConnectionRefusedError)
+            #print failure.trap(LoginFailedError)
+            if (failure.trap(LoginFailedError)):
+                print 'Failed login'
+                # enter new password?
+            elif (failure.trap(ConnectionRefusedError)):
+                self.retryLabradConnectDialog = RetryConnectingDialog(self)
+                self.retryLabradConnectDialog.show()
+        deferred.addErrback(handleLabRadError)
 
     # connect to the data vault    
     @inlineCallbacks    
@@ -72,7 +86,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.introWindow = FirstWindow(self, context)
         self.introWindow.show()
         print 'Connection established: now listening dataset.'
-
 
     # set up dataset listener    
     @inlineCallbacks
@@ -202,3 +215,27 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         for i in self.winList:
             if i == win:
                 self.winList.remove(i)
+                
+class RetryConnectingDialog(QtGui.QDialog):
+    def __init__(self, parent):
+        QtGui.QDialog.__init__(self)
+        self.parent = parent
+        self.setupUi(self)
+        
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(400, 300)
+        self.gridLayout = QtGui.QGridLayout(Dialog)
+        self.confirmButton = QtGui.QPushButton(Dialog)
+        self.confirmButton.setText('Retry')
+        self.gridLayout.addWidget(self.confirmButton,1,0)
+        self.declineButton = QtGui.QPushButton(Dialog)
+        self.declineButton.setText('Exit')
+        self.gridLayout.addWidget(self.declineButton,1,1)
+        self.label = QtGui.QLabel('Could not connect to Labrad!')
+        self.font = QtGui.QFont()
+        self.font.setPointSize(20)
+        self.label.setFont(self.font)
+        self.gridLayout.addWidget(self.label,0,0)
+        self.confirmButton.clicked.connect(self.parent.attemptLabRadConnect)
+        self.declineButton.clicked.connect(self.parent.reactor.stop)

@@ -27,7 +27,7 @@ import numpy as np
 
 MAXDATASETSIZE = 10000
 SCALEFACTOR = 1.5
-SCROLLFRACTION = .95; # Data reaches this much of the screen before auto-scroll takes place
+SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0
 DEPENDENT = 1
 PLOTS = 2
@@ -194,9 +194,9 @@ class Qt4MplCanvas(FigureCanvas):
             elif (currentX < (1 - SCROLLFRACTION) * xwidth + xmin):
                 self.autofitDataX(currentX, MIN)               
             if (currentYmax > SCROLLFRACTION * ywidth + ymin):
-                self.autofitDataY(currentYmax, MAX)
+                self.autofitDataY(currentYmax)
             elif (currentYmin < (1 - SCROLLFRACTION) * ywidth + ymin):
-                self.autofitDataY(currentYmin, MIN)
+                self.autofitDataY(currentYmin)
     
     def getDataXLimits(self):
         xmin = None
@@ -231,19 +231,18 @@ class Qt4MplCanvas(FigureCanvas):
                                 ymax = j
         return ymin, ymax
 
-    def autofitDataY(self, currentY, minmax):
-        ymin, ymax = self.ax.get_ylim()
-        if (minmax == MAX):
-            newmaxY = (SCALEFACTOR*(ymax - ymin) + ymin) 
-            self.ax.set_ylim(ymin, newmaxY)
-        elif (minmax == MIN):
-            newminY = (ymax - SCALEFACTOR*(ymax - ymin))
-            self.ax.set_ylim(newminY, ymax)
+    def autofitDataY(self, currentY):
+        #ymin, ymax = self.ax.get_ylim()
+        ymin, ymax = self.getDataYLimits()
+        newminY = (ymax - SCALEFACTOR*(ymax - ymin))
+        newmaxY = (SCALEFACTOR*(ymax - ymin) + ymin)
+        self.ax.set_ylim(newminY, newmaxY) 
         self.draw() 
     
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self, currentX, minmax):
-        xmin, xmax = self.ax.get_xlim()
+        #xmin, xmax = self.ax.get_xlim()
+        xmin, xmax = self.getDataXLimits()
         if (minmax == MAX):
             newmaxX = (SCALEFACTOR*(xmax - xmin) + xmin)
             self.ax.set_xlim(xmin, newmaxX)

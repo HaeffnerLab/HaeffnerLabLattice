@@ -257,5 +257,6 @@ class ParameterWindow(QtGui.QMainWindow):
     def populateList(self):
         self.parameters = self.parent.getParameters(self.dataset, self.directory)
         self.parameterListWidget.clear()
-        for i in self.parameters:
-            self.parameterListWidget.addItem(str(i))
+        if (self.parameters):
+            for i in self.parameters:
+                self.parameterListWidget.addItem(str(i))
