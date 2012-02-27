@@ -64,12 +64,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         from labrad.errors import LoginFailedError
         deferred = self.connect()
         def handleLabRadError(failure):
-            #print failure.trap(ConnectionRefusedError)
-            #print failure.trap(LoginFailedError)
-            if (failure.trap(LoginFailedError)):
-                print 'Failed login'
-                # enter new password?
-            elif (failure.trap(ConnectionRefusedError)):
+            if (failure.trap(ConnectionRefusedError)):
                 self.retryLabradConnectDialog = RetryConnectingDialog(self)
                 self.retryLabradConnectDialog.show()
         deferred.addErrback(handleLabRadError)

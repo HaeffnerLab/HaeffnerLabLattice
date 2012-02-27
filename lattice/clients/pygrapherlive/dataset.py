@@ -57,8 +57,6 @@ class Dataset(QtCore.QObject):
         returnValue(self.hasPlotParameter)
             
     def updateParameter(self, x, y):
-        if (self.hasPlotParameter == False):
-            self.hasPlotParameter = True
         self.checkForPlotParameter()
 
         #append whatever to self.parameters
