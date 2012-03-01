@@ -4,21 +4,18 @@ import time
 
 #connect to LabRAD
 try:
-	cxn = labrad.connect()
+	cxn = labrad.connect('192.168.169.49')
 except:
 	print 'Please start LabRAD Manager'
 	time.sleep(10)
 	raise()
 
-nodeDict = {'node_lattice_pc':
-				['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','NormalPMTCountFPGA',
-				'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','Trigger','NormalPMTFlow',
-				'Compensation LineScan','Double Pass','ADCserver','FreqCounter'],
-			'node_lab_197':
-				['Paul Box','TimeResolvedFPGA']
+nodeDict = {
+			'node_lab_49':
+				['Serial Server', 'LaserDAC'],
 			}
 
-for node in ['node_lab_197','node_lattice_pc']: #sets the order of opening
+for node in ['node_lab_49']: #sets the order of opening
 	#make sure all node servers are up
 	if not node in cxn.servers: print node + ' is not running'
 	else:
