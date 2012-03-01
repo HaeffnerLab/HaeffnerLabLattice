@@ -256,9 +256,11 @@ class Qt4MplCanvas(FigureCanvas):
     
     def fitData(self):
         xmin, xmax = self.getDataXLimits()
-        self.ax.set_xlim(xmin, xmax)
+        xwidth = abs(xmax - xmin)
+        self.ax.set_xlim(xmin - .1*xwidth, xmax + .1*xwidth)
         ymin, ymax = self.getDataYLimits()
-        self.ax.set_ylim(ymin, ymax)
+        ywidth = abs(ymax - ymin)
+        self.ax.set_ylim(ymin - .1*ywidth, ymax + .1*ywidth)
         self.draw()
         #self.ax.set_xlim(self.initialxmin, self.maxX)
         #self.draw()
