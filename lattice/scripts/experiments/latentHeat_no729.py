@@ -15,7 +15,7 @@ and we need a far red global beam to be able to crystallize the chain again.
 
 #Global parameters
 comment = 'no comment'
-iterations = 1
+iterations = 10
 experimentName = 'LatentHeat_no729'
 #axial double pass scan
 axfreqmin = 250.0 #MHz
@@ -25,15 +25,15 @@ axFreqList =  numpy.r_[axfreqmin:axfreqmax:complex(0,axfreq_points)]
 
 pboxsequence = 'LatentHeat_no729.py'
 global_off_start = 50.*10**3
-crystallize_delay = 500.*10**3
+crystallize_delay = 100.*10**3
 how_many_exposures = 1
 shutter_delay = 20.*10**3
-camera_exposure =  110.*10**3####
-crystallize_time = 500.*10**3
-axial_heat = 50.*10**3
-global_off_time = 200.*10**3
+camera_exposure =  50.*10**3####
+crystallize_time = 1000.*10**3
+axial_heat = 25.*10**3
+global_off_time = 300.*10**3
 #Time Resolved Recording
-recordTime = min(.5, (global_off_start + shutter_delay + global_off_time + crystallize_delay) / 10.0**6)   
+recordTime = min(.55, (global_off_start + shutter_delay + global_off_time + crystallize_delay + crystallize_time) / 10.0**6)   
 
 globalDict = {
               'iterations':iterations,
@@ -80,7 +80,8 @@ def initialize():
     trfpga.set_time_length(recordTime)
     paulsbox.program(pbox, pboxDict)
     trigger.switch_auto('axial',  False) #axial needs to be inverted, so that high TTL corresponds to light on
-    trigger.switch_auto('110DP',  False)
+    trigger.switch_auto('110DP',  True)
+    trigger.switch_auto('crystallization',  True)
     #make sure r&s synthesizers are on, and 
     for name in ['110DP','axial']:
         dpass.select(name)
@@ -123,7 +124,7 @@ def sequence():
         dvParameters.saveParameters(dv, pboxDict)
 
 def finalize():
-    for name in ['axial', '110DP']:
+    for name in ['axial', '110DP','crystallization']:
         trigger.switch_manual(name)
             
 print 'initializing measurement'
