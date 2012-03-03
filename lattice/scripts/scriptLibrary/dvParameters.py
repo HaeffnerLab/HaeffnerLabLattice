@@ -3,7 +3,7 @@ def saveParameters(dv, dict):
     for name in dict.keys():
         dv.add_parameter(name, dict[name])
         
-def measureParameters(cxn, list):
+def measureParameters(cxn, cxnlab, list):
     """Measures parameters in the list and returns the dictionary containing these"""
     dict = {}
     for item in list:
@@ -25,17 +25,17 @@ def measureParameters(cxn, list):
             server = cxn.dc_box
             dict['dcoffsetonrf'] = server.getdcoffsetrf()
         elif item == 'cavity397':
-            server = cxn.laserdac
+            server = cxnlab.laserdac
             dict['cavity397'] = server.getvoltage('397')
         elif item == 'cavity866':
-            server = cxn.laserdac
+            server = cxnlab.laserdac
             dict['cavity866'] = server.getvoltage('866')
         elif item == 'multiplexer397':
-            server = cxn.multiplexer_server
-            dict['frequency397'] = cxn.multiplexer_server.get_frequency('397')
+            server = cxnlab.multiplexer_server
+            dict['frequency397'] = server.get_frequency('397')
         elif item == 'multiplexer866':
-            server = cxn.multiplexer_server
-            dict['frequency866'] = cxn.multiplexer_server.get_frequency('866')
+            server = cxnlab.multiplexer_server
+            dict['frequency866'] = server.get_frequency('866')
         elif item == 'axialDP':
             server = cxn.double_pass
             server.select('axial')

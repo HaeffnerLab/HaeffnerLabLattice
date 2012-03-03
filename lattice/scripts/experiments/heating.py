@@ -67,6 +67,7 @@ if heatWithRadial:
                 'axial_on_time':axial_on_time,
                 'diffax':diffax
                 }
+    globalDict['recordTime'] = recordTime
     
 if heatArbitrary:
     pboxsequence = 'SoundVelocity.py'
@@ -87,6 +88,7 @@ if heatArbitrary:
             'axial_duration':axial_duration,
             'off866time':off866time
             }
+    globalDict['recordTime'] = recordTime
 
 
 #data processing on the fly

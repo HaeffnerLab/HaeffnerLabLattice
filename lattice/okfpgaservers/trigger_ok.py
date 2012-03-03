@@ -51,7 +51,7 @@ class TriggerFPGA(LabradServer):
                                       'maninv':     False,
                                       'autoinv':    False
                                       },
-                                 'global':
+                                 'crystallization':
                                      {'chan':       0x02,
                                       'ismanual':   True,
                                       'manstate':   True,
@@ -65,21 +65,21 @@ class TriggerFPGA(LabradServer):
                                       'maninv':     False,
                                       'autoinv':    True,
                                       },
+#                                '110DP':
+#                                     {'chan':       0x08,
+#                                      'ismanual':   True,
+#                                      'manstate':   True,
+#                                      'maninv':     False,
+#                                      'autoinv':    False
+#                                      },
+#                                '220SP':
+#                                     {'chan':       0x10,
+#                                      'ismanual':   True,
+#                                      'manstate':   True,
+#                                      'maninv':     False,
+#                                      'autoinv':    False
+#                                      },
                                 '110DP':
-                                     {'chan':       0x08,
-                                      'ismanual':   True,
-                                      'manstate':   True,
-                                      'maninv':     False,
-                                      'autoinv':    False
-                                      },
-                                '220SP':
-                                     {'chan':       0x10,
-                                      'ismanual':   True,
-                                      'manstate':   True,
-                                      'maninv':     False,
-                                      'autoinv':    False
-                                      },
-                                'radial':
                                      {'chan':       0x20,
                                       'ismanual':   True,
                                       'manstate':   True,

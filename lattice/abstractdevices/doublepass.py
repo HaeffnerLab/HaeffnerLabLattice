@@ -80,9 +80,9 @@ class doublePass(object):
         yield self.frequencyCalibPower(self.freq)
         returnValue ((self.freq, self.ampl))
         
-class radialDP(doublePass):
+class DP110(doublePass):
     def __init__(self, name, cxn, context):
-        super(radialDP,self).__init__(name)
+        super(DP110,self).__init__(name)
         self.selectFuncs(cxn, context)
     
     @inlineCallbacks
@@ -90,9 +90,9 @@ class radialDP(doublePass):
         self.server = cxn.rohdeschwarz_server
         self.context = context
         yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542', context = self.context)
-        self.freqRange = (190,250) #MHZ
-        self.amplRange = (-145,7.01) #dBM
-        self.calibDomain = (210,250) # domain where calibration is valid
+        self.freqRange = (90,130) #MHZ
+        self.amplRange = (-145,-3.99) #dBM
+        self.calibDomain = (90,130) # domain where calibration is valid
         yield self.populateInfo()
         self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
@@ -109,6 +109,7 @@ class radialDP(doublePass):
     @inlineCallbacks
     def outputFunc(self, outp= None):
         outp = yield self.server.output(outp, context = self.context)
+        print outp
         returnValue(outp)    
     
     @inlineCallbacks
@@ -232,7 +233,7 @@ class doublePassServer( LabradServer ):
         
     def createDict(self):
         self.d = {'axial':axialDP('axial',self.client, self.client.context()),
-                  'radial':radialDP('radial',self.client, self.client.context()),
+                  '110DP':DP110('110DP',self.client, self.client.context()),
                   'repump':repumpDP('repump',self.client, self.client.context())
                   }
         
