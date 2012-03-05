@@ -69,19 +69,27 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 self.retryLabradConnectDialog.show()
         deferred.addErrback(handleLabRadError)
 
+#    def attemptDataVaultConnect(self):
+    
     # connect to the data vault    
     @inlineCallbacks    
     def connect(self):
         from labrad.wrappers import connectAsync
         from labrad.types import Error
+        try: # if the connection failed and was retried, close the dialog
+            self.retryLabradConnectDialog.close()
+        except AttributeError:
+            pass
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.data_vault
-        yield self.setupListeners()
-        context = yield self.cxn.context() # create a new context
-        self.introWindow = FirstWindow(self, context)
-        self.introWindow.show()
-        print 'Connection established: now listening dataset.'
-
+        try:
+            self.server = yield self.cxn.data_vault
+            yield self.setupListeners()
+            context = yield self.cxn.context() # create a new context
+            self.introWindow = FirstWindow(self, context)
+            self.introWindow.show()
+            print 'Connection established: now listening dataset.'
+        except AttributeError:
+            print 'no data vault'
     # set up dataset listener    
     @inlineCallbacks
     def setupListeners(self):               
@@ -173,10 +181,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
                     i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
-            for i in windowsToDrawOn:
-                # if dataset is intended to be drawn (a checkbox governs this)
-                if i.datasetCheckboxes[datasetObject.dataset, datasetObject.directory].isChecked():
-                    i.qmc.drawPlot(datasetObject.dataset, datasetObject.directory)
     
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
     # ...with the overlay button checked
