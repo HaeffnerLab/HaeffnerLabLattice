@@ -80,10 +80,10 @@ class Qt4MplCanvas(FigureCanvas):
                 self.plotDict[dataset, directory][PLOTS][i] = self.ax.plot(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i],label = label,animated=True)
             self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
             # find initial graph limits
-            self.initialxmin, self.initialxmax = self.getDataXLimits()
-            self.ax.set_xlim(self.initialxmin,self.initialxmax)
-            self.initialymin, self.initialymax = self.getDataYLimits()
-            self.ax.set_ylim(self.initialymin,self.initialymax)
+            #self.initialxmin, self.initialxmax = self.getDataXLimits()
+            #self.ax.set_xlim(self.initialxmin,self.initialxmax)
+            #self.initialymin, self.initialymax = self.getDataYLimits()
+            #self.ax.set_ylim(self.initialymin,self.initialymax)
             self.drawLegend()
             self.draw()
             self.timer = self.startTimer(100)
@@ -103,7 +103,7 @@ class Qt4MplCanvas(FigureCanvas):
     def timerEvent(self, evt):
         if (self.okayToDraw == True):
             self.drawGraph()
-            self.okayToDraw = False
+        self.okayToDraw = False
        
     def drawLegend(self):
 #        handles, labels = self.ax.get_legend_handles_labels()
@@ -121,7 +121,7 @@ class Qt4MplCanvas(FigureCanvas):
             # if dataset is intended to be drawn (a checkbox governs this)
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
                 self.drawPlot(dataset, directory)
-        
+
     # plot the data
     def drawPlot(self, dataset, directory):#, dataset, directory):
             
@@ -192,15 +192,17 @@ class Qt4MplCanvas(FigureCanvas):
         elif self.appWindowParent.cb3.isChecked():
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 self.autofitDataX(currentX, MAX)
-                print 'max'
-            elif (currentX < (1 - SCROLLFRACTION) * xwidth + xmin):
+                self.needsUpdating = True
+            elif (currentX < (1 - SCROLLFRACTION- .15) * xwidth + xmin): # -.15 since usually data travels right
                 self.autofitDataX(currentX, MIN)
-                print 'min'               
+             
             if (currentYmax > SCROLLFRACTION * ywidth + ymin):
                 self.autofitDataY(currentYmax)
+                self.needsUpdating = True
             elif (currentYmin < (1 - SCROLLFRACTION) * ywidth + ymin):
                 self.autofitDataY(currentYmin)
-    
+           
+        
     def getDataXLimits(self):
         xmin = None
         xmax = None
@@ -240,8 +242,7 @@ class Qt4MplCanvas(FigureCanvas):
         newminY = (ymax - SCALEFACTOR*(ymax - ymin))
         newmaxY = (SCALEFACTOR*(ymax - ymin) + ymin)
         self.ax.set_ylim(newminY, newmaxY) 
-        #self.okayToDraw = True
-        self.draw() 
+        self.draw()
     
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self, currentX, minmax):
@@ -250,16 +251,9 @@ class Qt4MplCanvas(FigureCanvas):
         if (minmax == MAX):
             newmaxX = (SCALEFACTOR*(dataxmax - dataxmin) + dataxmin)
             self.ax.set_xlim(dataxmin, newmaxX)
-            print 'automax'
-            print xmin, xmax
-            print dataxmin, newmaxX
         elif (minmax == MIN):
             newminX = (dataxmax - SCALEFACTOR*(dataxmax - dataxmin))
-            self.ax.set_xlim(newminX, xmax)
-            print 'automin'
-            print xmin, xmax
-            print newminX, dataxmax
-        #self.okayToDraw = True
+            self.ax.set_xlim(newminX, dataxmax)
         self.draw()
          
     
