@@ -3,5 +3,6 @@ import labrad
 from scriptLibrary.cavityScan import scanCavity  
 
 cxn = labrad.connect()
-scanCavity(cxn, ch = '866', resolution = 2, min = 450.0, max = 600.0, average = 3)
+cxnlab =  labrad.connect('192.168.169.49')
+scanCavity(cxn, cxnlab, ch = '866', resolution = 2, min = 400.0, max = 600.0, average = 3)
 print 'DONE'

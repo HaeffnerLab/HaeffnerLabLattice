@@ -1,8 +1,8 @@
 import numpy
 import time
 
-def scanCavity(cxn, ch, resolution, min, max, average, delay = .1):
-    ld = cxn.laserdac
+def scanCavity(cxn, cxnlab, ch, resolution, min, max, average, delay = .1):
+    ld = cxnlab.laserdac
     pmt = cxn.normalpmtflow
     dv = cxn.data_vault
     dv.cd(['','CavityScans'],True)

@@ -25,15 +25,16 @@ axFreqList =  numpy.r_[axfreqmin:axfreqmax:complex(0,axfreq_points)]
 
 pboxsequence = 'LatentHeat_no729.py'
 global_off_start = 50.*10**3
-crystallize_delay = 100.*10**3
+crystallize_delay = 25.*10**3
 how_many_exposures = 1
 shutter_delay = 20.*10**3
 camera_exposure =  50.*10**3####
-crystallize_time = 1000.*10**3
-axial_heat = 25.*10**3
-global_off_time = 300.*10**3
+crystallize_time = 2000.*10**3
+axial_heat = 60*10**3
+heat_delay = 10.*10**3
+readout_delay = 100.*10**3
 #Time Resolved Recording
-recordTime = min(.55, (global_off_start + shutter_delay + global_off_time + crystallize_delay + crystallize_time) / 10.0**6)   
+recordTime = min(.55, (heat_delay + readout_delay + axial_heat + shutter_delay + global_off_start + crystallize_delay + crystallize_time) / 10.0**6)   
 
 globalDict = {
               'iterations':iterations,
@@ -54,7 +55,8 @@ pboxDict = {
         'camera_exposure':camera_exposure,
         'crystallize_time':crystallize_time,
         'axial_heat':axial_heat,
-        'global_off_time':global_off_time,
+        'heat_delay':heat_delay,
+        'readout_delay':readout_delay
         }
 
 #data processing on the fly
