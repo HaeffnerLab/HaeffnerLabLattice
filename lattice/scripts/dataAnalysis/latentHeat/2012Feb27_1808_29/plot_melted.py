@@ -35,7 +35,6 @@ for dataset in notMelted:
 
 for dataset in melted:
     print dataset
-    print type(dataset)
     dv.open(int(dataset))
     timetags = dv.get().asarray[:,0]
     newbinned = numpy.histogram(timetags, binArray )[0]

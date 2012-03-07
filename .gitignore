@@ -9,3 +9,4 @@ Errors.log
 *.pyc
 .recent.ini
 .DS_store
+.settings
