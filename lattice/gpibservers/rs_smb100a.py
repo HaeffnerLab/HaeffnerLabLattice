@@ -77,6 +77,15 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
             self.output = out
     
     @inlineCallbacks
+    def make_new_list(self, inputs, name):
+        freqs,powers = zip(*inputs)
+        freqString = 'SOURce1:LIST:FREQ' + ''.join([' {} MHZ,'.format(freq) for freq in freqs])
+        powerString = 'SOURce1:LIST:POW' + ''.join([' {}dBm,'.format(pwr) for pwr in powers])
+        yield self.write('SOURce1:LIST:SEL "{}"'.format(name))
+        yield self.write(freqString)
+        yield self.write(powerString)
+    
+    @inlineCallbacks
     def activate_list_mode(self, state):
         if state:
             yield self.write("SOURce1:LIST:MODE STEP") #sets the step mode
@@ -131,6 +140,11 @@ class RohdeSchwarzServer(GPIBManagedServer):
         dev = self.selectedDevice(c)
         yield dev.reset_list()
         
+    @setting(15,"New List", inputs = '*(vv)', name = 's', returns = '')
+    def make_new_list(self, c, inputs, name = 'unnamed'):
+        """Make a new list, input is a list of tuples in the form (freq in Mhz, power in dBm)"""
+        dev = self.selectedDevice(c)
+        yield dev.make_new_list(inputs, name)
 
 __server__ = RohdeSchwarzServer()
 

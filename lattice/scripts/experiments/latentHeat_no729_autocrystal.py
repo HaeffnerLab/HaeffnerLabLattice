@@ -24,8 +24,12 @@ iterations = 10
 experimentName = 'LatentHeat_no729_autocrystal'
 #heating double pass frequency
 axfreq = 250.0 #MHz
-coolingfreq = 90.0 #MHz, frequency for the 110DP
-readoutfreq = 110.0 #Mhz, frequency for the 110DP
+#110DP
+cooling = (90.0, -4.0) #MHz, dBm
+readout = (110.0, -4.0)
+crystallization = (90,-4.0)
+rs110List = [cooling, readout,crystallization] 
+
 auto_crystal = True
 #paul's box parameters
 pboxsequence = 'LatentHeat_no729_autocrystal.py' #all Paul's box parameters are in microseconds
@@ -71,6 +75,7 @@ dpass = cxn.double_pass
 trigger = cxn.trigger
 pbox = cxn.paul_box
 trfpga = cxn.timeresolvedfpga
+rs110DP = cxn.rohdeschwarz_server
 
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
@@ -89,10 +94,19 @@ def initialize():
     #readout / cooling
     dpass.select('110DP')
     dpass.output(True)
-    #repump####ADD LIST MODE HERE and RUN IT
+    rs110DP.select_device(dpass.device_id())
+    #make sure the list is in range:
+    freqRange = dpass.frequency_range()
+    powerRange = dpass.power_range()
+    for freq,power in rs110List:
+        assert freqRange[0] <= freq <= freqRange[1]
+        assert powerRange[0] <= power <= powerRange[1]
+    #create list and enter the list mode
+    rs110DP.new_list(rs110List)
+    rs110DP.activate_list(True)
+    #repump
     dpass.select('repump')
     dpass.output(True)
-    ####ADD LIST MODE HERE and RUN IT
     globalDict['resolution']=trfpga.get_resolution()
 
 def sequence():
@@ -133,6 +147,7 @@ def sequence():
 def finalize():
     for name in ['axial', '110DP']:
         trigger.switch_manual(name)
+    rs110.activate_list(False)
 
 crystal_threshold = 30 #kcounts per sec
 crystallization_attempts = 10

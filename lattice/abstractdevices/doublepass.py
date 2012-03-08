@@ -29,6 +29,7 @@ class doublePass(object):
     """
     def __init__(self, name):
         self.name = name
+        self.deviceID = None
         self.freq = None
         self.ampl = None
         self.outp = None
@@ -89,7 +90,8 @@ class DP110(doublePass):
     def selectFuncs(self, cxn, context):
         self.server = cxn.rohdeschwarz_server
         self.context = context
-        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542', context = self.context)
+        self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542'
+        yield self.server.select_device(self.deviceID , context = self.context)
         self.freqRange = (90,130) #MHZ
         self.amplRange = (-145,-3.99) #dBM
         self.calibDomain = (90,130) # domain where calibration is valid
@@ -139,7 +141,8 @@ class axialDP(doublePass):
     def selectFuncs(self, cxn, context):
         self.server = cxn.rohdeschwarz_server
         self.context = context
-        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543', context = self.context)
+        self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543'
+        yield self.server.select_device(self.deviceID, context = self.context)
         self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,5.01) #dBM
         self.calibDomain = (190,250)
@@ -186,7 +189,8 @@ class repumpDP(doublePass):
     def selectFuncs(self, cxn, context):
         self.server = cxn.rohdeschwarz_server
         self.context = context
-        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549', context = self.context)
+        self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549'
+        yield self.server.select_device(self.deviceID, context = self.context)
         self.freqRange = (70,90) #MHZ
         self.amplRange = (-145,0.01) #dBM
         self.calibDomain = (70,90)
@@ -300,6 +304,12 @@ class doublePassServer( LabradServer ):
         """Returns the frequency range in the current context"""
         dp = self.getDP(c)
         return dp.amplRange
+    
+    @setting(9, "Device ID", returns = 's')
+    def deviceID(self, c):
+        """Returns the frequency range in the current context"""
+        dp = self.getDP(c)
+        return dp.deviceID
     
     def getDP(self, context):
         if not 'doublePass' in context.keys(): raise Exception ('Double Pass not selected')
