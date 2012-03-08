@@ -2,7 +2,6 @@ import sys; sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scrip
 import labrad
 import numpy
 import time
-import os
 from scriptLibrary.parameter import Parameters
 from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
@@ -21,7 +20,7 @@ Features:
 '''
 
 #Global parameters
-iterations = 50
+iterations = 10
 experimentName = 'LatentHeat_no729_autocrystal'
 #heating double pass frequency
 axfreq = 250.0 #MHz
@@ -90,7 +89,7 @@ def initialize():
     #readout / cooling
     dpass.select('110DP')
     dpass.output(True)
-    #repump
+    #repump####ADD LIST MODE HERE and RUN IT
     dpass.select('repump')
     dpass.output(True)
     ####ADD LIST MODE HERE and RUN IT
@@ -115,7 +114,9 @@ def sequence():
         print 'now waiting to complete recooling'
         trigger.wait_for_pbox_completion()
         trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
-        if auto_crystal: auto_crystalize()
+        if auto_crystal:
+            success = auto_crystalize()
+            if not success: break
     print 'getting result and adding to data vault'
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
@@ -133,8 +134,49 @@ def finalize():
     for name in ['axial', '110DP']:
         trigger.switch_manual(name)
 
+crystal_threshold = 30 #kcounts per sec
+crystallization_attempts = 10
+detect_time = 0.150
+far_red_time = 0.300 #seconds
+optimal_cool_time = 0.150
+pmtresolution = 0.025 #seconds
+shutter_delay = 0.025
+pmt = cxn.normalpmtflow
+pmt.set_time_length(pmtresolution)
+
+def is_crystalized():
+    countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
+    print 'auto crystalization: count rate {}'.format(countRate)
+    return (countRate > crystal_threshold) 
+    
 def auto_crystalize():
-    print 'auto xtal'
+    print 'auto crystalization: commencing'
+    if is_crystalized():
+        print 'initially crystalized'
+        return True
+    else:
+        trigger.switch_manual('crystallization',  True)
+        time.sleep(shutter_delay)
+        for attempt in range(crystallization_attempts):
+            trigger.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
+            time.sleep(far_red_time)
+            trigger.switch_manual('110DP',  True) 
+            time.sleep(optimal_cool_time)
+            if is_crystalized():
+                print 'success on attempt number {}'.format(attempt)
+                trigger.switch_manual('crystallization',  False)
+                time.sleep(shutter_delay)
+                trigger.switch_auto('110DP',  True)
+                return True
+        #if still not crystzlied, let the user handle things
+        response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
+        if response == 'f':
+            return False
+        else:
+            trigger.switch_manual('crystallization',  False)
+            time.sleep(shutter_delay)
+            trigger.switch_auto('110DP',  True)
+            return True
             
 print 'initializing measurement'
 initialize()
