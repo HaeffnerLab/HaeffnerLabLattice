@@ -30,7 +30,7 @@ readout = (110.0, -4.0)
 crystallization = (90,-4.0)
 rs110List = [cooling, readout,crystallization] 
 
-auto_crystal = True
+auto_crystal = False
 #paul's box parameters
 pboxsequence = 'LatentHeat_no729_autocrystal.py' #all Paul's box parameters are in microseconds
 initial_cooling = 50.0*10**3
@@ -47,8 +47,9 @@ globalDict = {
               'experimentName':experimentName,
               'axfreq':axfreq,
               'recordTime':recordTime, 
-              'coolingfreq':coolingfreq,
-              'readoutfreq':readoutfreq
+              'cooling':cooling,
+              'readout':readout,
+              'crystallization':crystallization,
               }
 
 pboxDict = {
@@ -97,13 +98,16 @@ def initialize():
     rs110DP.select_device(dpass.device_id())
     #make sure the list is in range:
     freqRange = dpass.frequency_range()
-    powerRange = dpass.power_range()
+    powerRange = dpass.amplitude_range()
+    print freqRange, powerRange
     for freq,power in rs110List:
-        assert freqRange[0] <= freq <= freqRange[1]
-        assert powerRange[0] <= power <= powerRange[1]
+        if not (freqRange[0] <= freq <= freqRange[1]):
+            raise Exception('frequency list parameters out of range')
+        if not (powerRange[0] <= power <= powerRange[1]):
+            raise Exception('power list parameters out of range')
     #create list and enter the list mode
     rs110DP.new_list(rs110List)
-    rs110DP.activate_list(True)
+    rs110DP.activate_list_mode(True)
     #repump
     dpass.select('repump')
     dpass.output(True)
@@ -128,6 +132,7 @@ def sequence():
         print 'now waiting to complete recooling'
         trigger.wait_for_pbox_completion()
         trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
+        time.sleep(3)
         if auto_crystal:
             success = auto_crystalize()
             if not success: break
@@ -147,7 +152,8 @@ def sequence():
 def finalize():
     for name in ['axial', '110DP']:
         trigger.switch_manual(name)
-    rs110.activate_list(False)
+    rs110DP.activate_list_mode(False)
+    trigger.switch_manual('crystallization',  False)
 
 crystal_threshold = 30 #kcounts per sec
 crystallization_attempts = 10
@@ -161,6 +167,7 @@ pmt.set_time_length(pmtresolution)
 
 def is_crystalized():
     countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
+    print countRate
     print 'auto crystalization: count rate {}'.format(countRate)
     return (countRate > crystal_threshold) 
     

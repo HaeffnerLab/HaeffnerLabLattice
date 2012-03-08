@@ -17,7 +17,7 @@
 ### BEGIN NODE INFO
 [info]
 name = RohdeSchwarz Server
-version = 1.0
+version = 1.1
 description = 
 
 [startup]
@@ -79,8 +79,11 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
     @inlineCallbacks
     def make_new_list(self, inputs, name):
         freqs,powers = zip(*inputs)
-        freqString = 'SOURce1:LIST:FREQ' + ''.join([' {} MHZ,'.format(freq) for freq in freqs])
-        powerString = 'SOURce1:LIST:POW' + ''.join([' {}dBm,'.format(pwr) for pwr in powers])
+        freqString = "SOURce1:LIST:FREQ" + "".join([" {} MHZ,".format(freq) for freq in freqs])
+        powerString = "SOURce1:LIST:POW" + "".join([" {}dBm,".format(pwr) for pwr in powers])
+        #deleting the last comma
+        freqString = freqString[:-1]
+        powerString = powerString[:-1]
         yield self.write('SOURce1:LIST:SEL "{}"'.format(name))
         yield self.write(freqString)
         yield self.write(powerString)
@@ -144,7 +147,7 @@ class RohdeSchwarzServer(GPIBManagedServer):
     def make_new_list(self, c, inputs, name = 'unnamed'):
         """Make a new list, input is a list of tuples in the form (freq in Mhz, power in dBm)"""
         dev = self.selectedDevice(c)
-        yield dev.make_new_list(inputs, name)
+        yield dev.make_new_list(inputs.astuple, name)
 
 __server__ = RohdeSchwarzServer()
 
