@@ -65,5 +65,6 @@ if __name__=="__main__":
     qt4reactor.install()
     from twisted.internet import reactor
     latticeGUI = LATTICE_GUI(reactor)
+    latticeGUI.setWindowTitle('Lattice GUI')
     latticeGUI.show()
     reactor.run()

@@ -86,7 +86,7 @@ class Qt4MplCanvas(FigureCanvas):
             #self.ax.set_ylim(self.initialymin,self.initialymax)
             self.drawLegend()
             self.draw()
-            self.timer = self.startTimer(100)
+            self.timer = self.startTimer(1000)
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
             self.okayToDraw = True
         else:
@@ -102,8 +102,9 @@ class Qt4MplCanvas(FigureCanvas):
     
     def timerEvent(self, evt):
         if (self.okayToDraw == True):
+            self.okayToDraw = False
             self.drawGraph()
-        self.okayToDraw = False
+       
        
     def drawLegend(self):
 #        handles, labels = self.ax.get_legend_handles_labels()
