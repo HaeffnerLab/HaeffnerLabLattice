@@ -49,7 +49,9 @@ class Qt4MplCanvas(FigureCanvas):
         self.datasetLabelsDict = {}
         self.plotDict = {}
         self.data = None 
-        self.okayToDraw = False
+        self.okayToDraw = 1
+        self.NumberOfDatasetsToDraw = 0
+        self.drawFlag = True
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
@@ -59,8 +61,9 @@ class Qt4MplCanvas(FigureCanvas):
         
     # Reset the idle counter, since drawing no longer makes the graph idle
     def on_draw(self, event):
-        self.okayToDraw = True
-    
+        if (self.okayToDraw >= self.NumberOfDatasetsToDraw):
+            self.drawFlag = True
+
     # Initialize a place in the dictionary for the dataset
     def initializeDataset(self, dataset, directory, labels):
         self.dataDict[dataset, directory] = None
@@ -88,7 +91,7 @@ class Qt4MplCanvas(FigureCanvas):
             self.draw()
             self.timer = self.startTimer(100)
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
-            self.okayToDraw = True
+            self.drawFlag = True
         else:
             # append the new data
             self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0)
@@ -97,14 +100,23 @@ class Qt4MplCanvas(FigureCanvas):
                 numberOfRowsToDelete = data.shape[0]
                 self.dataDict[dataset, directory] = np.delete(self.dataDict[dataset, directory], range(numberOfRowsToDelete), 0) 
                 self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
-            self.okayToDraw = True
+            self.drawFlag = True
 
+    def getNumberOfDatasetsToDraw(self):
+        for dataset, directory in self.dataDict:
+            cnt = 0
+            # if dataset is intended to be drawn (a checkbox governs this)
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                cnt = cnt + 1
+        return cnt
     
     def timerEvent(self, evt):
-        if (self.okayToDraw == True):
-            self.okayToDraw = False
-            self.drawGraph()
-       
+        if (self.drawFlag == True):
+            self.drawFlag = False
+            self.numberOfDatasetsToDraw = self.getNumberOfDatasetsToDraw()
+            if (self.okayToDraw >= self.NumberOfDatasetsToDraw):
+                self.okayToDraw = 0
+                self.drawGraph()
        
     def drawLegend(self):
 #        handles, labels = self.ax.get_legend_handles_labels()
@@ -189,20 +201,25 @@ class Qt4MplCanvas(FigureCanvas):
                 xmax = xmin + xwidth
                 self.ax.set_xlim(xmin, xmax)
                 self.draw()
+            else:
+                self.okayToDraw = self.okayToDraw + 1
             
         elif self.appWindowParent.cb3.isChecked():
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 self.autofitDataX(currentX, MAX)
-                self.needsUpdating = True
             elif (currentX < (1 - SCROLLFRACTION- .15) * xwidth + xmin): # -.15 since usually data travels right
                 self.autofitDataX(currentX, MIN)
-             
+            else:
+                self.okayToDraw = self.okayToDraw + 1
+         
             if (currentYmax > SCROLLFRACTION * ywidth + ymin):
                 self.autofitDataY(currentYmax)
-                self.needsUpdating = True
             elif (currentYmin < (1 - SCROLLFRACTION) * ywidth + ymin):
                 self.autofitDataY(currentYmin)
-           
+            else:
+                self.okayToDraw = self.okayToDraw + 1
+        else:
+            self.okayToDraw = self.okayToDraw + 1  
         
     def getDataXLimits(self):
         xmin = None
@@ -244,6 +261,7 @@ class Qt4MplCanvas(FigureCanvas):
         newmaxY = (SCALEFACTOR*(ymax - ymin) + ymin)
         self.ax.set_ylim(newminY, newmaxY) 
         self.draw()
+        self.okayToDraw = self.okayToDraw + 1
     
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self, currentX, minmax):
@@ -256,7 +274,8 @@ class Qt4MplCanvas(FigureCanvas):
             newminX = (dataxmax - SCALEFACTOR*(dataxmax - dataxmin))
             self.ax.set_xlim(newminX, dataxmax)
         self.draw()
-         
+        self.okayToDraw = self.okayToDraw + 1
+        
     
     # update boundaries to fit all the data                
     
@@ -268,6 +287,7 @@ class Qt4MplCanvas(FigureCanvas):
         ywidth = abs(ymax - ymin)
         self.ax.set_ylim(ymin - .1*ywidth, ymax + .1*ywidth)
         self.draw()
+        self.okayToDraw = self.okayToDraw + 1
         #self.ax.set_xlim(self.initialxmin, self.maxX)
         #self.draw()
 
