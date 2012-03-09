@@ -111,8 +111,8 @@ def sequence():
     dv.add_parameter('plotLive',True)
     #finalizing
     measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP','radialDP']
-    measuredDict = dvParameters.measureParameters(cxn, measureList)
-    dvParameters.saveParameters(dv, measuredDict)
+    #measuredDict = dvParameters.measureParameters(cxn, measureList)
+    #dvParameters.saveParameters(dv, measuredDict)
     dvParameters.saveParameters(dv, globalDict)
     dvParameters.saveParameters(dv, pboxDict)
     print 'switching beams back into manual mode'

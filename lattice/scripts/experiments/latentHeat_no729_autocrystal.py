@@ -25,22 +25,22 @@ experimentName = 'LatentHeat_no729_autocrystal'
 #heating double pass frequency
 axfreq = 250.0 #MHz
 #110DP
-cooling = (90.0, -4.0) #MHz, dBm
-readout = (110.0, -4.0)
-crystallization = (90,-4.0)
+cooling = (102.0, -4.9) #MHz, dBm
+readout = (120.0, -4.9) 
+crystallization = (102.0,-4.9)
 rs110List = [cooling, readout,crystallization] 
 
-auto_crystal = False
+auto_crystal = True
 #paul's box parameters
 pboxsequence = 'LatentHeat_no729_autocrystal.py' #all Paul's box parameters are in microseconds
-initial_cooling = 50.0*10**3
-heat_delay = 10.*10**3
-axial_heat = 25.0*10**3
-readout_delay = 25.*10**3
-readout_time = 50.*10**3
+initial_cooling = 75.0*10**3
+heat_delay = 15.0*10**3
+axial_heat = 155.0*10**3
+readout_delay = 100.*10**3
+readout_time = 100.*10**3
 
 #Time Resolved Recording
-recordTime = min(.55, 0.1 +  (initial_cooling + heat_delay + axial_heat + readout_delay + readout_time ) / 10.0**6)   
+recordTime = min(.55, 0.1 +  (initial_cooling + heat_delay + axial_heat + readout_delay + readout_time ) / 10.0**6)###   
 
 globalDict = {
               'iterations':iterations,
@@ -77,6 +77,7 @@ trigger = cxn.trigger
 pbox = cxn.paul_box
 trfpga = cxn.timeresolvedfpga
 rs110DP = cxn.rohdeschwarz_server
+rf = cxn.lattice_pc_hp_server
 
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
@@ -108,6 +109,7 @@ def initialize():
     #create list and enter the list mode
     rs110DP.new_list(rs110List)
     rs110DP.activate_list_mode(True)
+    rs110DP.reset_list() ####need to reset because activate list mode after programming ends up at some random step
     #repump
     dpass.select('repump')
     dpass.output(True)
@@ -116,6 +118,7 @@ def initialize():
 def sequence():
     binnedFlour = numpy.zeros(binNumber)
     for iteration in range(iterations):
+        rs110DP.reset_list()
         print 'recording trace {0} out of {1}'.format(iteration+1, iterations)
         trfpga.perform_time_resolved_measurement()
         trigger.trigger('PaulBox')
@@ -132,7 +135,6 @@ def sequence():
         print 'now waiting to complete recooling'
         trigger.wait_for_pbox_completion()
         trigger.wait_for_pbox_completion() #have to call twice until bug is fixed
-        time.sleep(3)
         if auto_crystal:
             success = auto_crystalize()
             if not success: break
@@ -155,7 +157,7 @@ def finalize():
     rs110DP.activate_list_mode(False)
     trigger.switch_manual('crystallization',  False)
 
-crystal_threshold = 30 #kcounts per sec
+crystal_threshold = 18 #kcounts per sec
 crystallization_attempts = 10
 detect_time = 0.150
 far_red_time = 0.300 #seconds
@@ -164,6 +166,7 @@ pmtresolution = 0.025 #seconds
 shutter_delay = 0.025
 pmt = cxn.normalpmtflow
 pmt.set_time_length(pmtresolution)
+crystal_power = -5.9
 
 def is_crystalized():
     countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
@@ -172,12 +175,14 @@ def is_crystalized():
     return (countRate > crystal_threshold) 
     
 def auto_crystalize():
-    print 'auto crystalization: commencing'
     if is_crystalized():
         print 'initially crystalized'
         return True
     else:
+        print 'MELTED!!!!'
         trigger.switch_manual('crystallization',  True)
+        initpower = rf.getpower()
+        rf.setpower(-5.9)
         time.sleep(shutter_delay)
         for attempt in range(crystallization_attempts):
             trigger.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
@@ -189,6 +194,7 @@ def auto_crystalize():
                 trigger.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
                 trigger.switch_auto('110DP',  True)
+                rf.setpower(initpower)
                 return True
         #if still not crystzlied, let the user handle things
         response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
@@ -198,6 +204,7 @@ def auto_crystalize():
             trigger.switch_manual('crystallization',  False)
             time.sleep(shutter_delay)
             trigger.switch_auto('110DP',  True)
+            rf.setpower(initpower)
             return True
             
 print 'initializing measurement'
@@ -207,3 +214,4 @@ sequence()
 print 'finalizing'
 finalize()
 print 'DONE'
+print dirappend

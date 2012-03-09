@@ -86,7 +86,7 @@ class Qt4MplCanvas(FigureCanvas):
             #self.ax.set_ylim(self.initialymin,self.initialymax)
             self.drawLegend()
             self.draw()
-            self.timer = self.startTimer(1000)
+            self.timer = self.startTimer(100)
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
             self.okayToDraw = True
         else:
