@@ -8,11 +8,22 @@ class LATTICE_GUI(QtGui.QMainWindow):
         lightControlTab = self.makeLightWidget(reactor)
         voltageControlTab = self.makeVoltageWidget(reactor)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor)
+        grapher = self.makeGrapherWidget(reactor)
         tabWidget = QtGui.QTabWidget()
         tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         tabWidget.addTab(lightControlTab,'&LaserRoom')
         tabWidget.addTab(tableOpticsWidget,'&Optics')
+        #tabWidget.addTab(grapher, '&Grapher')
         self.setCentralWidget(tabWidget)
+    
+    def makeGrapherWidget(self, reactor):
+        pass
+#        widget = QtGui.QWidget()
+#        from pygrapherlive.connections import CONNECTIONS
+#        vboxlayout = QtGui.QVBoxLayout()
+#        vboxlayout.addWidget(CONNECTIONS(reactor))
+#        widget.setLayout(vboxlayout)
+#        return widget
     
     def makeLightWidget(self, reactor):
         widget = QtGui.QWidget()
