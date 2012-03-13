@@ -19,6 +19,18 @@ variables, and the line objects:
 The x and y values are used to constantly update the plot lines. The grapher then uses
 the plot lines to draw the data onto the canvas.
 
+---
+
+Two mechanisms govern how often a plot is drawn. 
+
+1. A main timer cycles constantly updating a counter. When this counter reaches an exact desired number
+(such that, for example, 10 counts = 100ms), the plots are drawn. Note: the plots will NOT be drawn when
+the counter is larger than the desired number of counts. Every time the axes change (on_draw()), this counter is reset
+back to 0 in order to ensure that there is at least a certain amount of time between repeated calls to draw
+the plots.
+
+2. New incoming data will automatically redraw the plots. 
+
 '''
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -28,6 +40,7 @@ from twisted.internet.threads import deferToThread
 import time
 import numpy as np
 
+TIMERREFRESH = 100 #ms
 MAXDATASETSIZE = 100000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
@@ -89,10 +102,11 @@ class Qt4MplCanvas(FigureCanvas):
             #self.ax.set_ylim(self.initialymin,self.initialymax)
             self.drawLegend()
             self.draw()
-            self.timer = self.startTimer(10)
+            self.timer = self.startTimer(TIMERREFRESH)
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
             #self.drawFlag = True
-            self.drawCounter = 0
+            #self.drawCounter = 0
+            self.drawGraph()
         else:
             # append the new data
             self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0)
@@ -102,13 +116,14 @@ class Qt4MplCanvas(FigureCanvas):
                 self.dataDict[dataset, directory] = np.delete(self.dataDict[dataset, directory], range(numberOfRowsToDelete), 0) 
                 self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
             #self.drawFlag = True
-            self.drawCounter = 0
+            #self.drawCounter = 0
+            self.drawGraph()
   
     def timerEvent(self, evt):
         self.drawCounter = self.drawCounter + 1
-        if (self.drawCounter == 10):
+        if (self.drawCounter == 10): #100ms
             self.drawGraph()
-
+#        self.drawGraph()
 #        if (self.drawFlag == True):
 #            self.drawFlag = False
 #            self.drawGraph()
@@ -125,11 +140,13 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.legend(handles, labels)
     
     def drawGraph(self):
+#        tstartupdate = time.clock()
         for dataset, directory in self.dataDict:
             # if dataset is intended to be drawn (a checkbox governs this)
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
                 self.drawPlot(dataset, directory)
-
+#        tstopupdate = time.clock()
+#        print tstopupdate - tstartupdate
     # plot the data
     def drawPlot(self, dataset, directory):#, dataset, directory):
             
