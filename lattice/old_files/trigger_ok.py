@@ -34,18 +34,68 @@ SIGNALID = 611051
 
 class TriggerFPGA(LabradServer):
     name = 'Trigger'
-    onNewUpdate = Signal(SIGNALID, 'signal: switch toggled', '(sb)')
+    onNewUpdate = Signal(SIGNALID, 'signal: switch toggled', '(ss)')
     
     def initServer(self):
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
-        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:(channel , logicnotnegated, state'
+        #create dictionary for triggers and switches in the form 'trigger':channel;'switch:{}
         #the state written below represents the initial state of the server
         self.dict = {
                      'Triggers':{'PaulBox':0},
-                     'Switches':{'866':[0x01,True, True], 'bluePI':[0x02,True, False], 'axial':[0x04,True,False]}
-                     }
-        self.initializeChannels()
+                     'Switches':{
+                                 'bluePI':
+                                     {'chan':       0x01,
+                                      'ismanual':   True,
+                                      'manstate':   False,
+                                      'maninv':     False,
+                                      'autoinv':    False
+                                      },
+                                 'crystallization':
+                                     {'chan':       0x02,
+                                      'ismanual':   True,
+                                      'manstate':   True,
+                                      'maninv':     True,
+                                      'autoinv':    False
+                                      },
+                                '866DP':
+                                     {'chan':       0x04,
+                                      'ismanual':   False,
+                                      'manstate':   True,
+                                      'maninv':     False,
+                                      'autoinv':    True,
+                                      },
+#                                '110DP':
+#                                     {'chan':       0x08,
+#                                      'ismanual':   True,
+#                                      'manstate':   True,
+#                                      'maninv':     False,
+#                                      'autoinv':    False
+#                                      },
+#                                '220SP':
+#                                     {'chan':       0x10,
+#                                      'ismanual':   True,
+#                                      'manstate':   True,
+#                                      'maninv':     False,
+#                                      'autoinv':    False
+#                                      },
+                                '110DP':
+                                     {'chan':       0x20,
+                                      'ismanual':   True,
+                                      'manstate':   True,
+                                      'maninv':     False,
+                                      'autoinv':    False
+                                      },
+                                'axial':
+                                     {'chan':       0x40,
+                                      'ismanual':   True,
+                                      'manstate':   True,
+                                      'maninv':     False,
+                                      'autoinv':    False
+                                      }
+                                 }
+                     }        
+        self.updateSwitches()
         self.listeners = set()
         
     def connectOKBoard(self):
@@ -80,14 +130,23 @@ class TriggerFPGA(LabradServer):
         pll.SetDiv1(pll.DivSrc_VCO,4)
         xem.SetPLL22150Configuration(pll)
     
-    def initializeChannels(self):
+    def updateSwitches(self):
+        """updates the switches to the current dictionary values"""
+        ep00 = 0 #programming arrays, see page70 Hong notebook
+        ep01 = 0
         for switchName in self.dict['Switches'].keys():
-            channel = self.dict['Switches'][switchName][0]
-            value = self.dict['Switches'][switchName][1]
-            initialize = self.dict['Switches'][switchName][2]
-            if initialize:
-                print 'initializing {0} to {1}'.format(switchName, value)
-                self._switch( channel, value)
+            channel = self.dict['Switches'][switchName]['chan']
+            ismanual = self.dict['Switches'][switchName]['ismanual']
+            manstate = self.dict['Switches'][switchName]['manstate']
+            maninv = self.dict['Switches'][switchName]['maninv']
+            autoinv = self.dict['Switches'][switchName]['autoinv']
+            ep00 = ep00 + channel * ismanual
+            if ismanual:
+                if maninv: manstate = not manstate
+                ep01 = ep01 + channel * manstate
+            else:
+                ep01 = ep01 + channel * autoinv
+        self._switch( ep00, ep01)
         
     def _isSequenceDone(self):
         self.xem.UpdateTriggerOuts()
@@ -96,11 +155,9 @@ class TriggerFPGA(LabradServer):
     def _trigger(self, channel):
         self.xem.ActivateTriggerIn(0x40, channel)
     
-    def _switch(self, channel, value):
-        if value:
-            self.xem.SetWireInValue(0x00,channel,channel)
-        else:
-            self.xem.SetWireInValue(0x00,0x00,channel)
+    def _switch(self, ep00, ep01):
+        self.xem.SetWireInValue(0x00,ep00,0xFF)
+        self.xem.SetWireInValue(0x01,ep01,0xFF)
         self.xem.UpdateWireIns()
     
     @setting(0, 'Get Trigger Channels', returns = '*s')
@@ -128,37 +185,61 @@ class TriggerFPGA(LabradServer):
         yield deferToThread(self._trigger, channel)
         yield self.inCommunication.release()
     
-    @setting(3, 'Switch', channelName = 's', state= 'b')
-    def switch(self, c, channelName, state):  
+    @setting(3, 'Switch Manual', channelName = 's', state= 'b', invert = 'b')
+    def switchManual(self, c, channelName, state = None, invert = None):  
         """
-        Switches the given channel
+        Switches the given channel into the manual mode, by default will go into the last remembered state but can also
+        pass the argument which state it should go into, and whether commands should be inverted.
         """
         if channelName not in self.dict['Switches'].keys(): raise Exception("Incorrect Channel")
-        if not self.dict['Switches'][channelName][1]: state = not state #allows for easy reversal of high/low
+        self.dict['Switches'][channelName]['ismanual'] = True
+        if state is not None:
+            self.dict['Switches'][channelName]['manstate'] = state
+        if invert is not None:
+            self.dict['Switches'][channelName]['maninv'] = invert
         yield self.inCommunication.acquire()
-        channel = self.dict['Switches'][channelName][0]
-        yield deferToThread(self._switch, channel, state)
+        yield deferToThread(self.updateSwitches)
         yield self.inCommunication.release()
-        self.dict['Switches'][channelName][2] = state
-        if not self.dict['Switches'][channelName][1]: state = not state #(if needed) reverse again for notification
-        self.notifyOtherListeners(c, (channelName, state))
-    
-    @setting(4, 'Get State', channelName = 's', returns = 'b')
+        newstate = self.dict['Switches'][channelName]['manstate']
+        if newstate:
+            self.notifyOtherListeners(c,(channelName,'ManualOn'))
+        else:
+            self.notifyOtherListeners(c,(channelName,'ManualOff'))
+
+    @setting(4, 'Switch Auto', channelName = 's', invert= 'b')
+    def switchAuto(self, c, channelName, invert = None):  
+        """
+        Switches the given channel into the automatic mode, with an optional inversion.
+        """
+        if channelName not in self.dict['Switches'].keys(): raise Exception("Incorrect Channel")
+        self.dict['Switches'][channelName]['ismanual'] = False
+        if invert is not None:
+            self.dict['Switches'][channelName]['autoinv'] = invert
+        yield self.inCommunication.acquire()
+        yield deferToThread(self.updateSwitches)
+        yield self.inCommunication.release()
+        self.notifyOtherListeners(c,(channelName,'Auto'))
+            
+    @setting(5, 'Get State', channelName = 's', returns = '(bbbb)')
     def getState(self, c, channelName):
         """
-        Returns the current state of the switch
+        Returns the current state of the switch: in the form (Manual/Auto, ManualOn/Off, ManualInversionOn/Off, AutoInversionOn/Off)
         """
         if channelName not in self.dict['Switches'].keys(): raise Exception("Incorrect Channel")
-        state = self.dict['Switches'][channelName][2]
-        if not self.dict['Switches'][channelName][1]: state = not state #allows for easy reversal of high/low
-        return state
-    
-    @setting(5, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
+        ismanual = self.dict['Switches'][channelName]['ismanual']
+        manstate = self.dict['Switches'][channelName]['manstate']
+        maninv = self.dict['Switches'][channelName]['maninv']
+        autoinv = self.dict['Switches'][channelName]['autoinv']
+        answer = (ismanual,manstate,maninv,autoinv)
+        return answer
+        
+    @setting(6, 'Wait for PBox Completion', timeout = 'v', returns = 'b')
     def waitForPBDone(self, c, timeout = 10):
         """
-        Returns true if Paul Box sequence has completed within a timeout period
+        Returns true if Paul's Box sequence has completed within a timeout period
         """
         requestCalls = int(timeout / 0.050 ) #number of request calls
+        print requestCalls
         for i in range(requestCalls):
             yield self.inCommunication.acquire()
             done = yield deferToThread(self._isSequenceDone)

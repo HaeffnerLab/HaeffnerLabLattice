@@ -5,7 +5,7 @@
 ### BEGIN NODE INFO
 [info]
 name = NormalPMTFlow
-version = 1.0
+version = 1.1
 description = 
 instancename = NormalPMTFlow
 
@@ -36,7 +36,7 @@ class NormalPMTFlow( LabradServer):
     def initServer(self):
         #improve on this to start in arbitrary order
         self.dv = yield self.client.data_vault
-        self.n = yield self.client.normalpmtcountfpga
+        self.n = yield self.client.pulser
         self.pbox = yield self.client.paul_box
         self.trigger = yield self.client.trigger
         self.saveFolder = ['','PMT Counts']
@@ -230,7 +230,7 @@ class NormalPMTFlow( LabradServer):
     def _record(self):
         yield self.running.acquire()
         if self.keepRunning:
-            rawdata = yield self.n.get_all_counts()
+            rawdata = yield self.n.get_pmt_counts()
             if len(rawdata) != 0:
                 if self.currentMode == 'Normal':
                     toDataVault = [ [elem[2] - self.startTime, elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]
@@ -240,7 +240,7 @@ class NormalPMTFlow( LabradServer):
                 self.processSignals(toDataVault)
                 yield self.dv.add(toDataVault)
             self.running.release()
-            delayTime = self.collectTimes[self.currentMode]/2 #set to half the collection time no to miss anythign
+            delayTime = self.collectTimes[self.currentMode]/2 #set to half the collection time no to miss anything
             reactor.callLater(delayTime,self._record)
         else:
             self.running.release()
