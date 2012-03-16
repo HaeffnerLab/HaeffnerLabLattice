@@ -53,6 +53,3 @@ if __name__ == '__main__':
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
     print timetags
-    
-    
-    

@@ -9,7 +9,6 @@
 #check higher channels numbers >9
 #from struct import Struct
 #changing inversion requires restart -> save setting
-#how to do nothing
+#how to do nothing?aaaaa
 #clean startup / shutdown 
 #skipped count on switch of timing
-

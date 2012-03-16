@@ -52,10 +52,10 @@ class hardwareConfiguration():
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     channelDict = {
-                   '866DP':channelConfiguration(0, False, True, False, False),
+                   '866DP':channelConfiguration(0, False, True, True, False),
                    'crystallization':channelConfiguration(1, True, False, False, False),
-                   'bluePI':channelConfiguration(2, False, True, False, False),
-                   '110DP':channelConfiguration(3, False, True, False, False),
+                   'bluePI':channelConfiguration(2, True, True, True, False),
+                   '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, False, False),
                    '729Switch':channelConfiguration(5, False, True, False, False),
                    '110DPlist':channelConfiguration(6, True, True, True, False),
