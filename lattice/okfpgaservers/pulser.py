@@ -8,6 +8,8 @@
 #set pmt counting initially to 100ms
 #check higher channels numbers >9
 #from struct import Struct
-#changing inversion requires restatr -> save setting
-#give long pmt counting a try
+#changing inversion requires restart -> save setting
+#how to do nothing
+#clean startup / shutdown 
+#skipped count on switch of timing
 

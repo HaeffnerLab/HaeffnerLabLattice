@@ -3,9 +3,9 @@ from twisted.internet.defer import inlineCallbacks
 
 SIGNALID = 378902
 
-class triggerWidget(QtGui.QFrame):
+class switchWidget(QtGui.QFrame):
     def __init__(self, reactor, parent=None):
-        super(triggerWidget, self).__init__(parent)
+        super(switchWidget, self).__init__(parent)
         self.setFrameStyle(0x0001 | 0x0030)
         self.reactor = reactor
         self.connect()
@@ -108,6 +108,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    triggerWidget = triggerWidget(reactor)
+    triggerWidget = switchWidget(reactor)
     triggerWidget.show()
     reactor.run()

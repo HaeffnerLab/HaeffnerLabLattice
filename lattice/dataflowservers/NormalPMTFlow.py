@@ -36,9 +36,7 @@ class NormalPMTFlow( LabradServer):
     def initServer(self):
         #improve on this to start in arbitrary order
         self.dv = yield self.client.data_vault
-        self.n = yield self.client.pulser
-        self.pbox = yield self.client.paul_box
-        self.trigger = yield self.client.trigger
+        self.pulser = yield self.client.pulser
         self.saveFolder = ['','PMT Counts']
         self.dataSetName = 'PMT Counts'
         self.dataSet = None
@@ -48,16 +46,7 @@ class NormalPMTFlow( LabradServer):
         self.running = DeferredLock()
         self.requestList = []
         self.keepRunning = False
-    
-#    @inlineCallbacks
-#    def confirmPBoxScripting(self):
-#        self.script = 'DifferentialPMTCount.py'
-#        self.variable = 'CountingInterval'
-#        allScripts = yield self.pbox.get_available_scripts()
-#        if script not in allScripts: raise Exception('Pauls Box script {} does not exist'.format(script))
-#        allVariables = yield self.pbox.get_variable_list(script)
-#        if variable not in allVariables[0]: raise Exception('Variable {} not found'.format(variable))
-    
+            
     @inlineCallbacks
     def makeNewDataSet(self):
         dir = self.saveFolder
@@ -91,11 +80,11 @@ class NormalPMTFlow( LabradServer):
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
         if not self.keepRunning:
             self.currentMode = mode
-            yield self.n.set_mode(mode)
+            yield self.pulser.set_mode(mode)
         else:
             yield self.dostopRecording()
             self.currentMode = mode
-            yield self.n.set_mode(mode)
+            yield self.pulser.set_mode(mode)
             yield self.dorecordData()
 
     @setting(3, 'getCurrentMode', returns = 's')
@@ -115,10 +104,10 @@ class NormalPMTFlow( LabradServer):
     @inlineCallbacks
     def dorecordData(self):
         self.keepRunning = True
-        yield self.n.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
-        yield self.n.set_mode(self.currentMode)
+        yield self.pulser.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
+        yield self.pulser.set_mode(self.currentMode)
         if self.currentMode == 'Differential':
-            yield self._programPBOXDiff()
+            yield self._programPulserDiff()
         if self.dataSet is None:
             yield self.makeNewDataSet()
         reactor.callLater(0, self._record)
@@ -134,9 +123,10 @@ class NormalPMTFlow( LabradServer):
     def dostopRecording(self):
         self.keepRunning = False
         yield self.running.acquire()
-        self.running.release()
-        yield self._programPBOXEmpty()
-        
+        self.running.release() #completed one last iteration
+        if self.currentMode == 'Differential':
+            yield self._stopPulserDiff()
+            
     @setting(6, returns = 'b')
     def isRunning(self,c):
         """
@@ -154,16 +144,17 @@ class NormalPMTFlow( LabradServer):
     def setTimeLength(self, c, timelength, mode = None):
         if mode is None: mode = self.currentMode
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
-        if not 0 < timelength < 5.0: raise ('Incorrect Recording Time')
+        if not 0 <= timelength <= 5.0: raise ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
         if mode == self.currentMode:
             yield self.running.acquire()
-            yield self.n.set_collection_time(timelength, mode)
+            yield self.pulser.set_collection_time(timelength, mode)
             if mode == 'Differential':
-                yield self._programPBOXDiff()
+                yield self._stopPulserDiff()
+                yield self._programPulserDiff()
             self.running.release()
         else:
-            yield self.n.set_collection_time(timelength, mode)
+            yield self.pulser.set_collection_time(timelength, mode)
         
     @setting(9, 'Get Next Counts', type = 's', number = 'w', average = 'b', returns = ['*v', 'v'])
     def getNextCounts(self, c, type, number, average = False):
@@ -193,15 +184,22 @@ class NormalPMTFlow( LabradServer):
         return self.collectTimes[self.currentMode]
     
     @inlineCallbacks
-    def _programPBOXDiff(self):
-        yield self.pbox.send_command('DifferentialPMTCount.py',[['FLOAT','CountingInterval',str(10**6 * self.collectTimes['Differential'])]])
-        yield deferToThread(time.sleep,.2) #give it enough time to finish programming
-        yield self.trigger.trigger('PaulBox')
+    def _programPulserDiff(self):
+        yield self.pulser.new_sequence()
+        countRate = self.collectTimes['Differential']
+        yield self.pulser.add_ttl_pulse('DiffCountTrigger', 0.0, 10.0e-6)
+        yield self.pulser.add_ttl_pulse('DiffCountTrigger', countRate, 10.0e-6)
+        yield self.pulser.add_ttl_pulse('866DP', 0.0, countRate)
+        yield self.pulser.extend_sequence_length(2*countRate)
+        yield self.pulser.program_sequence()
+        yield self.pulser.start_infinite()
+    
     
     @inlineCallbacks
-    def _programPBOXEmpty(self):
-        yield self.pbox.send_command('emptySequence.py',[['FLOAT','nothing','0']])
-        yield self.trigger.trigger('PaulBox')
+    def _stopPulserDiff(self):
+        yield self.pulser.complete_infinite_iteration()
+        yield self.pulser.wait_sequence_done()
+        yield self.pulser.stop_sequence()
         
     class readingRequest():
         def __init__(self, d, type, count):
@@ -230,7 +228,7 @@ class NormalPMTFlow( LabradServer):
     def _record(self):
         yield self.running.acquire()
         if self.keepRunning:
-            rawdata = yield self.n.get_pmt_counts()
+            rawdata = yield self.pulser.get_pmt_counts()
             if len(rawdata) != 0:
                 if self.currentMode == 'Normal':
                     toDataVault = [ [elem[2] - self.startTime, elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]

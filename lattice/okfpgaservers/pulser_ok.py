@@ -30,7 +30,8 @@ okDeviceID = 'Pulser'
 devicePollingPeriod = 10
 
 channelTotal = 32
-timeResolution = 20*10**-9
+timeResolution = 40.0e-9 #seconds
+timeResolvedResolution = timeResolution/4.0 #second
 MIN_SEQUENCE = 0
 MAX_SEQUENCE = 85 #seconds
 
@@ -46,18 +47,22 @@ class channelConfiguration():
         self.autoinv = autoinversion
         
 class hardwareConfiguration():
-    isProgrammed = False #has a pulse sequence to run
+    isProgrammed = False
+    sequenceType = None #none for not programmed, can be 'one' or 'infinite'
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     channelDict = {
-                   '866DP':channelConfiguration(0, True, False, False, False),
-                   'crystallization':channelConfiguration(1, True, True, False, False),
+                   '866DP':channelConfiguration(0, False, True, False, False),
+                   'crystallization':channelConfiguration(1, True, False, False, False),
                    'bluePI':channelConfiguration(2, False, True, False, False),
                    '110DP':channelConfiguration(3, False, True, False, False),
                    'axial':channelConfiguration(4, False, True, False, False),
                    '729Switch':channelConfiguration(5, False, True, False, False),
-                   'camera':channelConfiguration(6, False, True, False, False),
-                   '110DPlist':channelConfiguration(7, True, True, True, False),
+                   '110DPlist':channelConfiguration(6, True, True, True, False),
+                   'camera':channelConfiguration(7, False, False, False, False),
+                   #------------INTERNAL CHANNELS----------------------------------------#
+                   'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
+                   'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
                    }
 
 class Pulser(LabradServer):
@@ -68,6 +73,8 @@ class Pulser(LabradServer):
         self.channelDict =  hardwareConfiguration.channelDict
         self.collectionTime = hardwareConfiguration.collectionTime
         self.collectionMode = hardwareConfiguration.collectionMode
+        self.sequenceType = hardwareConfiguration.sequenceType
+        self.isProgrammed = hardwareConfiguration.isProgrammed
         self.inCommunication = DeferredLock()
         self.connectOKBoard()
         self.listeners = set()
@@ -136,22 +143,33 @@ class Pulser(LabradServer):
     def startInfinite(self,c):
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
         yield self.inCommunication.acquire()
+        yield deferToThread(self._resetSeqCounter)
         yield deferToThread(self._startInfinite)
+        self.sequenceType = 'Infinite'
         self.inCommunication.release()
     
-    @setting(3, "Start", returns = '')
+    @setting(3, "Complete Infinite Iteration", returns = '')
+    def completeInfinite(self,c):
+        if self.sequenceType != 'Infinite': raise Exception( "Not Running Infinite Sequence")
+        yield self.inCommunication.acquire()
+        yield deferToThread(self._startSingle)
+        self.inCommunication.release()
+    
+    @setting(4, "Start Single", returns = '')
     def start(self, c):
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._start)
+        yield deferToThread(self._resetSeqCounter)
+        yield deferToThread(self._startSingle)
+        self.sequenceType = 'One'
         self.inCommunication.release()
     
-    @setting(4, 'Add TTL Pulse', channel = 's', start = 'v', duration = 'v')
+    @setting(5, 'Add TTL Pulse', channel = 's', start = 'v', duration = 'v')
     def addTTLPulse(self, c, channel, start, duration):
         """
         Add a TTL Pulse to the sequence, times are in seconds
         """
-        hardwareAddr = self.channelDict.get(channel)
+        hardwareAddr = self.channelDict.get(channel).channelnumber
         sequence = c.get('sequence')
         #simple error checking
         if hardwareAddr is None: raise Exception("Unknown Channel {}".format(channel))
@@ -160,7 +178,30 @@ class Pulser(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addTTLPulse(hardwareAddr, start, duration)
     
-    @setting(5, "Human Readable", returns = '*2s')
+    @setting(6, "Extend Sequence Length", timeLength = 'v')
+    def extendSequenceLength(self, c, timeLength):
+        """
+        Allows to optionally extend the total length of the sequence beyond the last TTL pulse. 
+        """
+        sequence = c.get('sequence')
+        if not (MIN_SEQUENCE <= timeLength <= MAX_SEQUENCE): raise Exception ("Time boundaries are out of range")
+        if not sequence: raise Exception ("Please create new sequence first")
+        sequence.extendSequenceLength(timeLength)
+        
+    
+    @setting(7, "Stop Sequence")
+    def stopSequence(self, c):
+        """Stops any currently running  sequence"""
+        yield self.inCommunication.acquire()
+        yield deferToThread(self._resetRam)
+        if self.sequenceType =='Infinite':
+            yield deferToThread(self._stopInfinite)
+        elif self.sequenceType =='One':
+            yield deferToThread(self._stopSingle)
+        self.inCommunication.release()
+        self.sequenceType = None
+    
+    @setting(8, "Human Readable", returns = '*2s')
     def humanReadable(self, c):
         """
         Returns a readable form of the programmed sequence for debugging
@@ -310,7 +351,7 @@ class Pulser(LabradServer):
         reading = self._getNormalCounts(inFIFO)
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf, split)
-        #countlist = map(self.convertKCperSec, countlist)
+        countlist = map(self.convertKCperSec, countlist)
         countlist = self.appendTimes(countlist, time.time())
         return countlist
     
@@ -350,6 +391,26 @@ class Pulser(LabradServer):
     def getMode(self, c):
         return self.collectionMode
     
+    @setting(31, "Reset Timetags")
+    def resetTimetags(self, c):
+        """Reset the time resolved FIFO to clear any residual timetags"""
+        yield self.inCommunication.acquire()
+        yield deferToThread(self._resetFIFOResolved)
+        self.inCommunication.release()
+    
+    @setting(32, "Get Timetags", returns = '*v')
+    def getTimetags(self, c):
+        """Get the time resolved timetags"""
+        yield self.inCommunication.acquire()
+        counted = yield deferToThread(self._getResolvedTotal)
+        raw = yield deferToThread(self._getResolvedCounts, counted)
+        self.inCommunication.release()
+        arr = numpy.fromstring(raw, dtype = numpy.uint16)
+        del(raw)
+        arr = arr.reshape(-1,2)
+        timetags =( 65536  *  arr[:,0] + arr[:,1]) * timeResolvedResolution
+        returnValue(timetags)
+    
     def wait(self, seconds, result=None):
         """Returns a deferred that will be fired later"""
         d = Deferred()
@@ -367,11 +428,11 @@ class Pulser(LabradServer):
         self.xem.SetWireInValue(0x00,0x02,0x06)
         self.xem.UpdateWireIns()
         
-    def _start(self):
+    def _startSingle(self):
         self.xem.SetWireInValue(0x00,0x04,0x06)
         self.xem.UpdateWireIns()
     
-    def _stop(self):
+    def _stopSingle(self):
         self.xem.SetWireInValue(0x00,0x00,0x06)
         self.xem.UpdateWireIns()
     
@@ -406,15 +467,13 @@ class Pulser(LabradServer):
     
     def _getResolvedTotal(self):
         self.xem.UpdateWireOuts()
-        counted = xem.GetWireOutValue(0x22)
+        counted = self.xem.GetWireOutValue(0x22)
         return counted
     
-    def _getResolvedCounts(self):
-        buf = "\x00"*2*2*320
+    def _getResolvedCounts(self, number):
+        buf = "\x00"*(number*2)
         self.xem.ReadFromBlockPipeOut(0xa0,2,buf)
-        a = Struct("H"*(len(buf)/2))
-        Struct.unpack(a,buf)
-        ####return and check format
+        return buf
     
     def _getNormalTotal(self):
         self.xem.SetWireInValue(0x00,0x40,0xf0)
@@ -489,6 +548,10 @@ class Sequence():
         """adding TTL pulse, times are in seconds"""
         self._addNewSwitch(start, channel, 1)
         self._addNewSwitch(start + duration, channel, -1)
+    
+    def extendSequenceLength(self, timeLength):
+        """Allows to extend the total length of the sequence"""
+        self._addNewSwitch(timeLength,0,0)
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
@@ -527,9 +590,9 @@ class Sequence():
         """Returns the human readable version of the sequence for FPGA for debugging"""
         rep = self.progRepresentation()
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
-        arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large number
+        arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)
-        times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolution
+        times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolvedResolution
         channels = ( 65536  *  arr[:,2] + arr[:,3])
         
         def expandChannel(ch):

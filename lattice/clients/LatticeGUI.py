@@ -56,11 +56,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def makeTableOpticsWidget(self, reactor):
         widget = QtGui.QWidget()
         from PMT_CONTROL import pmtWidget
-        from TRIGGER_CONTROL import triggerWidget
+        from SWITCH_CONTROL import switchWidget
         from INTENSITY_CONTROL import INTENSITY_CONTROL as intensityWidget
         from doublePassWidget import doublePassWidget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(triggerWidget(reactor),0,0)
+        gridLayout.addWidget(switchWidget(reactor),0,0)
         gridLayout.addWidget(pmtWidget(reactor),0,1)
         gridLayout.addWidget(intensityWidget(reactor),1,0,1,2)
         gridLayout.addWidget(doublePassWidget(reactor),2,0,1,2)
