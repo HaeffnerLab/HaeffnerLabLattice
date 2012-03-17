@@ -156,6 +156,7 @@ class Qt4MplCanvas(FigureCanvas):
         #...self.plotDict[dataset][1] is not an empty set 
         
         if (data != None):
+            tstartupdate = time.clock()
          
             NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
 
@@ -181,8 +182,10 @@ class Qt4MplCanvas(FigureCanvas):
             
             # check to see if the boundary needs updating
             self.updateBoundary(dataset, directory, NumberOfDependentVariables)
+            
+            tstopupdate = time.clock()
+            print tstopupdate - tstartupdate
 
-     
     # if the screen has reached the scrollfraction limit, it will update the boundaries
     def updateBoundary(self, dataset, directory, NumberOfDependentVariables):
         

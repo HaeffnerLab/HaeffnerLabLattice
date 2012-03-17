@@ -17,7 +17,6 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-
 import ok
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
@@ -25,45 +24,15 @@ from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, D
 from twisted.internet.threads import deferToThread
 import numpy
 import time
+from hardwareConfiguration import hardwareConfiguration
 
 okDeviceID = 'Pulser'
 devicePollingPeriod = 10
-
 channelTotal = 32
 timeResolution = 40.0e-9 #seconds
 timeResolvedResolution = timeResolution/4.0 #second
 MIN_SEQUENCE = 0
 MAX_SEQUENCE = 85 #seconds
-
-class channelConfiguration():
-    """
-    Stores complete configuration for each of the channels
-    """
-    def __init__(self, channelNumber, ismanual, manualstate,  manualinversion, autoinversion):
-        self.channelnumber = channelNumber
-        self.ismanual = ismanual
-        self.manualstate = manualstate
-        self.manualinv = manualinversion
-        self.autoinv = autoinversion
-        
-class hardwareConfiguration():
-    isProgrammed = False
-    sequenceType = None #none for not programmed, can be 'one' or 'infinite'
-    collectionMode = 'Normal' #default PMT mode
-    collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
-    channelDict = {
-                   '866DP':channelConfiguration(0, False, True, True, False),
-                   'crystallization':channelConfiguration(1, True, False, False, False),
-                   'bluePI':channelConfiguration(2, True, True, True, False),
-                   '110DP':channelConfiguration(3, False, True, True, False),
-                   'axial':channelConfiguration(4, False, True, False, False),
-                   '729Switch':channelConfiguration(5, False, True, False, False),
-                   '110DPlist':channelConfiguration(6, True, True, True, False),
-                   'camera':channelConfiguration(7, False, False, False, False),
-                   #------------INTERNAL CHANNELS----------------------------------------#
-                   'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
-                   'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
-                   }
 
 class Pulser(LabradServer):
     name = 'Pulser'
@@ -130,7 +99,7 @@ class Pulser(LabradServer):
         """
         Programs Pulser with the current sequence.
         """
-        if self.xem is None: raise('Board not connected')
+        if self.xem is None: raise Exception('Board not connected')
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
         parsedSequence = sequence.progRepresentation()
@@ -290,7 +259,7 @@ class Pulser(LabradServer):
         In the differential mode, the FPGA uses triggers the pulse sequence
         frequency and to know when the repumping light is swtiched on or off.
         """
-        if mode not in self.collectionTime.keys(): raise("Incorrect mode")
+        if mode not in self.collectionTime.keys(): raise Exception("Incorrect mode")
         self.collectionMode = mode
         countRate = self.collectionTime[mode]
         yield self.inCommunication.acquire()
@@ -309,7 +278,7 @@ class Pulser(LabradServer):
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
         """
         time = float(time)
-        if not 0.010<=time<=5.0: raise('incorrect collection time')
+        if not 0.010<=time<=5.0: raise Exception('incorrect collection time')
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
         if mode == 'Normal':
             self.collectionTime[mode] = time

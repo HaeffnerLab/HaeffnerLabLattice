@@ -8,6 +8,7 @@ class LatentHeat(Sequence):
                          'axial_heat':(float, 10e-9, 5.0, 100e-3),
                          'readout_delay':(float, 10e-9, 5.0, 100e-3),
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
+                         'xtal_record':(float, 10e-9, 5.0, 100e-3)
                     }
     
     def defineSequence(self):
@@ -16,11 +17,13 @@ class LatentHeat(Sequence):
         axial_heat = self.vars['axial_heat']
         readout_delay = self.vars['readout_delay']
         readout_time = self.vars['readout_time']
+        xtal_record =  self.vars['xtal_record']
         
         globalofftime = heat_delay + axial_heat + readout_delay
-        recordTime = initial_cooling + heat_delay + axial_heat + readout_delay + readout_time
+        recordTime = initial_cooling + heat_delay + axial_heat + readout_delay + readout_time + xtal_record
         startHeat = initial_cooling + heat_delay
         endHeat = initial_cooling + heat_delay + axial_heat
+        start_xtal = endHeat + readout_delay + readout_time
         
         self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         self.pulser.add_ttl_pulse('110DP', initial_cooling, globalofftime) #turn off blue light during heating
@@ -29,7 +32,7 @@ class LatentHeat(Sequence):
         #make sure there is no cooling by also switching off 866 when there is no 397 light.
         self.pulser.add_ttl_pulse('866DP', initial_cooling, heat_delay )
         self.pulser.add_ttl_pulse('866DP', endHeat, readout_delay )
-        self.pulser.add_ttl_pulse('110DPlist', recordTime, 10e-6) #advance frequency of RS at the end of the sequence
+        self.pulser.add_ttl_pulse('110DPlist', start_xtal, 10e-6) #advance frequency of RS at the end of the sequence
 
 if __name__ == '__main__':
     import labrad

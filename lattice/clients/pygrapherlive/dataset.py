@@ -67,11 +67,20 @@ class Dataset(QtCore.QObject):
         yield self.cxn.data_vault.signal__data_available(11111, context = context)
         yield self.cxn.data_vault.addListener(listener = self.updateData, source = None, ID = 11111, context = context)
         #self.setupDeferred.callback(True)
-         
+        self.updatecounter = 0
+        self.timer = self.startTimer(100)
+    
     # new data signal
     def updateData(self,x,y):
+        self.updatecounter = self.updatecounter + 1
         self.getData(self.context)
-      
+    
+    def timerEvent(self,evt):
+        #print self.updatecounter
+        if self.updatecounter > 1:
+            print 'slowing down!, less than 1 dataupdate per 100milliseconds '
+        self.updatecounter = 0
+        
     # returns the current data
     @inlineCallbacks
     def getData(self,context):

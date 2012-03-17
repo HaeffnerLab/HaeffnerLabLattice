@@ -31,24 +31,25 @@ pulser = cxn.pulser
 
 
 #Global parameters
-iterations = 10
+iterations = 30
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-cooling = (102.0, -4.9) #MHz, dBm
+cooling = (100.0, -4.9) #MHz, dBm
 readout = (120.0, -4.9) 
-crystallization = (102.0,-4.9)
+crystallization = (100.0,-4.9)
 rs110List = [cooling, readout,crystallization] 
-auto_crystal = True
+auto_crystal = False
 #sequence parameters
 params = {
-              'initial_cooling': 0.1,
-              'heat_delay':0.010,
+              'initial_cooling': 0.100,
+              'heat_delay':0.030,
               'axial_heat':0.010,
-              'readout_delay':0.001,
-              'readout_time':0.100
+              'readout_delay':0.030,
+              'readout_time':0.100,
+              'xtal_record':0.100
             }
-recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time']
+recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
 
 globalDict = {
               'iterations':iterations,
@@ -73,9 +74,10 @@ def initialize():
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
-    pulser.switch_auto('axial',  False) #axial needs to be inverted, so that high TTL corresponds to light ON
-    pulser.switch_auto('110DP',  True) #high TTL corresponds to light OFF
-    pulser.switch_auto('866DP',  True) #high TTL corresponds to light OFF
+    pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
+    pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
+    pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
+    pulser.switch_auto('110DPlist', False) #high TTL corresponds to light OFF
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
     #make sure r&s synthesizers are on, and are of correct frequency
     #heating

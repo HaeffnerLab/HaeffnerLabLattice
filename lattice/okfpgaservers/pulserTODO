@@ -1,0 +1,8 @@
+####
+#LABRAD: remove all references to local path
+#standardize inversion on auto: false means: high ->light is on
+#listeners for pmt?
+#changing inversion requires restart, change that and save setting
+#clean startup / shutdown 
+#skipped count on switch of timing
+#move to pulser directory, make sure node client works with the new directory
