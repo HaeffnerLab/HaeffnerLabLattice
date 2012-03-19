@@ -177,7 +177,10 @@ class Qt4MplCanvas(FigureCanvas):
             # draw the plots onto the canvas and blit them into view
             for i in range(NumberOfDependentVariables):
                 self.plotDict[dataset, directory][PLOTS][i].set_data(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i])
-                self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                try:
+                    self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                except AssertionError:
+                    print 'failed to draw!'
             self.blit(self.ax.bbox)
             
             # check to see if the boundary needs updating
