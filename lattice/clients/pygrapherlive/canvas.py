@@ -117,7 +117,8 @@ class Qt4MplCanvas(FigureCanvas):
                 self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
             #self.drawFlag = True
             #self.drawCounter = 0
-            self.drawGraph()
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                self.drawGraph()
   
     def timerEvent(self, evt):
         self.drawCounter = self.drawCounter + 1

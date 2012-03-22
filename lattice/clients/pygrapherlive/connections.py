@@ -132,11 +132,11 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         datasetLabels = yield datasetObject.getYLabels()
         # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
         if (manuallyLoaded == True):
-            self.prepareDataset(datasetObject, dataset, directory, datasetLabels, context)
+            self.prepareDataset(datasetObject, dataset, directory, datasetLabels)#, context)
         else:        
             hasPlotParameter = yield datasetObject.listenForPlotParameter()
             if (hasPlotParameter == True):
-                self.prepareDataset(datasetObject, dataset, directory, datasetLabels, context)
+                self.prepareDataset(datasetObject, dataset, directory, datasetLabels)#, context)
             else:
                 # This data is not for plotting. Remove it.
                 # There should be a cleaner way of doing this
@@ -144,7 +144,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
 
     # Prepare the dataset for plotting
     @inlineCallbacks
-    def prepareDataset(self, datasetObject, dataset, directory, datasetLabels, context):
+    def prepareDataset(self, datasetObject, dataset, directory, datasetLabels):#, context):
         #if windows request overlay, update those. else, create a new window.
         overlayWindows = self.getOverlayingWindows()
         if overlayWindows:
@@ -153,6 +153,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 window.qmc.initializeDataset(dataset, directory, datasetLabels)
                 window.createDatasetCheckbox(dataset, directory) 
         else:
+            context = yield self.cxn.context() # create a new context
             win = self.newGraph(context)
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
