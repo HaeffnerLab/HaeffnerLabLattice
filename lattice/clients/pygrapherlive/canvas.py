@@ -40,7 +40,7 @@ from twisted.internet.threads import deferToThread
 import time
 import numpy as np
 
-TIMERREFRESH = 100 #ms
+TIMERREFRESH = 10 #ms
 MAXDATASETSIZE = 100000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
@@ -117,7 +117,8 @@ class Qt4MplCanvas(FigureCanvas):
                 self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
             #self.drawFlag = True
             #self.drawCounter = 0
-            self.drawGraph()
+            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+                self.drawGraph()
   
     def timerEvent(self, evt):
         self.drawCounter = self.drawCounter + 1
@@ -177,7 +178,10 @@ class Qt4MplCanvas(FigureCanvas):
             # draw the plots onto the canvas and blit them into view
             for i in range(NumberOfDependentVariables):
                 self.plotDict[dataset, directory][PLOTS][i].set_data(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i])
-                self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                try:
+                    self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                except AssertionError:
+                    print 'failed to draw!'
             self.blit(self.ax.bbox)
             
             # check to see if the boundary needs updating
