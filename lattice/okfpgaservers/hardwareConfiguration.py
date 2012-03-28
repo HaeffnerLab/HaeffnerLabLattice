@@ -17,7 +17,7 @@ class hardwareConfiguration():
     channelDict = {
                    '866DP':channelConfiguration(0, False, True, True, False),
                    'crystallization':channelConfiguration(1, True, False, False, False),
-                   'bluePI':channelConfiguration(2, True, True, True, False),
+                   'bluePI':channelConfiguration(2, True, False, True, False),
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, False),
                    '729Switch':channelConfiguration(5, False, True, True, False),

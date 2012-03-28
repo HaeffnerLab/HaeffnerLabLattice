@@ -45,6 +45,8 @@ figure.clf()
 pyplot.suptitle(datasetName)
 pyplot.plot(binArray[:-1],notmeltedFluor, 'r',label = 'not melted')
 pyplot.plot(binArray[:-1],meltedFluor, 'b',label = 'melted')
+pyplot.xlabel('time (seconds)')
+pyplot.ylabel('Fluorescence (kCounts)')
 pyplot.legend()
 
 pyplot.show()

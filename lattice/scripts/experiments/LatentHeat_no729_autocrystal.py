@@ -31,23 +31,25 @@ pulser = cxn.pulser
 
 
 #Global parameters
-iterations = 30
+iterations = 100
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
 cooling = (100.0, -4.9) #MHz, dBm
 readout = (120.0, -4.9) 
 crystallization = (100.0,-4.9)
+rf_power = 0.0
+rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
-auto_crystal = False
+auto_crystal = True
 #sequence parameters
 params = {
-              'initial_cooling': 0.100,
-              'heat_delay':0.030,
-              'axial_heat':0.010,
-              'readout_delay':0.030,
-              'readout_time':0.100,
-              'xtal_record':0.100
+              'initial_cooling': 100e-3,
+              'heat_delay':30e-3,
+              'axial_heat':35e-3,
+              'readout_delay':30e-3,     
+              'readout_time':100e-3,
+              'xtal_record':100e-3
             }
 recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
 
@@ -59,6 +61,8 @@ globalDict = {
               'cooling':cooling,
               'readout':readout,
               'crystallization':crystallization,
+              'rf_power':rf_power,
+              'rf_settling_time':rf_settling_time
               }
 
 #Binning on the fly
@@ -145,22 +149,25 @@ def finalize():
     for name in ['axial', '110DP']:
         pulser.switch_manual(name)
     rs110DP.activate_list_mode(False)
-    pulser.switch_manual('crystallization',  False)
+    pulser.switch_manual('crystallization',  True)
 
-crystal_threshold = 18 #kcounts per sec
-crystallization_attempts = 10
+    
 detect_time = 0.150
 far_red_time = 0.300 #seconds
 optimal_cool_time = 0.150
-pmtresolution = 0.025 #seconds
+pmtresolution = 0.025 #seconds 
 shutter_delay = 0.025
 pmt = cxn.normalpmtflow
-pmt.set_time_length(pmtresolution)
+pmt.set_time_length(pmtresolution) 
 crystal_power = -5.9
+countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
+print 'initial countrate', countRate
+crystal_threshold = 0.6 * countRate #kcounts per sec
+print 'Crystallization threshold: ', crystal_threshold
 
 def is_crystalized():
     countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
-    print countRate
+    #temp = pulser.get_timetags().asarray   # work around to dump the data
     print 'auto crystalization: count rate {}'.format(countRate)
     return (countRate > crystal_threshold) 
     
@@ -181,27 +188,33 @@ def auto_crystalize():
             time.sleep(optimal_cool_time)
             if is_crystalized():
                 print 'success on attempt number {}'.format(attempt)
+                rf.setpower(initpower)
+                time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
-                pulser.switch_auto('110DP',  True)
-                rf.setpower(initpower)
+                pulser.switch_auto('110DP',  False)
                 return True
         #if still not crystzlied, let the user handle things
         response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
         if response == 'f':
             return False
         else:
+            rf.setpower(initpower)
+            time.sleep(rf_settling_time)
             pulser.switch_manual('crystallization',  False)
             time.sleep(shutter_delay)
-            pulser.switch_auto('110DP',  True)
-            rf.setpower(initpower)
+            pulser.switch_auto('110DP',  False)
             return True
             
 print 'initializing measurement'
+initpower = rf.getpower()
+rf.setpower(rf_power)
+time.sleep(rf_settling_time)
 initialize()
 print 'performing sequence'
 sequence()
 print 'finalizing'
 finalize()
+rf.setpower(initpower)
 print 'DONE'
 print dirappend
