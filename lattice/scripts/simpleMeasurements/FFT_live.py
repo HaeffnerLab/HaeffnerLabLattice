@@ -9,13 +9,13 @@ from PulseSequences.TimeRes_FFT import TimeResolved
 
 centerFreq = 14799400#14998866#15.00*10**6
 ptsAround = 4
-recordTime = 1 #seconds
+recordTime = 5.0 #seconds
 iterations = 50
-average = 2
+average = 1
 #program pulse sequence for triggering time resolved
 
 params = {
-              'recordTime': 1.0#100*1e-3,
+              'recordTime': recordTime#100*1e-3,
           }
 
 #connect and define servers we'll be using
@@ -45,6 +45,8 @@ def getFFTpwr(timetags):
 
 dv.cd(['','QuickMeasurements','FFTlive'],True)
 dv.new('FFT',[('time', 'arb')], [('Power','Arb','Arb')] )
+dv.add_parameter('plotLive',True)
+
 for i in range(iterations):
     pwr = np.zeros_like(freqs)
     for j in range(average):
