@@ -1,28 +1,28 @@
-import os; labradPath = os.environ.get('LABRADPATH') 
-path = os.path.join(labradPath,'lattice/scripts')
-import sys; sys.path.append(path)
-import labrad; cxn = labrad.connect()
-from scriptLibrary import paulsbox 
+import sys; 
+sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
+sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+import labrad
 import numpy as np
+import time
+from scriptLibrary import dvParameters 
+from PulseSequences.TimeRes_FFT import TimeResolved
 
-minFreq = 14.9985*10**6#14.99885*10**6 #Hz
-maxFreq = 14.9990*10**6#14.99887*10**6
-recordTime = 0.5 #seconds
-average = 20
+minFreq = 14.79938*10**6 #14.9985*10**6 #Hz  15.10935 @ 15.11///14.99938 14.9
+maxFreq = 14.79943*10**6#14.9990*10**6  15.10940/// 14.99942
+recordTime = 1 #seconds
+average = 5
 saveFFT = True
 #program pulse sequence for triggering time resolved
-pboxDict = {
-            'sequence':'TimeResolvedTrigger.py',
-            'nothing':1,
-            }
-paulsbox.program(cxn.paul_box, pboxDict)
-trfpga = cxn.timeresolvedfpga
-trigger = cxn.trigger
-trfpga.set_time_length(recordTime)
-timeResolution = float(trfpga.get_resolution())
-freqRes = 1.0 / recordTime
-dv = cxn.data_vault
+params = {
+              'recordTime': 1 #100*1e-3,
+          }
 
+#connect and define servers we'll be using
+cxn = labrad.connect()
+cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+dv = cxn.data_vault
+pulser = cxn.pulser
+freqRes = 1.0 / recordTime
 
 freqs = np.arange(minFreq,maxFreq,freqRes)
 
@@ -39,13 +39,14 @@ import time####
 pwr = np.zeros_like(freqs)
 for i in range(average):
     print i
-    trfpga.perform_time_resolved_measurement()
-    time.sleep(.2)
-    print 'now trigger'
-    trigger.trigger('PaulBox')
-    print 'now get result'
-    timetags = trfpga.get_result_of_measurement().asarray
+    pulser.reset_timetags()
+    pulser.start_single()
+    print 'triggered'
+    pulser.wait_sequence_done()
+    pulser.stop_sequence()
+    timetags = pulser.get_timetags().asarray
     print 'got timetags'
+    print 'timetag size', timetags.size
     pwr += getFFTpwr(timetags)
 if saveFFT:
     dv.cd(['','QuickMeasurements','FFT'],True)
