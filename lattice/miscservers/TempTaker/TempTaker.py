@@ -19,65 +19,18 @@ timeout = 20
 from labrad.server import LabradServer, setting
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import LoopingCall
+from RunningAverage import RunningAverage
+from AlarmChecker import AlarmChecker
 import numpy
 
+####testing
+#get temperature array, make sure is the same
 
-#store PID, integrator in the registry
-class AlarmChecker():
-
-    timeToReset = 2*3600  # set time for next alarm to 2 hours
-    messageMax = 1 #maximum number of allowed emails per the number of callstoReset
-    
-    def __init__(self, emailer, dict):
-        self.Table1 = dict['Table1']
-        self.Table3 = dict['Table3']
-        self.Table4 = dict['Table4']
-        self.ColdWater = dict['ColdWater']
-        self.HotWater = dict['HotWater']
-        self.emailer = emailer
-        self.messageSent = 0
-        self.alarmReset = LoopingCall(self.reset)
-        self.alarmReset.start(self.timeToReset, now = False)
-        
-    def reset(self):
-        self.messageSent = 0
-    
-    @inlineCallbacks
-    def check(self, temp):
-        message = None
-        if(abs(temp[self.Table1] - 22) > 2):
-            message = ('AC ALARM','The differential between Table1 temperature and setpoint exceeds norm')
-        if(abs(temp[self.Table3] - 22) > 2):
-            message = ('AC ALARM','The differential between Table3 temperature and setpoint exceeds norm')
-        if(abs(temp[self.Table4] - 22) > 2):
-            message = ('AC ALARM','The differential between Table4 temperature and setpoint exceeds norm')
-        #if(abs(temp[self.ColdWater] - 9) > 9):
-            #message = ('AC ALARM','Cold Water temperature is too far from norm')
-        if(abs(temp[self.HotWater] - 45) > 35):  # Hot water varies really a lot
-            message = ('AC ALARM','The HotWaterBigRoom temperature is too far from norm')
-        if message and (self.messageSent < self.messageMax): 
-            yield self.emailer.send(*message)
-            self.messageSent +=1
-
-class RunningAverage():
-    """Allows for smoothing of input data by taking a running average"""
-    def __init__(self, arrLength, averageNumber):
-        self.historyArray = numpy.zeros((averageNumber,arrLength))
-        self.averageNumber = averageNumber
-        self.counter = 0
-        self.filled = False
-    
-    def add(self, addition):
-        self.historyArray[self.counter] = addition 
-        self.counter = (self.counter + 1) % self.averageNumber
-        if self.counter == 0: self.filled = True
-    
-    def getAverage(self):
-        if self.filled:
-            average = numpy.average(self.historyArray, 0)
-        else:
-            average = numpy.sum(self.historyArray, 0) / self.counter
-        return average
+####store PID, integrator in the registry
+####check on physically where supply vs measurements are done
+####save P,I,D, PID, valves into data vault
+####delete lab-user?
+####remove excess cabling
 
 class PIDcontroller:
     pass
@@ -85,6 +38,7 @@ class PIDcontroller:
 class AC_Server( LabradServer ):
     name = 'AC Server'
     updateRate = 1.0 #seconds
+    maxDaqErrors = 10
         
     @inlineCallbacks
     def initServer( self ):
@@ -94,14 +48,13 @@ class AC_Server( LabradServer ):
         self.channelDict = self.daq.channelDict
         self.averager = RunningAverage(self.channels, averageNumber = 12)
         self.emailer = self.client.emailer
-        yield self.emailer.set_recipients(['micramm@gmail.com']) # set this later
+        yield self.emailer.set_recipients(['micramm@gmail.com']) #### set this later
         self.alarmChecker = AlarmChecker(self.emailer, self.channelDict)
-        self.responseCalc = ResponseCalculator()
         #stting up constants
-        self.manualOverwrite = False
-        self.manualPositions = None####
-        self.PIDparams =[0,0,0]####get from registry
+        self.PIDparams =([0,0,0],..)####get from registry
         self.daqErrors = 0
+        #
+        self.responseCalc = ResponseCalculator()
         #begin control
         self.inControl = LoopingCall(self.control)
         self.inControl.start(self.updateRate)
@@ -110,15 +63,20 @@ class AC_Server( LabradServer ):
     @setting(0, 'Manual Override', enable = 'b', valvePositions = '*v')
     def manualOverride(self, c, enable, valvePositions = None):
         """If enabled, allows to manual specify the positions of the valves, ignoring feedback"""
-        self.manualOverwrite = enable
-        pass
-    
+        if enable:
+            if self.inControl.running:
+                yield self.inControl.stop()
+            raise NotImplementedError
+            #### set valve positions through valve class (with error checking there)
+        else: #resume automated control
+            self.inControl.start(self.updateRate)
+            
     @setting(1, 'PID Parameters', PID = '*3v')
     def PID(self, c, PID = None):
         """Allows to view or to set the PID parameters"""
         if PID is None: return self.PID
         self.PIDparams = PID
-        ###
+        ####
         
     @setting(2, 'Reset Integrator')
     def resetIntegrator(self, c):
@@ -135,6 +93,7 @@ class AC_Server( LabradServer ):
             self.averager.add(temps)
             temps = self.averager.getAverage()
             yield self.alarmChecker.check(temps)
+            PIDresponse,valveSignal =  self.responseCalc.getResponse(temps)
             
     @inlineCallbacks
     def checkMaxErrors(self):
@@ -143,19 +102,21 @@ class AC_Server( LabradServer ):
             print "TOO MANY DAQ ERRORS"
             yield self.emailer.send('AC ALARM: TOO MANY DAQ ERRORS', '')
             self.daqErrors = 0
-            self.inControl.stop()
+            yield self.inControl.stop()
     
 class ResponseCalculator():
     
-    IntegrationMin = -500*5; #limit on how small integration response can get, modified later with I-gain and thus more than the max control signal makes not much sense, the 20 comes from the estimated cooling power rescaling (SetPoint-2)
-    IntegrationMax = 700*5; #limit on how big integration response can get, modified later with the I-gain, the 60 comes from the estimated heating power rescaling
+    IntegrationMin = -2500.0 
+    IntegrationMax = 3500.0
     
-    def __init__(self, channels, (P,I,D), setpoints, integrated = None):
-        self.lastErrSigArr = numpy.zeros(channels)
+    def __init__(self, channels, (P,I,D), setpoints, dict):
+        self.integralError = numpy.zeros(channels)
+        self.lastError = numpy.zeros(channels)
         self.P = P
         self.I = I
         self.D = D
         self.setpoints = setpoints
+        self.dict = dict
     
     def updateGains(self, (P,I,D)):
         #constants for PID in the format [big room , small room , laser room]
@@ -163,42 +124,31 @@ class ResponseCalculator():
         self.I = I
         self.D = D
     
-    def calculateResponse(self, temp):
-        error = temp - setpoint
+    def getResponse(self, temp):
+        errorSignal = temp - self.setpoints
+        self.integralError =  self.calcIntegrator(self.integralError, errorSignal)
+        PIDresponse = self.findPIDresponse(errorSignal, self.integralError , self.lastError) 
         
-        self.integralerrorSigArr = self.calcintegrator(self.integralerrorSigArr, self.errorSigArr)
-        self.saveIntegralError(self.integralerrorSigArr)
-        self.PIDresponseArr = self.findPIDresponse(self.errorSigArr, self.integralerrorSigArr,self.lastErrSigArr) 
-        self.lastErrSigArr= self.errorSigArr
-        self.valvesignalArr = self.CalcValveSignal(self.PIDresponseArr, curTempArr)
+        
 
-    
-    def getResponse(self):
+        ####self.valvesignalArr = self.CalcValveSignal(self.PIDresponseArr, curTempArr)
+        
+        
+        self.lastError = errorSignal
         return [self.PIDresponseArr,self.valvesignalArr]
-    
-    
-        
-    def saveIntegralError(self,integError):
-        #print integError
-        self.INTEGFILE.seek(0) #moves position to the beginning of the file
-        pickle.dump(integError, self.INTEGFILE)
-        self.INTEGFILE.truncate() 
-
-        
- 
-        
-    def calcintegrator(self,oldArr, newArr):
-        TotalArr = oldArr + newArr
+                
+    def calcIntegrator(self,old, new):
+        total = old + new
         # Normalize maximum by the mean of the integration constants
-        minim = IntegrationMin/(-sum(self.I)/len(self.I))
-        maxim = IntegrationMax/(-sum(self.I)/len(self.I))
-        TotalArr=clip(TotalArr,minim,maxim)
-        return TotalArr
+        ####come back to this to translate from valve position
+        minim = self.IntegrationMin/(-sum(self.I)/len(self.I))
+        maxim = self.IntegrationMax/(-sum(self.I)/len(self.I))
+        total = numpy.clip(total,minim,maxim)
+        return total
             
-    def findPIDresponse(self,curErrArr, IntErrArr, lastErrArr):    #produces array containg signal to be sent to valves in format [Control1, Control2..] where each one is measured from -255 to 255 positive to hotter, negative for colder
-        P = self.P
-        I = self.I
-        D = self.D
+    def findPIDresponse(self, errorSignal, integralError, lastError):    
+        #produces array containg signal to be sent to valves in format [Control1, Control2..] where each one is measured from -255 to 255 positive to hotter, negative for colder
+        ####clearer desciption here
         propArr = zeros(ControlCh)
         propArr[bigroomctrl] = PSup[bigroomctrl]*curErrArr[SupplyBigRoom-1] + PTab[bigroomctrl]*curErrArr[Table1-1] + PCoolingWater[bigroomctrl]*curErrArr[ColdWaterBigRoom]
         propArr[smlroomctrl] = PSup[smlroomctrl]*curErrArr[SupplySmallRoom-1] + PTab[smlroomctrl]*curErrArr[Table3-1] + PCoolingWater[smlroomctrl]*curErrArr[ColdWaterSmallRoom]
@@ -276,11 +226,9 @@ class DataAcquisition():
     hardwareGain = numpy.array([15,15,15,15,15,15,15,15,15,15,15,15,5,15,5,15]) #channels 13 and 15 (or 12,14 counting from 0) have less gain for expanded range
     V0 = 6.95 #volts on the voltage reference
     #dictionary of locations and corresponding array elements i.e table3 corresponds to hardwareGain[0]
-    channelDict = {'Table1':7,
-                   'Table2':4,
-                   'Table3':0,
-                   'Table4':5,
-                   'Table5':8,
+    channelDict = {'Table1':7, #### Big Table Big Room
+                   'Table3':0, #### small room
+                   'Table4':5, #### laser room
                    'SupplyBigRoom':13,
                    'SupplyLaserRoom':15,
                    'SupplySmallRoom':10,
@@ -331,8 +279,7 @@ class thermistor():
         T = 1./(self.a + self.b*numpy.log(R/10.) + self.c * pow(numpy.log(R/10.),2) + self.d * pow(numpy.log(R/10.),3)) #datasheet
         TempC = round(T - 273.15,2) #Kelvin to C
         return TempC
-
-
+    
 if __name__ == "__main__":
     from labrad import util
     util.runServer(AC_Server())
