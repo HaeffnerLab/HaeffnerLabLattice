@@ -21,6 +21,7 @@ Ch = 16; # written for 16 incoming chaneels
 ControlCh = 4 #number of controlled rooms
 ControlledValves = 8 # number of valves
 
+a = 3.3540154E-03; b = 2.5627725E-04; c = 2.0829210E-06 ; d = 7.3003206E-08 # coeffs for voltage to T conversion info from thermistor datasheet
 V0 = 6.95 #volts on the voltage reference
 #corresponding channels
 Table1=8;Table2=5;Table3=1;Table4=6;Table5=9;SupplyBigRoom=14;SupplyLaserRoom=16;SupplySmallRoom=11;ColdWaterSmallRoom=15;ColdWaterBigRoom=15;ColdWaterLaserRoom=15;HotWaterSmallRoom=13;HotWaterBigRoom=13;HotWaterLaserRoom=13;
@@ -50,6 +51,9 @@ direction=zeros(ControlledValves)
 hysteresis = [ 22, 12, 2, 7, 22, 12, 0, 0]  # smlroom (cold, hot), bigroom (cold, hot), laserroom (cold, hot) 
 #hysteresis = [ 14, 12, 2, 7, 17, 12, 0, 0]  # working well
 #hysteresis = [ 12, 20, 3, 13, 35, 25, 0, 0]
+
+IntegrationMin = -500*5; #limit on how small integration response can get, modified later with I-gain and thus more than the max control signal makes not much sense, the 20 comes from the estimated cooling power rescaling (SetPoint-2)
+IntegrationMax = 700*5; #limit on how big integration response can get, modified later with the I-gain, the 60 comes from the estimated heating power rescaling
 
 DiffMax = 20000000
 
@@ -218,9 +222,9 @@ class ResponseCalculator():
 		I = self.I
 		D = self.D
 		propArr = zeros(ControlCh)
-		propArr[bigroomctrl] = PSup[bigroomctrl]*curErrArr[SupplyBigRoom-1] + PTab[bigroomctrl]*curErrArr[Table1-1] + PCoolingWater[bigroomctrl]*curErrArr[ColdWaterBigRoom]
-		propArr[smlroomctrl] = PSup[smlroomctrl]*curErrArr[SupplySmallRoom-1] + PTab[smlroomctrl]*curErrArr[Table3-1] + PCoolingWater[smlroomctrl]*curErrArr[ColdWaterSmallRoom]
-		propArr[laserroomctrl] = PSup[laserroomctrl]*curErrArr[SupplyLaserRoom-1] + PTab[laserroomctrl]*curErrArr[Table4-1] + PCoolingWater[laserroomctrl]*curErrArr[ColdWaterLaserRoom]
+		propArr[bigroomctrl] = PSup[bigroomctrl]*curErrArr[SupplyBigRoom-1]#0 + PTab[bigroomctrl]*curErrArr[Table1-1]#0 + PCoolingWater[bigroomctrl]*curErrArr[ColdWaterBigRoom]
+		propArr[smlroomctrl] = PSup[smlroomctrl]*curErrArr[SupplySmallRoom-1]#0 + PTab[smlroomctrl]*curErrArr[Table3-1]#0 + PCoolingWater[smlroomctrl]*curErrArr[ColdWaterSmallRoom]
+		propArr[laserroomctrl] = PSup[laserroomctrl]*curErrArr[SupplyLaserRoom-1]#0 + PTab[laserroomctrl]*curErrArr[Table4-1]#0 + PCoolingWater[laserroomctrl]*curErrArr[ColdWaterLaserRoom]
 		propArr[officectrl] = 0 #no control in office
 		propArr = propArr - clip(propArr, -PropActionThreshold,PropActionThreshold)
 	
@@ -247,24 +251,26 @@ class ResponseCalculator():
 
 			diffrespArr = (D * diffArr)
 			diffrespArr = clip(diffrespArr, -DiffMax, DiffMax)
-		
+		print 'P', proprespArr
+		print 'I', integrespArr
+		print 'D', diffrespArr
 		responseArr = proprespArr + integrespArr + diffrespArr	
 		return responseArr
 			
 	def CalcValveSignal(self,responseArr,curTempArr):#hard codes which control channel correspond to which output number
 		valvesignalArr = zeros(ControlledValves)
 	
-		ColdWater = array([curTempArr[ColdWaterBigRoom-1], curTempArr[ColdWaterSmallRoom-1], curTempArr[ColdWaterLaserRoom-1],0 ])
-		ColdWater = clip(ColdWater,0,20)
-#		ColdWater = array([10,10,10,0]);   # set cold water temp to 10 degrees because the sensor is not working atm
+		#ColdWater = array([curTempArr[ColdWaterBigRoom-1], curTempArr[ColdWaterSmallRoom-1], curTempArr[ColdWaterLaserRoom-1],0 ])
+		#ColdWater = clip(ColdWater,0,20)
+		ColdWater = array([13.0,13.0,13.0,0.0]);   # set cold water temp to 13 degrees because the sensor is not working atm
 
 		HotWater = array([curTempArr[HotWaterBigRoom-1], curTempArr[HotWaterSmallRoom-1], curTempArr[HotWaterLaserRoom-1], 0])
 		SetPointAux = array([SetPoint[Table1-1], SetPoint[Table3-1], SetPoint[Table4-1], 0])  
 
-		CoolingPower = clip(SetPointAux - ColdWater - ColdWaterTempCorrection,1,100) # estimate cooling power for valve settings, always assume some cooling power
-		HeatingPower =  clip(HotWater - SetPointAux,20,200) # minum heating power corresponds to 20 degrees temp-difference
+		CoolingPower = clip(SetPointAux - ColdWater - ColdWaterTempCorrection,1.0,100.0) # estimate cooling power for valve settings, always assume some cooling power
+		HeatingPower =  clip(HotWater - SetPointAux,20.0,200.0) # minum heating power corresponds to 20 degrees temp-difference
 
-		ColdValveSignal = - responseArr/CoolingPower*ColdValveGain + Coldoffset + ColdWaterValveGain * (ColdWater-ColdWaterTempBase)
+		ColdValveSignal = - responseArr/CoolingPower*ColdValveGain + Coldoffset# + ColdWaterValveGain * (ColdWater-ColdWaterTempBase)
 		HotValveSignal = Hotoffset + responseArr/HeatingPower*HotValveGain
 		
                 valvesignalArr[0] = ColdValveSignal[smlroomctrl]
@@ -332,6 +338,51 @@ class DataAcquisition():
 			time.sleep(DataFreq)
 			curTempArr = self.readTemp(ser)
 		return curTempArr
+	
+class RunningAverage():
+	def __init__(self):
+		self.RunningAvgNum = RunningAvgNum
+		self.historyArr = zeros([self.RunningAvgNum,Ch])
+		self.binfull = 0
+		self.historyCounter = 0
+		self.printintro()
+	def printintro(self):
+		print '\n' + 'Filling up history for ' + str(self.RunningAvgNum) +' seconds \n'
+	def printbinfull(self):
+		print 'Running Average Operational'
+	def addNumber(self,newnumber):
+		self.historyArr[self.historyCounter,:] = newnumber #updates history by cycling through rows of historyArr and replacing old data with readTemp
+		self.historyCounter = (self.historyCounter + 1) % self.RunningAvgNum
+		if(self.historyCounter == 0):
+			if(self.binfull == 0):
+				self.printbinfull()
+			self.binfull = 1
+	def getAverage(self):
+		if(self.binfull): #if bin is full, take the mean
+			average = mean(self.historyArr,axis=0) #current temperature is the average of the columns of the history array	
+		else: #if bin is not filled, return mean of existing elements
+			average =  sum(self.historyArr[0:(self.historyCounter+1),:],axis=0)/(self.historyCounter)
+		return average
+		
+class ManualController():
+	def __init__(self):
+		if(os.path.isfile(mancontrolfile)):#if file exists open it in read mode
+			pass
+		else: #if file doesn't exist, create it
+			self.FILE =  open(mancontrolfile,"w");
+			pickle.dump(0,self.FILE) #indicates automatic control, 1 is manual
+			pickle.dump(zeros(ControlledValves).tolist(),self.FILE)
+			self.FILE.close()
+		self.modtime = os.path.getmtime(mancontrolfile)
+		self.valves = zeros(ControlledValves)
+	def isControlManual(self):
+		self.FILE =  open(mancontrolfile,"r");
+		self.mancontrol = pickle.load(self.FILE)
+		self.valves = array(pickle.load(self.FILE))
+		self.FILE.close()
+		return self.mancontrol
+	def ManualValvePos(self):
+		return self.valves
 	
 class AlarmChecker():
 	def __init__(self):
