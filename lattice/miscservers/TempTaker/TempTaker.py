@@ -29,6 +29,7 @@ import numpy
 ####testing
 #get temperature array, make sure is the same
 
+####set points for cold water should be that base temperature
 ####store PID, integrator in the registry
 ####check on physically where supply vs measurements are done
 ####save P,I,D, PID, valves into data vault
