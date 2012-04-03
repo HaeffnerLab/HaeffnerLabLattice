@@ -29,7 +29,7 @@ class QCustomFreqPower(QtGui.QWidget):
     def setFreqNoSignal(self, freq):
         self.spinFreq.blockSignals(True)
         self.spinFreq.setValue(freq)
-        self.spinPower.blockSignals(False)
+        self.spinFreq.blockSignals(False)
     
     def setStateNoSignal(self, state):
         self.buttonSwitch.blockSignals(True)
