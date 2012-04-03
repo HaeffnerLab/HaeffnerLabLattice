@@ -123,13 +123,16 @@ class multiplexerWidget(QtGui.QWidget):
         yield self.server.addListener(listener = self.followNewCycling, source = None, ID = SIGNALID4)
     
     def followNewState(self,x,(chanName,state)):
-        self.d[chanName].setState(state, True)
+        if chanName in self.d.keys():
+            self.d[chanName].setState(state, True)
         
     def followNewExposure(self, x, (chanName,exp)):
-        self.d[chanName].setExposure(exp, True)
+        if chanName in self.d.keys():
+            self.d[chanName].setExposure(exp, True)
     
     def followNewFreq(self, x, (chanName, freq)):
-        self.d[chanName].setFreq(freq)
+        if chanName in self.d.keys():
+            self.d[chanName].setFreq(freq)
     
     def followNewCycling(self, x, cycling):
         self.pushButton.blockSignals(True)
