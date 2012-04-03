@@ -1,17 +1,14 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy as np
-import time
-from scriptLibrary import dvParameters 
 from PulseSequences.TimeRes_FFT import TimeResolved
 
-minFreq = 14.79938*10**6 #14.9985*10**6 #Hz  15.10935 @ 15.11///14.99938 14.9
-maxFreq = 14.79943*10**6#14.9990*10**6  15.10940/// 14.99942
-recordTime = 5.0 #seconds
-average = 1
-saveFFT = True
+recordTime = 1.0 #seconds
+average = 10
+freqSpan = 50.0 #Hz 
+freqOffset = -625.0 #Hz, the offset between the counter clock and the rf synthesizer clock
+
 #program pulse sequence for triggering time resolved
 params = {
               'recordTime': recordTime
@@ -21,9 +18,12 @@ params = {
 cxn = labrad.connect()
 cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
+rf = cxn.lattice_pc_hp_server
 pulser = cxn.pulser
 freqRes = 1.0 / recordTime
-
+rffreq = float(rf.getfreq())*1e6 #in Hz
+minFreq = rffreq + freqOffset - freqSpan/2.0
+maxFreq = rffreq + freqOffset + freqSpan/2.0
 # program pulser
 seq = TimeResolved(pulser)
 pulser.new_sequence()
@@ -37,26 +37,32 @@ def getFFTpwr(timetags):
     mat = np.exp(-1.j*2.0*np.pi*np.outer(freqs, timetags))
     fft = mat.sum(axis=1)
     pwr = np.abs(fft)**2.0
-    pwr = pwr / timetags.size
+    if timetags.size > 0:
+        pwr = pwr / timetags.size
+    else:
+        pwr = np.zeros_like(freqs)
     del(mat,fft)
     return pwr
 
 pwr = np.zeros_like(freqs)
 for i in range(average):
-    print i
+    print 'iteration {0} out of {1}'.format(i+1, average)
     pulser.reset_timetags()
     pulser.start_single()
-    print 'triggered'
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
-    print 'got timetags'
-    print 'timetag size', timetags.size
+    print 'photons counted', timetags.size
     pwr += getFFTpwr(timetags)
-if saveFFT:
-    dv.cd(['','QuickMeasurements','FFT'],True)
-    dv.new('FFT',[('Freq', 'Hz')], [('Power','Arb','Arb')] )
-    data = np.array(np.vstack((freqs,pwr)).transpose(), dtype = 'float')
-    dv.add_parameter('plotLive',True)
-    dv.add(data)
+    
+pwr = pwr / float(average) #normalizing to the number of iterations
+totalPower = np.sum(pwr)
+#saving
+dv.cd(['','QuickMeasurements','FFT'],True)
+name = dv.new('FFT',[('Freq', 'Hz')], [('Power','Arb','Arb')] )
+data = np.array(np.vstack((freqs,pwr)).transpose(), dtype = 'float')
+dv.add_parameter('plotLive',True)
+dv.add(data)
+print 'Saved {}'.format(name)
+print 'Total Power {}'.format(totalPower)
 print 'DONE'

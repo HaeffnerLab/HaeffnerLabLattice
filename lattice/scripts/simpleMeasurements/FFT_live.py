@@ -1,21 +1,18 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy as np
-import time
-from scriptLibrary import dvParameters 
 from PulseSequences.TimeRes_FFT import TimeResolved
 
 centerFreq = 14799400#14998866#15.00*10**6
 ptsAround = 4
-recordTime = 5.0 #seconds
+recordTime = 1.0 #seconds
 iterations = 50
-average = 1
-#program pulse sequence for triggering time resolved
+average = 5
+
 
 params = {
-              'recordTime': recordTime#100*1e-3,
+              'recordTime': recordTime
           }
 
 #connect and define servers we'll be using
@@ -23,9 +20,7 @@ cxn = labrad.connect()
 cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
 pulser = cxn.pulser
-timeResolution = 10e-9 # not used
 freqRes = 1.0 / recordTime
-
 # program pulser
 seq = TimeResolved(pulser)
 pulser.new_sequence()
@@ -39,7 +34,10 @@ def getFFTpwr(timetags):
     mat = np.exp(-1.j*2.0*np.pi*np.outer(freqs, timetags))
     fft = mat.sum(axis=1)
     pwr = np.abs(fft)**2.0
-    pwr = pwr / timetags.size
+    if timetags.size > 0:
+        pwr = pwr / timetags.size
+    else:
+        pwr = np.zeros_like(freqs)
     del(mat,fft)
     return pwr
 
@@ -55,10 +53,9 @@ for i in range(iterations):
         pulser.wait_sequence_done()
         pulser.stop_sequence()
         timetags = pulser.get_timetags().asarray
-        print 'timetag size', timetags.size
+        print 'photons counted', timetags.size
         pwr += getFFTpwr(timetags)
-    pwr = pwr.sum() #find the total power across the frequencies 
-    dv.add([i,pwr])
+    pwr = pwr / float(average) #normalize by averages
+    totalPower = pwr.sum() #find the total power across the frequencies 
+    dv.add([i,totalPower])
 print 'DONE'
-
-
