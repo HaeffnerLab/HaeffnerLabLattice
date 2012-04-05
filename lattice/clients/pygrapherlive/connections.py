@@ -208,8 +208,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             values = self.dwDict[i]
             for j in values:
                 if j == win:
-                    self.dwDict[i].remove(j)
-                    
+                    # if the last window is being removed, delete the dataset object
+                    # from the dictionary
+                    if (len(values) == 1):
+                        self.dwDict[i].remove(j)
+                        i.endTimer()
+                        del i
+                    else:
+                        self.dwDict[i].remove(j)
+
+        
     # Datavault widgets no longer need to be updated
     def removeWindowFromWinList(self, win):
         for i in self.winList:

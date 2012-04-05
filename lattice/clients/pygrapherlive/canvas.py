@@ -119,7 +119,7 @@ class Qt4MplCanvas(FigureCanvas):
             #self.drawCounter = 0
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
                 self.drawGraph()
-  
+    
     def timerEvent(self, evt):
         self.drawCounter = self.drawCounter + 1
         if (self.drawCounter == 10): #100ms
@@ -128,6 +128,9 @@ class Qt4MplCanvas(FigureCanvas):
 #        if (self.drawFlag == True):
 #            self.drawFlag = False
 #            self.drawGraph()
+    
+    def endTimer(self):
+        self.killTimer(self.timer)
        
     def drawLegend(self):
 #        handles, labels = self.ax.get_legend_handles_labels()

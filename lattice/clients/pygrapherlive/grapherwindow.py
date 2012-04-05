@@ -193,7 +193,7 @@ class GrapherWindow(QtGui.QMainWindow):
         return action
     
     def closeEvent(self, event):
-        self.killTimer(self.qmc.timer)
+        self.qmc.endTimer()
         if (self.cb2.isChecked()):
             # "uncheck" the overlay checkbox
             self.cb2.toggle()
