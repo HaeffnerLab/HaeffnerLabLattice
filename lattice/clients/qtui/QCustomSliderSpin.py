@@ -19,7 +19,7 @@ class QCustomSliderSpin(QtGui.QWidget):
         self.maxrange.valueChanged.connect(self.setRange)
         self.minrange.setValue(initrange[0])
         self.maxrange.setValue(initrange[1])
-	
+        
     def setRange(self):
         minrange = self.minrange.value()
         maxrange = self.maxrange.value()
