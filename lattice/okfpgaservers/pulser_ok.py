@@ -380,6 +380,10 @@ class Pulser(LabradServer):
         timetags =( 65536  *  arr[:,0] + arr[:,1]) * timeResolvedResolution
         returnValue(timetags)
     
+    @setting(33, "Get TimeTag Resolution", returns = 'v')
+    def getTimeTagResolution(self, c):
+        return timeResolvedResolution
+    
     def wait(self, seconds, result=None):
         """Returns a deferred that will be fired later"""
         d = Deferred()

@@ -1,13 +1,14 @@
 import sys; 
+sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy as np
 from PulseSequences.TimeRes_FFT import TimeResolved
 
-recordTime = 1.0 #seconds
-average = 10
-freqSpan = 50.0 #Hz 
-freqOffset = -625.0 #Hz, the offset between the counter clock and the rf synthesizer clock
+recordTime = 0.5 #seconds
+average = 4
+freqSpan = 300.0 #Hz 
+freqOffset = -310.0 #Hz, the offset between the counter clock and the rf synthesizer clock
 
 #program pulse sequence for triggering time resolved
 params = {
@@ -30,15 +31,20 @@ pulser.new_sequence()
 seq.setVariables(**params)
 seq.defineSequence()
 pulser.program_sequence()
-
+timeRes = float(pulser.get_timetag_resolution())
 freqs = np.arange(minFreq,maxFreq,freqRes)
 
 def getFFTpwr(timetags):
+    '''uses the timetags to compute the fft power at freq
+    normalization such that the total power across all frequency is 1'''
     mat = np.exp(-1.j*2.0*np.pi*np.outer(freqs, timetags))
     fft = mat.sum(axis=1)
-    pwr = np.abs(fft)**2.0
+    pwr = np.abs(fft)**2.0 
     if timetags.size > 0:
-        pwr = pwr / timetags.size
+        #normalizes such that total of the complete power spectrum is 1:
+        #timetags.size is the initial area of the signal while N is the length of the array, see Parseval's theorem
+        N = recordTime / timeRes
+        pwr = pwr / (N * timetags.size) 
     else:
         pwr = np.zeros_like(freqs)
     del(mat,fft)
@@ -53,11 +59,11 @@ for i in range(average):
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
     print 'photons counted', timetags.size
-    pwr += getFFTpwr(timetags)
-    
-pwr = pwr / float(average) #normalizing to the number of iterations
-totalPower = np.sum(pwr)
-#saving
+    pwr += getFFTpwr(timetags) / (timetags.size / recordTime) #normalize to fluorescence rate
+totalPower = np.sum(pwr)  
+totalPower = totalPower / float(average) #normalizing to the number of averaging iterations
+totalPower = totalPower*1e9 #to make numbers bigger, the size is arbitrary anyway
+#saving to DV
 dv.cd(['','QuickMeasurements','FFT'],True)
 name = dv.new('FFT',[('Freq', 'Hz')], [('Power','Arb','Arb')] )
 data = np.array(np.vstack((freqs,pwr)).transpose(), dtype = 'float')
