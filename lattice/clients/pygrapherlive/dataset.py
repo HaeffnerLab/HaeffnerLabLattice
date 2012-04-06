@@ -77,9 +77,12 @@ class Dataset(QtCore.QObject):
     
     def timerEvent(self,evt):
         #print self.updatecounter
-        if self.updatecounter > 1:
+        if self.updatecounter < 1:
             print 'slowing down!, less than 1 dataupdate per 100milliseconds '
         self.updatecounter = 0
+    
+    def endTimer(self):
+        self.killTimer(self.timer)
         
     # returns the current data
     @inlineCallbacks
