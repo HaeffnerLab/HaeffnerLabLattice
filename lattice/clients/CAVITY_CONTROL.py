@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore
-from qtui.QCustomSliderSpin import QCustomSliderSpin
+from qtui.SliderSpin import SliderSpin
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
@@ -17,7 +17,7 @@ class widgetWrapper():
         self.updated = False
         
     def makeWidget(self):
-        self.widget = QCustomSliderSpin(self.displayName,self.units,self.range, self.globalRange) 
+        self.widget = SliderSpin(self.displayName,self.units,self.range, self.globalRange) 
     
     def onUpdate(self):
         self.updated = True
@@ -34,7 +34,7 @@ class cavityWidget(QtGui.QWidget):
         self.d['397'] =  widgetWrapper( serverName = '397', displayName = '397 Cavity', regName = 'range397', globalRange = (0,2500))
         self.d['866'] =  widgetWrapper( serverName = '866', displayName = '866 Cavity', regName = 'range866', globalRange = (0,2500))
         self.d['422'] =  widgetWrapper( serverName = '422', displayName = '422 Offset', regName = 'range422', globalRange = (0,2500))
-        self.d['397S'] =  widgetWrapper( serverName = '397S', displayName = '397 Single Pass Cavity', regName = 'range397S', globalRange = (0,2500))
+        self.d['397S'] = widgetWrapper( serverName = '397S',displayName = '397 Single Pass Cavity', regName = 'range397S', globalRange = (0,2500))
         self.d['732'] =  widgetWrapper( serverName = '732', displayName = '732 Offset', regName = 'range732', globalRange = (0,2500))
         
     @inlineCallbacks
@@ -102,6 +102,7 @@ class cavityWidget(QtGui.QWidget):
         yield self.registry.cd(['','Clients','Cavity Control'],True)
         try:
             range = yield self.registry.get(rangeName)
+            range = list(range)
         except:
             print 'problem with acquiring range from registry'
             range = [0,2500]

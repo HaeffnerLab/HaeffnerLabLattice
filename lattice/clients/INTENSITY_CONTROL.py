@@ -1,13 +1,12 @@
 from PyQt4 import QtGui, QtCore
-from qtui.QCustomSliderSpin import QCustomSliderSpin
+from qtui.SliderSpin import SliderSpin
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
-class INTENSITY_CONTROL(QCustomSliderSpin):
+class INTENSITY_CONTROL(SliderSpin):
     def __init__(self, reactor ,parent=None):
         super(INTENSITY_CONTROL, self).__init__('397 Intensity','mV',(0,2500),(0,2500),parent)
-        #self.frame = QtGui.QFrame(self)
         self.reactor = reactor
         self.connect()
     
