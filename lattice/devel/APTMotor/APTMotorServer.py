@@ -207,9 +207,8 @@ class APTMotorServer(LabradServer):
             yield self.aptMotor.identify(serialNumber)
             returnValue(True)
     
-    @setting(99, "Clean up APT")
-    def cleanUpAPT(self, c):    
-        """Do this before exiting the server"""
+    def stopServer( self ):  
+        """Cleans up APT DLL before closing"""
         self.aptMotor.cleanUpAPT()
         
 if __name__ == "__main__":

@@ -3,18 +3,21 @@ import sys
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
-class ControlPanel(QtGui.QWidget):
-    def __init__(self):
+class DevicePanel(QtGui.QWidget):
+    #def __init__(self, parent, cxn, context):
+    def __init__(self):    
         QtGui.QWidget.__init__(self)
-       
-        #self.connect()
+#        self.parent = parent
+#        self.cxn = cxn
+#        self.context = context 
         self.setupUI()
+#        self.setupListeners()
         
     def setupUI(self):
-        self.setWindowTitle("APT Motor Control Panel")
-        getHardwareUnits = QtGui.QLabel('Get Available Hardware Units')
-        initHardwareDevice = QtGui.QLabel('Initialize Hardware Device')
-        getDeviceInformation = QtGui.QLabel('Get Device Information (Enter serial number)')
+        # Labels
+#        getHardwareUnits = QtGui.QLabel('Get Available Hardware Units')
+#        initHardwareDevice = QtGui.QLabel('Initialize Hardware Device')
+#        getDeviceInformation = QtGui.QLabel('Get Device Information (Enter serial number)')
         getSetVelParams = QtGui.QLabel('Get/Set Velocity Parameters')
         getVelParamLimits = QtGui.QLabel('Get Velocity Parameter Limits')
         getPosition = QtGui.QLabel('Get Current Position')
@@ -22,119 +25,211 @@ class ControlPanel(QtGui.QWidget):
         moveAbsolute = QtGui.QLabel('Move Absolute')
         identify = QtGui.QLabel('Identify Device')
 
-        getHardwareUnitsButton = QtGui.QPushButton("Get", self)
-        getHardwareUnitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        initHardwareDeviceButton = QtGui.QPushButton("Init", self)
-        initHardwareDeviceButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        getDeviceInformationButton = QtGui.QPushButton("Get", self)
-        getDeviceInformationButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        # Buttons
+#        getHardwareUnitsButton = QtGui.QPushButton("Get", self)
+#        getHardwareUnitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getHardwareUnitsButton.clicked.connect(self.getHardwareUnitsSignal)
+        
+#        initHardwareDeviceButton = QtGui.QPushButton("Init", self)
+#        initHardwareDeviceButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        initHardwareDeviceButton.clicked.connect(self.initHardwareDeviceSignal)
+        
+#        getDeviceInformationButton = QtGui.QPushButton("Get", self)
+#        getDeviceInformationButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getDeviceInformationButton.clicked.connect(self.getDeviceInformationSignal)
+        
         getVelParamsButton = QtGui.QPushButton("Get", self)
         getVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getVelParamsButton.clicked.connect(self.getVelParamsSignal)
+        
         setVelParamsButton = QtGui.QPushButton("Set", self)
         setVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        setVelParamsButton.clicked.connect(self.setVelParamsSignal)
+        
         getVelParamLimitsButton = QtGui.QPushButton("Get", self)
         getVelParamLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getVelParamLimitsButton.clicked.connect(self.getVelParamLimitsSignal)
+        
         getPositionButton = QtGui.QPushButton("Get", self)
         getPositionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getPositionButton.clicked.connect(self.getPositionSignal)
+        
         moveRelativeButton = QtGui.QPushButton("Move", self)
         moveRelativeButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        moveRelativeButton.clicked.connect(self.moveRelativeSignal)
+        
         moveAbsoluteButton = QtGui.QPushButton("Move", self)
         moveAbsoluteButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
+        
         identifyButton = QtGui.QPushButton("ID", self)
         identifyButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        identifyButton.clicked.connect(self.identifySignal)
                         
-        
-        getHardwareUnitsEdit = QtGui.QLineEdit(readOnly=True)
-        initHardwareDeviceEdit = QtGui.QLineEdit()
-        getDeviceInformationSNEdit = QtGui.QLineEdit()
-        getDeviceInformation1Edit = QtGui.QLineEdit(readOnly=True)
-        getDeviceInformation2Edit = QtGui.QLineEdit(readOnly=True)
-        getDeviceInformation3Edit = QtGui.QLineEdit(readOnly=True)
-        getSetVelParams1Edit = QtGui.QLineEdit()
-        getSetVelParams2Edit = QtGui.QLineEdit()
-        getSetVelParams3Edit = QtGui.QLineEdit()
-        getVelParamLimits1Edit = QtGui.QLineEdit(readOnly=True)
-        getVelParamLimits2Edit = QtGui.QLineEdit(readOnly=True)
-        getPositionEdit = QtGui.QLineEdit(readOnly=True)
-        moveRelativeEdit = QtGui.QLineEdit()
-        moveAbsoluteEdit = QtGui.QLineEdit()        
-        
+        # Text Boxes
+#        grid.addWidget(reviewEdit, 3, 1, 5, 1) # multiple lines!
+
+#        getHardwareUnitsEdit = QtGui.QLineEdit(readOnly=True)
+#        initHardwareDeviceEdit = QtGui.QLineEdit()
+#        getDeviceInformationSNEdit = QtGui.QLineEdit()
+#        getDeviceInformation1Edit = QtGui.QLineEdit(readOnly=True)
+#        getDeviceInformation2Edit = QtGui.QLineEdit(readOnly=True)
+#        getDeviceInformation3Edit = QtGui.QLineEdit(readOnly=True)
+        self.getSetVelParams1Edit = QtGui.QLineEdit()
+        self.getSetVelParams2Edit = QtGui.QLineEdit()
+        self.getSetVelParams3Edit = QtGui.QLineEdit()
+        self.getVelParamLimits1Edit = QtGui.QLineEdit(readOnly=True)
+        self.getVelParamLimits2Edit = QtGui.QLineEdit(readOnly=True)
+        self.getPositionEdit = QtGui.QLineEdit(readOnly=True)
+        self.moveRelativeEdit = QtGui.QLineEdit()
+        self.moveAbsoluteEdit = QtGui.QLineEdit()        
+
+        # Layout        
         grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
+        grid.setSpacing(5)
 
-        grid.addWidget(getHardwareUnits, 1, 0)
-        grid.addWidget(getHardwareUnitsButton, 1, 1)
-        grid.addWidget(getHardwareUnitsEdit, 1, 2)
-
-        grid.addWidget(initHardwareDevice, 2, 0)
-        grid.addWidget(initHardwareDeviceButton, 2, 1)
-        grid.addWidget(initHardwareDeviceEdit, 2, 2)
-
-        grid.addWidget(getDeviceInformation, 3, 0)
-        grid.addWidget(getDeviceInformationButton, 3, 1)
-        grid.addWidget(getDeviceInformationSNEdit, 3, 2)
-        grid.addWidget(getDeviceInformation1Edit, 3, 3)
-        grid.addWidget(getDeviceInformation2Edit, 3, 4)
-        grid.addWidget(getDeviceInformation3Edit, 3, 5)
+#        grid.addWidget(getHardwareUnits, 1, 0)
+#        grid.addWidget(getHardwareUnitsButton, 1, 1)
+#        grid.addWidget(getHardwareUnitsEdit, 1, 2)
+#
+#        grid.addWidget(initHardwareDevice, 2, 0)
+#        grid.addWidget(initHardwareDeviceButton, 2, 1)
+#        grid.addWidget(initHardwareDeviceEdit, 2, 2)
+#
+#        grid.addWidget(getDeviceInformation, 3, 0)
+#        grid.addWidget(getDeviceInformationButton, 3, 1)
+#        grid.addWidget(getDeviceInformationSNEdit, 3, 2)
+#        grid.addWidget(getDeviceInformation1Edit, 3, 3)
+#        grid.addWidget(getDeviceInformation2Edit, 3, 4)
+#        grid.addWidget(getDeviceInformation3Edit, 3, 5)
 
         grid.addWidget(getSetVelParams, 4, 0)
         grid.addWidget(getVelParamsButton, 4, 1)
         grid.addWidget(setVelParamsButton, 4, 2)
-        grid.addWidget(getSetVelParams1Edit, 4, 3)
-        grid.addWidget(getSetVelParams2Edit, 4, 4)
-        grid.addWidget(getSetVelParams3Edit, 4, 5)
+        grid.addWidget(self.getSetVelParams1Edit, 4, 3)
+        grid.addWidget(self.getSetVelParams2Edit, 4, 4)
+        grid.addWidget(self.getSetVelParams3Edit, 4, 5)
 
         grid.addWidget(getVelParamLimits, 5, 0)
         grid.addWidget(getVelParamLimitsButton, 5, 1)
-        grid.addWidget(getVelParamLimits1Edit, 5, 2)
-        grid.addWidget(getVelParamLimits2Edit, 5, 3)
+        grid.addWidget(self.getVelParamLimits1Edit, 5, 2)
+        grid.addWidget(self.getVelParamLimits2Edit, 5, 3)
 
         grid.addWidget(getPosition, 6, 0)
         grid.addWidget(getPositionButton, 6, 1)
-        grid.addWidget(getPositionEdit, 6, 2)
+        grid.addWidget(self.getPositionEdit, 6, 2)
 
         grid.addWidget(moveRelative, 7, 0)
         grid.addWidget(moveRelativeButton, 7, 1)
-        grid.addWidget(moveRelativeEdit, 7, 2)
+        grid.addWidget(self.moveRelativeEdit, 7, 2)
 
         grid.addWidget(moveAbsolute, 8, 0)
         grid.addWidget(moveAbsoluteButton, 8, 1)
-        grid.addWidget(moveAbsoluteEdit, 8, 2)
+        grid.addWidget(self.moveAbsoluteEdit, 8, 2)
 
         grid.addWidget(identify, 9, 0)
-        grid.addWidget(identifyButton, 9, 1)
+        grid.addWidget(identifyButton, 9, 1) 
 
-    
-
-#        grid.addWidget(reviewEdit, 3, 1, 5, 1) # multiple lines!
-        
-        self.setLayout(grid) 
-        
-        #self.setGeometry(300, 300, 350, 300)
+        self.setLayout(grid)        
         self.show()        
         
-        
+        # Button Functions
+#        @inlineCallbacks
+#        def getVelParamsSignal(self):
+#            velParams = yield self.parent.server.get_velocity_parameters(self.serialNumber)
+#            self.getSetVelParams1Edit.setText(velParams[0])
+#            self.getSetVelParams2Edit.setText(velParams[1])
+#            self.getSetVelParams3Edit.setText(velParams[2])
+#
+#        @inlineCallbacks
+#        def setVelParamsSignal(self):
+#            ok = yield self.parent.server.set_velocity_parameters(self.serialNumber, float(self.getSetVelParams1Edit.text()), float(self.getSetVelParams2Edit.text()), float(self.getSetVelParams3Edit.text()))
+#
+#        @inlineCallbacks
+#        def getVelParamLimitsSignal(self):
+#            velParamLimits = yield self.parent.server.get_velocity_parameter_limits(self.serialNumber)
+#            self.getVelParamLimits1Edit.setText(velParamLimits[0])
+#            self.getVelParamLimits2Edit.setText(velParamLimits[1])
+#
+#        @inlineCallbacks
+#        def getPositionSignal(self):
+#            position = yield self.parent.server.get_position(self.serialNumber)
+#            self.getPositionEdit.setText(position[0])
+#            
+#        @inlineCallbacks
+#        def moveRelativeSignal(self):
+#            ok = yield self.parent.server.move_relative(self.serialNumber, float(self.moveRelativeEdit.text()))
+#            
+#        @inlineCallbacks
+#        def moveAbsoluteSignal(self):
+#            ok = yield self.parent.server.move_absolute(self.serialNumber, float(self.moveAbsoluteEdit.text()))
+#
+#        @inlineCallbacks
+#        def identifySignal(self):
+#            ok = yield self.parent.server.identify(self.serialNumber)
 
-#        getNumberUnitsButton = QtGui.QPushButton("Available HW Units", self)
-#        getNumberUnitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#    @inlineCallbacks
+#    def setupListeners(self):               
+#        yield self.parent.server.signal__position_change(88888), context = self.context)
+#        yield self.parent.server.addListener(listener = self.getVelParamsSignal, source = None, ID = 88888), context = self.context)    
+#        yield self.parent.server.signal__velocity_parameter_change(99999), context = self.context)
+#        yield self.parent.server.addListener(listener = self.getPositionSignal, source = None, ID = 99999), context = self.context)    
+
+#        @inlineCallbacks
+#        def getVelParamsSignal(self):
+#            velParams = yield self.parent.server.get_velocity_parameters(self.serialNumber)
+#            self.getSetVelParams1Edit.setText(velParams[0])
+#            self.getSetVelParams2Edit.setText(velParams[1])
+#            self.getSetVelParams3Edit.setText(velParams[2])
+#
+#        @inlineCallbacks
+#        def getPositionSignal(self):
+#            position = yield self.parent.server.get_position(self.serialNumber)
+#            self.getPositionEdit.setText(position[0])
+
         
-        
+class MainPanel(QtGui.QWidget):
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+        self.devDict = {}
+        self.setupUI(4)     
+        #self.connect()              
         
     @inlineCallbacks
     def connect(self):
-        print 'trying to connect?'
-#        from labrad.wrappers import connectAsync
-#        from labrad.types import Error
-        self.cxn = labrad.connect()
+        from labrad.wrappers import connectAsync
+        from labrad.types import Error
+        self.cxn = yield connectAsync()
         self.server = yield self.cxn.apt_motor_server
-        print 'connected?'
         hwunits = yield self.server.get_available_hardware_units()
-        print hwunits      
-        #self.cxn.apt_motor_server.clean_up_apt()
+        print hwunits
+        numDevices = len(hwunits)
+        self.setupUI(numDevices)
+
+    def setupUI(self, numDevices):
+        self.setWindowTitle("APT Motor Control Panel")
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
+        self.setLayout(grid) 
+        
+        for i in range(numDevices):
+            #context = yield self.cxn.context()
+            #devPanel = DevicePanel(self, self.cxn, context)
+            devPanel = DevicePanel()
+            self.devDict[i] = devPanel
+            if (i % 2 == 0): #even
+                grid.addWidget(devPanel, (i / 2) , 0)
+            else:
+                grid.addWidget(devPanel, ((i - 1) / 2) , 1)
+        #self.setGeometry(300, 300, 350, 300)
+        self.show()        
+    
+          
 
 if __name__ == "__main__":
     a = QtGui.QApplication( [] )
-    controlPanel = ControlPanel()
+    #controlPanel = ControlPanel()
+    mainPanel = MainPanel()
     sys.exit(a.exec_())
 
 
