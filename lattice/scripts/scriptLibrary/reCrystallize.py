@@ -28,12 +28,16 @@ print initcavity, min, initpower
 
 while 1:
 	key = kbfunc()
-	if key == "\x1b":
+	initpower = rf.getpower()
+	if key == "\r": #\x1b
     		print 'Resetting rf & Switching on far-red beam..'		
-		time.sleep(0.5)
+		time.sleep(0.1)
     		rf.setpower(-5.9)
 		pulser.switch_manual('crystallization',  True) # crystallization shutter open
-		pulser.switch_manual('110DP',  False) # 110DP off         
+		pulser.switch_manual('110DP',  False) # 110DP off 
+		time.sleep(2)	
+		pulser.switch_manual('110DP',  True)
+		rf.setpower(initpower)
    		#for voltage in numpy.arange(initcavity, min, -1):
    		 #   print voltage
    		 #   time.sleep(0.05)
