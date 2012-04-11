@@ -4,13 +4,12 @@ from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
 class DevicePanel(QtGui.QWidget):
-    def __init__(self, parent, cxn, context, serialNumber):
+    def __init__(self, parent, cxn, context):
 #    def __init__(self):    
         QtGui.QWidget.__init__(self)
         self.parent = parent
         self.cxn = cxn
         self.context = context
-        self.serialNumber = serialNumber
         self.setupUI()
 #        self.setupListeners()
            
@@ -144,11 +143,11 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def setVelParamsSignal(self, evt):
-        ok = yield self.parent.server.set_velocity_parameters(self.serialNumber, float(self.getSetVelParams1Edit.text()), float(self.getSetVelParams2Edit.text()), float(self.getSetVelParams3Edit.text()), context = self.context)
+        ok = yield self.parent.server.set_velocity_parameters(float(self.getSetVelParams1Edit.text()), float(self.getSetVelParams2Edit.text()), float(self.getSetVelParams3Edit.text()), context = self.context)
 
     @inlineCallbacks
     def getVelParamLimitsSignal(self, evt):
-        velParamLimits = yield self.parent.server.get_velocity_parameter_limits(self.serialNumber, context = self.context)
+        velParamLimits = yield self.parent.server.get_velocity_parameter_limits(context = self.context)
         self.getVelParamLimits1Edit.setText(str(velParamLimits[0]))
         self.getVelParamLimits2Edit.setText(str(velParamLimits[1]))
 
@@ -159,31 +158,31 @@ class DevicePanel(QtGui.QWidget):
 #        
     @inlineCallbacks
     def moveRelativeSignal(self, evt):
-        ok = yield self.parent.server.move_relative(self.serialNumber, float(self.moveRelativeEdit.text()), context = self.context)
+        ok = yield self.parent.server.move_relative(float(self.moveRelativeEdit.text()), context = self.context)
         if (ok == True):
             self.getPositionSignal(1)
         
     @inlineCallbacks
     def moveAbsoluteSignal(self, evt):
-        ok = yield self.parent.server.move_absolute(self.serialNumber, float(self.moveAbsoluteEdit.text()), context = self.context)
+        ok = yield self.parent.server.move_absolute(float(self.moveAbsoluteEdit.text()), context = self.context)
         if (ok == True):
             self.getPositionSignal(1)
 
     @inlineCallbacks
     def identifySignal(self, evt):
-        ok = yield self.parent.server.identify(self.serialNumber, context = self.context)
+        ok = yield self.parent.server.identify(context = self.context)
 
 
     @inlineCallbacks
     def getVelParamsSignal(self, evt):
-        velParams = yield self.parent.server.get_velocity_parameters(self.serialNumber, context = self.context)
+        velParams = yield self.parent.server.get_velocity_parameters(context = self.context)
         self.getSetVelParams1Edit.setText(str(velParams[0]))
         self.getSetVelParams2Edit.setText(str(velParams[1]))
         self.getSetVelParams3Edit.setText(str(velParams[2]))
 
     @inlineCallbacks
     def getPositionSignal(self, evt):
-        position = yield self.parent.server.get_position(self.serialNumber, context = self.context)
+        position = yield self.parent.server.get_position(context = self.context)
         self.getPositionEdit.setText(str(position))
 
 #    @inlineCallbacks
@@ -216,32 +215,27 @@ class MainPanel(QtGui.QWidget):
         from labrad.types import Error
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.apt_motor_server
-        hwunits = yield self.server.get_available_hardware_units()
-        print hwunits
-        self.setupUI(hwunits)
-
+        availableDevices = yield self.server.get_available_devices()
+        print availableDevices
+        numDevices = len(availableDevices)
+        self.setupUI(numDevices)
 
     @inlineCallbacks
-    def setupUI(self, hwunits):
+    def setupUI(self, numDevices):
         self.setWindowTitle("APT Motor Control Panel")
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
         self.setLayout(grid) 
 
-        numDevices = len(hwunits)/2
-        
         for i in range(numDevices):
             context = yield self.cxn.context()
-            ok = yield self.server.initialize_hardware_device(hwunits[2*i + 1], context = context)
-#            ok = True
-            if (ok == True):
-                devPanel = DevicePanel(self, self.cxn, context, hwunits[2*i + 1])
-    #            devPanel = DevicePanel()
-                self.devDict[i] = devPanel
-                if (i % 2 == 0): #even
-                    grid.addWidget(devPanel, (i / 2) , 0)
-                else:
-                    grid.addWidget(devPanel, ((i - 1) / 2) , 1)
+            devPanel = DevicePanel(self, self.cxn, context)
+#            devPanel = DevicePanel()
+            self.devDict[i] = devPanel
+            if (i % 2 == 0): #even
+                grid.addWidget(devPanel, (i / 2) , 0)
+            else:
+                grid.addWidget(devPanel, ((i - 1) / 2) , 1)
         #self.setGeometry(300, 300, 350, 300)
         self.show()        
     
