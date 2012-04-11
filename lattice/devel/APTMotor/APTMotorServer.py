@@ -12,22 +12,33 @@ class APTMotor():
         self.HWType = c_long(31) # 31 means TDC001 controller
     
     def getNumberOfHardwareUnits(self):
+        print 'got here'
         numUnits = c_long()
         self.aptdll.GetNumHWUnitsEx(self.HWType, pointer(numUnits))
-        returnValue(numUnits.value)
+        return numUnits.value
     
     def getSerialNumber(self, index):
+        print 'within function: getting serial number'
         HWSerialNum = c_long()
         hardwareIndex = c_long(index)
         self.aptdll.GetHWSerialNumEx(self.HWType, hardwareIndex, pointer(HWSerialNum))
-        returnValue(HWSerialNum.value)
-    
+        return HWSerialNum.value
+
     def initializeHardwareDevice(self, serialNumber):
+        print serialNumber
         HWSerialNum = c_long(serialNumber)
         self.aptdll.InitHWDevice(HWSerialNum)
         # need some kind of error reporting here
-        returnValue(True)
-        
+        return True
+    
+#    @inlineCallbacks
+#    def initializeHardwareDevice(self, serialNumber):
+#        print serialNumber
+#        HWSerialNum = c_long(serialNumber)
+#        yield self.aptdll.InitHWDevice(HWSerialNum)
+#        # need some kind of error reporting here
+#        returnValue( True )
+#        
     def getHardwareInformation(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
         model = c_buffer(255)
@@ -35,7 +46,7 @@ class APTMotor():
         hardwareNotes = c_buffer(255)
         self.aptdll.GetHWInfo(HWSerialNum, model, 255, softwareVersion, 255, hardwareNotes, 255)      
         hwinfo = [model.value, softwareVersion.value, hardwareNotes.value]
-        returnValue(hwinfo)
+        return hwinfo
     
     def getVelocityParameters(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
@@ -44,7 +55,7 @@ class APTMotor():
         maximumVelocity = c_float()
         self.aptdll.MOT_GetVelParams(HWSerialNum, pointer(minimumVelocity), pointer(acceleration), pointer(maximumVelocity))
         velocityParameters = [minimumVelocity.value, acceleration.value, maximumVelocity.value]
-        returnValue(velocityParameters)
+        return velocityParameters
     
     def setVelocityParameters(self, serialNumber, minVel, acc, maxVel):
         HWSerialNum = c_long(serialNumber)
@@ -52,7 +63,7 @@ class APTMotor():
         acceleration = c_float(acc)
         maximumVelocity = c_float(maxVel)
         self.aptdll.MOT_SetVelParams(HWSerialNum, minimumVelocity, acceleration, maximumVelocity)
-        returnValue(True)
+        return True
     
     def getVelocityParameterLimits(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
@@ -60,29 +71,30 @@ class APTMotor():
         maximumVelocity = c_float()
         self.aptdll.MOT_GetVelParamLimits(HWSerialNum, pointer(maximumAcceleration), pointer(maximumVelocity))
         velocityParameterLimits = [maximumAcceleration.value, maximumVelocity.value]
-        returnValue(velocityParameterLimits)    
+        return velocityParameterLimits  
 
     def getPosition(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
         position = c_float()
         self.aptdll.MOT_GetPosition(HWSerialNum, pointer(position))
-        returnValue(position.value)    
+        return position.value    
 
     def moveRelative(self, serialNumber, relDistance):
         HWSerialNum = c_long(serialNumber)
         relativeDistance = c_float(relDistance)
         self.aptdll.MOT_MoveRelativeEx(HWSerialNum, relativeDistance, True)
-        returnValue(True)
+        return True
 
     def moveAbsolute(self, serialNumber, absPosition):
         HWSerialNum = c_long(serialNumber)
         absolutePosition = c_float(absPosition)
         self.aptdll.MOT_MoveAbsoluteEx(HWSerialNum, absolutePosition, True)
-        returnValue(True)
+        return True
 
     def identify(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
         self.aptdll.MOT_Identify(HWSerialNum)
+        return True
         
     def cleanUpAPT(self):
         self.aptdll.APTCleanUp()
@@ -100,16 +112,27 @@ class APTMotorServer(LabradServer):
     
    
     def initServer(self):
-        self.aptMotor = APTMotor()
         self.deviceDict = {'Axial FB': 83825962,
                        'Radial FB': 83825936,
                        'Radial LR': 83815664,
                        'Axial LR': 63001773,
                        'Auxilliary': 83816548,
                        'Simulator': 83000001}
+        
+        # Make sure none of these devices have been initialized yet
         self.initializedDict = {}
-        self.prepareDevices()        
+        for i in self.deviceDict.keys():
+            self.initializedDict[self.deviceDict[i]] = False
+
+        from twisted.internet import reactor
+        print 'about to call later'
+        reactor.callLater(0, self.doPrepareDevices)        
+#        self.prepareDevices()        
         self.listeners = set()    
+    
+    @inlineCallbacks
+    def doPrepareDevices(self):
+        yield deferToThread(self.prepareDevices)
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -124,22 +147,24 @@ class APTMotorServer(LabradServer):
         return notified
 
     def prepareDevices(self):
-        numberOfHardwareUnits = yield deferToThread(self.aptMotor.getNumberOfHardwareUnits)
+        self.aptMotor = APTMotor()        
+        numberOfHardwareUnits = self.aptMotor.getNumberOfHardwareUnits()
+        print numberOfHardwareUnits
         for i in range(numberOfHardwareUnits):
-            serialNumber = yield deferToThread(self.aptMotor.getSerialNumber, i)
+            serialNumber = self.aptMotor.getSerialNumber(i)
+            print serialNumber
             if (serialNumber in self.deviceDict.values()):
-                ok = yield deferToThread(self.aptMotor.initializeHardwareDevice, serialNumber)
+                #ok = yield self.aptMotor.initializeHardwareDevice(serialNumber)
+                ok = self.aptMotor.initializeHardwareDevice(serialNumber)
                 if (ok == True):
                     self.initializedDict[serialNumber] = True
-                else:
-                    self.initializedDict[serialNumber] = False
-
     
     @setting(0, "Get Available Devices", returns = '*s')
-    def getAvailableHardwareUnits(self, c):
+    def getAvailableDevices(self, c):
         """Returns a List of Initialized Devices"""
         availableHardwareUnits = []
-        for i in self.deviceDict.keys:
+        print self.initializedDict
+        for i in self.deviceDict.keys():
             if (self.initializedDict[self.deviceDict[i]] == True):
                 availableHardwareUnits.append(i)
         return availableHardwareUnits
@@ -164,7 +189,7 @@ class APTMotorServer(LabradServer):
     def getHardwareInformation(self, c):
         """Returns Hardware Information
             Model, Software Version, Hardware Notes"""
-        if (c['Hardware Initialized'] == True):
+        if (self.initializedDict[c['Device']] == True):
             c['Hardware Information'] = yield deferToThread(self.aptMotor.getHardwareInformation, c['Device'])
             returnValue(c['Hardware Information'])
 
@@ -173,7 +198,7 @@ class APTMotorServer(LabradServer):
     def getVelocityParameters(self, c):
         """Returns Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
-        if (c['Hardware Initialized'] == True):
+        if (self.initializedDict[c['Device']] == True):
             c['Velocity Parameters'] = yield deferToThread(self.aptMotor.getVelocityParameters, c['Device'])
             returnValue(c['Velocity Parameters'])
 
@@ -181,7 +206,7 @@ class APTMotorServer(LabradServer):
     def getVelocityParameterLimits(self, c):
         """Returns Velocity Parameter Limits
             Maximum Acceleration, Maximum Velocity"""
-        if (c['Hardware Initialized'] == True):
+        if (self.initializedDict[c['Device']] == True):
             c['Velocity Parameter Limits'] = yield deferToThread(self.aptMotor.getVelocityParameterLimits, c['Device'])
             returnValue(c['Velocity Parameter Limits'])
 
@@ -189,8 +214,8 @@ class APTMotorServer(LabradServer):
     def setVelocityParameters(self, c, minimumVelocity, acceleration, maximumVelocity):
         """Sets Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
-        if (c['Hardware Initialized'] == True):
-            yield deferToThread(self.aptMotor.setVelocityParameters, c['Device'], minimumVelocity, acceleration, maximumVelocity)
+        if (self.initializedDict[c['Device']] == True):
+            ok = yield deferToThread(self.aptMotor.setVelocityParameters, c['Device'], minimumVelocity, acceleration, maximumVelocity)
             notified = self.getOtherListeners(c)
             self.onVelocityParameterChange(c['Device'], notified)
             returnValue(True)
@@ -198,34 +223,34 @@ class APTMotorServer(LabradServer):
     @setting(6, "Get Position", returns ='v')
     def getPosition(self, c):
         """Returns Current Position"""
-        if (c['Hardware Initialized'] == True):
+        if (self.initializedDict[c['Device']] == True):
             c['Current Position'] = yield deferToThread(self.aptMotor.getPosition, c['Device'])
             returnValue(c['Current Position'])
         
     @setting(7, "Move Relative", relativeDistance = 'v', returns ='b')
     def moveRelative(self, c, relativeDistance):
         """Moves the Motor by a Distance Relative to its Current Position"""
-        if (c['Hardware Initialized'] == True):
-            yield deferToThread(self.aptMotor.moveRelative, c['Device'], relativeDistance)
+        if (self.initializedDict[c['Device']] == True):
+            ok = yield deferToThread(self.aptMotor.moveRelative, c['Device'], relativeDistance)
             notified = self.getOtherListeners(c)
             self.onPositionChange(c['Device'], notified)
-            returnValue(True)    
+            returnValue(ok)    
 
     @setting(8, "Move Absolute", absolutePosition = 'v', returns ='b')
     def moveAbsolute(self, c, absolutePosition):
         """Moves the Motor an Absolute Position"""
-        if (c['Hardware Initialized'] == True):
-            yield deferToThread(self.aptMotor.moveAbsolute, c['Device'], absolutePosition)
+        if (self.initializedDict[c['Device']] == True):
+            ok = yield deferToThread(self.aptMotor.moveAbsolute, c['Device'], absolutePosition)
             notified = self.getOtherListeners(c)
             self.onPositionChange(c['Device'], notified)   
-            returnValue(True)    
+            returnValue(ok)    
 
     @setting(9, "Identify Device", returns ='b')
     def identifyDevice(self, c):
         """Identifies Device by Flashing Front Panel LED for a Few Seconds"""
-        if (c['Hardware Initialized'] == True):
-            yield deferToThread(self.aptMotor.identify, c['Device'])
-            returnValue(True)
+        if (self.initializedDict[c['Device']] == True):
+            ok = yield deferToThread(self.aptMotor.identify, c['Device'])
+            returnValue(ok)
     
     def stopServer(self):  
         """Cleans up APT DLL before closing"""

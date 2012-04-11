@@ -217,18 +217,20 @@ class MainPanel(QtGui.QWidget):
         self.server = yield self.cxn.apt_motor_server
         availableDevices = yield self.server.get_available_devices()
         print availableDevices
-        numDevices = len(availableDevices)
-        self.setupUI(numDevices)
+        self.setupUI(availableDevices)
 
     @inlineCallbacks
-    def setupUI(self, numDevices):
+    def setupUI(self, availableDevices):
         self.setWindowTitle("APT Motor Control Panel")
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
         self.setLayout(grid) 
 
+        numDevices = len(availableDevices)
+
         for i in range(numDevices):
             context = yield self.cxn.context()
+            self.server.select_device(availableDevices[i], context = context)
             devPanel = DevicePanel(self, self.cxn, context)
 #            devPanel = DevicePanel()
             self.devDict[i] = devPanel
