@@ -56,7 +56,7 @@ class APTMotor():
         minimumVelocity = c_float(minVel)
         acceleration = c_float(acc)
         maximumVelocity = c_float(maxVel)
-        yield self.aptdll.MOT_GetVelParams(HWSerialNum, minimumVelocity, acceleration, maximumVelocity)
+        yield self.aptdll.MOT_SetVelParams(HWSerialNum, minimumVelocity, acceleration, maximumVelocity)
         returnValue(True)
     
     @inlineCallbacks
@@ -122,7 +122,7 @@ class APTMotorServer(LabradServer):
         notified.remove(c.ID)
         return notified
 
-    @setting(0, "Get Available Hardware Units", returns = '*s')
+    @setting(0, "Get Available Hardware Units", returns = '*w')
     def getAvailableHardwareUnits(self, c):
         """Returns a List of Available Hardware Units
             Index: Serial Number"""
@@ -130,15 +130,20 @@ class APTMotorServer(LabradServer):
         numberOfHardwareUnits = yield self.aptMotor.getNumberOfHardwareUnits()
         for i in range(numberOfHardwareUnits):
             serialNumber = yield self.aptMotor.getSerialNumber(i)
-            availableHardwareUnits.append([i, serialNumber])
+            availableHardwareUnits.append(i)
+            availableHardwareUnits.append(serialNumber)
         returnValue(availableHardwareUnits)
 
     @setting(1, "Initialize Hardware Device", serialNumber = 'w', returns ='b')
     def initializeHardwareDevice(self, c, serialNumber):
         """Initializes Hardware Device"""
-        if (yield self.aptMotor.initializeHardwareDevice(serialNumber) == True):
+        ok = yield self.aptMotor.initializeHardwareDevice(serialNumber)
+        if (ok == True):
             c['Hardware Initialized'] = True
             returnValue(True)
+        else:
+            print 'false?'
+            returnValue(False)
     
     @setting(2, "Get Device Information", serialNumber = 'w', returns ='*s')
     def getHardwareInformation(self, c, serialNumber):
@@ -149,7 +154,7 @@ class APTMotorServer(LabradServer):
             returnValue(c['Hardware Information'])
 
 
-    @setting(3, "Get Velocity Parameters", serialNumber = 'w', returns ='*s')
+    @setting(3, "Get Velocity Parameters", serialNumber = 'w', returns ='*v')
     def getVelocityParameters(self, c, serialNumber):
         """Returns Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
@@ -157,7 +162,7 @@ class APTMotorServer(LabradServer):
             c['Velocity Parameters'] = yield self.aptMotor.getVelocityParameters(serialNumber)
             returnValue(c['Velocity Parameters'])
 
-    @setting(4, "Get Velocity Parameter Limits", serialNumber = 'w', returns ='*s')
+    @setting(4, "Get Velocity Parameter Limits", serialNumber = 'w', returns ='*v')
     def getVelocityParameterLimits(self, c, serialNumber):
         """Returns Velocity Parameter Limits
             Maximum Acceleration, Maximum Velocity"""
@@ -175,7 +180,7 @@ class APTMotorServer(LabradServer):
             self.onVelocityParameterChange(serialNumber, notified)
             returnValue(True)
 
-    @setting(6, "Get Postion", serialNumber = 'w', returns ='v')
+    @setting(6, "Get Position", serialNumber = 'w', returns ='v')
     def getPosition(self, c, serialNumber):
         """Returns Current Position"""
         if (c['Hardware Initialized'] == True):
