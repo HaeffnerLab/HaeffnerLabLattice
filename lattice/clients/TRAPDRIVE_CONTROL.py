@@ -25,6 +25,18 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
         yield self.server.addListener(listener = self.followNewSetting, source = None, ID = SIGNAL_ID1)
         yield self.server.signal__state_updated(SIGNAL_ID2)
         yield self.server.addListener(listener = self.followNewState, source = None, ID = SIGNAL_ID2)
+        yield self.cxn.manager.subscribe_to_named_message('Server Connect', 9898989, True)
+        yield self.cxn.manager.subscribe_to_named_message('Server Disconnect', 9898989+1, True)
+        yield self.cxn.manager.addListener(listener = self.followServerConnect, source = None, ID = 9898989)
+        yield self.cxn.manager.addListener(listener = self.followServerDisconnect, source = None, ID = 9898989+1)
+
+    def followServerConnect(self, cntx, serverName):
+        print serverName
+        print 'CONNECTED!!!'
+    
+    def followServerDisconnect(self, cntx, serverName):
+        print serverName
+        print 'DISCONNECTED!!!'
     
     def followNewSetting(self, x, (kind,value)):
         if kind == 'frequency':
