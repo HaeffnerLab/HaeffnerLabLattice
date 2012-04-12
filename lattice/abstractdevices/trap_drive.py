@@ -1,0 +1,98 @@
+"""
+### BEGIN NODE INFO
+[info]
+name = Trap Drive
+version = 1.0
+description = 
+instancename = Trap Drive
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
+from labrad.server import LabradServer, Signal, setting
+from twisted.internet.defer import inlineCallbacks, returnValue
+
+class TrapDrive( LabradServer ):
+    """Controls Trap Drive"""
+
+    name = 'Trap Drive'
+    onNewUpdate = Signal(209057, 'signal: settings updated', '(sv)')
+    onStateUpdate = Signal(209058, 'signal: state updated', 'b')
+    
+    @inlineCallbacks
+    def initServer( self ):
+        self.powerRange = (-5.9,5.0) #dBM
+        self.freqRange = (14.5,15.5) #MHz
+        self.listeners = set()
+        self.server = self.client.rohdeschwarz_server
+        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541')
+        
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
+  
+    def getOtherListeners(self,c):
+        notified = self.listeners.copy()
+        notified.remove(c.ID)
+        return notified
+    
+    @setting(1, 'Frequency', f=['v[MHz]'], returns=['v[MHz]'])
+    def frequency(self, c, f = None):
+        """Get or set the CW frequency."""
+        if f is not None: self.checkFreq(f)
+        freq = yield self.server.frequency(f)
+        if f is not None:
+            otherListeners = self.getOtherListeners(c)
+            self.onNewUpdate(('frequency', freq), otherListeners)
+        returnValue(freq)
+    
+    @setting(2, 'Amplitude', a=['v[dBm]'], returns=['v[dBm]'])
+    def amplitude(self, c, a = None):
+        """Get or set the CW amplitude."""
+        if a is not None: self.checkPower(a)
+        ampl = yield self.server.amplitude(a)
+        if a is not None: 
+            otherListeners = self.getOtherListeners(c)
+            self.onNewUpdate(('amplitude', ampl), otherListeners)
+        returnValue(ampl)
+    
+    @setting(3, 'Output',  os=['b'], returns=['b'])
+    def output(self, c, os = None):
+         """Get or set the output status."""
+         outp = yield self.server.output(os)
+         if os is not None:
+             otherListeners = self.getOtherListeners(c)
+             self.onStateUpdate(os)
+         returnValue(outp)
+    
+    @setting(4, 'Get Amplitude Range', returns = '(vv)')
+    def getPowerRange(self, c):
+        return self.powerRange
+    
+    @setting(5, 'Get Frequency Range', returns = '(vv)')
+    def getAmplitudeRange(self, c):
+        return self.freqRange
+        
+    def checkPower(self, level):
+        MIN,MAX = self.powerRange
+        if not MIN <= level <= MAX:
+            raise('Power Out of Allowed Range')
+    
+    def checkFreq(self, freq):
+        MIN,MAX = self.freqRange
+        if not MIN <= freq <= MAX:
+            raise('Frequency Out of Allowed Range')
+
+if __name__ == "__main__":
+    from labrad import util
+    util.runServer(TrapDrive())
