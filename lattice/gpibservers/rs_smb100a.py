@@ -1,5 +1,3 @@
-# Copyright (C) 2007  Matthew Neeley
-#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -17,7 +15,7 @@
 ### BEGIN NODE INFO
 [info]
 name = RohdeSchwarz Server
-version = 1.1
+version = 1.2
 description = 
 
 [startup]
@@ -40,6 +38,7 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
         self.frequency = yield self.getFrequency()
         self.amplitude = yield self.getAmplitude()
         self.output = yield self.getOutput()
+        self.phase = None
 
     @inlineCallbacks
     def getFrequency(self):
@@ -100,6 +99,13 @@ class RSSMB100AWrapper(GPIBDeviceWrapper):
     @inlineCallbacks
     def reset_list(self):
         yield self.write("SOURce1:LIST:RES")
+    
+    @inlineCallbacks
+    def set_phase(self, phase):
+        phase = round(phase, 1)
+        if not -359.9<=phase<=359.9: raise Exception ("Phase out of range")
+        yield self.write('SOURce:PHASe {}DEG'.format(phase))
+        self.phase = phase
             
 class RohdeSchwarzServer(GPIBManagedServer):
     """Provides basic CW control for Rohde&Schwarz SMB100A RF Generators"""
@@ -148,6 +154,12 @@ class RohdeSchwarzServer(GPIBManagedServer):
         """Make a new list, input is a list of tuples in the form (freq in Mhz, power in dBm)"""
         dev = self.selectedDevice(c)
         yield dev.make_new_list(inputs.astuple, name)
+    
+    @setting(16,"Set Phase", phase = 'v', returns = '')
+    def set_phase(self, c, phase):
+        """Sets the phase of the output, useful for phase locked applications"""
+        dev = self.selectDevice(c)
+        yield dev.set_phase(phase)
 
 __server__ = RohdeSchwarzServer()
 

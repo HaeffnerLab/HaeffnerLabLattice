@@ -60,15 +60,14 @@ for i in range(average):
     timetags = pulser.get_timetags().asarray
     print 'photons counted', timetags.size
     pwr += getFFTpwr(timetags) / (timetags.size / recordTime) #normalize to fluorescence rate
-totalPower = np.sum(pwr)  
-totalPower = totalPower / float(average) #normalizing to the number of averaging iterations
-totalPower = totalPower*1e9 #to make numbers bigger, the size is arbitrary anyway
 #saving to DV
 dv.cd(['','QuickMeasurements','FFT'],True)
 name = dv.new('FFT',[('Freq', 'Hz')], [('Power','Arb','Arb')] )
 data = np.array(np.vstack((freqs,pwr)).transpose(), dtype = 'float')
 dv.add_parameter('plotLive',True)
 dv.add(data)
+totalPower = np.sum(pwr)  
+totalPower = totalPower / float(average) #normalizing to the number of averaging iterations
 print 'Saved {}'.format(name)
 print 'Total Power {}'.format(totalPower)
 print 'DONE'
