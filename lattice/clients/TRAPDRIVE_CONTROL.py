@@ -15,7 +15,7 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
     def connect(self):
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync()
-        self.server = self.cxn.lattice_pc_hp_server
+        self.server = self.cxn.trap_drive
         self.setupWidget()
         self.setupListeners()
         
@@ -27,9 +27,9 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
         yield self.server.addListener(listener = self.followNewState, source = None, ID = SIGNAL_ID2)
     
     def followNewSetting(self, x, (kind,value)):
-        if kind == 'freq':
+        if kind == 'frequency':
             self.setFreqNoSignal(value)
-        elif kind == 'power':
+        elif kind == 'amplitude':
             self.setPowerNoSignal(value)
     
     def followNewState(self, x, checked):
@@ -38,14 +38,14 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
     @inlineCallbacks
     def setupWidget(self):
         #get ranges
-        MinPower,MaxPower = yield self.server.get_power_range()
+        MinPower,MaxPower = yield self.server.get_amplitude_range()
         MinFreq,MaxFreq = yield self.server.get_frequency_range()
         self.setPowerRange((MinPower,MaxPower))
         self.setFreqRange((MinFreq,MaxFreq))
         #get initial values
-        initpower = yield self.server.getpower()
-        initfreq = yield self.server.getfreq()
-        initstate = yield self.server.getstate()
+        initpower = yield self.server.amplitude()
+        initfreq = yield self.server.frequency()
+        initstate = yield self.server.output()
         self.spinPower.setValue(initpower)
         self.spinFreq.setValue(initfreq)
         self.buttonSwitch.setChecked(initstate)
@@ -57,16 +57,16 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
         
     @inlineCallbacks
     def powerChanged(self, pwr):
-        yield self.server.setpower(pwr)
+        yield self.server.amplitude(pwr)
         
     @inlineCallbacks
     def freqChanged(self, freq):
-        yield self.server.setfreq(freq)
+        yield self.server.frequency(freq)
         
     @inlineCallbacks
     def switchChanged(self, pressed):
         if pressed:
-            yield self.server.setstate(pressed)
+            yield self.server.output(pressed)
         else:
             self.dlg = MyAppDialog()
             self.dlg.accepted.connect(self.userAccept)
@@ -75,7 +75,7 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
     
     @inlineCallbacks 
     def userAccept(self):
-        yield self.server.setstate(False)
+        yield self.server.output(False)
         
     def userReject(self):
         self.setStateNoSignal(True)     

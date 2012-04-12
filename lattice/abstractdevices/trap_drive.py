@@ -18,6 +18,7 @@ timeout = 20
 
 from labrad.server import LabradServer, Signal, setting
 from twisted.internet.defer import inlineCallbacks, returnValue
+from labrad.types import Error
 
 class TrapDrive( LabradServer ):
     """Controls Trap Drive"""
@@ -31,8 +32,19 @@ class TrapDrive( LabradServer ):
         self.powerRange = (-5.9,5.0) #dBM
         self.freqRange = (14.5,15.5) #MHz
         self.listeners = set()
-        self.server = self.client.rohdeschwarz_server
-        yield self.server.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541')
+        self.serverName = 'RohdeSchwarz Server'
+        self.device = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541'
+        try:
+            self.server = yield self.connectToServer()
+        except KeyError:
+            print '{} not connected'.format(self.serverName)
+            self.server = None
+    
+    @inlineCallbacks
+    def connectToServer(self):
+        server = self.client[self.serverName]
+        yield server.select_device(self.device)
+        returnValue(server)
         
     def initContext(self, c):
         """Initialize a new context object."""
@@ -49,6 +61,7 @@ class TrapDrive( LabradServer ):
     @setting(1, 'Frequency', f=['v[MHz]'], returns=['v[MHz]'])
     def frequency(self, c, f = None):
         """Get or set the CW frequency."""
+        if self.server is None: raise Exception ('{} not connected'.format(self.serverName))
         if f is not None: self.checkFreq(f)
         freq = yield self.server.frequency(f)
         if f is not None:
@@ -59,6 +72,7 @@ class TrapDrive( LabradServer ):
     @setting(2, 'Amplitude', a=['v[dBm]'], returns=['v[dBm]'])
     def amplitude(self, c, a = None):
         """Get or set the CW amplitude."""
+        if self.server is None: raise Exception ('{} not connected'.format(self.serverName))
         if a is not None: self.checkPower(a)
         ampl = yield self.server.amplitude(a)
         if a is not None: 
@@ -69,6 +83,7 @@ class TrapDrive( LabradServer ):
     @setting(3, 'Output',  os=['b'], returns=['b'])
     def output(self, c, os = None):
          """Get or set the output status."""
+         if self.server is None: raise Exception ('{} not connected'.format(self.serverName))
          outp = yield self.server.output(os)
          if os is not None:
              otherListeners = self.getOtherListeners(c)
@@ -92,6 +107,19 @@ class TrapDrive( LabradServer ):
         MIN,MAX = self.freqRange
         if not MIN <= freq <= MAX:
             raise('Frequency Out of Allowed Range')
+    
+    @inlineCallbacks
+    def serverConnected( self, ID, name ):
+        """Connect to the server"""
+        if name == self.serverName:
+            self.server = yield self.connectToServer()
+            print '{} connected'.format(self.serverName)
+
+    def serverDisconnected( self, ID, name ):
+        """Close connection"""
+        if name == self.serverName:
+            print '{} disconnected'.format(self.serverName)
+            self.server = None
 
 if __name__ == "__main__":
     from labrad import util
