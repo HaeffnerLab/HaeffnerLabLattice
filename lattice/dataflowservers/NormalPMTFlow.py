@@ -5,7 +5,7 @@
 ### BEGIN NODE INFO
 [info]
 name = NormalPMTFlow
-version = 1.1
+version = 1.2
 description = 
 instancename = NormalPMTFlow
 
@@ -20,9 +20,8 @@ timeout = 20
 """
 
 from labrad.server import LabradServer, setting, Signal
-from twisted.internet.defer import Deferred, returnValue, inlineCallbacks, DeferredLock
-from twisted.internet import reactor
-from twisted.internet.threads import deferToThread
+from twisted.internet.defer import Deferred, returnValue, inlineCallbacks
+from twisted.internet.task import LoopingCall
 import time
 
 SIGNALID = 331483
@@ -37,15 +36,15 @@ class NormalPMTFlow( LabradServer):
         #improve on this to start in arbitrary order
         self.dv = yield self.client.data_vault
         self.pulser = yield self.client.pulser
+        self.collectTimeRange = yield self.pulser.get_collection_time()
         self.saveFolder = ['','PMT Counts']
         self.dataSetName = 'PMT Counts'
         self.dataSet = None
         self.collectTimes = {'Normal':0.100, 'Differential':0.100}
         self.lastDifferential = {'ON': 0, 'OFF': 0}
         self.currentMode = 'Normal'
-        self.running = DeferredLock()
+        self.recording = LoopingCall(self._record)
         self.requestList = []
-        self.keepRunning = False
             
     @inlineCallbacks
     def makeNewDataSet(self):
@@ -78,7 +77,7 @@ class NormalPMTFlow( LabradServer):
         Start recording Time Resolved Counts into Data Vault
         """
         if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
-        if not self.keepRunning:
+        if not self.recording.running:
             self.currentMode = mode
             yield self.pulser.set_mode(mode)
         else:
@@ -110,7 +109,7 @@ class NormalPMTFlow( LabradServer):
             yield self._programPulserDiff()
         if self.dataSet is None:
             yield self.makeNewDataSet()
-        reactor.callLater(0, self._record)
+        self.recording.start(self.collectTimes[self.currentMode]/2.0)
     
     @setting(5, returns = '')
     def stopRecording(self,c):
@@ -121,9 +120,7 @@ class NormalPMTFlow( LabradServer):
     
     @inlineCallbacks
     def dostopRecording(self):
-        self.keepRunning = False
-        yield self.running.acquire()
-        self.running.release() #completed one last iteration
+        yield self.recording.stop()
         if self.currentMode == 'Differential':
             yield self._stopPulserDiff()
             
@@ -132,7 +129,7 @@ class NormalPMTFlow( LabradServer):
         """
         Returns whether or not currently recording
         """
-        return self.keepRunning
+        return self.recording.running
         
     @setting(7, returns = 's')
     def currentDataSet(self,c):
@@ -143,16 +140,16 @@ class NormalPMTFlow( LabradServer):
     @setting(8, 'Set Time Length', timelength = 'v', mode = 's')
     def setTimeLength(self, c, timelength, mode = None):
         if mode is None: mode = self.currentMode
-        if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
-        if not 0 <= timelength <= 5.0: raise ('Incorrect Recording Time')
+        if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
+        if not self.collectTimeRange[0] <= timelength <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
         if mode == self.currentMode:
-            yield self.running.acquire()
+            yield self.recording.stop()
             yield self.pulser.set_collection_time(timelength, mode)
             if mode == 'Differential':
                 yield self._stopPulserDiff()
                 yield self._programPulserDiff()
-            self.running.release()
+            self.recording.start(timelength/2.0)
         else:
             yield self.pulser.set_collection_time(timelength, mode)
         
@@ -168,7 +165,7 @@ class NormalPMTFlow( LabradServer):
         if type not in ['ON', 'OFF','DIFF']: raise('Incorrect type')
         if type in ['OFF','DIFF'] and self.currentMode == 'Normal':raise('in the wrong mode to process this request')
         if not 0 < number < 1000: raise('Incorrect Number')
-        if not self.keepRunning: raise('Not currently recording')
+        if not self.recording.running: raise('Not currently recording')
         d = Deferred()
         self.requestList.append(self.readingRequest(d, type, number))
         data = yield d
@@ -182,6 +179,10 @@ class NormalPMTFlow( LabradServer):
         Returns the current timelength of in the current mode
         """
         return self.collectTimes[self.currentMode]
+    
+    @setting(11, 'Get Time Length Range', returns = '(vv)')
+    def get_time_length_range(self, c):
+        return self.collectTimeRange
     
     @inlineCallbacks
     def _programPulserDiff(self):
@@ -207,41 +208,35 @@ class NormalPMTFlow( LabradServer):
             self.count = count
             self.type = type
             self.data = []
+        
+        def is_fulfilled(self):
+            return len(self.data) == self.count
     
     def processRequests(self, data):
+        if not len(self.requestList): return
         for dataPoint in data:
-            for req in self.requestList:
+            for item,req in enumerate(self.requestList):
                 if dataPoint[1] != 0 and req.type == 'ON':
                     req.data.append(dataPoint[1])
-                    if len(req.data) == req.count:
-                        req.d.callback(req.data)
                 if dataPoint[2] != 0 and req.type == 'OFF':
                     req.data.append(dataPoint[1])
-                    if len(req.data) == req.count:
-                        req.d.callback(req.data)
                 if dataPoint[3] != 0 and req.type == 'DIFF':
                     req.data.append(dataPoint[1])
-                    if len(req.data) == req.count:
-                        req.d.callback(req.data)
-                        
+                if req.is_fulfilled():
+                    req.d.callback(req.data)
+                    del(self.requestList[item])
+                    
     @inlineCallbacks
     def _record(self):
-        yield self.running.acquire()
-        if self.keepRunning:
-            rawdata = yield self.pulser.get_pmt_counts()
-            if len(rawdata) != 0:
-                if self.currentMode == 'Normal':
-                    toDataVault = [ [elem[2] - self.startTime, elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]
-                elif self.currentMode =='Differential':
-                    toDataVault = self.convertDifferential(rawdata)
-                self.processRequests(toDataVault)
-                self.processSignals(toDataVault)
-                yield self.dv.add(toDataVault)
-            self.running.release()
-            delayTime = self.collectTimes[self.currentMode]/2 #set to half the collection time no to miss anything
-            reactor.callLater(delayTime,self._record)
-        else:
-            self.running.release()
+        rawdata = yield self.pulser.get_pmt_counts()
+        if len(rawdata) != 0:
+            if self.currentMode == 'Normal':
+                toDataVault = [ [elem[2] - self.startTime, elem[0], 0, 0] for elem in rawdata] # converting to format [time, normal count, 0 , 0]
+            elif self.currentMode =='Differential':
+                toDataVault = self.convertDifferential(rawdata)
+            self.processRequests(toDataVault) #if we have any requests, process them
+            self.processSignals(toDataVault)
+            yield self.dv.add(toDataVault)
     
     def processSignals(self, data):
         lastPt = data[-1]

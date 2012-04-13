@@ -33,6 +33,7 @@ timeResolution = 40.0e-9 #seconds
 timeResolvedResolution = timeResolution/4.0 #second
 MIN_SEQUENCE = 0
 MAX_SEQUENCE = 85 #seconds
+collectionTimeRange = (0.010, 5.0)
 
 class Pulser(LabradServer):
     name = 'Pulser'
@@ -278,7 +279,7 @@ class Pulser(LabradServer):
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
         """
         time = float(time)
-        if not 0.010<=time<=5.0: raise Exception('incorrect collection time')
+        if not collectionTimeRange[0]<=time<=collectionTimeRange[1]: raise Exception('incorrect collection time')
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
         if mode == 'Normal':
             self.collectionTime[mode] = time
@@ -289,7 +290,11 @@ class Pulser(LabradServer):
         elif mode == 'Differential':
             self.collectionTime[mode] = time
     
-    @setting(23, 'Reset FIFO Normal', returns = '')
+    @setting(23, 'Get Collection Time', returns = '(vv)')
+    def getCollectTime(self, c):
+        return collectionTimeRange
+    
+    @setting(24, 'Reset FIFO Normal', returns = '')
     def resetFIFONormal(self,c):
         """
         Resets the FIFO on board, deleting all queued counts
@@ -298,7 +303,7 @@ class Pulser(LabradServer):
         yield deferToThread(self._resetFIFONormal)
         self.inCommunication.release()
     
-    @setting(24, 'Get PMT Counts', returns = '*(vsv)')
+    @setting(25, 'Get PMT Counts', returns = '*(vsv)')
     def getALLCounts(self, c):
         """
         Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/SEC
@@ -311,12 +316,10 @@ class Pulser(LabradServer):
         yield self.inCommunication.acquire()
         countlist = yield deferToThread(self.doGetAllCounts)
         self.inCommunication.release()
-        print countlist
         returnValue(countlist)
     
     def doGetAllCounts(self):
         inFIFO = self._getNormalTotal()
-        print inFIFO
         reading = self._getNormalCounts(inFIFO)
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf, split)
@@ -356,7 +359,7 @@ class Pulser(LabradServer):
         '''useful for splitting a string in length-long pieces'''
         return [seq[i:i+length] for i in range(0, len(seq), length)]
     
-    @setting(25, 'Get Collection Mode', returns = 's')
+    @setting(26, 'Get Collection Mode', returns = 's')
     def getMode(self, c):
         return self.collectionMode
     

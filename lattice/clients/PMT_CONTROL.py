@@ -41,6 +41,8 @@ class pmtWidget(QtGui.QWidget):
         self.pushButton.setChecked(running)
         self.setText(self.pushButton)
         duration = yield self.server.get_time_length()
+        range = yield self.server.get_time_length_range()
+        self.doubleSpinBox.setRange(*range)
         self.doubleSpinBox.setValue(duration)
     
     def followSignal(self,signal,value):
