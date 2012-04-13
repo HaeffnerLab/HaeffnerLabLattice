@@ -9,8 +9,8 @@ def measureParameters(cxn, cxnlab, list):
     for item in list:
         if item == 'trapdrive':
             server = cxn.lattice_pc_hp_server
-            dict['rffreq'] = cxn.lattice_pc_hp_server.getfreq()
-            dict['rfpower'] = cxn.lattice_pc_hp_server.getpower()
+            dict['rffreq'] = cxn.trap_drive.frequency()
+            dict['rfpower'] = cxn.trap_drive.amplitude()
         elif item == 'endcaps':
             server = cxn.dc_box
             [endcap1,endcap2] = [server.getendcap(ch) for ch in [1,2]]

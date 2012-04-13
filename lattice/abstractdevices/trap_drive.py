@@ -29,7 +29,7 @@ class TrapDrive( LabradServer ):
     
     @inlineCallbacks
     def initServer( self ):
-        self.powerRange = (-5.9,5.0) #dBM
+        self.powerRange = (-7.0,-1.7) #dBM
         self.freqRange = (14.5,15.5) #MHz
         self.listeners = set()
         self.serverName = 'RohdeSchwarz Server'
