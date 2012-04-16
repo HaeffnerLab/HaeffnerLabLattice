@@ -199,14 +199,17 @@ class ParameterWindow(QtGui.QWidget):
         self.minVelocityDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.minVelocityDoubleSpinBox.setDecimals(4)
         self.minVelocityDoubleSpinBox.setMinimum(0)
+        self.minVelocityDoubleSpinBox.setSingleStep(.01)
         self.minVelocityDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.accDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.accDoubleSpinBox.setDecimals(4)
         self.accDoubleSpinBox.setMinimum(0)
+        self.accDoubleSpinBox.setSingleStep(.01)
         self.accDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.maxVelocityDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.maxVelocityDoubleSpinBox.setDecimals(4)
         self.maxVelocityDoubleSpinBox.setMinimum(0)
+        self.maxVelocityDoubleSpinBox.setSingleStep(.01)
         self.maxVelocityDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         # Text boxes 
@@ -278,6 +281,7 @@ class ParameterWindow(QtGui.QWidget):
         self.accLimitEdit.setText(str(paramLimits[0]))
         self.velocityLimitEdit.setText(str(paramLimits[1]))
         self.minVelocityDoubleSpinBox.setMaximum(paramLimits[1])
+        self.accDoubleSpinBox.setMaximum(paramLimits[0])
         self.maxVelocityDoubleSpinBox.setMaximum(paramLimits[1])
         
     def closeEvent(self, evt):
