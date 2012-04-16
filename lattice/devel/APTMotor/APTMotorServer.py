@@ -173,7 +173,10 @@ class APTMotorServer(LabradServer):
     def selectDevice(self, c, name):
         if name not in self.deviceDict.keys(): raise Exception("No such Device")
         c['Device'] = self.deviceDict[name]
-    
+
+    @setting(2, "Get Serial Number", returns = 'w')
+    def getSerialNumber(self, c):
+        return c['Device']
 #    @setting(1, "Initialize Hardware Device", serialNumber = 'w', returns ='b')
 #    def initializeHardwareDevice(self, c, serialNumber):
 #        """Initializes Hardware Device"""
@@ -185,7 +188,7 @@ class APTMotorServer(LabradServer):
 #            print 'false?'
 #            returnValue(False)
     
-    @setting(2, "Get Device Information",  returns ='*s')
+    @setting(3, "Get Device Information",  returns ='*s')
     def getHardwareInformation(self, c):
         """Returns Hardware Information
             Model, Software Version, Hardware Notes"""
@@ -194,7 +197,7 @@ class APTMotorServer(LabradServer):
             returnValue(c['Hardware Information'])
 
 
-    @setting(3, "Get Velocity Parameters", returns ='*v')
+    @setting(4, "Get Velocity Parameters", returns ='*v')
     def getVelocityParameters(self, c):
         """Returns Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
@@ -202,7 +205,7 @@ class APTMotorServer(LabradServer):
             c['Velocity Parameters'] = yield deferToThread(self.aptMotor.getVelocityParameters, c['Device'])
             returnValue(c['Velocity Parameters'])
 
-    @setting(4, "Get Velocity Parameter Limits", returns ='*v')
+    @setting(5, "Get Velocity Parameter Limits", returns ='*v')
     def getVelocityParameterLimits(self, c):
         """Returns Velocity Parameter Limits
             Maximum Acceleration, Maximum Velocity"""
@@ -210,7 +213,7 @@ class APTMotorServer(LabradServer):
             c['Velocity Parameter Limits'] = yield deferToThread(self.aptMotor.getVelocityParameterLimits, c['Device'])
             returnValue(c['Velocity Parameter Limits'])
 
-    @setting(5, "Set Velocity Parameters", minimumVelocity = 'v', acceleration = 'v', maximumVelocity = 'v', returns ='b')
+    @setting(6, "Set Velocity Parameters", minimumVelocity = 'v', acceleration = 'v', maximumVelocity = 'v', returns ='b')
     def setVelocityParameters(self, c, minimumVelocity, acceleration, maximumVelocity):
         """Sets Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
@@ -220,14 +223,14 @@ class APTMotorServer(LabradServer):
             self.onVelocityParameterChange(c['Device'], notified)
             returnValue(True)
 
-    @setting(6, "Get Position", returns ='v')
+    @setting(7, "Get Position", returns ='v')
     def getPosition(self, c):
         """Returns Current Position"""
         if (self.initializedDict[c['Device']] == True):
             c['Current Position'] = yield deferToThread(self.aptMotor.getPosition, c['Device'])
             returnValue(c['Current Position'])
         
-    @setting(7, "Move Relative", relativeDistance = 'v', returns ='b')
+    @setting(8, "Move Relative", relativeDistance = 'v', returns ='b')
     def moveRelative(self, c, relativeDistance):
         """Moves the Motor by a Distance Relative to its Current Position"""
         if (self.initializedDict[c['Device']] == True):
@@ -236,7 +239,7 @@ class APTMotorServer(LabradServer):
             self.onPositionChange(c['Device'], notified)
             returnValue(ok)    
 
-    @setting(8, "Move Absolute", absolutePosition = 'v', returns ='b')
+    @setting(9, "Move Absolute", absolutePosition = 'v', returns ='b')
     def moveAbsolute(self, c, absolutePosition):
         """Moves the Motor an Absolute Position"""
         if (self.initializedDict[c['Device']] == True):
@@ -245,7 +248,7 @@ class APTMotorServer(LabradServer):
             self.onPositionChange(c['Device'], notified)   
             returnValue(ok)    
 
-    @setting(9, "Identify Device", returns ='b')
+    @setting(10, "Identify Device", returns ='b')
     def identifyDevice(self, c):
         """Identifies Device by Flashing Front Panel LED for a Few Seconds"""
         if (self.initializedDict[c['Device']] == True):

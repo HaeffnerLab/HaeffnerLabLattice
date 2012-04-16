@@ -11,7 +11,9 @@ class DevicePanel(QtGui.QWidget):
         self.cxn = cxn
         self.context = context
         self.deviceName = deviceName
+        self.setSerialNumber()
         self.setupUI()
+        self.getInitialValues()
 #        self.setupListeners()
            
     def setupUI(self):
@@ -19,14 +21,20 @@ class DevicePanel(QtGui.QWidget):
 #        getHardwareUnits = QtGui.QLabel('Get Available Hardware Units')
 #        initHardwareDevice = QtGui.QLabel('Initialize Hardware Device')
 #        getDeviceInformation = QtGui.QLabel('Get Device Information (Enter serial number)')
-        device = QtGui.QLabel(self.deviceName)
-        stepSize = QtGui.QLabel('Move Relative - Step Size')
-        getSetVelParams = QtGui.QLabel('Get/Set Velocity Parameters')
-        getVelParamLimits = QtGui.QLabel('Get Velocity Parameter Limits')
-        getPosition = QtGui.QLabel('Get Current Position')
+#        device = QtGui.QLabel('Device:')
+        deviceName = QtGui.QLabel(self.deviceName)
+        minVelocity = QtGui.QLabel('Min Velocity')
+        acceleration = QtGui.QLabel('Acceleration')
+        maxVelocity = QtGui.QLabel('Max Velocity')
+#        accLimit = QtGui.QLabel('Maximum Acceleraiton')
+#        velLimit = QtGui.QLabel('Maximum Velocity')
+        stepSize = QtGui.QLabel('Move - Step Size')
+#        getSetVelParams = QtGui.QLabel('Get/Set Velocity Parameters')
+#        getVelParamLimits = QtGui.QLabel('Get Velocity Parameter Limits')
+        getPosition = QtGui.QLabel('Position')
 #        moveRelative = QtGui.QLabel('Move Relative')
         moveAbsolute = QtGui.QLabel('Move Absolute')
-        identify = QtGui.QLabel('Identify Device')
+#        identify = QtGui.QLabel('Identify Device')
 
         # Buttons
 #        getHardwareUnitsButton = QtGui.QPushButton("Get", self)
@@ -41,25 +49,25 @@ class DevicePanel(QtGui.QWidget):
 #        getDeviceInformationButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
 #        getDeviceInformationButton.clicked.connect(self.getDeviceInformationSignal)
         
-        getVelParamsButton = QtGui.QPushButton("Get", self)
-        getVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        getVelParamsButton.clicked.connect(self.getVelParamsSignal)
-        getVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        getVelParamsButton = QtGui.QPushButton("Get", self)
+#        getVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getVelParamsButton.clicked.connect(self.getVelParamsSignal)
+#        getVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         setVelParamsButton = QtGui.QPushButton("Set", self)
         setVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         setVelParamsButton.clicked.connect(self.setVelParamsSignal)
         setVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-        getVelParamLimitsButton = QtGui.QPushButton("Get", self)
-        getVelParamLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        getVelParamLimitsButton.clicked.connect(self.getVelParamLimitsSignal)
-        getVelParamLimitsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-        getPositionButton = QtGui.QPushButton("Get", self)
-        getPositionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        getPositionButton.clicked.connect(self.getPositionSignal)
-        getPositionButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        getVelParamLimitsButton = QtGui.QPushButton("Get", self)
+#        getVelParamLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getVelParamLimitsButton.clicked.connect(self.getVelParamLimitsSignal)
+#        getVelParamLimitsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        
+#        getPositionButton = QtGui.QPushButton("Get", self)
+#        getPositionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        getPositionButton.clicked.connect(self.getPositionSignal)
+#        getPositionButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
 #        moveRelativeButton = QtGui.QPushButton("Move", self)
 #        moveRelativeButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
@@ -80,10 +88,10 @@ class DevicePanel(QtGui.QWidget):
         moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
         moveAbsoluteButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-        identifyButton = QtGui.QPushButton("ID", self)
-        identifyButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        identifyButton.clicked.connect(self.identifySignal)
-        identifyButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        identifyButton = QtGui.QPushButton("ID", self)
+#        identifyButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        identifyButton.clicked.connect(self.identifySignal)
+#        identifyButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
                         
         # Text Boxes
@@ -96,27 +104,36 @@ class DevicePanel(QtGui.QWidget):
 #        getDeviceInformation2Edit = QtGui.QLineEdit(readOnly=True)
 #        getDeviceInformation3Edit = QtGui.QLineEdit(readOnly=True)
         self.getSetVelParams1Edit = QtGui.QLineEdit()
+        self.getSetVelParams1Edit.setMaximumWidth(43)
         self.getSetVelParams1Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.getSetVelParams2Edit = QtGui.QLineEdit()
+        self.getSetVelParams2Edit.setMaximumWidth(43)
         self.getSetVelParams2Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.getSetVelParams3Edit = QtGui.QLineEdit()
+        self.getSetVelParams3Edit.setMaximumWidth(43)
         self.getSetVelParams3Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.getVelParamLimits1Edit = QtGui.QLineEdit(readOnly=True)
+        self.getVelParamLimits1Edit.setMaximumWidth(43)
         self.getVelParamLimits1Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.getVelParamLimits2Edit = QtGui.QLineEdit(readOnly=True)
+        self.getVelParamLimits2Edit.setMaximumWidth(43)
         self.getVelParamLimits2Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getPositionEdit = QtGui.QLineEdit(readOnly=True)
+        self.getPositionEdit = QtGui.QLineEdit()
+        self.getPositionEdit.setMaximumWidth(43)
         self.getPositionEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.stepSizeEdit = QtGui.QLineEdit()
+        self.stepSizeEdit.setMaximumWidth(43)
         self.stepSizeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.moveRelativeEdit = QtGui.QLineEdit()
+        self.moveRelativeEdit.setMaximumWidth(43)
         self.moveRelativeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.moveAbsoluteEdit = QtGui.QLineEdit()        
+        self.moveAbsoluteEdit = QtGui.QLineEdit()
+        self.moveAbsoluteEdit.setMaximumWidth(43)        
         self.moveAbsoluteEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Layout        
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(5)
+        self.grid = QtGui.QGridLayout()
+        self.grid.setSpacing(5)
 
 #        grid.addWidget(getHardwareUnits, 1, 0)
 #        grid.addWidget(getHardwareUnitsButton, 1, 1)
@@ -133,40 +150,51 @@ class DevicePanel(QtGui.QWidget):
 #        grid.addWidget(getDeviceInformation2Edit, 3, 4)
 #        grid.addWidget(getDeviceInformation3Edit, 3, 5)
 
-        grid.addWidget(device, 3, 0)
+#        grid.addWidget(device, 1, 0, QtCore.Qt.AlignRight)
+        self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(setVelParamsButton, 1, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(minVelocity, 2, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(acceleration, 2, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(maxVelocity, 2, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.getSetVelParams1Edit, 3, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.getSetVelParams2Edit, 3, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.getSetVelParams3Edit, 3, 2, QtCore.Qt.AlignCenter)
+
+#        grid.addWidget(getSetVelParams, 4, 0)
+#        grid.addWidget(getVelParamsButton, 4, 1, QtCore.Qt.AlignCenter)
         
-        grid.addWidget(getSetVelParams, 4, 0)
-        grid.addWidget(getVelParamsButton, 4, 1, QtCore.Qt.AlignRight)
-        grid.addWidget(setVelParamsButton, 4, 2)
-        grid.addWidget(self.getSetVelParams1Edit, 4, 3)
-        grid.addWidget(self.getSetVelParams2Edit, 4, 4)
-        grid.addWidget(self.getSetVelParams3Edit, 4, 5)
 
-        grid.addWidget(getVelParamLimits, 5, 0)
-        grid.addWidget(getVelParamLimitsButton, 5, 1, QtCore.Qt.AlignRight)
-        grid.addWidget(self.getVelParamLimits1Edit, 5, 2)
-        grid.addWidget(self.getVelParamLimits2Edit, 5, 3)
+#        grid.addWidget(identify, 5, 0, QtCore.Qt.AlignRight)
+#        grid.addWidget(identifyButton, 5, 1, QtCore.Qt.AlignCenter) 
 
-        grid.addWidget(getPosition, 6, 0)
-        grid.addWidget(getPositionButton, 6, 1, QtCore.Qt.AlignRight)
-        grid.addWidget(self.getPositionEdit, 6, 2)
-        grid.addWidget(stepSize, 8, 1)
+#        grid.addWidget(moveAbsolute, 6, 0, QtCore.Qt.AlignRight)
+#        grid.addWidget(self.moveAbsoluteEdit, 6, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(moveAbsoluteButton, 7, 2, QtCore.Qt.AlignLeft)
+
+
+#        grid.addWidget(accLimit, 5, 0)
+#        grid.addWidget(velLimit, 5, 1)
+#        grid.addWidget(self.getVelParamLimits1Edit, 6, 0)
+#        grid.addWidget(self.getVelParamLimits2Edit, 6, 1)
+
+#        grid.addWidget(getVelParamLimits, 7, 0)
+#        grid.addWidget(getVelParamLimitsButton, 7, 1, QtCore.Qt.AlignRight)
+        
+        self.grid.addWidget(getPosition, 7, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.getPositionEdit, 7, 1, QtCore.Qt.AlignCenter)
+#        grid.addWidget(getPositionButton, 7, 2, QtCore.Qt.AlignLeft)
 
 #        grid.addWidget(moveRelative, 7, 0)
 #        grid.addWidget(moveRelativeButton, 7, 1)
 #        grid.addWidget(self.moveRelativeEdit, 7, 2)
-        grid.addWidget(stepLeftButton, 7, 0, QtCore.Qt.AlignRight)
-        grid.addWidget(self.stepSizeEdit, 7, 1)
-        grid.addWidget(stepRightButton, 7, 2)
+        self.grid.addWidget(stepLeftButton, 8, 0, QtCore.Qt.AlignRight)
+        self.grid.addWidget(self.stepSizeEdit, 8, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(stepRightButton, 8, 2)
+        self.grid.addWidget(stepSize, 9, 1)
 
-        grid.addWidget(moveAbsolute, 6, 3, QtCore.Qt.AlignRight)
-        grid.addWidget(moveAbsoluteButton, 6, 4, QtCore.Qt.AlignRight)
-        grid.addWidget(self.moveAbsoluteEdit, 6, 5)
 
-        grid.addWidget(identify, 7, 3, QtCore.Qt.AlignRight)
-        grid.addWidget(identifyButton, 7, 4, QtCore.Qt.AlignRight) 
 
-        self.setLayout(grid)        
+        self.setLayout(self.grid)        
         self.show()        
         
     # Button Functions
@@ -177,6 +205,12 @@ class DevicePanel(QtGui.QWidget):
 #        self.getSetVelParams2Edit.setText(velParams[1])
 #        self.getSetVelParams3Edit.setText(velParams[2])
 
+    @inlineCallbacks
+    def setSerialNumber(self):
+        self.serialNumber = yield self.parent.server.get_serial_number(context = self.context)
+        serialNumberLabel = QtGui.QLabel(str(self.serialNumber))
+        self.grid.addWidget(serialNumberLabel, 1, 2, QtCore.Qt.AlignCenter)       
+        
     @inlineCallbacks
     def setVelParamsSignal(self, evt):
         ok = yield self.parent.server.set_velocity_parameters(float(self.getSetVelParams1Edit.text()), float(self.getSetVelParams2Edit.text()), float(self.getSetVelParams3Edit.text()), context = self.context)
@@ -213,7 +247,8 @@ class DevicePanel(QtGui.QWidget):
     
     @inlineCallbacks
     def moveAbsoluteSignal(self, evt):
-        ok = yield self.parent.server.move_absolute(float(self.moveAbsoluteEdit.text()), context = self.context)
+#        ok = yield self.parent.server.move_absolute(float(self.moveAbsoluteEdit.text()), context = self.context)
+        ok = yield self.parent.server.move_absolute(float(self.getPositionEdit.text()), context = self.context)
         if (ok == True):
             self.getPositionSignal(1)
 
@@ -250,6 +285,12 @@ class DevicePanel(QtGui.QWidget):
 #        print sig
 #        print 'signal2?'
 
+    def getInitialValues(self):
+        self.getVelParamsSignal(1)
+        self.getVelParamLimitsSignal(1)
+        self.getPositionSignal(1)
+        self.moveAbsoluteEdit.setText('0.0')
+        self.stepSizeEdit.setText('0.0')
 
 class MainPanel(QtGui.QWidget):
     def __init__(self):
