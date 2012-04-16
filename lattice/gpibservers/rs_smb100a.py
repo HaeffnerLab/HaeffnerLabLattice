@@ -142,6 +142,10 @@ class RohdeSchwarzServer(GPIBManagedServer):
         """Activate the List Mode"""
         dev = self.selectedDevice(c)
         yield dev.activate_list_mode(state)
+#        if bool(state):
+#            #make sure the list goes to the first index after programming
+#            print 'resetting'
+#            yield dev.reset_list()
     
     @setting(14,"Reset List", returns = '')
     def reset_list(self, c):
@@ -154,6 +158,7 @@ class RohdeSchwarzServer(GPIBManagedServer):
         """Make a new list, input is a list of tuples in the form (freq in Mhz, power in dBm)"""
         dev = self.selectedDevice(c)
         yield dev.make_new_list(inputs.astuple, name)
+       
     
     @setting(16,"Set Phase", phase = 'v', returns = '')
     def set_phase(self, c, phase):

@@ -28,17 +28,19 @@ dpass = cxn.double_pass
 rs110DP = cxn.rohdeschwarz_server
 rf = cxn.trap_drive
 pulser = cxn.pulser
+pmt = cxn.normalpmtflow
 
 
 #Global parameters
-iterations = 100
+iterations = 10
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
+xtalFreq = 100.0
 xtalPower = -7.0
 cooling = (100.0, -12.0) #MHz, dBm
 readout = (115.0, -12.0) 
-crystallization = (100.0, xtalPower)
+crystallization = (xtalFreq, xtalPower)
 rf_power = -3.5
 rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
@@ -72,8 +74,28 @@ binNumber = int(recordTime / binTime)
 binArray = binTime * numpy.arange(binNumber + 1)
 #directory name
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
+#auto-crystallization settings
+meltedTimes = 0
+detect_time = 0.225
+far_red_time = 0.300 #seconds
+optimal_cool_time = 0.150
+pmtresolution = 0.075 #seconds 
+shutter_delay = 0.025
+rf_crystal_power = -7.0
+dpass.select('110DP')
+dpass.frequency(xtalFreq)
+dpass.amplitude(xtalPower)
+countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
+print 'initial countrate', countRate
+crystal_threshold = 0.8 * countRate #kcounts per sec
+crystallization_attempts = 10
+print 'Crystallization threshold: ', crystal_threshold
+
 
 def initialize():
+    #pmt recording
+    pmt.set_time_length(pmtresolution)
+    #pulser sequence 
     seq = LatentHeat(pulser)
     pulser.new_sequence()
     seq.setVariables(**params)
@@ -96,7 +118,6 @@ def initialize():
     #make sure the list is in range:
     freqRange = dpass.frequency_range()
     powerRange = dpass.amplitude_range()
-    print freqRange, powerRange
     for freq,power in rs110List:
         if not (freqRange[0] <= freq <= freqRange[1]):
             raise Exception('frequency list parameters out of range')
@@ -104,9 +125,6 @@ def initialize():
             raise Exception('power list parameters out of range')
     #create list and enter the list mode
     rs110DP.new_list(rs110List)
-    rs110DP.activate_list_mode(True)
-    rs110DP.reset_list() ####need to reset because activate list mode after programming ends up at some random step
-    ####removeddprepump
     ####globalDict['resolution']=trfpga.get_resolution()
 
 def sequence():
@@ -114,7 +132,6 @@ def sequence():
     for iteration in range(iterations):
         print 'recording trace {0} out of {1}'.format(iteration+1, iterations)
         rs110DP.activate_list_mode(True) ####
-        rs110DP.reset_list()
         pulser.reset_timetags()
         pulser.start_single()
         pulser.wait_sequence_done()
@@ -152,40 +169,18 @@ def finalize():
     rs110DP.activate_list_mode(False)
     pulser.switch_manual('crystallization',  True)
 
-meltedTimes = 0
-detect_time = 0.150
-far_red_time = 0.300 #seconds
-optimal_cool_time = 0.150
-pmtresolution = 0.075 #seconds 
-shutter_delay = 0.025
-pmt = cxn.normalpmtflow
-pmt.set_time_length(pmtresolution) 
-rf_crystal_power = -7.0
-dpass.select('110DP')
-dpass.frequency(100.0) ####make this better
-dpass.amplitude(xtalPower)
-print 'waiting for power to set'
-time.sleep(1)
-countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
-dpass.frequency(100.0) ####make this better
-print 'initial countrate', countRate
-crystal_threshold = 0.8 * countRate #kcounts per sec
-crystallization_attempts = 10
-print 'Crystallization threshold: ', crystal_threshold
-
 def is_crystalized():
     countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
-    #temp = pulser.get_timetags().asarray   # work around to dump the data
-    print 'auto crystalization: count rate {}'.format(countRate)
+    print 'auto crystalization: count rate {0} and threshold is {1}'.format(countRate, crystal_threshold)
     return (countRate > crystal_threshold) 
     
 def auto_crystalize():
     global meltedTimes
     if is_crystalized():
-        print 'initially crystalized'
+        print 'Crystallized'
         return True
     else:
-        print 'MELTED!!!!'
+        print 'Melted'
         meltedTimes += 1
         pulser.switch_manual('crystallization',  True)
         initpower = rf.amplitude()
