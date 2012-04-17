@@ -20,9 +20,9 @@ class hardwareConfiguration():
                    'bluePI':channelConfiguration(2, True, False, True, False),
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, False),
-                   '729Switch':channelConfiguration(5, False, True, True, False),
+                   #'729Switch':channelConfiguration(5, False, True, True, False),
                    '110DPlist':channelConfiguration(6, True, True, True, False),
-                   'camera':channelConfiguration(7, False, False, False, False),
+                   'camera':channelConfiguration(5, False, False, False, False),
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),

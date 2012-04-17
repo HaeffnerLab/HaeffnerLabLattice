@@ -32,16 +32,16 @@ pmt = cxn.normalpmtflow
 
 
 #Global parameters
-iterations = 10
+iterations = 50
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-xtalFreq = 100.0
-xtalPower = -7.0
-cooling = (100.0, -12.0) #MHz, dBm
-readout = (115.0, -12.0) 
+xtalFreq = 102.0
+xtalPower = -4.0
+cooling = (102.0, -8.0) #MHz, dBm
+readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
-rf_power = -3.5
+rf_power = -5.0
 rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
 auto_crystal = True
@@ -49,9 +49,9 @@ auto_crystal = True
 params = {
               'initial_cooling': 100e-3,
               'heat_delay':30e-3,
-              'axial_heat':40.0*10**-3,
-              'readout_delay':100.0*10**-3, ####should implement 0
-              'readout_time':100e-3,
+              'axial_heat':95.0*10**-3,
+              'readout_delay':400.0*10**-3, ####should implement 0
+              'readout_time':10.0*10**-3,
               'xtal_record':100e-3
             }
 recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
@@ -125,13 +125,15 @@ def initialize():
             raise Exception('power list parameters out of range')
     #create list and enter the list mode
     rs110DP.new_list(rs110List)
+    rs110DP.activate_list_mode(True)
+    time.sleep(0.50) #letting list mode activate
     ####globalDict['resolution']=trfpga.get_resolution()
 
 def sequence():
     binnedFlour = numpy.zeros(binNumber)
     for iteration in range(iterations):
         print 'recording trace {0} out of {1}'.format(iteration+1, iterations)
-        rs110DP.activate_list_mode(True) ####
+        rs110DP.reset_list()
         pulser.reset_timetags()
         pulser.start_single()
         pulser.wait_sequence_done()
@@ -146,7 +148,6 @@ def sequence():
         #add to binning of the entire sequence
         newbinned = numpy.histogram(timetags, binArray )[0]
         binnedFlour = binnedFlour + newbinned
-        rs110DP.activate_list_mode(False)####
         if auto_crystal:
             success = auto_crystalize()
             if not success: break
@@ -192,7 +193,7 @@ def auto_crystalize():
             pulser.switch_manual('110DP',  True) 
             time.sleep(optimal_cool_time)
             if is_crystalized():
-                print 'success on attempt number {}'.format(attempt)
+                print 'Crysallized on attempt number {}'.format(attempt + 1)
                 rf.amplitude(initpower)
                 time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)

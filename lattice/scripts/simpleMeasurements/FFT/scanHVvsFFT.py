@@ -7,7 +7,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 hv = cxn.highvolta
 
-voltageMin = 3000.0
+voltageMin = 3500.0
 VoltageMax = 4000.0
 VoltageStep = 100.0
 voltagesettime = 1.0

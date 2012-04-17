@@ -23,7 +23,8 @@ class LatentHeat(Sequence):
         recordTime = initial_cooling + heat_delay + axial_heat + readout_delay + readout_time + xtal_record
         startHeat = initial_cooling + heat_delay
         endHeat = initial_cooling + heat_delay + axial_heat
-        start_xtal = endHeat + readout_delay + readout_time
+        startReadout = endHeat + readout_delay
+        start_xtal = startReadout + readout_time
         
         self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         self.pulser.add_ttl_pulse('110DP', initial_cooling, globalofftime) #turn off blue light during heating
@@ -32,6 +33,7 @@ class LatentHeat(Sequence):
         #make sure there is no cooling by also switching off 866 when there is no 397 light.
         self.pulser.add_ttl_pulse('866DP', initial_cooling, heat_delay )
         self.pulser.add_ttl_pulse('866DP', endHeat, readout_delay )
+        self.pulser.add_ttl_pulse('camera', startReadout, 10e-6)
         self.pulser.add_ttl_pulse('110DPlist', start_xtal, 10e-6) #advance frequency of RS at the end of the sequence
 
 if __name__ == '__main__':
