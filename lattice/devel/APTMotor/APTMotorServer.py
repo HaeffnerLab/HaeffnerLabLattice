@@ -12,20 +12,17 @@ class APTMotor():
         self.HWType = c_long(31) # 31 means TDC001 controller
     
     def getNumberOfHardwareUnits(self):
-        print 'got here'
         numUnits = c_long()
         self.aptdll.GetNumHWUnitsEx(self.HWType, pointer(numUnits))
         return numUnits.value
     
     def getSerialNumber(self, index):
-        print 'within function: getting serial number'
         HWSerialNum = c_long()
         hardwareIndex = c_long(index)
         self.aptdll.GetHWSerialNumEx(self.HWType, hardwareIndex, pointer(HWSerialNum))
         return HWSerialNum.value
 
     def initializeHardwareDevice(self, serialNumber):
-        print serialNumber
         HWSerialNum = c_long(serialNumber)
         self.aptdll.InitHWDevice(HWSerialNum)
         # need some kind of error reporting here
@@ -125,7 +122,6 @@ class APTMotorServer(LabradServer):
             self.initializedDict[self.deviceDict[i]] = False
 
         from twisted.internet import reactor
-        print 'about to call later'
         reactor.callLater(0, self.doPrepareDevices)        
 #        self.prepareDevices()        
         self.listeners = set()    
@@ -149,10 +145,8 @@ class APTMotorServer(LabradServer):
     def prepareDevices(self):
         self.aptMotor = APTMotor()        
         numberOfHardwareUnits = self.aptMotor.getNumberOfHardwareUnits()
-        print numberOfHardwareUnits
         for i in range(numberOfHardwareUnits):
             serialNumber = self.aptMotor.getSerialNumber(i)
-            print serialNumber
             if (serialNumber in self.deviceDict.values()):
                 #ok = yield self.aptMotor.initializeHardwareDevice(serialNumber)
                 ok = self.aptMotor.initializeHardwareDevice(serialNumber)
@@ -163,7 +157,6 @@ class APTMotorServer(LabradServer):
     def getAvailableDevices(self, c):
         """Returns a List of Initialized Devices"""
         availableHardwareUnits = []
-        print self.initializedDict
         for i in self.deviceDict.keys():
             if (self.initializedDict[self.deviceDict[i]] == True):
                 availableHardwareUnits.append(i)

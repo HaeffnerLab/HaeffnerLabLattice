@@ -1,77 +1,31 @@
-#import labrad
-import sys
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
 class DevicePanel(QtGui.QWidget):
-    def __init__(self, parent, cxn, context, deviceName):
-#    def __init__(self):    
+    def __init__(self, parent, cxn, context, deviceName):    
         QtGui.QWidget.__init__(self)
         self.parent = parent
         self.cxn = cxn
         self.context = context
         self.deviceName = deviceName
         self.setSerialNumber()
+        self.parameterWindowExists = False
         self.setupUI()
-        self.getInitialValues()
-#        self.setupListeners()
+        self.getPositionSignal(1)
+        self.setupListeners()
            
     def setupUI(self):
         # Labels
-#        getHardwareUnits = QtGui.QLabel('Get Available Hardware Units')
-#        initHardwareDevice = QtGui.QLabel('Initialize Hardware Device')
-#        getDeviceInformation = QtGui.QLabel('Get Device Information (Enter serial number)')
-#        device = QtGui.QLabel('Device:')
+        position = QtGui.QLabel('Position (mm)')
         deviceName = QtGui.QLabel(self.deviceName)
-        minVelocity = QtGui.QLabel('Min Velocity')
-        acceleration = QtGui.QLabel('Acceleration')
-        maxVelocity = QtGui.QLabel('Max Velocity')
-#        accLimit = QtGui.QLabel('Maximum Acceleraiton')
-#        velLimit = QtGui.QLabel('Maximum Velocity')
-        stepSize = QtGui.QLabel('Move - Step Size')
-#        getSetVelParams = QtGui.QLabel('Get/Set Velocity Parameters')
-#        getVelParamLimits = QtGui.QLabel('Get Velocity Parameter Limits')
-        getPosition = QtGui.QLabel('Position')
-#        moveRelative = QtGui.QLabel('Move Relative')
-        moveAbsolute = QtGui.QLabel('Move Absolute')
-#        identify = QtGui.QLabel('Identify Device')
+        stepSize = QtGui.QLabel('Step Size (mm)')
 
         # Buttons
-#        getHardwareUnitsButton = QtGui.QPushButton("Get", self)
-#        getHardwareUnitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        getHardwareUnitsButton.clicked.connect(self.getHardwareUnitsSignal)
         
-#        initHardwareDeviceButton = QtGui.QPushButton("Init", self)
-#        initHardwareDeviceButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        initHardwareDeviceButton.clicked.connect(self.initHardwareDeviceSignal)
-        
-#        getDeviceInformationButton = QtGui.QPushButton("Get", self)
-#        getDeviceInformationButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        getDeviceInformationButton.clicked.connect(self.getDeviceInformationSignal)
-        
-#        getVelParamsButton = QtGui.QPushButton("Get", self)
-#        getVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        getVelParamsButton.clicked.connect(self.getVelParamsSignal)
-#        getVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-        setVelParamsButton = QtGui.QPushButton("Set", self)
+        setVelParamsButton = QtGui.QPushButton("Parameters", self)
         setVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        setVelParamsButton.clicked.connect(self.setVelParamsSignal)
+        setVelParamsButton.clicked.connect(self.parametersSignal)
         setVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-#        getVelParamLimitsButton = QtGui.QPushButton("Get", self)
-#        getVelParamLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        getVelParamLimitsButton.clicked.connect(self.getVelParamLimitsSignal)
-#        getVelParamLimitsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-#        
-#        getPositionButton = QtGui.QPushButton("Get", self)
-#        getPositionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        getPositionButton.clicked.connect(self.getPositionSignal)
-#        getPositionButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-#        moveRelativeButton = QtGui.QPushButton("Move", self)
-#        moveRelativeButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        moveRelativeButton.clicked.connect(self.moveRelativeSignal)
         
         stepLeftButton = QtGui.QPushButton("<", self)
         stepLeftButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
@@ -83,47 +37,31 @@ class DevicePanel(QtGui.QWidget):
         stepRightButton.clicked.connect(self.moveRelativeRightSignal)
         stepRightButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-        moveAbsoluteButton = QtGui.QPushButton("Move", self)
+        moveAbsoluteButton = QtGui.QPushButton("Move Absolute", self)
         moveAbsoluteButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
         moveAbsoluteButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-#        identifyButton = QtGui.QPushButton("ID", self)
-#        identifyButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        identifyButton.clicked.connect(self.identifySignal)
-#        identifyButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.positionDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.positionDoubleSpinBox.setDecimals(4)
+        self.positionDoubleSpinBox.setSingleStep(.001)
+        self.positionDoubleSpinBox.setMinimum(0)
+        self.positionDoubleSpinBox.setMaximum(1)
+        self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
-                        
-        # Text Boxes
-#        grid.addWidget(reviewEdit, 3, 1, 5, 1) # multiple lines!
-
-#        getHardwareUnitsEdit = QtGui.QLineEdit(readOnly=True)
-#        initHardwareDeviceEdit = QtGui.QLineEdit()
-#        getDeviceInformationSNEdit = QtGui.QLineEdit()
-#        getDeviceInformation1Edit = QtGui.QLineEdit(readOnly=True)
-#        getDeviceInformation2Edit = QtGui.QLineEdit(readOnly=True)
-#        getDeviceInformation3Edit = QtGui.QLineEdit(readOnly=True)
-        self.getSetVelParams1Edit = QtGui.QLineEdit()
-        self.getSetVelParams1Edit.setMaximumWidth(43)
-        self.getSetVelParams1Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getSetVelParams2Edit = QtGui.QLineEdit()
-        self.getSetVelParams2Edit.setMaximumWidth(43)
-        self.getSetVelParams2Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getSetVelParams3Edit = QtGui.QLineEdit()
-        self.getSetVelParams3Edit.setMaximumWidth(43)
-        self.getSetVelParams3Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getVelParamLimits1Edit = QtGui.QLineEdit(readOnly=True)
-        self.getVelParamLimits1Edit.setMaximumWidth(43)
-        self.getVelParamLimits1Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getVelParamLimits2Edit = QtGui.QLineEdit(readOnly=True)
-        self.getVelParamLimits2Edit.setMaximumWidth(43)
-        self.getVelParamLimits2Edit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.getPositionEdit = QtGui.QLineEdit()
-        self.getPositionEdit.setMaximumWidth(43)
-        self.getPositionEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.stepSizeEdit = QtGui.QLineEdit()
         self.stepSizeEdit.setMaximumWidth(43)
         self.stepSizeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
+        self.stepSizeDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.stepSizeDoubleSpinBox.setDecimals(4)
+        self.stepSizeDoubleSpinBox.setSingleStep(.001)
+        self.stepSizeDoubleSpinBox.setMinimum(0)
+        self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
+        
+        self.moveDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.moveDoubleSpinBox.setMaximumWidth(43)
         self.moveRelativeEdit = QtGui.QLineEdit()
         self.moveRelativeEdit.setMaximumWidth(43)
         self.moveRelativeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -135,85 +73,39 @@ class DevicePanel(QtGui.QWidget):
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(5)
 
-#        grid.addWidget(getHardwareUnits, 1, 0)
-#        grid.addWidget(getHardwareUnitsButton, 1, 1)
-#        grid.addWidget(getHardwareUnitsEdit, 1, 2)
-#
-#        grid.addWidget(initHardwareDevice, 2, 0)
-#        grid.addWidget(initHardwareDeviceButton, 2, 1)
-#        grid.addWidget(initHardwareDeviceEdit, 2, 2)
-#
-#        grid.addWidget(getDeviceInformation, 3, 0)
-#        grid.addWidget(getDeviceInformationButton, 3, 1)
-#        grid.addWidget(getDeviceInformationSNEdit, 3, 2)
-#        grid.addWidget(getDeviceInformation1Edit, 3, 3)
-#        grid.addWidget(getDeviceInformation2Edit, 3, 4)
-#        grid.addWidget(getDeviceInformation3Edit, 3, 5)
-
-#        grid.addWidget(device, 1, 0, QtCore.Qt.AlignRight)
         self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(setVelParamsButton, 1, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(minVelocity, 2, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(acceleration, 2, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(maxVelocity, 2, 2, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.getSetVelParams1Edit, 3, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.getSetVelParams2Edit, 3, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.getSetVelParams3Edit, 3, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(setVelParamsButton, 4, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(moveAbsoluteButton, 4, 0, QtCore.Qt.AlignCenter)
 
-#        grid.addWidget(getSetVelParams, 4, 0)
-#        grid.addWidget(getVelParamsButton, 4, 1, QtCore.Qt.AlignCenter)
-        
+        self.grid.addWidget(self.positionDoubleSpinBox, 4, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(position, 3, 1, QtCore.Qt.AlignCenter)
 
-#        grid.addWidget(identify, 5, 0, QtCore.Qt.AlignRight)
-#        grid.addWidget(identifyButton, 5, 1, QtCore.Qt.AlignCenter) 
-
-#        grid.addWidget(moveAbsolute, 6, 0, QtCore.Qt.AlignRight)
-#        grid.addWidget(self.moveAbsoluteEdit, 6, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(moveAbsoluteButton, 7, 2, QtCore.Qt.AlignLeft)
-
-
-#        grid.addWidget(accLimit, 5, 0)
-#        grid.addWidget(velLimit, 5, 1)
-#        grid.addWidget(self.getVelParamLimits1Edit, 6, 0)
-#        grid.addWidget(self.getVelParamLimits2Edit, 6, 1)
-
-#        grid.addWidget(getVelParamLimits, 7, 0)
-#        grid.addWidget(getVelParamLimitsButton, 7, 1, QtCore.Qt.AlignRight)
-        
-        self.grid.addWidget(getPosition, 7, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.getPositionEdit, 7, 1, QtCore.Qt.AlignCenter)
-#        grid.addWidget(getPositionButton, 7, 2, QtCore.Qt.AlignLeft)
-
-#        grid.addWidget(moveRelative, 7, 0)
-#        grid.addWidget(moveRelativeButton, 7, 1)
-#        grid.addWidget(self.moveRelativeEdit, 7, 2)
-        self.grid.addWidget(stepLeftButton, 8, 0, QtCore.Qt.AlignRight)
-        self.grid.addWidget(self.stepSizeEdit, 8, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(stepRightButton, 8, 2)
-        self.grid.addWidget(stepSize, 9, 1)
-
-
+        self.grid.addWidget(stepLeftButton, 2, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.stepSizeDoubleSpinBox, 2, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(stepRightButton, 2, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(stepSize, 1, 1)
 
         self.setLayout(self.grid)        
         self.show()        
         
-    # Button Functions
-#    @inlineCallbacks
-#    def getVelParamsSignal(self, evt):
-#        velParams = yield self.parent.server.get_velocity_parameters(self.serialNumber, context = self.context)
-#        self.getSetVelParams1Edit.setText(velParams[0])
-#        self.getSetVelParams2Edit.setText(velParams[1])
-#        self.getSetVelParams3Edit.setText(velParams[2])
 
     @inlineCallbacks
     def setSerialNumber(self):
         self.serialNumber = yield self.parent.server.get_serial_number(context = self.context)
-        serialNumberLabel = QtGui.QLabel(str(self.serialNumber))
+        serialNumberLabel = QtGui.QLabel("ID: " + str(self.serialNumber))
         self.grid.addWidget(serialNumberLabel, 1, 2, QtCore.Qt.AlignCenter)       
         
     @inlineCallbacks
     def setVelParamsSignal(self, evt):
         ok = yield self.parent.server.set_velocity_parameters(float(self.getSetVelParams1Edit.text()), float(self.getSetVelParams2Edit.text()), float(self.getSetVelParams3Edit.text()), context = self.context)
+
+    def parametersSignal(self, evt):
+        if (self.parameterWindowExists == False):
+            self.parameterWindowExists = True
+            self.parameterWindow = ParameterWindow(self, self.deviceName, self.context)
+            self.parameterWindow.show()
+        else:
+            self.parameterWindow.show()
 
     @inlineCallbacks
     def getVelParamLimitsSignal(self, evt):
@@ -221,34 +113,27 @@ class DevicePanel(QtGui.QWidget):
         self.getVelParamLimits1Edit.setText(str(round(velParamLimits[0], 4)))
         self.getVelParamLimits2Edit.setText(str(round(velParamLimits[1], 4)))
 
-#    @inlineCallbacks
-#    def getPositionSignal(self):
-#        position = yield self.parent.server.get_position(self.serialNumber, context = self.context)
-#        self.getPositionEdit.setText(position[0])
-#        
-#    @inlineCallbacks
-#    def moveRelativeSignal(self, evt):
-#        ok = yield self.parent.server.move_relative(float(self.moveRelativeEdit.text()), context = self.context)
-#        if (ok == True):
-#            self.getPositionSignal(1)
-#        
     @inlineCallbacks
     def moveRelativeLeftSignal(self, evt):
-        ok = yield self.parent.server.move_relative(-float(self.stepSizeEdit.text()), context = self.context)
-        if (ok == True):
-            self.getPositionSignal(1)
+        if ((self.positionDoubleSpinBox.value() - self.stepSizeDoubleSpinBox.value()) > 0):      
+            ok = yield self.parent.server.move_relative(-self.stepSizeDoubleSpinBox.value(), context = self.context)
+            if (ok == True):
+                self.getPositionSignal(1)
+        else:
+            print "The specified move is outside the current limits."
 
     @inlineCallbacks
     def moveRelativeRightSignal(self, evt):
-        ok = yield self.parent.server.move_relative(float(self.stepSizeEdit.text()), context = self.context)
-        if (ok == True):
-            self.getPositionSignal(1)
-
+        if ((self.positionDoubleSpinBox.value() + self.stepSizeDoubleSpinBox.value()) < 1):              
+            ok = yield self.parent.server.move_relative(self.stepSizeDoubleSpinBox.value(), context = self.context)
+            if (ok == True):
+                self.getPositionSignal(1)
+        else:
+            print "The specified move is outside the current limits."
     
     @inlineCallbacks
     def moveAbsoluteSignal(self, evt):
-#        ok = yield self.parent.server.move_absolute(float(self.moveAbsoluteEdit.text()), context = self.context)
-        ok = yield self.parent.server.move_absolute(float(self.getPositionEdit.text()), context = self.context)
+        ok = yield self.parent.server.move_absolute(self.positionDoubleSpinBox.value(), context = self.context)
         if (ok == True):
             self.getPositionSignal(1)
 
@@ -267,36 +152,145 @@ class DevicePanel(QtGui.QWidget):
     @inlineCallbacks
     def getPositionSignal(self, evt):
         position = yield self.parent.server.get_position(context = self.context)
-        self.getPositionEdit.setText(str(round(position, 4)))
+        self.positionDoubleSpinBox.setValue(position)
 
-#    @inlineCallbacks
-#    def setupListeners(self):               
-#        yield self.parent.server.signal__position_change(88888, context = self.context)
-#        yield self.parent.server.addListener(listener = self.signalTest, source = None, ID = 88888)    
-#        yield self.parent.server.signal__velocity_parameter_change(99999, context = self.context)
-#        yield self.parent.server.addListener(listener = self.signalTest2, source = None, ID = 99999)    
-#        print 'listeners set up'
-#        
-#    def signalTest(self, sig):
-#        print sig
-#        print 'signal?'
-#    
-#    def signalTest2(self, sig):
-#        print sig
-#        print 'signal2?'
+    @inlineCallbacks
+    def setupListeners(self):               
+        yield self.parent.server.signal__position_change(88888, context = self.context)
+        yield self.parent.server.addListener(listener = self.positionChange, source = None, ID = 88888)    
+        print 'listeners set up'
 
-    def getInitialValues(self):
-        self.getVelParamsSignal(1)
-        self.getVelParamLimitsSignal(1)
+    def positionChange(self, signal):
         self.getPositionSignal(1)
-        self.moveAbsoluteEdit.setText('0.0')
-        self.stepSizeEdit.setText('0.0')
 
+class ParameterWindow(QtGui.QWidget):
+    """Creates the device parameter window"""
+
+    def __init__(self, parent, deviceName, context):
+        QtGui.QWidget.__init__(self)
+        self.parent = parent
+        self.deviceName = deviceName
+        self.context = context
+        self.setWindowTitle(str(self.deviceName) + " " + 'Velocity Parameters')
+        self.setupUI()
+        self.getInitialValues()
+    
+    def setupUI(self):        
+        # Labels
+        minVelocity = QtGui.QLabel('Min Velocity')
+        acceleration = QtGui.QLabel('Acceleration')
+        maxVelocity = QtGui.QLabel('Max Velocity')
+        
+        hardwareModel = QtGui.QLabel('Hardware Model')
+        softwareVersion = QtGui.QLabel('Software Version')
+        hardwareNotes = QtGui.QLabel('Hardware Notes')
+        
+        parameterLimits = QtGui.QLabel('Max Limits')
+        accLimit = QtGui.QLabel('Max Acceleration')
+        velocityLimit = QtGui.QLabel('Max Velocity')
+
+        # Buttons
+        setVelParamsButton = QtGui.QPushButton("Set Velocity Parameters", self)
+        setVelParamsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        setVelParamsButton.clicked.connect(self.setVelParamsSignal)
+        setVelParamsButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        
+        # Spin Boxes
+        self.minVelocityDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.minVelocityDoubleSpinBox.setDecimals(4)
+        self.minVelocityDoubleSpinBox.setMinimum(0)
+        self.minVelocityDoubleSpinBox.setSingleStep(.01)
+        self.minVelocityDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.accDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.accDoubleSpinBox.setDecimals(4)
+        self.accDoubleSpinBox.setMinimum(0)
+        self.accDoubleSpinBox.setSingleStep(.01)
+        self.accDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.maxVelocityDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.maxVelocityDoubleSpinBox.setDecimals(4)
+        self.maxVelocityDoubleSpinBox.setMinimum(0)
+        self.maxVelocityDoubleSpinBox.setSingleStep(.01)
+        self.maxVelocityDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        
+        # Text boxes 
+        self.hardwareModelEdit = QtGui.QLineEdit(readOnly=True)
+        self.softwareVersionEdit = QtGui.QLineEdit(readOnly=True)         
+        self.hardwareNotesEdit = QtGui.QLineEdit(readOnly=True)        
+
+        self.accLimitEdit = QtGui.QLineEdit(readOnly=True)
+        self.velocityLimitEdit = QtGui.QLineEdit(readOnly=True)         
+
+        # Layout        
+        self.grid = QtGui.QGridLayout()
+        self.setLayout(self.grid)        
+        self.grid.setSpacing(5)
+        
+        self.grid.addWidget(setVelParamsButton, 0, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(minVelocity, 1, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(acceleration, 1, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(maxVelocity, 1, 2, QtCore.Qt.AlignCenter)
+        
+        self.grid.addWidget(self.minVelocityDoubleSpinBox, 2, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.accDoubleSpinBox, 2, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.maxVelocityDoubleSpinBox, 2, 2, QtCore.Qt.AlignCenter)
+        
+        self.grid.addWidget(hardwareModel, 3, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(softwareVersion, 3, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(hardwareNotes, 3, 2, QtCore.Qt.AlignCenter)
+        
+        self.grid.addWidget(self.hardwareModelEdit, 4, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.softwareVersionEdit, 4, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.hardwareNotesEdit, 4, 2, QtCore.Qt.AlignCenter)
+        
+        self.grid.addWidget(accLimit, 5, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(velocityLimit, 5, 2, QtCore.Qt.AlignCenter)
+        
+        self.grid.addWidget(parameterLimits, 6, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.accLimitEdit, 6, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.velocityLimitEdit, 6, 2, QtCore.Qt.AlignCenter)
+        
+    def getInitialValues(self):
+        self.getVelParams()
+        self.getHardwareInfo()
+        self.getVelocityParameterLimits()
+
+    @inlineCallbacks
+    def setVelParamsSignal(self, evt):
+        if (self.minVelocityDoubleSpinBox.value() > self.maxVelocityDoubleSpinBox.value()):
+            print 'Minimum velocity exceeds maximum velocity!'
+        else:
+            ok = yield self.parent.parent.server.set_velocity_parameters(self.minVelocityDoubleSpinBox.value(),self.accDoubleSpinBox.value(), self.maxVelocityDoubleSpinBox.value(), context = self.context)
+    
+    @inlineCallbacks
+    def getVelParams(self):
+        velParams = yield self.parent.parent.server.get_velocity_parameters(context = self.context)
+        self.minVelocityDoubleSpinBox.setValue(velParams[0])
+        self.accDoubleSpinBox.setValue(velParams[1])
+        self.maxVelocityDoubleSpinBox.setValue(velParams[2])
+    
+    @inlineCallbacks
+    def getHardwareInfo(self):
+        hwInfo = yield self.parent.parent.server.get_device_information(context = self.context)
+        self.hardwareModelEdit.setText(str(hwInfo[0]))
+        self.softwareVersionEdit.setText(str(hwInfo[1]))
+        self.hardwareNotesEdit.setText(str(hwInfo[2]))
+ 
+    @inlineCallbacks
+    def getVelocityParameterLimits(self):
+        paramLimits = yield self.parent.parent.server.get_velocity_parameter_limits(context = self.context)
+        self.accLimitEdit.setText(str(paramLimits[0]))
+        self.velocityLimitEdit.setText(str(paramLimits[1]))
+        self.minVelocityDoubleSpinBox.setMaximum(paramLimits[1])
+        self.accDoubleSpinBox.setMaximum(paramLimits[0])
+        self.maxVelocityDoubleSpinBox.setMaximum(paramLimits[1])
+        
+    def closeEvent(self, evt):
+        self.hide()
+        
 class MainPanel(QtGui.QWidget):
     def __init__(self):
         QtGui.QWidget.__init__(self)
         self.devDict = {}
-        #self.setupUI(4)     
         self.connect()              
         
     @inlineCallbacks
@@ -322,7 +316,6 @@ class MainPanel(QtGui.QWidget):
             context = yield self.cxn.context()
             self.server.select_device(availableDevices[i], context = context)
             devPanel = DevicePanel(self, self.cxn, context, availableDevices[i])
-#            devPanel = DevicePanel()
             self.devDict[i] = devPanel
             if (i % 2 == 0): #even
                 grid.addWidget(devPanel, (i / 2) , 0)
