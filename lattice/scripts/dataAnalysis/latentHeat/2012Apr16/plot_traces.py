@@ -9,11 +9,11 @@ from matplotlib import pyplot
 experiment = 'LatentHeat_no729_autocrystal'
 totalTraces = 50
 binTime =250.0*10**-6
-datasets = ['2012Apr16_2159_01']
+datasets = ['2012Apr16_2205_26']
             
 figure = pyplot.figure()
 figure.clf()
-pyplot.suptitle('Far Blue Heating 5 ions')
+pyplot.suptitle('Far Blue Heating')
 for datasetName in datasets:
     #getting parameters
     dv.cd(['','Experiments',experiment,datasetName])
@@ -27,7 +27,7 @@ for datasetName in datasets:
     dv.cd(['','Experiments',experiment,datasetName,'timetags'])
     fluor = numpy.zeros(binNumber)
     for dataset in range(1,totalTraces+1):
-        print dataset
+        #print dataset
         dv.open(int(dataset))
         timetags = dv.get().asarray[:,0]
         newbinned = numpy.histogram(timetags, binArray )[0]

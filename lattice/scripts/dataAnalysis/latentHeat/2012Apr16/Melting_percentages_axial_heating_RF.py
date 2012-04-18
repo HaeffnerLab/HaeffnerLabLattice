@@ -6,32 +6,32 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
-meltingThreshold = 1000 
-totalTraces = 2
-datasets =  [['2012Apr12_2033_19','2012Apr12_2045_26','2012Apr12_2043_40','2012Apr12_2041_42',
-              '2012Apr12_2039_40','2012Apr12_2037_26','2012Apr12_2034_49','2012Apr12_2030_05',
-              '2012Apr12_2026_28','2012Apr12_2022_14'],
-            ['2012Apr12_2158_28','2012Apr12_2202_27','2012Apr12_2159_18','2012Apr12_2200_41']]#,
-             #[['2012Apr12_2127_43','2012Apr12_2128_40','2012Apr12_2129_48'],
-             #['2012Apr12_2223_45','2012Apr12_2221_05','2012Apr12_2218_11','2012Apr12_2215_22',
-             # '2012Apr12_2212_19','2012Apr12_2209_19','2012Apr12_2206_09'],
-             # ['2012Apr12_2150_53','2012Apr12_2152_43','2012Apr12_2154_32','2012Apr12_2156_30']]
+meltingThreshold = 100 
+totalTraces = 50
+datasets =   [['2012Apr16_1807_50','2012Apr16_1808_44','2012Apr16_1809_49','2012Apr16_1811_04','2012Apr16_1812_25',
+               '2012Apr16_1813_55','2012Apr16_1816_59','2012Apr16_1818_25','2012Apr16_1820_08'],
+              ['2012Apr16_2044_39','2012Apr16_2043_36','2012Apr16_2042_03','2012Apr16_2039_50',
+               '2012Apr16_2038_11','2012Apr16_2045_33','2012Apr16_2046_59','2012Apr16_2048_35','2012Apr16_2050_43'],
+               ['2012Apr16_2003_38','2012Apr16_2005_00','2012Apr16_2007_13','2012Apr16_2008_39','2012Apr16_2010_11']]
+#  RF with varying delay [['2012Apr16_1947_53','2012Apr16_1958_37','2012Apr16_2000_11','2012Apr16_1948_59',
+#             '2012Apr16_1950_32','2012Apr16_1952_27'],
+#             ['2012Apr16_2054_21','2012Apr16_2055_21','2012Apr16_2056_29','2012Apr16_2100_06',
+#              '2012Apr16_2057_52','2012Apr16_2101_54','2012Apr16_2104_07','2012Apr16_2106_51'],
+#             ['2012Apr16_2011_56','2012Apr16_2012_56','2012Apr16_2014_07','2012Apr16_2015_29',
+#              '2012Apr16_2017_14','2012Apr16_2020_22','2012Apr16_2022_54']] 
+            #['2012Apr16_2150_52','2012Apr16_2151_56','2012Apr16_2153_06','2012Apr16_2154_08','2012Apr16_2155_31']
 
 detectedCounts = [] #list of counts detected during readout
 
-fig, ax = pyplot.subplots()
-fig.clf()
-title = 'Melting fractions for 30 ms heating time'
-#pyplot.suptitle(title)
-
+figure = pyplot.figure()
+figure.clf()
+title = 'Varying heating times at different Rf'
+pyplot.suptitle(title)
 
 refSigs = []
 
 for x in range(len(datasets)):
-#    if x == 2:
-#        totalTraces = 100
-#    else:
-#        totalTraces = 50
+    heat_times = []
     delay_times = []
     percent_melt = []
     for datasetName in datasets[x]:
@@ -42,11 +42,14 @@ for x in range(len(datasets)):
         initial_cooling = dv.get_parameter('initial_cooling')
         heat_delay = dv.get_parameter('heat_delay')
         axial_heat = dv.get_parameter('axial_heat')
+        heat_times.append(axial_heat * 10.**3)
         readout_delay = dv.get_parameter('readout_delay')
         delay_times.append(readout_delay * 10.**3)
-        #readout_delay = dv.get_parameter('readout_delay')
+        axial_heat = dv.get_parameter('axial_heat')
+        readout_delay = dv.get_parameter('readout_delay')
         readout_time = dv.get_parameter('readout_time')
         xtal_record = dv.get_parameter('xtal_record')
+        rf_power = dv.get_parameter('rf_power')
        
         #readout range
         heatStart = (initial_cooling + heat_delay ) #in seconds
@@ -64,41 +67,23 @@ for x in range(len(datasets)):
             if countsReadout < meltingThreshold: # melting is less counts
                 melted +=1
             refs = refs + refReadout    
-            #refs.append(refReadout)
-        #print refs
-        refs = refs/30
+            refs = refs/totalTraces
         refSigs.append(refs)
         perc = melted / float(totalTraces)
         percent_melt.append(perc)
-    
-    numpy.set_printoptions(precision=2)
-    g = numpy.array(delay_times)
-    print 'delay times = ',g
-    print 'melted fraction =',percent_melt
-    
-    pyplot.plot(g, percent_melt, '-o', label = 'Heating for {0} ms'.format(axial_heat*1e3))
+        print 'Heating time :', heatEnd - heatStart
+        print 'Delay time :', readout_delay
+        print 'Melted = {0} %'.format(100*perc)
+    pyplot.plot(heat_times, percent_melt, '-o', label = 'RF = {0} dBm'.format(rf_power))
     pyplot.hold('True')
-    
-#ax.set_xscale('log')
-pyplot.xlabel('Delay time (ms)')
-pyplot.ylabel('Melted fraction')
-pyplot.legend()
-pyplot.xlim([0,1050])
-pyplot.show()
 
-fileObj = open(title + ".txt", "w")
-times = str(delay_times).strip('[]')
-fracs  = str(percent_melt).strip('[]')
-fileObj.write(times)
-fileObj.write('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-fileObj.write(fracs)
-fileObj.close()
+numpy.set_printoptions(precision=2)
+pyplot.xlabel('Heating time (ms)')
+pyplot.ylabel('Melted fraction')
+pyplot.legend(loc="upper left", bbox_to_anchor=(0.8,0.9))
+#pyplot.xlim([0,130])
+pyplot.ylim([-0.05,1.05])
+pyplot.show()
 
 print 'DONE'
 
-#figure = pyplot.figure()
-#figure.clf
-#pyplot.plot(heat_times, refSigs, '-o')
-#pyplot.xlabel('Heating time (ms)')
-#pyplot.ylabel('Heating fluorescence')
-#pyplot.show()
