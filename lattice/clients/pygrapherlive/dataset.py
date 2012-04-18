@@ -9,20 +9,21 @@ class, the buffer emptied.
 
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
 from PyQt4 import QtCore
-from twisted.internet.threads import deferToThread
+#from twisted.internet.threads import deferToThread
 import numpy as np
 import time
 
 class Dataset(QtCore.QObject):
     
     """Class to handle incoming data and prepare them for plotting """
-    def __init__(self, cxn, context, dataset, directory):
+    def __init__(self, cxn, context, dataset, directory, reactor):
         super(Dataset, self).__init__()
         self.accessingData = DeferredLock()
         self.cxn = cxn
         self.context = context # context of the first dataset in the window
         self.dataset = dataset
         self.directory = directory
+        self.reactor = reactor
         self.data = None
         self.hasPlotParameter = False
         self.cnt = 0
@@ -50,10 +51,11 @@ class Dataset(QtCore.QObject):
     # Over 60 seconds, check if the dataset has the appropriate 'plotLive' parameter            
     @inlineCallbacks
     def listenForPlotParameter(self):
-        for i in range(120):
+        for i in range(20):
             if (self.hasPlotParameter == True):
                 returnValue(self.hasPlotParameter)
-            yield deferToThread(time.sleep, .5)
+#            yield deferToThread(time.sleep, .5)
+            yield self.wait(.5)
         returnValue(self.hasPlotParameter)
             
     def updateParameter(self, x, y):
@@ -66,6 +68,7 @@ class Dataset(QtCore.QObject):
     def setupDataListener(self, context):
         yield self.cxn.data_vault.signal__data_available(11111, context = context)
         yield self.cxn.data_vault.addListener(listener = self.updateData, source = None, ID = 11111, context = context)
+        yield self.cxn.data_vault.removeListener(listener = self.updateData, source = None, ID = 11111, context = context)
         #self.setupDeferred.callback(True)
         self.updatecounter = 0
         self.timer = self.startTimer(100)
@@ -74,16 +77,25 @@ class Dataset(QtCore.QObject):
     def updateData(self,x,y):
         self.updatecounter = self.updatecounter + 1
         self.getData(self.context)
+        print 'still happening dataset'
     
     def timerEvent(self,evt):
         #print self.updatecounter
+        print 'in dataset'
         if self.updatecounter < 1:
             print 'slowing down!, less than 1 dataupdate per 100milliseconds '
         self.updatecounter = 0
     
     def endTimer(self):
         self.killTimer(self.timer)
+
+    @inlineCallbacks    
+    def disconnectDataSignal(self):
+        yield self.cxn.data_vault.removeListener(listener = self.updateData, source = None, ID = 11111, context = self.context)
+
         
+
+
     # returns the current data
     @inlineCallbacks
     def getData(self,context):
@@ -110,4 +122,7 @@ class Dataset(QtCore.QObject):
             labels.append(variables[1][i][1])
         returnValue(labels)
             
-        
+    def wait(self, seconds, result=None):
+        d = Deferred()
+        self.reactor.callLater(seconds, d.callback, result)
+        return d    

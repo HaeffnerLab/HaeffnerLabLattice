@@ -192,15 +192,22 @@ class GrapherWindow(QtGui.QMainWindow):
             action.setCheckable(True)
         return action
     
+    def fileQuit(self):
+        self.close()
+        
     def closeEvent(self, event):
         self.qmc.endTimer()
         if (self.cb2.isChecked()):
             # "uncheck" the overlay checkbox
             self.cb2.toggle()
+        print 'delering datadict'
+        del self.qmc.dataDict
         # Remove this window from the dictionary so that no datasets...
         # ... are drawn to this window
         self.parent.removeWindowFromDictionary(self)
         self.parent.removeWindowFromWinList(self)
+        self.fileQuit()
+
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
