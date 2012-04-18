@@ -41,7 +41,7 @@ xtalPower = -4.0
 cooling = (102.0, -8.0) #MHz, dBm
 readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
-rf_power = -5.0
+rf_power = -3.5
 rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
 auto_crystal = True
@@ -49,8 +49,8 @@ auto_crystal = True
 params = {
               'initial_cooling': 100e-3,
               'heat_delay':30e-3,
-              'axial_heat':95.0*10**-3,
-              'readout_delay':400.0*10**-3, ####should implement 0
+              'axial_heat':75.0*10**-3,
+              'readout_delay':1000.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3
             }
@@ -151,13 +151,13 @@ def sequence():
         if auto_crystal:
             success = auto_crystalize()
             if not success: break
-    print 'getting result and adding to data vault'
+    # getting result and adding to data vault
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
     data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
     dv.add(data)
     dv.add_parameter('plotLive',True)
-    print 'gathering parameters and adding them to data vault'
+    # gathering parameters and adding them to data vault
     measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP']
     measuredDict = dvParameters.measureParameters(cxn, cxnlab, measureList)
     dvParameters.saveParameters(dv, measuredDict)
@@ -194,7 +194,7 @@ def auto_crystalize():
             time.sleep(optimal_cool_time)
             if is_crystalized():
                 print 'Crysallized on attempt number {}'.format(attempt + 1)
-                rf.amplitude(initpower)
+                rf.amplitude(rf_power)
                 time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
@@ -215,6 +215,7 @@ def auto_crystalize():
 print 'initializing measurement'
 initpower = rf.amplitude()
 rf.amplitude(rf_power)
+print rf.amplitude()
 time.sleep(rf_settling_time)
 initialize()
 print 'performing sequence'
