@@ -20,7 +20,7 @@ fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = Fals
 #saving
 dv.cd(['','QuickMeasurements','FFT'],True)
 name = dv.new('FFT',[('Voltage', 'V')], [('FFTPeak','Arb','Arb')] )
-dv.add_parameter('plotLive',True)
+#dv.add_parameter('plotLive',True)
 print 'Saving {}'.format(name)
 
 voltages = np.arange(voltageMin, VoltageMax + VoltageStep, VoltageStep)
