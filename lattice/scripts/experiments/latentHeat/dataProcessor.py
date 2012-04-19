@@ -21,12 +21,14 @@ class histogramTimetags():
     def processTraces(self):
         if self.threshold is None:
             self.threshold = self.clusterkmeans()    
-        self.analyzeThreshold(self.threshold)
+        if self.threshold is not None:
+            self.self.analyzeThreshold(self.threshold)
         self.plot()
     
     def clusterkmeans(self):
         wh = whiten(self.counts) #normalizes the counts for easier clustering
-        #compute kmeans for one, two, compare the distortions and choose the better one
+        scale = self.counts[0] / wh[0]
+        #compute kmeans for  k = 1,2 compare the distortions and choose the better one
         one = kmeans(wh, 1)
         two = kmeans(wh, 2)
         if one[1] < two[1]:
@@ -34,7 +36,7 @@ class histogramTimetags():
             threshold = None
         else:
             km = two
-            threshold = km[0].mean() #set threshold to be the average of two centers
+            threshold = scale * km[0].mean() #set threshold to be the average of two centers
         return threshold
 
     def analyzeThreshold(self, threshold):

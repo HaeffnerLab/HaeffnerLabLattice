@@ -5,9 +5,9 @@ import labrad
 import numpy
 import time
 ####from scriptLibrary.parameter import Parameters
-from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 from PulseSequences.latentHeat import LatentHeat
+from dataProcessor import data_process
 ''''
 This experiment involves studying the sharpness of crystal to cloud phase transition. 
 After all cooling lights are switched off, the crystal is heated with far blue light for a variable time. Readout is meant to be done with a near resonant light.
@@ -50,7 +50,7 @@ params = {
               'initial_cooling': 100e-3,
               'heat_delay':30e-3,
               'axial_heat':75.0*10**-3,
-              'readout_delay':1000.0*10**-3, ####should implement 0
+              'readout_delay':10.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3
             }
@@ -108,12 +108,12 @@ def initialize():
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
     #make sure r&s synthesizers are on, and are of correct frequency
     #heating
-####    dpass.select('axial')
-####    dpass.frequency(axfreq)
-####    dpass.output(True)
+    dpass.select('axial')
+    dpass.frequency(axfreq)
+    dpass.output(True)
     #readout / cooling
-####    dpass.select('110DP')
-####    dpass.output(True)
+    dpass.select('110DP')
+    dpass.output(True)
     rs110DP.select_device(dpass.device_id())
     #make sure the list is in range:
     freqRange = dpass.frequency_range()
@@ -225,3 +225,6 @@ rf.amplitude(initpower)
 print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
+dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
+dp.loadDataVault()
+dp.processAll()
