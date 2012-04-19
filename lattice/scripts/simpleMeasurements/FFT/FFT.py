@@ -3,7 +3,7 @@ sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy as np
-#from PulseSequences.TimeRes_FFT import TimeResolved
+from PulseSequences.TimeRes_FFT import TimeResolved
 
 class measureFFT():
     def __init__(self, cxn, recordTime, average, freqSpan, freqOffset, savePlot = False):
@@ -13,7 +13,7 @@ class measureFFT():
         centerFreq = self.getCenterFreq()
         self.timeRes = float(self.pulser.get_timetag_resolution())
         self.freqs = self.computeFreqDomain(recordTime, freqSpan,  freqOffset, centerFreq)
-        #self.programPulseSequence(recordTime)
+        self.programPulseSequence(recordTime)
         self.savePlot = savePlot
     
     def getCenterFreq(self):
@@ -32,15 +32,15 @@ class measureFFT():
         self.dv = cxn.data_vault
         self.pulser = cxn.pulser
     
-#    def programPulseSequence(self, recordTime):
-#        params = {
-#                  'recordTime': recordTime
-#                  }
-#        seq = TimeResolved(self.pulser)
-#        self.pulser.new_sequence()
-#        seq.setVariables(**params)
-#        seq.defineSequence()
-#        self.pulser.program_sequence()
+    def programPulseSequence(self, recordTime):
+        params = {
+                  'recordTime': recordTime
+                  }
+        seq = TimeResolved(self.pulser)
+        self.pulser.new_sequence()
+        seq.setVariables(**params)
+        seq.defineSequence()
+        self.pulser.program_sequence()
     
     def getTotalPower(self):
         '''computers the total power in the spectrum of the given frequenceis'''
@@ -58,6 +58,7 @@ class measureFFT():
         peakArea = np.sum(pwr[maxindex - ptsAround: maxindex + ptsAround + 1])
         background = (np.sum(pwr) - peakArea) / (pwr.size - 2 * ptsAround + 1) #average height of a point outside the peak
         peakArea = peakArea - background * (2 * ptsAround + 1) #background subtraction
+        print 'Peak Area {}'.format(peakArea)
         return peakArea
         
     def getPowerSpectrum(self):
@@ -106,6 +107,5 @@ if  __name__ == '__main__':
     freqSpan = 300.0 #Hz 
     freqOffset = -310.0 #Hz, the offset between the counter clock and the rf synthesizer clock
     fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = True)
-    #totalPower = fft.getTotalPower()
-    peakArea = fft.getPeakArea(ptsAround = 3)
-    print peakArea
+    totalPower = fft.getTotalPower()
+    #peakArea = fft.getPeakArea(ptsAround = 3)
