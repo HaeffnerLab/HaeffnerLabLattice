@@ -114,7 +114,9 @@ class APTMotorServer(LabradServer):
                        'Radial LR': 83815664,
                        'Axial LR': 63001773,
                        'Auxilliary': 83816548,
-                       'Simulator': 83000001}
+                       'Simulator1': 83000001,
+                       'Simulator2': 83000002,
+                       'Simulator3': 83000003}
         
         # Make sure none of these devices have been initialized yet
         self.initializedDict = {}

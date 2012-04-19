@@ -13,6 +13,7 @@ class DevicePanel(QtGui.QWidget):
         self.setupUI()
         self.getPositionSignal(1)
         self.setupListeners()
+        self.cnt = 0
            
     def setupUI(self):
         # Labels
@@ -45,7 +46,7 @@ class DevicePanel(QtGui.QWidget):
         self.positionDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.positionDoubleSpinBox.setDecimals(4)
         self.positionDoubleSpinBox.setSingleStep(.001)
-        self.positionDoubleSpinBox.setMinimum(0)
+        self.positionDoubleSpinBox.setMinimum(-5)
         self.positionDoubleSpinBox.setMaximum(1)
         self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
@@ -58,16 +59,6 @@ class DevicePanel(QtGui.QWidget):
         self.stepSizeDoubleSpinBox.setSingleStep(.001)
         self.stepSizeDoubleSpinBox.setMinimum(0)
         self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-        
-        self.moveDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.moveDoubleSpinBox.setMaximumWidth(43)
-        self.moveRelativeEdit = QtGui.QLineEdit()
-        self.moveRelativeEdit.setMaximumWidth(43)
-        self.moveRelativeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.moveAbsoluteEdit = QtGui.QLineEdit()
-        self.moveAbsoluteEdit.setMaximumWidth(43)        
-        self.moveAbsoluteEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Layout        
         self.grid = QtGui.QGridLayout()
@@ -151,6 +142,7 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def getPositionSignal(self, evt):
+        print 'im in here!'
         position = yield self.parent.server.get_position(context = self.context)
         self.positionDoubleSpinBox.setValue(position)
 
@@ -160,8 +152,10 @@ class DevicePanel(QtGui.QWidget):
         yield self.parent.server.addListener(listener = self.positionChange, source = None, ID = 88888)    
         print 'listeners set up'
 
-    def positionChange(self, signal):
+    def positionChange(self, x, y):
         self.getPositionSignal(1)
+        self.cnt = self.cnt + 1
+        print 'Signal!: ', self.cnt, ' ', x
 
 class ParameterWindow(QtGui.QWidget):
     """Creates the device parameter window"""
