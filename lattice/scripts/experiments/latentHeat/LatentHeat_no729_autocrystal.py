@@ -144,7 +144,6 @@ def sequence():
         dv.add_parameter('iteration',iteration)
         ones = numpy.ones_like(timetags)
         dv.add(numpy.vstack((timetags,ones)).transpose())
-        dvParameters.saveParameters(dv, params)
         #add to binning of the entire sequence
         newbinned = numpy.histogram(timetags, binArray )[0]
         binnedFlour = binnedFlour + newbinned

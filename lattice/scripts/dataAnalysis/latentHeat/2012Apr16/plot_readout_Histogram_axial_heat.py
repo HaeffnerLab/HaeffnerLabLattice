@@ -48,7 +48,6 @@ for datasetName in datasets:
         timetags = dv.get().asarray[:,0]
         refReadout = numpy.count_nonzero((heatStart <= timetags) * (timetags <= heatEnd))
         countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= stopReadout))
-        normCounts = (float(refReadout) / float(max(refSigs))) * (countsReadout)  
         detectedCounts.append(countsReadout)
     print countsReadout, refReadout
 print numpy.shape(detectedCounts)
