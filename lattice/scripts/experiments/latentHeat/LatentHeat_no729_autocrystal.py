@@ -32,7 +32,7 @@ pmt = cxn.normalpmtflow
 
 
 #Global parameters
-iterations = 50
+iterations = 5
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
@@ -108,12 +108,12 @@ def initialize():
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
     #make sure r&s synthesizers are on, and are of correct frequency
     #heating
-    dpass.select('axial')
-    dpass.frequency(axfreq)
-    dpass.output(True)
+####    dpass.select('axial')
+####    dpass.frequency(axfreq)
+####    dpass.output(True)
     #readout / cooling
-    dpass.select('110DP')
-    dpass.output(True)
+####    dpass.select('110DP')
+####    dpass.output(True)
     rs110DP.select_device(dpass.device_id())
     #make sure the list is in range:
     freqRange = dpass.frequency_range()
@@ -127,7 +127,6 @@ def initialize():
     rs110DP.new_list(rs110List)
     rs110DP.activate_list_mode(True)
     time.sleep(0.50) #letting list mode activate
-    ####globalDict['resolution']=trfpga.get_resolution()
 
 def sequence():
     binnedFlour = numpy.zeros(binNumber)
@@ -145,6 +144,7 @@ def sequence():
         dv.add_parameter('iteration',iteration)
         ones = numpy.ones_like(timetags)
         dv.add(numpy.vstack((timetags,ones)).transpose())
+        dvParameters.saveParameters(dv, params)
         #add to binning of the entire sequence
         newbinned = numpy.histogram(timetags, binArray )[0]
         binnedFlour = binnedFlour + newbinned
@@ -158,7 +158,7 @@ def sequence():
     dv.add(data)
     dv.add_parameter('plotLive',True)
     # gathering parameters and adding them to data vault
-    measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP']
+    measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
     measuredDict = dvParameters.measureParameters(cxn, cxnlab, measureList)
     dvParameters.saveParameters(dv, measuredDict)
     dvParameters.saveParameters(dv, globalDict)

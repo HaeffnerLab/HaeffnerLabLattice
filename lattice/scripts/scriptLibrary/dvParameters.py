@@ -48,4 +48,6 @@ def measureParameters(cxn, cxnlab, list):
             dict['frequency_radialDP'] = server.frequency()
             dict['power_radialDP'] = server.amplitude()
             dict['output_radialDP'] = server.output()
+        elif item == 'pulser':
+            dict['timetag_resolution'] = cxn.pulser.get_timetag_resolution()
     return dict
