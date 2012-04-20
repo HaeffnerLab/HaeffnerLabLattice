@@ -7,7 +7,7 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 meltingThreshold = 600 
-totalTraces = 3
+totalTraces = 50
 datasets =  [['2012Apr12_2226_40','2012Apr12_2228_30'],['2012Apr12_2230_15','2012Apr12_2232_27',
              '2012Apr12_2235_45']]
 
@@ -15,7 +15,7 @@ detectedCounts = [] #list of counts detected during readout
 
 figure = pyplot.figure()
 figure.clf()
-title = 'Melting fractions :100 ms delay'
+title = 'melting'
 pyplot.suptitle(title)
 
 heat_times = []

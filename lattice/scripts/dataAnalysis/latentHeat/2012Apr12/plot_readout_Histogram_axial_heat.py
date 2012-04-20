@@ -7,7 +7,7 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 totalTraces = 50
-datasets = ['2012Apr16_1522_44']
+datasets = ['2012Apr12_2223_45']
 
 
 refSigs = []

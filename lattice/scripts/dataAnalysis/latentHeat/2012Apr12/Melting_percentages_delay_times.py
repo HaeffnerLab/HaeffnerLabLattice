@@ -6,34 +6,40 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
-meltingThreshold = 1000 
-totalTraces = 2
-datasets =  [['2012Apr12_2033_19','2012Apr12_2045_26','2012Apr12_2043_40','2012Apr12_2041_42',
+#meltingThreshold = 1000 
+#totalTraces = 1
+datasets =  [['2012Apr12_2158_28','2012Apr12_2202_27','2012Apr12_2159_18','2012Apr12_2200_41'],
+             ['2012Apr12_2033_19','2012Apr12_2045_26','2012Apr12_2043_40','2012Apr12_2041_42',
               '2012Apr12_2039_40','2012Apr12_2037_26','2012Apr12_2034_49','2012Apr12_2030_05',
               '2012Apr12_2026_28','2012Apr12_2022_14'],
-            ['2012Apr12_2158_28','2012Apr12_2202_27','2012Apr12_2159_18','2012Apr12_2200_41']]#,
-             #[['2012Apr12_2127_43','2012Apr12_2128_40','2012Apr12_2129_48'],
-             #['2012Apr12_2223_45','2012Apr12_2221_05','2012Apr12_2218_11','2012Apr12_2215_22',
-             # '2012Apr12_2212_19','2012Apr12_2209_19','2012Apr12_2206_09'],
-             # ['2012Apr12_2150_53','2012Apr12_2152_43','2012Apr12_2154_32','2012Apr12_2156_30']]
+             ['2012Apr12_2223_45','2012Apr12_2221_05','2012Apr12_2218_11','2012Apr12_2215_22',
+              '2012Apr12_2212_19','2012Apr12_2209_19','2012Apr12_2206_09'],
+             ['2012Apr12_2150_53','2012Apr12_2152_43','2012Apr12_2154_32','2012Apr12_2156_30']]
+             
+             #['2012Apr12_2033_19','2012Apr12_2045_26','2012Apr12_2043_40','2012Apr12_2041_42',
+             # '2012Apr12_2039_40','2012Apr12_2037_26','2012Apr12_2034_49','2012Apr12_2030_05',
+             # '2012Apr12_2026_28','2012Apr12_2022_14']
 
 detectedCounts = [] #list of counts detected during readout
 
 fig, ax = pyplot.subplots()
 fig.clf()
-title = 'Melting fractions for 30 ms heating time'
+title = ''
 #pyplot.suptitle(title)
 
 
 refSigs = []
 
 for x in range(len(datasets)):
-#    if x == 2:
-#        totalTraces = 100
-#    else:
-#        totalTraces = 50
+    if x == 1:
+        totalTraces = 100
+        meltingThreshold = 1000 
+    else:
+        totalTraces = 50
+        meltingThreshold = 600
     delay_times = []
     percent_melt = []
+    print x
     for datasetName in datasets[x]:
         refs = 0
         #getting parameters
@@ -76,7 +82,7 @@ for x in range(len(datasets)):
     print 'delay times = ',g
     print 'melted fraction =',percent_melt
     
-    pyplot.plot(g, percent_melt, '-o', label = 'Heating for {0} ms'.format(axial_heat*1e3))
+    pyplot.plot(g, percent_melt, '-o', label = 'Heating time {0} ms'.format(axial_heat*1e3))
     pyplot.hold('True')
     
 #ax.set_xscale('log')
@@ -84,15 +90,16 @@ pyplot.xlabel('Delay time (ms)')
 pyplot.ylabel('Melted fraction')
 pyplot.legend()
 pyplot.xlim([0,1050])
+pyplot.ylim([-0.05,1.05])
 pyplot.show()
 
-fileObj = open(title + ".txt", "w")
-times = str(delay_times).strip('[]')
-fracs  = str(percent_melt).strip('[]')
-fileObj.write(times)
-fileObj.write('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-fileObj.write(fracs)
-fileObj.close()
+#fileObj = open(title + ".txt", "w")
+#times = str(delay_times).strip('[]')
+#fracs  = str(percent_melt).strip('[]')
+#fileObj.write(times)
+#fileObj.write('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+#fileObj.write(fracs)
+#fileObj.close()
 
 print 'DONE'
 

@@ -8,7 +8,7 @@ from matplotlib import pyplot
 
 meltingThreshold = 2500
 totalTraces = 30
-binTime =250.0*10**-6
+binTime =500.0*10**-6
 excludeStat = 0.05 #discard traces with fewer than this percentage of events i.e if melts once, don't plot
 experiment = 'LatentHeat_no729_autocrystal'
 datasets = ['2012Mar08_1920_06', '2012Mar08_1921_47', '2012Mar08_1926_43']

@@ -8,13 +8,15 @@ from matplotlib import pyplot
 
 experiment = 'LatentHeat_no729_autocrystal'
 totalTraces = 30
-binTime =250.0*10**-6
-datasets = ['2012Mar08_1918_28', '2012Mar08_1920_06','2012Mar08_1922_59','2012Mar08_1919_12',
-            '2012Mar08_1921_47','2012Mar08_1920_53','2012Mar08_1924_11','2012Mar08_1926_43']
+binTime =500.0*10**-6
+datasets = ['2012Mar08_1918_28', '2012Mar08_1922_59','2012Mar08_1921_47','2012Mar08_1924_11','2012Mar08_1926_43']
+            #['2012Mar08_1918_28', '2012Mar08_1920_06','2012Mar08_1922_59','2012Mar08_1919_12',
+            #'2012Mar08_1921_47','2012Mar08_1920_53','2012Mar08_1924_11','2012Mar08_1926_43']
+
 
 figure = pyplot.figure()
 figure.clf()
-pyplot.suptitle('Far Blue Heating 6 ions')
+pyplot.suptitle('6 ions')
 for datasetName in datasets:
     #getting parameters
     dv.cd(['','Experiments',experiment,datasetName])
@@ -37,5 +39,5 @@ for datasetName in datasets:
 
 pyplot.xlabel('Time (sec)')
 pyplot.ylabel('Counts (arb)')
-pyplot.legend()
+#pyplot.legend()
 pyplot.show()
