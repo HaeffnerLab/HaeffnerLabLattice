@@ -6,12 +6,13 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
-meltingThreshold = 240
+meltingThreshold = 180
 totalTraces = 50
 binTime =240.0*10**-6
 excludeStat = 0.05 #discard traces with fewer than this percentage of events i.e if melts once, don't plot
 experiment = 'LatentHeat_no729_autocrystal'
-datasets = ['2012Apr19_2053_11']
+datasets = ['2012Apr19_1647_06','2012Apr19_1648_25','2012Apr19_1649_33','2012Apr19_1651_16',
+            '2012Apr19_1653_11', '2012Apr19_1655_13','2012Apr19_1657_09','2012Apr19_1659_25']#,'2012Apr19_1702_19']
 
 figure = pyplot.figure()
 figure.clf()
@@ -52,12 +53,12 @@ for datasetName in datasets:
             fluorCrystal += newbinned
             crystal += 1
     #normalizing and excluding ones that don't have enough statistics
-    if melted > excludeStat * totalTraces:
-        fluorMelted = fluorMelted / float(melted)
-        pyplot.plot(binArray[:-1],fluorMelted, label = 'Melted {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
+    #if melted > excludeStat * totalTraces:
+     #   fluorMelted = fluorMelted / float(melted)
+     #   pyplot.plot(binArray[:-1],fluorMelted, label = 'Melted {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
     if crystal > excludeStat * totalTraces:
         fluorCrystal = fluorCrystal / float(crystal)
         pyplot.plot(binArray[:-1],fluorCrystal, label = 'Crystallized {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
         
-pyplot.legend()
+#pyplot.legend()
 pyplot.show()

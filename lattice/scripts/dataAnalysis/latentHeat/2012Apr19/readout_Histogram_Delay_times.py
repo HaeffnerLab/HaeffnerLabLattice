@@ -19,10 +19,11 @@ detectedCounts = [] #list of counts detected during readout
 
 figure = pyplot.figure()
 figure.clf()
-pyplot.suptitle('Mean and sigmas of melted histograms')
+pyplot.suptitle('Mean and sigmas of still-crystal histograms')
 
 delay_times = []
 for datasetName in datasets:
+    detectedCounts = [] #list of counts detected during readout
     dv.cd(['','Experiments','LatentHeat_no729_autocrystal',datasetName])
     dv.open(1)    
     initial_cooling = dv.get_parameter('initial_cooling')
@@ -43,16 +44,20 @@ for datasetName in datasets:
     print 'Heating time :', heatEnd - heatStart
     print 'Delay time :', readout_delay
     dv.cd(['','Experiments','LatentHeat_no729_autocrystal',datasetName,'timetags'])
-        
+    
+    melted = 0  
+    crystal = 0
     for dataset in range(1,totalTraces+1):
         dv.open(int(dataset))
         timetags = dv.get().asarray[:,0]
         countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= stopReadout))
-        #normCounts = (float(refReadout) / float(max(refSigs))) * (countsReadout)  
         detectedCounts.append(countsReadout)
-
+        if countsReadout < meltingThreshold:
+            melted +=1
+        elif countsReadout > meltingThreshold:
+            crystal +=1
     dC = numpy.array(detectedCounts)
-    meltHist = dC[(dC < meltingThreshold).nonzero()]
+    meltHist = dC[(dC < meltingThreshold).nonzero()]  # < for melting
     (mu, sigma) = norm.fit(meltHist)
     print mu, sigma
     mus.append(mu)
@@ -61,8 +66,10 @@ for datasetName in datasets:
     #y = mlab.normpdf( bins, mu, sigma)
 #pyplot.hist(detectedCounts, 60)
 #l = pyplot.plot(bins, y*(9/max(y)), 'r--', linewidth=2)
+print sqrt(crystal), sigs/sqrt(crystal)
 pyplot.plot(delay_times, mus, '-o', label = 'means')
-pyplot.plot(delay_times, sigs, '-o', label = 'sigmas') 
+pyplot.plot(delay_times, sigs/sqrt(melted), '-o', label = 'sigmas') 
+#pyplot.plot(delay_times, sigs/sqrt(crystal), '-o', label = 'sigmas') 
 pyplot.legend()
 pyplot.show()
 print 'Done'
