@@ -84,6 +84,7 @@ class Qt4MplCanvas(FigureCanvas):
    
     # retrieve and store the new data from Connections
     def setPlotData(self, dataset, directory, data):
+        print 'still happening canvas'
         if (self.dataDict[dataset, directory] == None):# first iteration
             self.dataDict[dataset, directory] = data
             NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
@@ -121,6 +122,7 @@ class Qt4MplCanvas(FigureCanvas):
                 self.drawGraph()
     
     def timerEvent(self, evt):
+        print 'canvas timer event'
         self.drawCounter = self.drawCounter + 1
         if (self.drawCounter == 10): #100ms
             self.drawGraph()

@@ -19,8 +19,8 @@ def measureParameters(cxn, cxnlab, list):
         elif item == 'compensation':
             server = cxn.compensation_box
             [comp1, comp2] = [server.getcomp(1), server.getcomp(2)]
-            dict['comp1'] = endcap1
-            dict['comp2'] = endcap2
+            dict['comp1'] = comp1
+            dict['comp2'] = comp2
         elif item == 'dcoffsetonrf':
             server = cxn.dc_box
             dict['dcoffsetonrf'] = server.getdcoffsetrf()
@@ -48,4 +48,6 @@ def measureParameters(cxn, cxnlab, list):
             dict['frequency_radialDP'] = server.frequency()
             dict['power_radialDP'] = server.amplitude()
             dict['output_radialDP'] = server.output()
+        elif item == 'pulser':
+            dict['timetag_resolution'] = cxn.pulser.get_timetag_resolution()
     return dict

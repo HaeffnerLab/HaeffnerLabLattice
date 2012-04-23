@@ -5,9 +5,9 @@ import labrad
 import numpy
 import time
 ####from scriptLibrary.parameter import Parameters
-from scriptLibrary import paulsbox 
 from scriptLibrary import dvParameters 
 from PulseSequences.latentHeat import LatentHeat
+from dataProcessor import data_process
 ''''
 This experiment involves studying the sharpness of crystal to cloud phase transition. 
 After all cooling lights are switched off, the crystal is heated with far blue light for a variable time. Readout is meant to be done with a near resonant light.
@@ -32,7 +32,7 @@ pmt = cxn.normalpmtflow
 
 
 #Global parameters
-iterations = 50
+iterations = 5
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
@@ -41,7 +41,7 @@ xtalPower = -4.0
 cooling = (102.0, -8.0) #MHz, dBm
 readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
-rf_power = -5.0
+rf_power = -3.5
 rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
 auto_crystal = True
@@ -49,8 +49,8 @@ auto_crystal = True
 params = {
               'initial_cooling': 100e-3,
               'heat_delay':30e-3,
-              'axial_heat':95.0*10**-3,
-              'readout_delay':400.0*10**-3, ####should implement 0
+              'axial_heat':75.0*10**-3,
+              'readout_delay':10.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3
             }
@@ -127,7 +127,6 @@ def initialize():
     rs110DP.new_list(rs110List)
     rs110DP.activate_list_mode(True)
     time.sleep(0.50) #letting list mode activate
-    ####globalDict['resolution']=trfpga.get_resolution()
 
 def sequence():
     binnedFlour = numpy.zeros(binNumber)
@@ -151,14 +150,14 @@ def sequence():
         if auto_crystal:
             success = auto_crystalize()
             if not success: break
-    print 'getting result and adding to data vault'
+    # getting result and adding to data vault
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
     data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
     dv.add(data)
     dv.add_parameter('plotLive',True)
-    print 'gathering parameters and adding them to data vault'
-    measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP']
+    # gathering parameters and adding them to data vault
+    measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
     measuredDict = dvParameters.measureParameters(cxn, cxnlab, measureList)
     dvParameters.saveParameters(dv, measuredDict)
     dvParameters.saveParameters(dv, globalDict)
@@ -194,7 +193,7 @@ def auto_crystalize():
             time.sleep(optimal_cool_time)
             if is_crystalized():
                 print 'Crysallized on attempt number {}'.format(attempt + 1)
-                rf.amplitude(initpower)
+                rf.amplitude(rf_power)
                 time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
@@ -215,6 +214,7 @@ def auto_crystalize():
 print 'initializing measurement'
 initpower = rf.amplitude()
 rf.amplitude(rf_power)
+print rf.amplitude()
 time.sleep(rf_settling_time)
 initialize()
 print 'performing sequence'
@@ -225,3 +225,6 @@ rf.amplitude(initpower)
 print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
+dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
+dp.loadDataVault()
+dp.processAll()

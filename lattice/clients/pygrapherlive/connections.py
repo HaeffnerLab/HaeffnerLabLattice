@@ -124,7 +124,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     @inlineCallbacks
     def newDataset(self, dataset, directory, manuallyLoaded):
         context = yield self.cxn.context() # create a new context
-        datasetObject = Dataset(self.cxn, context, dataset, directory)
+        datasetObject = Dataset(self.cxn, context, dataset, directory, self.reactor)
         self.datasetDict[dataset, directory] = datasetObject
         yield datasetObject.openDataset(context)
         yield datasetObject.setupParameterListener(context)
@@ -140,6 +140,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             else:
                 # This data is not for plotting. Remove it.
                 # There should be a cleaner way of doing this
+                datasetObject.endTimer()
                 del datasetObject
 
     # Prepare the dataset for plotting
@@ -175,12 +176,14 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # ... which windows to draw the dataset on. Then draws the plot.   
     @inlineCallbacks
     def timerEvent(self):
+        print 'in connections: {0}'.format( len(self.dwDict.keys()) )
         for datasetObject in self.dwDict.keys():
             windowsToDrawOn = self.dwDict[datasetObject]
             if (datasetObject.data != None):
                 data = datasetObject.data
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
+                    print 'still happening connections'
                     i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
     
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
@@ -203,6 +206,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         return parameters
     
     # Datasets no longer need to be drawn on closed windows
+    @inlineCallbacks
     def removeWindowFromDictionary(self, win):
         for i in self.dwDict.keys():
             values = self.dwDict[i]
@@ -211,9 +215,11 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                     # if the last window is being removed, delete the dataset object
                     # from the dictionary
                     if (len(values) == 1):
-                        self.dwDict[i].remove(j)
+                        #self.dwDict[i].remove(j)
                         i.endTimer()
-                        del i
+                        print 'disconnecting data signal'
+                        yield i.disconnectDataSignal()
+                        del self.dwDict[i]
                     else:
                         self.dwDict[i].remove(j)
 

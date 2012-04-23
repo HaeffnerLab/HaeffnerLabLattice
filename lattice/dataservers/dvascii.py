@@ -63,8 +63,7 @@ except ImportError, e:
 
 # location of repository will get loaded from the registry
 DATADIR = None
-
-PRECISION = 6 # digits of precision to use when saving data
+PRECISION = 15 # digits of precision to use when saving data
 DATA_FORMAT = '%%.%dG' % PRECISION
 STRING_FORMAT = '%s'
 FILE_TIMEOUT = 60 # how long to keep datafiles open if not accessed

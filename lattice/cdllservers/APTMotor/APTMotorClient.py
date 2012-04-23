@@ -1,6 +1,8 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
+BLOCKSIGNAL = 1
+
 class DevicePanel(QtGui.QWidget):
     def __init__(self, parent, cxn, context, deviceName):    
         QtGui.QWidget.__init__(self)
@@ -11,7 +13,8 @@ class DevicePanel(QtGui.QWidget):
         self.setSerialNumber()
         self.parameterWindowExists = False
         self.setupUI()
-        self.getPositionSignal(1)
+        self.getPositionLimits()
+        self.getPositionSignal(BLOCKSIGNAL)
         self.setupListeners()
            
     def setupUI(self):
@@ -37,16 +40,18 @@ class DevicePanel(QtGui.QWidget):
         stepRightButton.clicked.connect(self.moveRelativeRightSignal)
         stepRightButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-        moveAbsoluteButton = QtGui.QPushButton("Move Absolute", self)
-        moveAbsoluteButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
-        moveAbsoluteButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        moveAbsoluteButton = QtGui.QPushButton("Move Absolute", self)
+#        moveAbsoluteButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
+#        moveAbsoluteButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         self.positionDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.connect(self.positionDoubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.moveAbsoluteSignal)
+#        self.positionDoubleSpinBox.valueChanged[int].connect(self.moveAbsoluteSignal(1))
         self.positionDoubleSpinBox.setDecimals(4)
         self.positionDoubleSpinBox.setSingleStep(.001)
         self.positionDoubleSpinBox.setMinimum(0)
-        self.positionDoubleSpinBox.setMaximum(1)
+        self.positionDoubleSpinBox.setMaximum(6)
         self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         self.stepSizeEdit = QtGui.QLineEdit()
@@ -59,26 +64,16 @@ class DevicePanel(QtGui.QWidget):
         self.stepSizeDoubleSpinBox.setMinimum(0)
         self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
-        
-        self.moveDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.moveDoubleSpinBox.setMaximumWidth(43)
-        self.moveRelativeEdit = QtGui.QLineEdit()
-        self.moveRelativeEdit.setMaximumWidth(43)
-        self.moveRelativeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.moveAbsoluteEdit = QtGui.QLineEdit()
-        self.moveAbsoluteEdit.setMaximumWidth(43)        
-        self.moveAbsoluteEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
         # Layout        
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(5)
 
         self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(setVelParamsButton, 4, 2, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(moveAbsoluteButton, 4, 0, QtCore.Qt.AlignCenter)
+#        self.grid.addWidget(moveAbsoluteButton, 4, 0, QtCore.Qt.AlignCenter)
 
         self.grid.addWidget(self.positionDoubleSpinBox, 4, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(position, 3, 1, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(position, 4, 0, QtCore.Qt.AlignCenter)
 
         self.grid.addWidget(stepLeftButton, 2, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(self.stepSizeDoubleSpinBox, 2, 1, QtCore.Qt.AlignCenter)
@@ -88,6 +83,11 @@ class DevicePanel(QtGui.QWidget):
         self.setLayout(self.grid)        
         self.show()        
         
+    @inlineCallbacks
+    def getPositionLimits(self):
+        stageAxisInformation = yield self.parent.server.get_stage_axis_information(context = self.context)
+        self.minimumPosition = stageAxisInformation[0]
+        self.maximumPosition = stageAxisInformation[1]
 
     @inlineCallbacks
     def setSerialNumber(self):
@@ -115,27 +115,28 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def moveRelativeLeftSignal(self, evt):
-        if ((self.positionDoubleSpinBox.value() - self.stepSizeDoubleSpinBox.value()) > 0):      
+        if ((self.positionDoubleSpinBox.value() - self.stepSizeDoubleSpinBox.value()) > self.minimumPosition):      
             ok = yield self.parent.server.move_relative(-self.stepSizeDoubleSpinBox.value(), context = self.context)
             if (ok == True):
-                self.getPositionSignal(1)
+                self.getPositionSignal(BLOCKSIGNAL)
         else:
             print "The specified move is outside the current limits."
 
     @inlineCallbacks
     def moveRelativeRightSignal(self, evt):
-        if ((self.positionDoubleSpinBox.value() + self.stepSizeDoubleSpinBox.value()) < 1):              
+        if ((self.positionDoubleSpinBox.value() + self.stepSizeDoubleSpinBox.value()) < self.maximumPosition):              
             ok = yield self.parent.server.move_relative(self.stepSizeDoubleSpinBox.value(), context = self.context)
             if (ok == True):
-                self.getPositionSignal(1)
+                self.getPositionSignal(BLOCKSIGNAL)
         else:
             print "The specified move is outside the current limits."
     
     @inlineCallbacks
     def moveAbsoluteSignal(self, evt):
+        self.positionDoubleSpinBox.blockSignals(True)
         ok = yield self.parent.server.move_absolute(self.positionDoubleSpinBox.value(), context = self.context)
         if (ok == True):
-            self.getPositionSignal(1)
+            self.getPositionSignal(BLOCKSIGNAL)
 
     @inlineCallbacks
     def identifySignal(self, evt):
@@ -151,8 +152,11 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def getPositionSignal(self, evt):
+        if (evt == BLOCKSIGNAL):
+            self.positionDoubleSpinBox.blockSignals(True)
         position = yield self.parent.server.get_position(context = self.context)
         self.positionDoubleSpinBox.setValue(position)
+        self.positionDoubleSpinBox.blockSignals(False)
 
     @inlineCallbacks
     def setupListeners(self):               
@@ -160,7 +164,7 @@ class DevicePanel(QtGui.QWidget):
         yield self.parent.server.addListener(listener = self.positionChange, source = None, ID = 88888)    
         print 'listeners set up'
 
-    def positionChange(self, signal):
+    def positionChange(self, x, y):
         self.getPositionSignal(1)
 
 class ParameterWindow(QtGui.QWidget):
@@ -288,8 +292,9 @@ class ParameterWindow(QtGui.QWidget):
         self.hide()
         
 class MainPanel(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, reactor):
         QtGui.QWidget.__init__(self)
+        self.reactor = reactor
         self.devDict = {}
         self.connect()              
         
@@ -314,7 +319,7 @@ class MainPanel(QtGui.QWidget):
 
         for i in range(numDevices):
             context = yield self.cxn.context()
-            self.server.select_device(availableDevices[i], context = context)
+            self.server.select_device(availableDevices[i], context = context)      
             devPanel = DevicePanel(self, self.cxn, context, availableDevices[i])
             self.devDict[i] = devPanel
             if (i % 2 == 0): #even
@@ -323,11 +328,15 @@ class MainPanel(QtGui.QWidget):
                 grid.addWidget(devPanel, ((i - 1) / 2) , 1)
         #self.setGeometry(300, 300, 350, 300)
         self.show()        
+        
+        def closeEvent(self, evt):
+            self.reactor.stop()
+            
     
 if __name__ == "__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    mainPanel = MainPanel()
+    mainPanel = MainPanel(reactor)
     reactor.run()

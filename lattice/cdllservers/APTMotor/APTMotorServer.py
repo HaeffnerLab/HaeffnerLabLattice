@@ -45,6 +45,34 @@ class APTMotor():
         hwinfo = [model.value, softwareVersion.value, hardwareNotes.value]
         return hwinfo
     
+    def getStageAxisInformation(self, serialNumber):
+        HWSerialNum = c_long(serialNumber)
+        minimumPosition = c_float()
+        maximumPosition = c_float()
+        units = c_long()
+        pitch = c_float()
+        self.aptdll.MOT_GetStageAxisInfo(HWSerialNum, pointer(minimumPosition), pointer(maximumPosition), pointer(units), pointer(pitch))
+        stageAxisInformation = [minimumPosition.value, maximumPosition.value, units.value, pitch.value]
+        return stageAxisInformation
+    
+#    def setStageAxisInformation(self, serialNumber, minimumPosition, maximumPosition):
+#        HWSerialNum = c_long(serialNumber)
+#        minimumPosition = c_float()
+#        maximumPosition = c_float()
+#        units = c_long(1) #since idk what these do
+#        pitch = c_float(.5) #since idk what these do
+#        self.aptdll.MOT_SetStageAxisInfo(HWSerialNum, minimumPosition, maximumPosition, units, pitch)
+#        return True
+
+    
+#    def getHardwareLimitSwitches(self, serialNumber):
+#        HWSerialNum = c_long(serialNumber)
+#        reverseLimitSwitch = c_long()
+#        forwardLimitSwitch = c_long()
+#        self.aptdll.MOT_GetHWLimSwitches(HWSerialNum, pointer(reverseLimitSwitch), pointer(forwardLimitSwitch))
+#        hardwareLimitSwitches = [reverseLimitSwitch.value, forwardLimitSwitch.value]
+#        return hardwareLimitSwitches
+    
     def getVelocityParameters(self, serialNumber):
         HWSerialNum = c_long(serialNumber)
         minimumVelocity = c_float()
@@ -114,7 +142,9 @@ class APTMotorServer(LabradServer):
                        'Radial LR': 83815664,
                        'Axial LR': 63001773,
                        'Auxilliary': 83816548,
-                       'Simulator': 83000001}
+                       'Simulator1': 83000001,
+                       'Simulator2': 83000002,
+                       'Simulator3': 83000003}
         
         # Make sure none of these devices have been initialized yet
         self.initializedDict = {}
@@ -247,6 +277,28 @@ class APTMotorServer(LabradServer):
         if (self.initializedDict[c['Device']] == True):
             ok = yield deferToThread(self.aptMotor.identify, c['Device'])
             returnValue(ok)
+    
+    @setting(11, "Get Stage Axis Information", returns='*v')
+    def getStageAxisInformation(self, c):
+        if (self.initializedDict[c['Device']] == True):
+            c['Stage Axis Information'] = yield deferToThread(self.aptMotor.getStageAxisInformation, c['Device'])
+            returnValue(c['Stage Axis Information'])
+
+#    @setting(13, "Set Stage Axis Information", minimumPosition = 'v', maximumPosition = 'v', returns='b')
+#    def setStageAxisInformation(self, c, minimumPosition, maximumPosition):
+#        if (self.initializedDict[c['Device']] == True):
+#            ok = yield deferToThread(self.aptMotor.setStageAxisInformation, c['Device'], minimumPosition, maximumPosition)
+#            returnValue(True)
+##    When attempting to set new limits, they both get set to 0!!
+    
+
+
+#    @setting(12, "Get Hardware Limit Switches", returns='*v')
+#    def getHardwareLimitSwitches(self, c):
+#        if (self.initializedDict[c['Device']] == True):
+#            c['Hardware Limit Switches'] = yield deferToThread(self.aptMotor.getHardwareLimitSwitches, c['Device'])
+#            returnValue(c['Hardware Limit Switches'])
+##    Sample Output: [Value(2.0, None), Value(2.0, None)]
     
     def stopServer(self):  
         """Cleans up APT DLL before closing"""
