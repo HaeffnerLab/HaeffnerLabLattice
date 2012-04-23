@@ -122,9 +122,9 @@ class Qt4MplCanvas(FigureCanvas):
                 self.drawGraph()
     
     def timerEvent(self, evt):
-        print 'canvas timer event'
         self.drawCounter = self.drawCounter + 1
         if (self.drawCounter == 10): #100ms
+            print 'drawing graph'
             self.drawGraph()
 #        self.drawGraph()
 #        if (self.drawFlag == True):

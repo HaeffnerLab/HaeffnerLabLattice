@@ -68,7 +68,6 @@ class Dataset(QtCore.QObject):
     def setupDataListener(self, context):
         yield self.cxn.data_vault.signal__data_available(11111, context = context)
         yield self.cxn.data_vault.addListener(listener = self.updateData, source = None, ID = 11111, context = context)
-        yield self.cxn.data_vault.removeListener(listener = self.updateData, source = None, ID = 11111, context = context)
         #self.setupDeferred.callback(True)
         self.updatecounter = 0
         self.timer = self.startTimer(100)

@@ -6,7 +6,7 @@ from scipy.cluster.vq import whiten, kmeans, vq
 
 class histogramTimetags():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''
-    def __init__(self, start, end, bins = 40, title = None, threshold = None ):
+    def __init__(self, start, end, bins = 50, title = None, threshold = None ):
         self.start = start
         self.end = end
         self.bins = bins
@@ -22,7 +22,7 @@ class histogramTimetags():
         if self.threshold is None:
             self.threshold = self.clusterkmeans()    
         if self.threshold is not None:
-            self.self.analyzeThreshold(self.threshold)
+            self.analyzeThreshold(self.threshold)
         self.plot()
     
     def clusterkmeans(self):
@@ -51,7 +51,7 @@ class histogramTimetags():
         figure.clf()
         if self.title is not None:
             pyplot.suptitle(self.title)
-        pyplot.hist(self.counts, self.bins)
+        pyplot.hist(self.counts, self.bins, range  = (0, max(self.counts)))
         pyplot.show()
 
 class data_process():
