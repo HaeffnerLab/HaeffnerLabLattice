@@ -7,7 +7,8 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 totalTraces = 50
-datasets = ['2012Apr19_1659_25']
+datasets = ['2012Apr19_1647_06','2012Apr19_1648_25','2012Apr19_1649_33','2012Apr19_1651_16',
+            '2012Apr19_1653_11', '2012Apr19_1655_13','2012Apr19_1657_09','2012Apr19_1659_25','2012Apr19_1702_19']
 
 
 refSigs = []
@@ -41,7 +42,7 @@ for datasetName in datasets:
     for dataset in range(1,totalTraces+1):
         dv.open(int(dataset))
         timetags = dv.get().asarray[:,0]
-        countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= stopReadout))
+        countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= startReadout + 1e-3))
         #normCounts = (float(refReadout) / float(max(refSigs))) * (countsReadout)  
         detectedCounts.append(countsReadout)
 print 'Done'

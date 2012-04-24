@@ -7,15 +7,16 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 meltingThreshold = 180
-totalTraces = 2
-binTime =400.0*10**-6
+totalTraces = 50
+binTime =250.0*10**-6
 excludeStat = 0.05 #discard traces with fewer than this percentage of events i.e if melts once, don't plot
 experiment = 'LatentHeat_no729_autocrystal'
-datasets = ['2012Apr19_1653_11']#, '2012Apr19_1655_13','2012Apr19_1657_09','2012Apr19_1659_25']#,'2012Apr19_1702_19']
+datasets = ['2012Apr19_1647_06']#,'2012Apr19_1649_33','2012Apr19_1653_11']#, '2012Apr19_1655_13','2012Apr19_1657_09','2012Apr19_1659_25']#,'2012Apr19_1702_19']
 
 figure = pyplot.figure()
 figure.clf()
-pyplot.suptitle('Separated Traces')
+pyplot.suptitle('')
+initRead = []
 
 
 for datasetName in datasets:
@@ -42,7 +43,7 @@ for datasetName in datasets:
     #data processing on the fly
     dv.cd(['','Experiments',experiment,datasetName,'timetags'])
     melted = 0
-    for dataset in range(2,totalTraces+1):
+    for dataset in range(1,totalTraces+1):
         dv.open(int(dataset))
         timetags = dv.get().asarray[:,0]
         countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= stopReadout))
@@ -54,12 +55,15 @@ for datasetName in datasets:
             fluorCrystal += newbinned
             crystal += 1
     #normalizing and excluding ones that don't have enough statistics
-    if melted > excludeStat * totalTraces:
-        fluorMelted = fluorMelted / float(melted)
-        pyplot.plot(binArray[:-1],fluorMelted, label = 'Melted {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
-    #if crystal > excludeStat * totalTraces:
-        #fluorCrystal = fluorCrystal / float(crystal)
-        #pyplot.plot(binArray[:-1],fluorCrystal, label = 'Crystallized {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
-
+    #if melted > excludeStat * totalTraces:
+     #   fluorMelted = fluorMelted / float(melted)
+     #   pyplot.plot(binArray[:-1],fluorMelted, label = 'Melted {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
+    if crystal > excludeStat * totalTraces:
+        fluorCrystal = fluorCrystal / float(crystal)
+        pyplot.plot(binArray[:-1],fluorCrystal, label = 'Crystallized {0}, heating {1} ms'.format(datasetName,axial_heat/10.**3))
+    data = [binArray[:-1], fluorCrystal] 
+    beginRead = fluorCrystal[numpy.rint(startReadout/binTime)]
+    initRead.append(beginRead)
+    numpy.savetxt(datasetName+'.csv',data,delimiter=",")
 #pyplot.legend()
 pyplot.show()
