@@ -1,3 +1,22 @@
+"""
+### BEGIN NODE INFO
+[info]
+name = HighVoltA
+version = 1.0
+description = 
+instancename = HighVoltA
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+"""
+
+
 '''
 Created on April 5, 2011
 

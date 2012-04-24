@@ -8,8 +8,8 @@ dv = cxn.data_vault
 rs = cxn.rohdeschwarz_server
 rs.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549')
 
-amplMin = 10.0
-amplMax = 23.0
+amplMin = 20.0
+amplMax = 28.0
 amplStep = 0.75
 recordTime = 0.5 #seconds
 average = 4
@@ -19,7 +19,7 @@ freqOffset = -310.0 #Hz, the offset between the counter clock and the rf synthes
 fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = False)
 #saving
 dv.cd(['','QuickMeasurements','FFT'],True)
-name = dv.new('FFT',[('Phase', 'deg')], [('FFTPeak','Arb','Arb')] )
+name = dv.new('FFT',[('Amplitude', 'dBm')], [('FFTPeak','Arb','Arb')] )
 dv.add_parameter('plotLive',True)
 print 'Saving {}'.format(name)
 

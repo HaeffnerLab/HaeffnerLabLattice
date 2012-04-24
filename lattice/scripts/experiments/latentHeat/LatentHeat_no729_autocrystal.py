@@ -30,13 +30,16 @@ rf = cxn.trap_drive
 pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
+dc = cxn.dc_box
+####
+
 
 #Global parameters
-iterations = 5
+iterations = 50
 experimentName = 'LatentHeat_no729_autocrystal'
 axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-xtalFreq = 102.0
+xtalFreq = 115.0 #107, 120
 xtalPower = -4.0
 cooling = (102.0, -8.0) #MHz, dBm
 readout = (115.0, -8.0) 
@@ -49,8 +52,8 @@ auto_crystal = True
 params = {
               'initial_cooling': 100e-3,
               'heat_delay':30e-3,
-              'axial_heat':75.0*10**-3,
-              'readout_delay':10.0*10**-3, ####should implement 0
+              'axial_heat':70*10**-3,
+              'readout_delay':200.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3
             }
@@ -87,7 +90,7 @@ dpass.frequency(xtalFreq)
 dpass.amplitude(xtalPower)
 countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
 print 'initial countrate', countRate
-crystal_threshold = 0.8 * countRate #kcounts per sec
+crystal_threshold = 0.7 * countRate #kcounts per sec #changes from .8 4/19
 crystallization_attempts = 10
 print 'Crystallization threshold: ', crystal_threshold
 
@@ -185,6 +188,8 @@ def auto_crystalize():
         pulser.switch_manual('crystallization',  True)
         initpower = rf.amplitude()
         rf.amplitude(rf_crystal_power)
+#        dc.setendcap(1, 0.695)
+#        dc.setendcap(2, 5.305)
         time.sleep(shutter_delay)
         for attempt in range(crystallization_attempts):
             pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
@@ -194,17 +199,21 @@ def auto_crystalize():
             if is_crystalized():
                 print 'Crysallized on attempt number {}'.format(attempt + 1)
                 rf.amplitude(rf_power)
+#                dc.setendcap(1, 3.695)
+#                dc.setendcap(2, 8.305)
                 time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
                 pulser.switch_auto('110DP',  False)
                 return True
-        #if still not crystzlied, let the user handle things
+        #if still not crystallized, let the user handle things
         response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
         if response == 'f':
             return False
         else:
             rf.amplitude(initpower)
+            dc.setendcap(1, 3.695)####
+            dc.setendcap(2, 8.305)####
             time.sleep(rf_settling_time)
             pulser.switch_manual('crystallization',  False)
             time.sleep(shutter_delay)
@@ -226,5 +235,6 @@ print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
 dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
+dp.addParameter('threshold', 216)
 dp.loadDataVault()
 dp.processAll()
