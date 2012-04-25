@@ -148,7 +148,18 @@ class Pulser(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addTTLPulse(hardwareAddr, start, duration)
     
-    @setting(6, "Extend Sequence Length", timeLength = 'v')
+    @setting(6, 'Add TTL Pulses', pulses = '*(svv)')
+    def addTTLPulses(self, c, pulses):
+        """
+        Add multiple TTL Pulses to the sequence, times are in seconds. The pulses are a list in the same format as 'add ttl pulse'.
+        """
+        for pulse in pulses:
+            channel = pulse[0]
+            start = pulse[1]
+            duration = pulse[2]
+            yield self.addTTLPulse(c, channel, start, duration)
+    
+    @setting(7, "Extend Sequence Length", timeLength = 'v')
     def extendSequenceLength(self, c, timeLength):
         """
         Allows to optionally extend the total length of the sequence beyond the last TTL pulse. 
@@ -159,7 +170,7 @@ class Pulser(LabradServer):
         sequence.extendSequenceLength(timeLength)
         
     
-    @setting(7, "Stop Sequence")
+    @setting(8, "Stop Sequence")
     def stopSequence(self, c):
         """Stops any currently running  sequence"""
         yield self.inCommunication.acquire()
@@ -171,7 +182,7 @@ class Pulser(LabradServer):
         self.inCommunication.release()
         self.sequenceType = None
     
-    @setting(8, "Human Readable", returns = '*2s')
+    @setting(9, "Human Readable", returns = '*2s')
     def humanReadable(self, c):
         """
         Returns a readable form of the programmed sequence for debugging

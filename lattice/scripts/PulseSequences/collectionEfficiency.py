@@ -4,7 +4,7 @@ class collectionEfficiency(Sequence):
     #dictionary of variable: (type, min, max, default)
     requiredVars = {
                     'dopplerCooling':(float,  100e-9, 1.0, 100e-3),
-                    'iterations':(int, 1, 2000, 1),
+                    'iterationsCycle':(int, 1, 10000, 1),
                     'repumpD':(float, 100e-9, 5.0, 10e-6),
                     'repumpDelay':(float, 100e-9, 5.0, 100e-9),
                     'exciteP':(float, 100e-9, 5.0, 1e-6),
@@ -14,7 +14,7 @@ class collectionEfficiency(Sequence):
     
     def defineSequence(self):
         dopplerCooling = self.vars['dopplerCooling']
-        iterations = self.vars['iterations']
+        iterations = self.vars['iterationsCycle']
         repumpD = self.vars['repumpD']
         repumpDelay = self.vars['repumpDelay']
         exciteP = self.vars['exciteP']
@@ -27,14 +27,18 @@ class collectionEfficiency(Sequence):
         self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         
         self.pulser.add_ttl_pulse('110DP', 0.0, dopplerCooling) 
-        self.pulser.add_ttl_pulse('866DP', 0.0, dopplerCooling) 
-        
-        for i in range(iterations):
-            print 'programming', i
-            startCycle = dopplerCooling + iterDelay + i * iterCycle
-            startRepump = startCycle + exciteP + repumpDelay
-            self.pulser.add_ttl_pulse('110DP', startCycle, exciteP) #excite the P-level
-            self.pulser.add_ttl_pulse('866DP', startRepump, repumpD) #repump the D level
+        self.pulser.add_ttl_pulse('866DP', 0.0, dopplerCooling) #### 
+
+        startCycles = [dopplerCooling + iterDelay + i * iterCycle for i in range(iterations)]
+        startRepumps = [startCycle + exciteP + repumpDelay for startCycle in startCycles]
+        excitePulses = [('110DP', startCycle, exciteP) for startCycle in startCycles]
+        repumpPulses = [('866DP', startRepump, repumpD) for startRepump in startRepumps]
+        #print excitePulses
+        self.pulser.add_ttl_pulses(excitePulses)
+        self.pulser.add_ttl_pulses(repumpPulses)
+
+#        for i in range(iterations):
+#            self.pulser.add_ttl_pulse('110DP', startCycles[i], exciteP)
 
 if __name__ == '__main__':
     import labrad
@@ -45,7 +49,7 @@ if __name__ == '__main__':
     params = {
               'dopplerCooling':100e-3,
               'iterDelay':1e-6,
-              'iterations': 2000,
+              'iterations': 10000,
               'repumpD':5.0*10**-6,
               'decayPS':100.0*10**-9,
               'exciteP':1.0*10**-6,

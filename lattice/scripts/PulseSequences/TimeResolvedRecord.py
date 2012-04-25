@@ -17,7 +17,7 @@ if __name__ == '__main__':
     seq = TimeResolved(pulser)
     pulser.new_sequence()
     params = {
-              'recordTime': 0.010
+              'recordTime': 0.100
               }
     seq.setVariables(**params)
     seq.defineSequence()
