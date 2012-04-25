@@ -4,6 +4,11 @@ class Sequence():
         self.vars = {}
 
     def setVariables(self, **input):
+        #make sure no extraneous keys
+        requiredKeys = self.requiredVars.keys()
+        for key in input.keys():
+            if key not in requiredKeys: raise Exception ("Provided key {} is not required by the sequence".format(key))
+        #assign keys
         for name in self.requiredVars.keys():
             if name in input.keys():
                 value = input[name]

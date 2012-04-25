@@ -13,10 +13,10 @@ params = {
           'iterDelay':1e-6,
           'iterationsCycle': 250,
           'repumpD':5.0*10**-6,
-          'decayPS':100.0*10**-9,
+          'repumpDelay':100.0*10**-9,
           'exciteP':1.0*10**-6,
           'finalDelay':5.0*10**-6,
-          }
+              }
 experimentName = 'collectionEfficiency'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 

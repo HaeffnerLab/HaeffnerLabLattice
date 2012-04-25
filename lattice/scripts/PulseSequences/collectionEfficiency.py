@@ -4,7 +4,7 @@ class collectionEfficiency(Sequence):
     #dictionary of variable: (type, min, max, default)
     requiredVars = {
                     'dopplerCooling':(float,  100e-9, 1.0, 100e-3),
-                    'iterationsCycle':(int, 1, 10000, 1),
+                    'iterationsCycle':(int, 1, 250, 1),
                     'repumpD':(float, 100e-9, 5.0, 10e-6),
                     'repumpDelay':(float, 100e-9, 5.0, 100e-9),
                     'exciteP':(float, 100e-9, 5.0, 1e-6),
@@ -23,17 +23,19 @@ class collectionEfficiency(Sequence):
         
         iterCycle = repumpD + repumpDelay + exciteP + finalDelay
         recordTime = dopplerCooling + iterDelay + iterations * iterCycle
-        
+        print recordTime
+        print iterCycle
         self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         
         self.pulser.add_ttl_pulse('110DP', 0.0, dopplerCooling) 
-        self.pulser.add_ttl_pulse('866DP', 0.0, dopplerCooling) #### 
-
+        self.pulser.add_ttl_pulse('866DP', 0.0, dopplerCooling) 
+        
         startCycles = [dopplerCooling + iterDelay + i * iterCycle for i in range(iterations)]
         startRepumps = [startCycle + exciteP + repumpDelay for startCycle in startCycles]
         excitePulses = [('110DP', startCycle, exciteP) for startCycle in startCycles]
         repumpPulses = [('866DP', startRepump, repumpD) for startRepump in startRepumps]
-        #print excitePulses
+        print startCycles
+        print repumpPulses
         self.pulser.add_ttl_pulses(excitePulses)
         self.pulser.add_ttl_pulses(repumpPulses)
 
@@ -49,9 +51,9 @@ if __name__ == '__main__':
     params = {
               'dopplerCooling':100e-3,
               'iterDelay':1e-6,
-              'iterations': 10000,
+              'iterationsCycle': 250,
               'repumpD':5.0*10**-6,
-              'decayPS':100.0*10**-9,
+              'repumpDelay':100.0*10**-9,
               'exciteP':1.0*10**-6,
               'finalDelay':5.0*10**-6,
               }
