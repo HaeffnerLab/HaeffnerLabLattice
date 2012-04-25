@@ -1,8 +1,8 @@
+resource.getrlimit(resource.RLIMIT_NOFILE)=
+
 import numpy
 import labrad
-import matplotlib
-matplotlib.use('Qt4Agg')
-from matplotlib import pyplot
+import makeplot
 
 def sliceArr(arr, start, duration, cyclenumber = 1, cycleduration = 0 ):
     '''Takes a numpy array arr, and returns a new array that consists of all elements between start and start + duration modulo the start time
@@ -50,7 +50,4 @@ for i in range(1, repeations + 1):
     binned += numpy.histogram(sliced,  bins)[0]
     
 numpy.savez('{}binning'.format(dataset), binned = binned, bins = bins)
-
-pyplot.figure()
-pyplot.plot(binned)
-pyplot.show()
+makeplot.makePlot(bins, binned)
