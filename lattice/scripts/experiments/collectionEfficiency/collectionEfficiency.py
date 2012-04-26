@@ -7,14 +7,14 @@ import time
 from scriptLibrary import dvParameters 
 from PulseSequences.collectionEfficiency import collectionEfficiency
 
-iterations = 1;
+iterations = 100;
 params = {
           'dopplerCooling':100e-3,
-          'iterDelay':1e-6,
+          'iterDelay':1e-3,
           'iterationsCycle': 250,
-          'repumpD':5.0*10**-6,
-          'repumpDelay':100.0*10**-9,
-          'exciteP':1.0*10**-6,
+          'repumpD':5.0*10**-6,#
+          'repumpDelay':5.0*10**-6,
+          'exciteP':5.0*10**-6,
           'finalDelay':5.0*10**-6,
               }
 experimentName = 'collectionEfficiency'
@@ -34,6 +34,23 @@ pulser.program_sequence()
 pulser.switch_auto('866DP', True) #high TTL means light ON
 pulser.switch_manual('crystallization', False)
 pulser.switch_auto('110DP', True)
+#data processing on the fly
+repumpD = params['repumpD']
+repumpDelay = params['repumpDelay']
+exciteP = params['exciteP']
+finalDelay = params['finalDelay']
+dopplerCooling = params['dopplerCooling']
+cycleTime = repumpD + repumpDelay + exciteP + finalDelay
+binTime = 40.0*10**-9 #fpga resolution
+
+binNumber = int(cycleTime / binTime)
+bins = binTime * numpy.arange(binNumber + 1)
+binned = numpy.zeros(binNumber)
+#data processing on the fly
+dopplerBinTime = 1.0*10**-3
+dopplerBinNumber = int(dopplerCooling / dopplerBinTime)
+dopplerBins = dopplerBinTime * numpy.arange(dopplerBinNumber + 1)
+dopplerBinned = numpy.zeros(dopplerBinNumber)
 
 for i in range(iterations):
     pulser.reset_timetags()

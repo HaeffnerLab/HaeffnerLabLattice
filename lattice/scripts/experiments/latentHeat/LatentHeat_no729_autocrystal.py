@@ -30,10 +30,6 @@ rf = cxn.trap_drive
 pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
-dc = cxn.dc_box
-####
-
-
 #Global parameters
 iterations = 50
 experimentName = 'LatentHeat_no729_autocrystal'
@@ -188,8 +184,6 @@ def auto_crystalize():
         pulser.switch_manual('crystallization',  True)
         initpower = rf.amplitude()
         rf.amplitude(rf_crystal_power)
-#        dc.setendcap(1, 0.695)
-#        dc.setendcap(2, 5.305)
         time.sleep(shutter_delay)
         for attempt in range(crystallization_attempts):
             pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
@@ -199,8 +193,6 @@ def auto_crystalize():
             if is_crystalized():
                 print 'Crysallized on attempt number {}'.format(attempt + 1)
                 rf.amplitude(rf_power)
-#                dc.setendcap(1, 3.695)
-#                dc.setendcap(2, 8.305)
                 time.sleep(rf_settling_time)
                 pulser.switch_manual('crystallization',  False)
                 time.sleep(shutter_delay)
@@ -212,8 +204,6 @@ def auto_crystalize():
             return False
         else:
             rf.amplitude(initpower)
-            dc.setendcap(1, 3.695)####
-            dc.setendcap(2, 8.305)####
             time.sleep(rf_settling_time)
             pulser.switch_manual('crystallization',  False)
             time.sleep(shutter_delay)

@@ -1,5 +1,3 @@
-resource.getrlimit(resource.RLIMIT_NOFILE)=
-
 import numpy
 import labrad
 import makeplot
@@ -12,7 +10,8 @@ def sliceArr(arr, start, duration, cyclenumber = 1, cycleduration = 0 ):
     criterion = reduce(numpy.logical_or, [(start <= arr) & (arr <=  start + duration) for start in starts])
     result = arr[criterion]
     if cycleduration == 0:
-        result = numpy.mod(result, start)
+        if start != 0:
+            result = numpy.mod(result, start)
     else:
         result = numpy.mod(result - start, cycleduration)
     return result
@@ -22,8 +21,8 @@ dv = cxn.data_vault
 
 experiment = 'collectionEfficiency'
 #dataset = '2012Apr24_1702_39'
-#dataset = '2012Apr24_1629_24'
-dataset = '2012Apr24_1625_39'
+dataset = '2012Apr24_1629_24'
+#dataset = '2012Apr24_1625_39'
 iterationsCycle = 250
 iterDelay = 1.0e-6
 exciteP = 1.0e-6
@@ -36,18 +35,32 @@ dv.cd(['', 'Experiments', experiment, dataset, 'timetags'])
 repeations = len(dv.dir()[1])
 
 binTime = 40.0*10**-9 #fpga resolution
-
 cycleTime = repumpD + repumpDelay + exciteP + finalDelay
 binNumber = int(cycleTime / binTime)
 bins = binTime * numpy.arange(binNumber + 1)
 binned = numpy.zeros(binNumber)
 
+dopplerBinTime = 1.0*10**-3
+dopplerBinNumber = int(dopplerCooling / dopplerBinTime)
+dopplerBins = dopplerBinTime * numpy.arange(dopplerBinNumber + 1)
+dopplerBinned = numpy.zeros(dopplerBinNumber)
+
+import time####
 for i in range(1, repeations + 1):
     print 'opening', i
+    time.sleep(.1)
     dv.open(i)
     timetags = dv.get().asarray
     sliced = sliceArr(timetags, start = dopplerCooling + iterDelay, duration = cycleTime, cyclenumber = iterationsCycle,  cycleduration = cycleTime)
     binned += numpy.histogram(sliced,  bins)[0]
-    
-numpy.savez('{}binning'.format(dataset), binned = binned, bins = bins)
-makeplot.makePlot(bins, binned)
+    doppler = sliceArr(timetags, start = 0, duration = dopplerCooling + iterDelay)
+    dopplerBinned += numpy.histogram(doppler, dopplerBins)[0]
+
+binned = binned / binTime
+binned = binned / (repeations * iterationsCycle)
+dopplerBinned = dopplerBinned / repeations
+dopplerBinned = dopplerBinned / dopplerBinTime
+
+numpy.savez('{}binning'.format(dataset), binned = binned, bins = bins, dopplerBins = dopplerBins, dopplerBinned = dopplerBinned)
+
+makeplot.makePlot(dopplerBins,dopplerBinned, bins, binned)

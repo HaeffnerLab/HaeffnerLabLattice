@@ -4,7 +4,7 @@ class collectionEfficiency(Sequence):
     #dictionary of variable: (type, min, max, default)
     requiredVars = {
                     'dopplerCooling':(float,  100e-9, 1.0, 100e-3),
-                    'iterationsCycle':(int, 1, 250, 1),
+                    'iterationsCycle':(int, 1, 500, 1),
                     'repumpD':(float, 100e-9, 5.0, 10e-6),
                     'repumpDelay':(float, 100e-9, 5.0, 100e-9),
                     'exciteP':(float, 100e-9, 5.0, 1e-6),
