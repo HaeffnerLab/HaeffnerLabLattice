@@ -6,42 +6,37 @@ class PulsedScan(Sequence):
                     'coolingTime':(float, 10e-9, 5.0, 10.0*10**-3),
                     'pulsedTime':(float, 10e-9, 5.0, 100.0*10**-6),
                     'switching':(float, 10e-9, 5.0, 2.0*10**-3),
-                    'pulsedSteps':(int, 1, 100, 1),
-                    'iterationsCycle':(int, 1, 20, 1)
+                    'iterations':(int, 1, 1000, 1)
                     }
     
     def defineSequence(self):
         p = self.parameters
         pulser = self.pulser
         
-        cycleTime = p.coolingTime + p.pulsedTime + 2*p.switching
-        totalCycles = p.pulsedSteps * p.iterationsCycle
-        recordTime = cycleTime * totalCycles
-        startCooling =  [cycleTime * iter for iter in range(totalCycles)]
+        p.cycleTime = p.coolingTime + p.pulsedTime + 2*p.switching
+        recordTime = p.cycleTime * p.iterations
+        startCooling =  [p.cycleTime * iter +  p.cycleTime for iter in range(p.iterations)] #sequence has TTL high then light OFF
         startPulses = [startCool + p.coolingTime + p.switching for startCool in startCooling]
-        startSwitching = [cycleTime * (iter+1) for iter in range(totalCycles) ]
-        coolingPulses = [('110DP',start, p.coolingTime) for start in startCooling ]
+        coolingPulses = [('110DP',start, p.pulsedTime + 2*p.switching) for start in startCooling ]
         pulsedPulses = [('axial',start, p.pulsedTime) for start in startPulses ]
-        switchingPulses = [('110DPlist', start, 10e-6) for start in startSwitching]
         
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
-        for pulses in [coolingPulses, pulsedPulses, switchingPulses]:
+        for pulses in [coolingPulses, pulsedPulses]:
             pulser.add_ttl_pulses(pulses)
         
         
 if __name__ == '__main__':
     import labrad
-    cxn = labrad.connect('192.168.169.254',password = 'lab')
+    cxn = labrad.connect()
     pulser = cxn.pulser
     seq = PulsedScan(pulser)
     pulser.new_sequence()
     params = {
               'coolingTime':10.0*10**-3,
-              'switching':5.0*10**-3,
-              'pulsedSteps':20,
-              'iterationsCycle':3,
-              'pulsedTime':1.0*10**-3
-              }
+              'switching':2.0*10**-3,
+              'pulsedTime':100*10**-6,
+              'iterations':10,
+            }
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
