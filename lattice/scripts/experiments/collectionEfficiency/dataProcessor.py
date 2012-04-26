@@ -103,13 +103,14 @@ if __name__ == '__main__':
               }
 
     dp = dataProcessor(params)
-    repeations = 50
     import time
+    repeations = 50
     for i in range(1, repeations + 1):
         print 'opening', i
         time.sleep(.1)
         dv.open(i)
         timetags = dv.get().asarray
+        timetags = timetags.transpose()[0]
         dp.addTimetags(timetags)
     dp.normalize(repeations)
     #dp.save(dataset)

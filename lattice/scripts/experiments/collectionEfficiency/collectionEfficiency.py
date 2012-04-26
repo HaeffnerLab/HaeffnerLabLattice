@@ -13,7 +13,7 @@ params = {
           'dopplerCooling':100e-3,
           'iterDelay':1e-3,
           'iterationsCycle': 250,
-          'repumpD':5.0*10**-6,#
+          'repumpD':5.0*10**-6,
           'repumpDelay':5.0*10**-6,
           'exciteP':5.0*10**-6,
           'finalDelay':5.0*10**-6,
