@@ -33,8 +33,8 @@ class dataProcessor():
     
     def normalize(self, repeatitions):
         self.binned = self.binned / self.binTime
-        self.binned = self.binned / float(repeations)
-        self.dopplerBinned = self.dopplerBinned / float(repeations)
+        self.binned = self.binned / float(repeatitions)
+        self.dopplerBinned = self.dopplerBinned / float(repeatitions)
         self.dopplerBinned = self.dopplerBinned / self.dopplerBinTime
         
     def save(self, dataset):

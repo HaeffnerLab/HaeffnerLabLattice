@@ -15,8 +15,8 @@ class PulsedScan(Sequence):
         
         p.cycleTime = p.coolingTime + p.pulsedTime + 2*p.switching
         recordTime = p.cycleTime * p.iterations
-        startCooling =  [p.cycleTime * iter +  p.cycleTime for iter in range(p.iterations)] #sequence has TTL high then light OFF
-        startPulses = [startCool + p.coolingTime + p.switching for startCool in startCooling]
+        startCooling =  [p.cycleTime * iter +  p.coolingTime for iter in range(p.iterations)] #sequence has TTL high then light OFF
+        startPulses = [startCool + p.switching for startCool in startCooling]
         coolingPulses = [('110DP',start, p.pulsedTime + 2*p.switching) for start in startCooling ]
         pulsedPulses = [('axial',start, p.pulsedTime) for start in startPulses ]
         

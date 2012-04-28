@@ -8,15 +8,15 @@ from scriptLibrary import dvParameters
 from PulseSequences.collectionEfficiency import collectionEfficiency
 import dataProcessor
 
-repeatitions = 100;
+repeatitions = 5000;
 params = {
           'dopplerCooling':100e-3,
           'iterDelay':1e-3,
           'iterationsCycle': 250,
-          'repumpD':5.0*10**-6,
-          'repumpDelay':5.0*10**-6,
-          'exciteP':5.0*10**-6,
-          'finalDelay':5.0*10**-6,
+          'repumpD':20.0*10**-6,
+          'repumpDelay':10.0*10**-6,
+          'exciteP':20.0*10**-6,
+          'finalDelay':10.0*10**-6,
               }
 experimentName = 'collectionEfficiency'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
@@ -25,7 +25,7 @@ dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 cxn = labrad.connect()
 dv = cxn.data_vault
 pulser = cxn.pulser
-do = dataProcessor.dataProcessor(params)
+dp = dataProcessor.dataProcessor(params)
 #pulse sequence
 pulser.new_sequence()
 seq = collectionEfficiency(pulser)
@@ -59,6 +59,6 @@ pulser.switch_auto('866DP', False) #high TTL means light Off
 pulser.switch_manual('110DP', True)
 #complete
 print 'SAVED {}'.format(dirappend)
-dp.normalize(repeations)
+dp.normalize(repeatitions)
 dp.makePlot()
 print 'DONE'

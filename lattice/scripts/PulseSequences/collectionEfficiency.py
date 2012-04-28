@@ -23,8 +23,8 @@ class collectionEfficiency(Sequence):
         
         iterCycle = repumpD + repumpDelay + exciteP + finalDelay
         recordTime = dopplerCooling + iterDelay + iterations * iterCycle
-        print recordTime
-        print iterCycle
+#        print recordTime
+#        print iterCycle
         self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         
         self.pulser.add_ttl_pulse('110DP', 0.0, dopplerCooling) 
@@ -34,8 +34,8 @@ class collectionEfficiency(Sequence):
         startRepumps = [startCycle + exciteP + repumpDelay for startCycle in startCycles]
         excitePulses = [('110DP', startCycle, exciteP) for startCycle in startCycles]
         repumpPulses = [('866DP', startRepump, repumpD) for startRepump in startRepumps]
-        print startCycles
-        print repumpPulses
+#        print startCycles
+#        print repumpPulses
         self.pulser.add_ttl_pulses(excitePulses)
         self.pulser.add_ttl_pulses(repumpPulses)
 

@@ -41,7 +41,7 @@ class dataProcessor():
         fluor = []
         for pwr in self.pwrList:
             tags = times[np.where(powers == pwr)]
-            counts = self.sliceArr(tags,  start = self.coolingTime +  self.switching, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
+            counts = self.sliceArr(tags,  start = self.coolingTime + self.switching, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
             fluor.append(counts.size)
         self.fluor = np.array(fluor)
     

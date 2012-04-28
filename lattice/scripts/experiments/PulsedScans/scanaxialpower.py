@@ -8,9 +8,9 @@ from PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 
-minpower = -30.0
+minpower = -20.0
 maxpower = 5.0
-steps = 10
+steps = 75
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
@@ -18,14 +18,15 @@ cxnlab = labrad.connect() #connection to labwide network
 dv = cxn.data_vault
 dpass = cxn.double_pass
 axial = cxn.lattice_pc_hp_server
+initpower = axial.amplitude()
 pulser = cxn.pulser
 experimentName = 'pulsedScanAxialPower'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
 params = {
-          'coolingTime':5.0*10**-3,
-          'switching':2.0*10**-3,
-          'pulsedTime':100*10**-6,
+          'coolingTime':20.0*10**-3,
+          'switching':1.0*10**-3,
+          'pulsedTime':1.0*10**-3,
           'iterations':100,
         }
 
@@ -44,7 +45,6 @@ def initialize():
     pulser.switch_auto('axial',  True) #high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
     pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-    pulser.switch_auto('110DPlist', False)
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
     #set up data vault
 
@@ -70,6 +70,7 @@ def finalize():
     for name in ['axial', '110DP']:
         pulser.switch_manual(name)
     pulser.switch_manual('crystallization',  True)
+    axial.amplitude(initpower)
 
 def process():
     dv.open(1)
