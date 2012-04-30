@@ -76,13 +76,13 @@ class Dataset(QtCore.QObject):
     def updateData(self,x,y):
         self.updatecounter = self.updatecounter + 1
         self.getData(self.context)
-        print 'still happening dataset'
+#        print 'still happening dataset'
     
     def timerEvent(self,evt):
         #print self.updatecounter
-        print 'in dataset'
-        if self.updatecounter < 1:
-            print 'slowing down!, less than 1 dataupdate per 100milliseconds '
+#        print 'in dataset'
+#        if self.updatecounter < 1:
+#            print 'slowing down!, less than 1 dataupdate per 100milliseconds '
         self.updatecounter = 0
     
     def endTimer(self):
@@ -91,6 +91,7 @@ class Dataset(QtCore.QObject):
     @inlineCallbacks    
     def disconnectDataSignal(self):
         yield self.cxn.data_vault.removeListener(listener = self.updateData, source = None, ID = 11111, context = self.context)
+        yield self.cxn.data_vault.removeListener(listener = self.updateParameter, source = None, ID = 66666, context = self.context)
 
         
 

@@ -11,37 +11,112 @@ are stored and managed in a dictionary (plotDict). The dataset number and direct
 reference the data points for the independent variables, the data points for the dependent
 variables, and the line objects:
 
-    plotDict[dataset, directory] = [x values, y values (possibly multiple sets), plot lines]  
-                                        ^                ^                            ^
-                                        |                |                            |
-                                    INDEPENDENT (0)   DEPENDENT (1)              PLOTS (2)
-
-The x and y values are used to constantly update the plot lines. The grapher then uses
-the plot lines to draw the data onto the canvas.
-
 ---
 
 Two mechanisms govern how often a plot is drawn. 
 
 1. A main timer cycles constantly updating a counter. When this counter reaches an exact desired number
-(such that, for example, 10 counts = 100ms), the plots are drawn. Note: the plots will NOT be drawn when
-the counter is larger than the desired number of counts. Every time the axes change (on_draw()), this counter is reset
-back to 0 in order to ensure that there is at least a certain amount of time between repeated calls to draw
-the plots.
+(such that, for example, 10 counts = 100ms), the plots are drawn. Note: the timer is then stopped in order
+to prevent further drawing. Every time the axes change (on_draw()), this counter is reset
+back to 0 and the timer is restarted in order to ensure that there is at least a certain amount of time
+between repeated calls to draw the plots.
 
 2. New incoming data will automatically redraw the plots. 
 
+---
+
+Because incoming data arrives in pieces, data accumulates in an array inside a dictionary (dataDict). 
+Matplotlib uses line objects, stored in plotDict, to draw lines onto the canvas. The line objects use
+the data stored in dataDict.
+
+In order to efficiently cap the amount of data stored (and plotted), while maintaining a live stream,
+a method involving two arrays of data was employed. The size of the arrays is determined by the global 
+variable MAXDATASETSIZE. Initial incoming data is stored in an array of size MAXDATASETSIZE. When the 
+data accumulates passed the array's halfway point, a second array is created and a copy of the data is 
+stored in a position that is half the MAXDATASETSIZE away from the position in the first array. When the
+data reaches the end of the arrays, the data wraps around to the beginning, and the grapher will then switch
+which array to plot. Using this method will effectively cap the total number of data and ensure that the 
+data being plotted is always in order.
+
+Example:
+
+Initial array:
+
+[0 0 0 0 0 0 0 0 0 0] <- Array being plotted (from position 0 to 0)
+
+Incoming data:
+
+[1 2 3 0 0 0 0 0 0 0] <- Array being plotted (from position 0 to 2)
+
+Passed halfway:
+
+[1 2 3 4 5 6 7 0 0 0] <- Array being plotted (from position 0 to 6)
+[6 7 0 0 0 0 0 0 0 0] <- New second array created
+
+Continued:
+
+[1 2 3 4 5 6 7 8 9 0] <- Array being plotted (from position 0 to 8)
+[6 7 8 9 0 0 0 0 0 0]
+
+Maximum reached:
+
+    Incoming data: [10, 11, 12, 13]
+
+[11 12 13 4 5 6 7 8 9 10]
+[6 7 8 9 10 11 12 13 0 0] <- Array being plotted (from position 0 to 7)
+
+Continued: 
+
+    Incoming data: [14, 15, 16, 17]
+    
+[11 12 13 14 15 16 17 8 9 10] <- Array being plotted (from position 0 to 6)
+[16 17 8 9 10 11 12 13 14 15]
+
+And so on...
+
+Note that sometimes the incoming data has more data points than the array has room for.
+This is dealt with by partitioning the incoming data into two pieces such that the first
+piece fills the first array, and the second piece starts at beginning of the other array.
+
+---
+
+In order for the above operation to happen successfully, there are certain parameters that
+govern its function (stored in plotParametersDict). They are:
+
+1. Data Index
+    This number increases constantly with the amount of incoming data. This value modulus 
+    MAXDATASETSIZE will give the exact position in the array that data should be added to, 
+    and will periodically reset back to zero as this parameter increases.
+    
+2. Array to Plot
+    This number refers to which of the two arrays need be currently plotted.
+    
+3. Halfway Point (boolean)
+    This value indicates whether half of the first array was filled with data. Upon happening,
+    the second array will be created.
+
+4. First Pass (boolean)
+    This value indicates whether the first array has been entirely filled once. This value
+    ensures that the second array is not plotted, because the second array does not contain
+    enough data before the first array completely fills up with data.
+    
+5. Data Initialized (boolean)
+    Because the drawPlot is called quickly and repeatedly, this value ensures that no data is 
+    drawn until these is actually data to draw.
+    
 '''
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
+from matplotlib import pyplot
+from PyQt4 import QtCore
 import time
 import numpy as np
 
-TIMERREFRESH = 10 #ms
-MAXDATASETSIZE = 100000
+TIMERREFRESH = .01 #s
+MAXDATASETSIZE = 10000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0
@@ -49,6 +124,13 @@ DEPENDENT = 1
 PLOTS = 2
 MAX = 1
 MIN = 0
+FIRST = 0
+SECOND = 1
+DATAINDEX = 0
+ARRAYTOPLOT = 1
+HALFWAY = 2
+FIRSTPASS = 3
+DATAINITIALIZED = 4
 
 
 class Qt4MplCanvas(FigureCanvas):
@@ -58,44 +140,45 @@ class Qt4MplCanvas(FigureCanvas):
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
         self.appWindowParent = appWindowParent      
-        self.dataDict = {}
         self.datasetLabelsDict = {}
+        self.plotParametersDict = {}
+        self.dataDict = {}
         self.plotDict = {}
-        self.data = None 
-        self.drawFlag = True
+        self.maxDatasetSizeReached = False
+        self.data = None
         self.drawCounter = 0
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
-        self.ax.set_autoscale_on(False) # disable figure-wide autoscale
-                
         self.background = self.copy_from_bbox(self.ax.bbox)
-        
-    # Reset the idle counter, since drawing no longer makes the graph idle
+    
+    # This method is called upon whenever the plot axes change
     def on_draw(self, event):
-        #self.drawFlag = True
-        self.drawCounter = 0       
-        
+        self.timer.start(TIMERREFRESH)
+        self.drawCounter = 0             
         
     # Initialize a place in the dictionary for the dataset
     def initializeDataset(self, dataset, directory, labels):
         self.dataDict[dataset, directory] = None
-        self.datasetLabelsDict[dataset, directory] = labels 
-   
+        self.datasetLabelsDict[dataset, directory] = labels     
+    
     # retrieve and store the new data from Connections
     def setPlotData(self, dataset, directory, data):
-        print 'still happening canvas'
-        if (self.dataDict[dataset, directory] == None):# first iteration
-            self.dataDict[dataset, directory] = data
-            NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
-            # set up independent axis, dependent axes for data, and dependent axes for plot
-            # a.k.a independent variable, dependent variables, plots
-            self.plotDict[dataset, directory] = [[], [[]]*NumberOfDependentVariables, [[]]*NumberOfDependentVariables]
-            # cycle through the number of dependent variables and create a line for each
-            for i in range(NumberOfDependentVariables):
-                label = self.datasetLabelsDict[dataset, directory][i]
-                self.plotDict[dataset, directory][PLOTS][i] = self.ax.plot(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i],label = label,animated=True)
-            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
+        # First Time
+        numberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable           
+        numberOfDataPoints = data.shape[0]
+
+        if (self.dataDict[dataset, directory] == None):        
+            self.dataDict[dataset, directory] = [[np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]#, [np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]           
+            self.plotDict[dataset, directory] = [[]]*numberOfDependentVariables
+            # plot parameters
+            self.plotParametersDict[dataset, directory] = [MAXDATASETSIZE, 0, False, False, False]          
+            # update the data points
+            self.setPoints(dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, 0)
+
+            self.initializePlots(dataset, directory, numberOfDependentVariables)
+
+            self.fitData()
             # find initial graph limits
             #self.initialxmin, self.initialxmax = self.getDataXLimits()
             #self.ax.set_xlim(self.initialxmin,self.initialxmax)
@@ -103,48 +186,137 @@ class Qt4MplCanvas(FigureCanvas):
             #self.ax.set_ylim(self.initialymin,self.initialymax)
             self.drawLegend()
             self.draw()
-            self.timer = self.startTimer(TIMERREFRESH)
+            self.timer = QtCore.QTimer()
+            QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.constantUpdate)
+            self.timer.start(TIMERREFRESH)
+
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
-            #self.drawFlag = True
-            #self.drawCounter = 0
             self.drawGraph()
         else:
-            # append the new data
-            self.dataDict[dataset, directory] = np.append(self.dataDict[dataset, directory], data, 0)
-            # check the size of the dataset, if too big, delete stuff
-            if (self.dataDict[dataset, directory].shape[0] > MAXDATASETSIZE):
-                numberOfRowsToDelete = data.shape[0]
-                self.dataDict[dataset, directory] = np.delete(self.dataDict[dataset, directory], range(numberOfRowsToDelete), 0) 
-                self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][0]
-            #self.drawFlag = True
-            #self.drawCounter = 0
-            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
-                self.drawGraph()
-    
-    def timerEvent(self, evt):
-        self.drawCounter = self.drawCounter + 1
-        if (self.drawCounter == 10): #100ms
-            print 'drawing graph'
+            # New Data      
+            
+            # dataIndexOffset is dataIndex, offset by MAXDATASETSIZE/2    
+            dataIndexOffset = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
+            dataIndex = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+            
+            if (self.plotParametersDict[dataset, directory][HALFWAY] == False):
+                # if halfway, create the second array
+                if (((self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE + numberOfDataPoints) > MAXDATASETSIZE/2)):# and (self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE <= MAXDATASETSIZE/2)):
+                    self.plotParametersDict[dataset, directory][HALFWAY] = True
+                    self.dataDict[dataset, directory].append([np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)])
+                    self.parseData(dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset)       
+                else:
+                    self.setPoints(dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex)
+            else:
+                self.parseData(dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset)               
+#                     COME BACK HERE AND FIX INITIALXMIN!!                   
+#                    self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][self.plotParametersDict[dataset, directory][DATAINDEX]] # new minimum?                                 
+#            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
             self.drawGraph()
-#        self.drawGraph()
-#        if (self.drawFlag == True):
-#            self.drawFlag = False
-#            self.drawGraph()
+
+#    def switchArray(self, dataset, directory):
+#        if (self.plotParametersDict[dataset, directory][ARRAYTOPLOT] == 0):
+#            self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = 1
+#        else:
+#            self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = 0 
+#        self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
+
+
+    # These conditional statements deal with incoming data that expands outside the array boundaries
+    def parseData(self, dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset):
+        if ((dataIndex + numberOfDataPoints) > MAXDATASETSIZE):
+            # split up the data into two pieces
+            numberOfDataPoints1 = (MAXDATASETSIZE - dataIndex)
+            data1 = data[0:numberOfDataPoints1]
+            data2 = data[numberOfDataPoints1:numberOfDataPoints]
+            self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data1, numberOfDataPoints1, dataIndex, dataIndexOffset)
+            # recalculate data indicies
+            dataIndex = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+            dataIndexOffset = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
+            numberOfDataPoints2 = numberOfDataPoints - numberOfDataPoints1 
+            self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables, data2, numberOfDataPoints2, dataIndex, dataIndexOffset)
+        
+        elif ((dataIndexOffset + numberOfDataPoints) > MAXDATASETSIZE):
+            # split up the data into two pieces
+            numberOfDataPoints1 = (MAXDATASETSIZE - dataIndexOffset)
+            data1 = data[0:numberOfDataPoints1]
+            data2 = data[numberOfDataPoints1:numberOfDataPoints]
+            self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data1, numberOfDataPoints1, dataIndex, dataIndexOffset)
+            # recalculate data indicies           
+            dataIndex = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+            dataIndexOffset = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
+            numberOfDataPoints2 = numberOfDataPoints - numberOfDataPoints1 
+            self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data2, numberOfDataPoints2, dataIndex, dataIndexOffset)            
+            #self.plotParametersDict[dataset, directory][FIRSTPASS] = True
+
+        else:
+            # This will occur if data is coming at the rate of 1 data point per signal, at most.
+            self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data, data.shape[0], dataIndex, dataIndexOffset)
+            print dataIndex, ' ',dataIndexOffset, ' ', numberOfDataPoints
+
+    # Create the initial plot lines
+    def initializePlots(self, dataset, directory, numberOfDependentVariables):
+        for i in range(numberOfDependentVariables):
+            label = self.datasetLabelsDict[dataset, directory][i]
+            self.plotDict[dataset, directory][i] = self.ax.plot(self.dataDict[dataset, directory][FIRST][INDEPENDENT],self.dataDict[dataset, directory][FIRST][DEPENDENT][i], label = label,animated=True)#'ko', markersize=2
+        self.plotDict[dataset, directory] = self.flatten(self.plotDict[dataset, directory])
+        
     
+    # This function fills the first array with data (only called for the first half)
+    def setPoints(self, dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex):
+        # update the data points
+#        dataIndex = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+        try:
+            self.dataDict[dataset, directory][FIRST][INDEPENDENT][self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE:(self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
+            for i in range(numberOfDependentVariables):
+                self.dataDict[dataset, directory][FIRST][DEPENDENT][i][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
+            self.plotParametersDict[dataset, directory][DATAINDEX] = self.plotParametersDict[dataset, directory][DATAINDEX] + numberOfDataPoints
+        except ValueError:
+            print 'Incoming data size is greater than MAXDATASETSIZE. Consider Increasing MAXDATASETSIZE'
+#        if ((dataIndex + numberOfDataPoints) == MAXDATASETSIZE):
+#            self.switchArray(dataset, directory)
+        
+    # This function fills both arrays with data, then updates the data indicies
+    def setPointsTwoArrays(self, dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset):
+        self.dataDict[dataset, directory][FIRST][INDEPENDENT][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
+        for i in range(numberOfDependentVariables):
+            self.dataDict[dataset, directory][FIRST][DEPENDENT][i][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
+        self.dataDict[dataset, directory][SECOND][INDEPENDENT][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
+        for i in range(numberOfDependentVariables):
+            self.dataDict[dataset, directory][SECOND][DEPENDENT][i][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column         
+        self.plotParametersDict[dataset, directory][DATAINDEX] = self.plotParametersDict[dataset, directory][DATAINDEX] + numberOfDataPoints
+        # If the end of either array is reached
+        if ((dataIndex + numberOfDataPoints) == MAXDATASETSIZE):
+            self.plotParametersDict[dataset, directory][FIRSTPASS] = True
+            # Switch the array to plot
+            self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
+        elif ((dataIndexOffset + numberOfDataPoints) == MAXDATASETSIZE):
+            if (self.plotParametersDict[dataset, directory][FIRSTPASS] == True):
+                # Switch the array to plot
+                self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
+            
+    def constantUpdate(self):
+        self.drawCounter = self.drawCounter + 1
+        if (self.drawCounter == 10): # 10*10ms = 100ms
+            self.timer.stop()
+            self.drawGraph()
+
     def endTimer(self):
-        self.killTimer(self.timer)
+        self.timer.stop()
        
+    # Draw the plot legend
     def drawLegend(self):
 #        handles, labels = self.ax.get_legend_handles_labels()
         handles = []
         labels = []
         for dataset,directory in self.appWindowParent.datasetCheckboxes.keys():
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
-                for i in self.plotDict[dataset, directory][PLOTS]:
+                for i in self.plotDict[dataset, directory]:
                     handles.append(i)
                     labels.append(str(dataset) + ' - ' + i.get_label())
         self.ax.legend(handles, labels)
     
+    # Check which datasets are meant to be plotted and draw them.
     def drawGraph(self):
 #        tstartupdate = time.clock()
         for dataset, directory in self.dataDict:
@@ -153,65 +325,69 @@ class Qt4MplCanvas(FigureCanvas):
                 self.drawPlot(dataset, directory)
 #        tstopupdate = time.clock()
 #        print tstopupdate - tstartupdate
+    
     # plot the data
     def drawPlot(self, dataset, directory):#, dataset, directory):
             
-        data = self.dataDict[dataset, directory]
-               
-        # note: this will work for slow datasets, need to make sure...
-        #...self.plotDict[dataset][1] is not an empty set 
-        
-        if (data != None):
-            tstartupdate = time.clock()
+        # check if data has been initialized
+        try:
+            # This first lines tests if the dataInitialized flag exists, otherwise, do not start plotting
+            dataInitialized = self.plotParametersDict[dataset, directory][DATAINITIALIZED]          
+#            tstartupdate = time.clock()
          
-            NumberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable
-
-            # update the data points
-            self.plotDict[dataset, directory][INDEPENDENT] = data.transpose()[INDEPENDENT]
-            for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset, directory][DEPENDENT][i] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
-    
-            # Reassign dependent axis to smaller integers (in order to fit on screen)
-            #self.plotDict[dataset, directory][0] = np.arange(self.plotDict[dataset, directory][0].size)
-                               
+            numberOfDependentVariables = len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][1])
+                                              
             # finds the maximum independent variable value
-            self.maxX = self.plotDict[dataset, directory][INDEPENDENT][-1]
+#            self.maxX = self.dataDict[dataset, directory][INDEPENDENT][-1]
+#            self.maxX = self.dataDict[dataset, directory][INDEPENDENT][self.plotParametersDict[dataset, directory][DATAINDEX]]
              
             # flatten the data
-            self.plotDict[dataset, directory][PLOTS] = self.flatten(self.plotDict[dataset, directory][PLOTS])
+            self.plotDict[dataset, directory] = self.flatten(self.plotDict[dataset, directory])
             
-            # draw the plots onto the canvas and blit them into view
-            for i in range(NumberOfDependentVariables):
-                self.plotDict[dataset, directory][PLOTS][i].set_data(self.plotDict[dataset, directory][INDEPENDENT],self.plotDict[dataset, directory][DEPENDENT][i])
+            # Determine the range of values to plot based on which array needs to be plotted
+            if (self.plotParametersDict[dataset, directory][ARRAYTOPLOT] == 0):
+                drawRange = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+            else:
+                drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE 
+            print 'drawRange: ', drawRange, ' array to plot: ', self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
+            for i in range(numberOfDependentVariables):
+                self.plotDict[dataset, directory][i].set_data(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange],self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange])
                 try:
-                    self.ax.draw_artist(self.plotDict[dataset, directory][PLOTS][i])
+                    self.ax.draw_artist(self.plotDict[dataset, directory][i])
                 except AssertionError:
                     print 'failed to draw!'
+        
             self.blit(self.ax.bbox)
             
             # check to see if the boundary needs updating
-            self.updateBoundary(dataset, directory, NumberOfDependentVariables)
+            self.updateBoundary(dataset, directory, numberOfDependentVariables, drawRange)
             
-            tstopupdate = time.clock()
-            print tstopupdate - tstartupdate
+#            tstopupdate = time.clock()
+#            print tstopupdate - tstartupdate
 
+            # del numberOfDependentVariables
+        except:
+            pass
     # if the screen has reached the scrollfraction limit, it will update the boundaries
-    def updateBoundary(self, dataset, directory, NumberOfDependentVariables):
-        
-        currentX = self.plotDict[dataset, directory][INDEPENDENT][-1]
+    def updateBoundary(self, dataset, directory, numberOfDependentVariables, drawRange):
+        #print 'drawRange: ', drawRange, ' array to plot: ', self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
+        #print self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT]
+        arrayToPlot = self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
+        currentX = self.dataDict[dataset, directory][arrayToPlot][INDEPENDENT][drawRange - 1]
+        #print currentX
         
         # find the current maximum/minimum Y values between all lines 
         currentYmax = None
         currentYmin = None
-        for i in range(NumberOfDependentVariables):
+        for i in range(numberOfDependentVariables):
             if (currentYmax == None):
-                currentYmax = self.plotDict[dataset, directory][DEPENDENT][i][-1]
-                currentYmin = self.plotDict[dataset, directory][DEPENDENT][i][-1]
+                currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
+                currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
             else:
-                if (self.plotDict[dataset, directory][DEPENDENT][i][-1] > currentYmax):
-                    currentYmax = self.plotDict[dataset, directory][DEPENDENT][i][-1]
-                elif ((self.plotDict[dataset, directory][DEPENDENT][i][-1] < currentYmin)):
-                    currentYmin = self.plotDict[dataset, directory][DEPENDENT][i][-1]
+                if (self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] > currentYmax):
+                    currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
+                elif ((self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] < currentYmin)):
+                    currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
         
         xmin, xmax = self.ax.get_xlim()
         xwidth = xmax - xmin
@@ -242,7 +418,7 @@ class Qt4MplCanvas(FigureCanvas):
         xmax = None
         for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
-                for i in self.plotDict[dataset, directory][INDEPENDENT]:
+                for i in self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT]:
                     if (xmin == None):
                         xmin = i
                         xmax = i
@@ -258,8 +434,8 @@ class Qt4MplCanvas(FigureCanvas):
         ymax = None
         for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
             if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
-                for i in range(len(self.plotDict[dataset, directory][DEPENDENT])):
-                    for j in self.plotDict[dataset, directory][DEPENDENT][i]:
+                for i in range(len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT])):
+                    for j in self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i]:
                         if (ymin == None):
                             ymin = i
                             ymax = i

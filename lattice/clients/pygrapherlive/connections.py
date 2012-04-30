@@ -5,7 +5,11 @@ from twisted.internet.threads import deferToThread
 from twisted.internet.error import ConnectionRefusedError
 from grapherwindow import FirstWindow, GrapherWindow
 from dataset import Dataset
+import sys
 import time
+import objgraph
+import gc
+
 
 GraphRefreshTime = .1; # s, how often the plot updates
 
@@ -176,16 +180,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # ... which windows to draw the dataset on. Then draws the plot.   
     @inlineCallbacks
     def timerEvent(self):
-        print 'in connections: {0}'.format( len(self.dwDict.keys()) )
+#        print 'in connections: {0}'.format( len(self.dwDict.keys()) )
         for datasetObject in self.dwDict.keys():
             windowsToDrawOn = self.dwDict[datasetObject]
             if (datasetObject.data != None):
                 data = datasetObject.data
                 yield datasetObject.emptyDataBuffer()
                 for i in windowsToDrawOn:
-                    print 'still happening connections'
+#                    print 'still happening connections'
                     i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
-    
+                # del data?
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
     # ...with the overlay button checked
     def getOverlayingWindows(self):
@@ -208,6 +212,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # Datasets no longer need to be drawn on closed windows
     @inlineCallbacks
     def removeWindowFromDictionary(self, win):
+        print sys.getrefcount(win)
+        #objgraph.show_most_common_types(limit=20)
         for i in self.dwDict.keys():
             values = self.dwDict[i]
             for j in values:
@@ -229,6 +235,12 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         for i in self.winList:
             if i == win:
                 self.winList.remove(i)
+    
+    @inlineCallbacks
+    def cleanUp(self):
+        print 'clean!'
+        yield deferToThread(time.sleep, 5)
+        gc.collect()
                 
 class RetryConnectingDialog(QtGui.QDialog):
     def __init__(self, parent):

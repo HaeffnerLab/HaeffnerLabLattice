@@ -7,6 +7,7 @@ from canvas import Qt4MplCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from datavault import DataVaultWidget
 import time
+import objgraph
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
@@ -200,12 +201,13 @@ class GrapherWindow(QtGui.QMainWindow):
         if (self.cb2.isChecked()):
             # "uncheck" the overlay checkbox
             self.cb2.toggle()
-        print 'delering datadict'
-        del self.qmc.dataDict
+        #print 'delering datadict'
+        #del self.qmc.dataDict
         # Remove this window from the dictionary so that no datasets...
         # ... are drawn to this window
         self.parent.removeWindowFromDictionary(self)
         self.parent.removeWindowFromWinList(self)
+        self.parent.cleanUp()
         self.fileQuit()
 
 
