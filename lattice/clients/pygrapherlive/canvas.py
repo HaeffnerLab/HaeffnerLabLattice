@@ -116,7 +116,7 @@ import time
 import numpy as np
 
 TIMERREFRESH = .01 #s
-MAXDATASETSIZE = 10000
+MAXDATASETSIZE = 20000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0
@@ -278,22 +278,25 @@ class Qt4MplCanvas(FigureCanvas):
         
     # This function fills both arrays with data, then updates the data indicies
     def setPointsTwoArrays(self, dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset):
-        self.dataDict[dataset, directory][FIRST][INDEPENDENT][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
-        for i in range(numberOfDependentVariables):
-            self.dataDict[dataset, directory][FIRST][DEPENDENT][i][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
-        self.dataDict[dataset, directory][SECOND][INDEPENDENT][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
-        for i in range(numberOfDependentVariables):
-            self.dataDict[dataset, directory][SECOND][DEPENDENT][i][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column         
-        self.plotParametersDict[dataset, directory][DATAINDEX] = self.plotParametersDict[dataset, directory][DATAINDEX] + numberOfDataPoints
-        # If the end of either array is reached
-        if ((dataIndex + numberOfDataPoints) == MAXDATASETSIZE):
-            self.plotParametersDict[dataset, directory][FIRSTPASS] = True
-            # Switch the array to plot
-            self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
-        elif ((dataIndexOffset + numberOfDataPoints) == MAXDATASETSIZE):
-            if (self.plotParametersDict[dataset, directory][FIRSTPASS] == True):
+        try:
+            self.dataDict[dataset, directory][FIRST][INDEPENDENT][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
+            for i in range(numberOfDependentVariables):
+                self.dataDict[dataset, directory][FIRST][DEPENDENT][i][dataIndex:(dataIndex + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column
+            self.dataDict[dataset, directory][SECOND][INDEPENDENT][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[INDEPENDENT]            
+            for i in range(numberOfDependentVariables):
+                self.dataDict[dataset, directory][SECOND][DEPENDENT][i][dataIndexOffset:(dataIndexOffset + numberOfDataPoints)] = data.transpose()[i+1] # (i + 1) -> in data, the y axes start with the second column         
+            self.plotParametersDict[dataset, directory][DATAINDEX] = self.plotParametersDict[dataset, directory][DATAINDEX] + numberOfDataPoints
+            # If the end of either array is reached
+            if ((dataIndex + numberOfDataPoints) == MAXDATASETSIZE):
+                self.plotParametersDict[dataset, directory][FIRSTPASS] = True
                 # Switch the array to plot
                 self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
+            elif ((dataIndexOffset + numberOfDataPoints) == MAXDATASETSIZE):
+                if (self.plotParametersDict[dataset, directory][FIRSTPASS] == True):
+                    # Switch the array to plot
+                    self.plotParametersDict[dataset, directory][ARRAYTOPLOT] = abs(self.plotParametersDict[dataset, directory][ARRAYTOPLOT] - 1)
+        except ValueError:
+            print 'Incoming data size is greater than MAXDATASETSIZE. Consider Increasing MAXDATASETSIZE'
             
     def constantUpdate(self):
         self.drawCounter = self.drawCounter + 1

@@ -212,10 +212,11 @@ class GrapherWindow(QtGui.QMainWindow):
 
 class FirstWindow(QtGui.QMainWindow):
     """Creates the opening window"""
-    def __init__(self, parent, context):
+    def __init__(self, parent, context, reactor):
         QtGui.QMainWindow.__init__(self)
         self.parent = parent
         self.context = context
+        self.reactor = reactor
         self.parameterWindows = {}
         self.manuallyLoaded = True
         self.setWindowTitle("Live Grapher!")
@@ -234,7 +235,10 @@ class FirstWindow(QtGui.QMainWindow):
 
     def getParameters(self, dataset, directory):
         parameters = self.parent.getParameters(dataset, directory)
-        return parameters                   
+        return parameters
+    
+    def closeEvent(self, event):
+        self.reactor.stop()                   
 
 
 class ParameterWindow(QtGui.QMainWindow):

@@ -9,7 +9,7 @@ import sys
 import time
 import gc
 
-
+MAXWINDOWS = 10
 GraphRefreshTime = .1; # s, how often the plot updates
 
 class CONNECTIONS(QtGui.QGraphicsObject):
@@ -88,7 +88,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             self.server = yield self.cxn.data_vault
             yield self.setupListeners()
             context = yield self.cxn.context() # create a new context
-            self.introWindow = FirstWindow(self, context)
+            self.introWindow = FirstWindow(self, context, self.reactor)
             self.introWindow.show()
             print 'Connection established: now listening dataset.'
         except AttributeError:
@@ -133,18 +133,23 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         yield datasetObject.setupParameterListener(context)
         yield datasetObject.checkForPlotParameter()
         datasetLabels = yield datasetObject.getYLabels()
-        # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
-        if (manuallyLoaded == True):
-            self.prepareDataset(datasetObject, dataset, directory, datasetLabels)#, context)
-        else:        
-            hasPlotParameter = yield datasetObject.listenForPlotParameter()
-            if (hasPlotParameter == True):
+        if (len(self.winList) < MAXWINDOWS):
+            # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
+            if (manuallyLoaded == True):
                 self.prepareDataset(datasetObject, dataset, directory, datasetLabels)#, context)
-            else:
-                # This data is not for plotting. Remove it.
-                # There should be a cleaner way of doing this
-                datasetObject.endTimer()
-                del datasetObject
+            else:        
+                hasPlotParameter = yield datasetObject.listenForPlotParameter()
+                if (hasPlotParameter == True):
+                    self.prepareDataset(datasetObject, dataset, directory, datasetLabels)#, context)
+                else:
+                    # This data is not for plotting. Remove it.
+                    # There should be a cleaner way of doing this
+                    datasetObject.endTimer()
+                    del datasetObject
+        else:
+            print 'Too many windows open!'
+            datasetObject.endTimer()
+            del datasetObject
 
     # Prepare the dataset for plotting
     @inlineCallbacks
@@ -162,7 +167,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
             win.qmc.initializeDataset(dataset, directory, datasetLabels)
-            win.createDatasetCheckbox(dataset, directory) 
+            win.createDatasetCheckbox(dataset, directory)
 
     # create a new graph window
     def newGraph(self, context):
