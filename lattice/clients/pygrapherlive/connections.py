@@ -7,7 +7,6 @@ from grapherwindow import FirstWindow, GrapherWindow
 from dataset import Dataset
 import sys
 import time
-import objgraph
 import gc
 
 

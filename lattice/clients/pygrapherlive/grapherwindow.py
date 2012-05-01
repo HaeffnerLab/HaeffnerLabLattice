@@ -7,7 +7,6 @@ from canvas import Qt4MplCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from datavault import DataVaultWidget
 import time
-import objgraph
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""

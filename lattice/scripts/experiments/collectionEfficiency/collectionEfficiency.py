@@ -8,16 +8,17 @@ from scriptLibrary import dvParameters
 from PulseSequences.collectionEfficiency import collectionEfficiency
 import dataProcessor
 
-repeatitions = 5000;
+repeatitions = 1;
 params = {
           'dopplerCooling':100e-3,
           'iterDelay':1e-3,
-          'iterationsCycle': 250,
+          'iterationsCycle': 10000,
           'repumpD':20.0*10**-6,
           'repumpDelay':10.0*10**-6,
           'exciteP':20.0*10**-6,
           'finalDelay':10.0*10**-6,
               }
+
 experimentName = 'collectionEfficiency'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
