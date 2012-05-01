@@ -81,7 +81,9 @@ class dataProcessor():
         return result
 
 if __name__ == '__main__':
-    dataset = '2012Apr27_1817_45'
+    dataset = '2012Apr27_1650_23'
+    #dataset = '2012Apr27_1742_15'
+    #dataset = '2012Apr27_1817_45'
     #dataset = '2012Apr27_1849_26'
     #dataset = '2012Apr27_1918_55'
     #dataset = '2012Apr27_1949_31'
