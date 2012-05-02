@@ -4,7 +4,7 @@ class collectionEfficiency(Sequence):
     #dictionary of variable: (type, min, max, default)
     requiredVars = {
                     'dopplerCooling':(float,  100e-9, 1.0, 100e-3),
-                    'iterationsCycle':(int, 1, 10000, 1),
+                    'iterationsCycle':(int, 1, 250, 1),
                     'repumpD':(float, 100e-9, 5.0, 10e-6),
                     'repumpDelay':(float, 100e-9, 5.0, 100e-9),
                     'exciteP':(float, 100e-9, 5.0, 1e-6),
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     params = {
               'dopplerCooling':100e-3,
               'iterDelay':1.0*10**-6,
-              'iterationsCycle': 100,
+              'iterationsCycle': 250,
               'repumpD':1.0*10**-6,
               'repumpDelay':5.0*10**-6,
               'exciteP':1.0*10**-6,
@@ -60,9 +60,11 @@ if __name__ == '__main__':
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
+    print pulser.human_readable().asarray
     pulser.reset_timetags()
     pulser.start_single()
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
+    
     print timetags.size

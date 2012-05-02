@@ -33,8 +33,8 @@ timeResolution = 40.0e-9 #seconds
 timeResolvedResolution = timeResolution/4.0 #second
 MIN_SEQUENCE = 0
 MAX_SEQUENCE = 85 #seconds
+MAX_SWITCHES = 1022 #maximum number of allowed switches in the sequence
 collectionTimeRange = (0.010, 5.0)
-
 class Pulser(LabradServer):
     name = 'Pulser'
     onSwitch = Signal(611051, 'signal: switch toggled', '(ss)')
@@ -526,10 +526,11 @@ class Pulser(LabradServer):
 class Sequence():
     """Sequence for programming pulses"""
     def __init__(self):
-        self.switchingTimes = {} 
-        #dictionary in the form time:which channels to swtich
+        #dictionary in the form time:which channels to switch
         #time is expressed as timestep with the given resolution
         #which channels to switch is a channelTotal-long array with 1 to switch ON, -1 to switch OFF, 0 to do nothing
+        self.switchingTimes = {0:numpy.zeros(channelTotal, dtype = numpy.int8)} 
+        self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
     
     def addTTLPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
@@ -556,7 +557,9 @@ class Sequence():
             if self.switchingTimes[timeStep][chan]: raise Exception ('Double switch at time {} for channel {}'.format(t, chan))
             self.switchingTimes[timeStep][chan] = value
         else:
+            if self.switches == MAX_SWITCHES: raise Exception("Exceeded maximum number of switches {}".format(self.switches))
             self.switchingTimes[timeStep] = numpy.zeros(channelTotal, dtype = numpy.int8)
+            self.switches += 1
             self.switchingTimes[timeStep][chan] = value
            
     def progRepresentation(self):
@@ -579,7 +582,7 @@ class Sequence():
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)
-        times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolvedResolution
+        times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolution
         channels = ( 65536  *  arr[:,2] + arr[:,3])
         
         def expandChannel(ch):
