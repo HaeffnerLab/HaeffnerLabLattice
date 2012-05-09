@@ -8,7 +8,7 @@ class TimeResolved(Sequence):
     
     def defineSequence(self):
         recordTime = self.vars['recordTime']       
-        self.pulser.add_ttl_pulse('TimeResolvedCount', 0.1, recordTime) #record the whole time
+        self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
 
 if __name__ == '__main__':
     import labrad
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     seq = TimeResolved(pulser)
     pulser.new_sequence()
     params = {
-              'recordTime': 0.100
+              'recordTime': 1.0
               }
     seq.setVariables(**params)
     seq.defineSequence()
