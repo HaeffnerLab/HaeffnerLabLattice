@@ -1,8 +1,8 @@
-*.exe
+RegistryEditor-v1.0.0.exe
+Grapher-v1.2.0.exe
 *.pyc
 LabRAD.ini
 /Registry
-/docs
 Errors.log
 .project
 .pydevproject
