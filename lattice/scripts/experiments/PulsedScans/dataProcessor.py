@@ -41,8 +41,10 @@ class dataProcessor():
         fluor = []
         for pwr in self.pwrList:
             tags = times[np.where(powers == pwr)]
-            counts = self.sliceArr(tags,  start = self.coolingTime + self.switching, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
-            fluor.append(counts.size)
+            countsBackground = self.sliceArr(tags,  start = self.coolingTime + self.switching, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
+            countsSignal = self.sliceArr(tags,  start = self.coolingTime + self.switching + self.pulsedTime, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
+            bgsubtracted = countsSignal.size - countsBackground.size
+            fluor.append(bgsubtracted)
         self.fluor = np.array(fluor)
     
     def makePlot(self):

@@ -13,15 +13,17 @@ class PulsedScan(Sequence):
         p = self.parameters
         pulser = self.pulser
         
-        p.cycleTime = p.coolingTime + p.pulsedTime + 2*p.switching
+        p.cycleTime = p.coolingTime + 2*p.pulsedTime + 2*p.switching
         recordTime = p.cycleTime * p.iterations
         startCooling =  [p.cycleTime * iter +  p.coolingTime for iter in range(p.iterations)] #sequence has TTL high then light OFF
         startPulses = [startCool + p.switching for startCool in startCooling]
-        coolingPulses = [('110DP',start, p.pulsedTime + 2*p.switching) for start in startCooling ]
-        pulsedPulses = [('axial',start, p.pulsedTime) for start in startPulses ]
+        coolingPulses = [('110DP',start, 2*p.pulsedTime + 2*p.switching) for start in startCooling ]
+        pulsedPulses = [('axial',start, 2*p.pulsedTime) for start in startPulses ]
+        repumpOffPulses = [('866DP',start, p.pulsedTime) for start in startPulses ]
+        
         
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
-        for pulses in [coolingPulses, pulsedPulses]:
+        for pulses in [coolingPulses, pulsedPulses,repumpOffPulses]:
             pulser.add_ttl_pulses(pulses)
         
         
@@ -32,10 +34,10 @@ if __name__ == '__main__':
     seq = PulsedScan(pulser)
     pulser.new_sequence()
     params = {
-              'coolingTime':10.0*10**-3,
-              'switching':2.0*10**-3,
-              'pulsedTime':100*10**-6,
-              'iterations':10,
+              'coolingTime':20.0*10**-3,
+              'switching':1.0*10**-3,
+              'pulsedTime':1*10**-3,
+              'iterations':50,
             }
     seq.setVariables(**params)
     seq.defineSequence()
