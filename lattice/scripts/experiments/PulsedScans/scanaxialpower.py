@@ -8,17 +8,20 @@ from PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 
-minpower = -20.0
-maxpower = 5.0
-steps = 75
+minpower = -50.0
+maxpower = -10.0#-0.1max #5.0 for axial
+steps = 25
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
-cxnlab = labrad.connect() #connection to labwide network
+cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
 dpass = cxn.double_pass
-axial = cxn.lattice_pc_hp_server
+axial = cxnlab.rohdeschwarz_server#axial = cxn.lattice_pc_hp_server
+print axial
+axial.select_device(0)#don't do this for axial
 initpower = axial.amplitude()
+print 'initial power',initpower
 pulser = cxn.pulser
 experimentName = 'pulsedScanAxialPower'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
@@ -27,7 +30,7 @@ params = {
           'coolingTime':20.0*10**-3,
           'switching':1.0*10**-3,
           'pulsedTime':1.0*10**-3,
-          'iterations':100,
+          'iterations':50,
         }
 
 def initialize():
