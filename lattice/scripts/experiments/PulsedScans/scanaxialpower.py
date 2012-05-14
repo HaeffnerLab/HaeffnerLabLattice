@@ -8,9 +8,9 @@ from PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 
-minpower = -50.0
-maxpower = -10.0#-0.1max #5.0 for axial
-steps = 25
+minpower = -60.0
+maxpower = -0.1#-0.1max #5.0 for axial
+steps = 30
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
@@ -30,7 +30,7 @@ params = {
           'coolingTime':20.0*10**-3,
           'switching':1.0*10**-3,
           'pulsedTime':1.0*10**-3,
-          'iterations':50,
+          'iterations':100,
         }
 
 def initialize():
