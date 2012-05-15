@@ -84,7 +84,6 @@ class DevicePanel(QtGui.QWidget):
     @inlineCallbacks
     def getPositionLimits(self):
         stageAxisInformation = yield self.parent.server.get_stage_axis_information(context = self.context)
-        print stageAxisInformation
         self.minimumPosition = stageAxisInformation[0]
         self.maximumPosition = stageAxisInformation[1]
 
@@ -161,7 +160,6 @@ class DevicePanel(QtGui.QWidget):
     def setupListeners(self):               
         yield self.parent.server.signal__position_change(88888, context = self.context)
         yield self.parent.server.addListener(listener = self.positionChange, source = None, ID = 88888)    
-        print 'listeners set up'
 
     def positionChange(self, x, y):
         self.getPositionSignal(1)
@@ -290,7 +288,7 @@ class ParameterWindow(QtGui.QWidget):
     def closeEvent(self, evt):
         self.hide()
         
-class MainPanel(QtGui.QWidget):
+class APTMotorClient(QtGui.QWidget):
     def __init__(self, reactor):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
@@ -304,7 +302,6 @@ class MainPanel(QtGui.QWidget):
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.apt_motor_server
         availableDevices = yield self.server.get_available_devices()
-        print availableDevices
         self.setupUI(availableDevices)
 
     @inlineCallbacks
@@ -325,11 +322,14 @@ class MainPanel(QtGui.QWidget):
                 grid.addWidget(devPanel, (i / 2) , 0)
             else:
                 grid.addWidget(devPanel, ((i - 1) / 2) , 1)
-        #self.setGeometry(300, 300, 350, 300)
         self.show()        
+    
+    
+#    def sizeHint(self):
+#        return QtCore.QSize(100,100)
         
-        def closeEvent(self, evt):
-            self.reactor.stop()
+    def closeEvent(self, evt):
+        self.reactor.stop()
             
     
 if __name__ == "__main__":
@@ -337,5 +337,5 @@ if __name__ == "__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    mainPanel = MainPanel(reactor)
+    mainPanel = APTMotorClient(reactor)
     reactor.run()

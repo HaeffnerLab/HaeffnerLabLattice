@@ -3,6 +3,23 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from ctypes import c_long, c_buffer, c_float, windll, pointer
 
+"""
+### BEGIN NODE INFO
+[info]
+name =  APT Motor Server
+version = 1.0
+description = 
+
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 5
+### END NODE INFO
+"""
+
 class APTMotor():
     def __init__(self):
         self.aptdll = windll.LoadLibrary("C:\\APTDLLClient\\APT.dll")
