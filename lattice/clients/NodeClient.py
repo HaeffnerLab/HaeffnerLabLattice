@@ -5,7 +5,7 @@ import time
 nodeDict = {'node_lattice_pc':
 					['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','Pulser',
 					'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','NormalPMTFlow',
-					'Compensation LineScan','Double Pass','ADCserver','FreqCounter',  'Trap Drive', 'HighVoltA'],
+					'Compensation LineScan','Double Pass','ADCserver','FreqCounter',  'Trap Drive', 'HighVoltA', 'APT Motor Server'],
 		}
 
 #connect to LabRAD
