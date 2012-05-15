@@ -55,14 +55,14 @@ class APTMotor():
         stageAxisInformation = [minimumPosition.value, maximumPosition.value, units.value, pitch.value]
         return stageAxisInformation
     
-#    def setStageAxisInformation(self, serialNumber, minimumPosition, maximumPosition):
-#        HWSerialNum = c_long(serialNumber)
-#        minimumPosition = c_float()
-#        maximumPosition = c_float()
-#        units = c_long(1) #since idk what these do
-#        pitch = c_float(.5) #since idk what these do
-#        self.aptdll.MOT_SetStageAxisInfo(HWSerialNum, minimumPosition, maximumPosition, units, pitch)
-#        return True
+    def setStageAxisInformation(self, serialNumber, minimumPosition, maximumPosition):
+        HWSerialNum = c_long(serialNumber)
+        minimumPosition = c_float(minimumPosition)
+        maximumPosition = c_float(maximumPosition)
+        units = c_long(1) #units of mm
+        pitch = c_float(.5) #standard pitch
+        self.aptdll.MOT_SetStageAxisInfo(HWSerialNum, minimumPosition, maximumPosition, units, pitch)
+        return True
 
     
 #    def getHardwareLimitSwitches(self, serialNumber):
@@ -125,6 +125,14 @@ class APTMotor():
         self.aptdll.APTCleanUp()
         print 'APT cleaned up'  
 
+class stage():
+    def __init__(self, name, serial, initialized=False):
+        self.name = name
+        self.serial = serial
+        self.initialized = initialized
+        self.minpos = -6.5
+        self.maxpos = 6.5
+
 class APTMotorServer(LabradServer):
     """ Contains methods that interact with the APT motor controller """
     
@@ -133,32 +141,19 @@ class APTMotorServer(LabradServer):
     onVelocityParameterChange = Signal(111111, 'signal: velocity parameter change', 'w')
     onPositionChange = Signal(222222, 'signal: position change', 'w')
     
-    # Device Dictionary (Known Ahead of Time)
-    
-   
+    # Device Dictionary, assigning meaningful names to serial numbers
     def initServer(self):
-        self.deviceDict = {'Axial FB': 83825962,
-                       'Radial FB': 83825936,
-                       'Radial LR': 83815664,
-                       'Axial LR': 63001773,
-                       'Auxilliary': 83816548,
-                       'Simulator1': 83000001,
-                       'Simulator2': 83000002,
-                       'Simulator3': 83000003}
-        
-        # Make sure none of these devices have been initialized yet
-        self.initializedDict = {}
-        for i in self.deviceDict.keys():
-            self.initializedDict[self.deviceDict[i]] = False
-
-        from twisted.internet import reactor
-        reactor.callLater(0, self.doPrepareDevices)        
-#        self.prepareDevices()        
-        self.listeners = set()    
-    
-    @inlineCallbacks
-    def doPrepareDevices(self):
-        yield deferToThread(self.prepareDevices)
+        self.deviceDict = {'Axial LR': stage('Axial LR', 83825962),
+                           'Axial UD': stage('Axial UD',83815664),
+                           }
+#                       'Radial FB': 83825936,
+#                       'Axial LR': 63001773,
+#                       'Auxilliary': 83816548,
+#                       'Simulator1': 83000001,
+#                       'Simulator2': 83000002,
+#                       'Simulator3': 83000003
+        self.listeners = set()  
+        self.prepareDevices()
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -175,123 +170,111 @@ class APTMotorServer(LabradServer):
     def prepareDevices(self):
         self.aptMotor = APTMotor()        
         numberOfHardwareUnits = self.aptMotor.getNumberOfHardwareUnits()
-        for i in range(numberOfHardwareUnits):
-            serialNumber = self.aptMotor.getSerialNumber(i)
-            if (serialNumber in self.deviceDict.values()):
-                #ok = yield self.aptMotor.initializeHardwareDevice(serialNumber)
-                ok = self.aptMotor.initializeHardwareDevice(serialNumber)
-                if (ok == True):
-                    self.initializedDict[serialNumber] = True
+        connectedSerials = [self.aptMotor.getSerialNumber(i) for i in range(numberOfHardwareUnits)]
+        print '{} units connected: {}'.format(numberOfHardwareUnits,connectedSerials)
+        for stage in self.deviceDict.values():
+            if stage.serial in connectedSerials:
+                ok = self.aptMotor.initializeHardwareDevice(stage.serial)
+                if ok: stage.initialized = True
+                self.aptMotor.setStageAxisInformation(stage.serial, stage.minpos, stage.maxpos)
     
+    def getInitialized(self):
+        initialized = [stage.name for stage in self.deviceDict.values() if stage.initialized]
+        return initialized 
+               
     @setting(0, "Get Available Devices", returns = '*s')
     def getAvailableDevices(self, c):
         """Returns a List of Initialized Devices"""
-        availableHardwareUnits = []
-        for i in self.deviceDict.keys():
-            if (self.initializedDict[self.deviceDict[i]] == True):
-                availableHardwareUnits.append(i)
-        return availableHardwareUnits
+        return self.getInitialized()
 
     @setting(1, "Select Device", name = 's', returns = '')
     def selectDevice(self, c, name):
-        if name not in self.deviceDict.keys(): raise Exception("No such Device")
-        c['Device'] = self.deviceDict[name]
+        if name not in self.getInitialized(): raise Exception("No such Device")
+        c['Device'] = self.deviceDict[name].serial
 
     @setting(2, "Get Serial Number", returns = 'w')
     def getSerialNumber(self, c):
-        return c['Device']
-#    @setting(1, "Initialize Hardware Device", serialNumber = 'w', returns ='b')
-#    def initializeHardwareDevice(self, c, serialNumber):
-#        """Initializes Hardware Device"""
-#        ok = yield deferToThread(self.aptMotor.initializeHardwareDevice, serialNumber)
-#        if (ok == True):
-#            c['Hardware Initialized'] = True
-#            returnValue(True)
-#        else:
-#            print 'false?'
-#            returnValue(False)
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        return serial
     
     @setting(3, "Get Device Information",  returns ='*s')
     def getHardwareInformation(self, c):
-        """Returns Hardware Information
-            Model, Software Version, Hardware Notes"""
-        if (self.initializedDict[c['Device']] == True):
-            c['Hardware Information'] = yield deferToThread(self.aptMotor.getHardwareInformation, c['Device'])
-            returnValue(c['Hardware Information'])
-
+        """Returns Hardware Information: Model, Software Version, Hardware Notes"""
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        c['Hardware Information'] = yield deferToThread(self.aptMotor.getHardwareInformation, c['Device'])
+        returnValue(c['Hardware Information'])
 
     @setting(4, "Get Velocity Parameters", returns ='*v')
     def getVelocityParameters(self, c):
-        """Returns Velocity Parameters
-            Minimum Velocity, Acceleration, Maximum Velocity"""
-        if (self.initializedDict[c['Device']] == True):
-            c['Velocity Parameters'] = yield deferToThread(self.aptMotor.getVelocityParameters, c['Device'])
-            returnValue(c['Velocity Parameters'])
+        """Returns Velocity Parameters: Minimum Velocity, Acceleration, Maximum Velocity"""
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        c['Velocity Parameters'] = yield deferToThread(self.aptMotor.getVelocityParameters, c['Device'])
+        returnValue(c['Velocity Parameters'])
 
     @setting(5, "Get Velocity Parameter Limits", returns ='*v')
     def getVelocityParameterLimits(self, c):
-        """Returns Velocity Parameter Limits
-            Maximum Acceleration, Maximum Velocity"""
-        if (self.initializedDict[c['Device']] == True):
-            c['Velocity Parameter Limits'] = yield deferToThread(self.aptMotor.getVelocityParameterLimits, c['Device'])
-            returnValue(c['Velocity Parameter Limits'])
+        """Returns Velocity Parameter Limits: Maximum Acceleration, Maximum Velocity"""
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        c['Velocity Parameter Limits'] = yield deferToThread(self.aptMotor.getVelocityParameterLimits, c['Device'])
+        returnValue(c['Velocity Parameter Limits'])
 
     @setting(6, "Set Velocity Parameters", minimumVelocity = 'v', acceleration = 'v', maximumVelocity = 'v', returns ='b')
     def setVelocityParameters(self, c, minimumVelocity, acceleration, maximumVelocity):
         """Sets Velocity Parameters
             Minimum Velocity, Acceleration, Maximum Velocity"""
-        if (self.initializedDict[c['Device']] == True):
-            ok = yield deferToThread(self.aptMotor.setVelocityParameters, c['Device'], minimumVelocity, acceleration, maximumVelocity)
-            notified = self.getOtherListeners(c)
-            self.onVelocityParameterChange(c['Device'], notified)
-            returnValue(True)
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        ok = yield deferToThread(self.aptMotor.setVelocityParameters, c['Device'], minimumVelocity, acceleration, maximumVelocity)
+        notified = self.getOtherListeners(c)
+        self.onVelocityParameterChange(c['Device'], notified)
+        returnValue(True)
 
     @setting(7, "Get Position", returns ='v')
     def getPosition(self, c):
         """Returns Current Position"""
-        if (self.initializedDict[c['Device']] == True):
-            c['Current Position'] = yield deferToThread(self.aptMotor.getPosition, c['Device'])
-            returnValue(c['Current Position'])
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        c['Current Position'] = yield deferToThread(self.aptMotor.getPosition, c['Device'])
+        returnValue(c['Current Position'])
         
     @setting(8, "Move Relative", relativeDistance = 'v', returns ='b')
     def moveRelative(self, c, relativeDistance):
         """Moves the Motor by a Distance Relative to its Current Position"""
-        if (self.initializedDict[c['Device']] == True):
-            ok = yield deferToThread(self.aptMotor.moveRelative, c['Device'], relativeDistance)
-            notified = self.getOtherListeners(c)
-            self.onPositionChange(c['Device'], notified)
-            returnValue(ok)    
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        ok = yield deferToThread(self.aptMotor.moveRelative, c['Device'], relativeDistance)
+        notified = self.getOtherListeners(c)
+        self.onPositionChange(c['Device'], notified)
+        returnValue(ok)    
 
     @setting(9, "Move Absolute", absolutePosition = 'v', returns ='b')
     def moveAbsolute(self, c, absolutePosition):
         """Moves the Motor an Absolute Position"""
-        if (self.initializedDict[c['Device']] == True):
-            ok = yield deferToThread(self.aptMotor.moveAbsolute, c['Device'], absolutePosition)
-            notified = self.getOtherListeners(c)
-            self.onPositionChange(c['Device'], notified)   
-            returnValue(ok)    
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        ok = yield deferToThread(self.aptMotor.moveAbsolute, c['Device'], absolutePosition)
+        notified = self.getOtherListeners(c)
+        self.onPositionChange(c['Device'], notified)   
+        returnValue(ok)    
 
     @setting(10, "Identify Device", returns ='b')
     def identifyDevice(self, c):
         """Identifies Device by Flashing Front Panel LED for a Few Seconds"""
-        if (self.initializedDict[c['Device']] == True):
-            ok = yield deferToThread(self.aptMotor.identify, c['Device'])
-            returnValue(ok)
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        ok = yield deferToThread(self.aptMotor.identify, c['Device'])
+        returnValue(ok)
     
     @setting(11, "Get Stage Axis Information", returns='*v')
     def getStageAxisInformation(self, c):
-        if (self.initializedDict[c['Device']] == True):
-            c['Stage Axis Information'] = yield deferToThread(self.aptMotor.getStageAxisInformation, c['Device'])
-            returnValue(c['Stage Axis Information'])
-
-#    @setting(13, "Set Stage Axis Information", minimumPosition = 'v', maximumPosition = 'v', returns='b')
-#    def setStageAxisInformation(self, c, minimumPosition, maximumPosition):
-#        if (self.initializedDict[c['Device']] == True):
-#            ok = yield deferToThread(self.aptMotor.setStageAxisInformation, c['Device'], minimumPosition, maximumPosition)
-#            returnValue(True)
-##    When attempting to set new limits, they both get set to 0!!
-    
-
+        serial = c.get('Device', False)
+        if not serial: raise Exception ("Device not selected")
+        c['Stage Axis Information'] = yield deferToThread(self.aptMotor.getStageAxisInformation, c['Device'])
+        returnValue(c['Stage Axis Information'])
 
 #    @setting(12, "Get Hardware Limit Switches", returns='*v')
 #    def getHardwareLimitSwitches(self, c):

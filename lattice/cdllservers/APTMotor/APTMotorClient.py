@@ -50,18 +50,16 @@ class DevicePanel(QtGui.QWidget):
 #        self.positionDoubleSpinBox.valueChanged[int].connect(self.moveAbsoluteSignal(1))
         self.positionDoubleSpinBox.setDecimals(4)
         self.positionDoubleSpinBox.setSingleStep(.001)
-        self.positionDoubleSpinBox.setMinimum(0)
-        self.positionDoubleSpinBox.setMaximum(6)
+        self.positionDoubleSpinBox.setMinimum(-6.5)####
+        self.positionDoubleSpinBox.setMaximum(6.5)
+        self.positionDoubleSpinBox.setKeyboardTracking(False)
         self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-        self.stepSizeEdit = QtGui.QLineEdit()
-        self.stepSizeEdit.setMaximumWidth(43)
-        self.stepSizeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         self.stepSizeDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.stepSizeDoubleSpinBox.setDecimals(4)
         self.stepSizeDoubleSpinBox.setSingleStep(.001)
         self.stepSizeDoubleSpinBox.setMinimum(0)
+        self.stepSizeDoubleSpinBox.setKeyboardTracking(False)
         self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Layout        
@@ -86,6 +84,7 @@ class DevicePanel(QtGui.QWidget):
     @inlineCallbacks
     def getPositionLimits(self):
         stageAxisInformation = yield self.parent.server.get_stage_axis_information(context = self.context)
+        print stageAxisInformation
         self.minimumPosition = stageAxisInformation[0]
         self.maximumPosition = stageAxisInformation[1]
 
