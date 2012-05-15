@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 BLOCKSIGNAL = 1
 
@@ -293,15 +293,23 @@ class APTMotorClient(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
         self.devDict = {}
-        self.connect()              
+        try:
+            self.connect()
+        except Exception:
+            print 'excepting'
+            self.setDisabled(True)        
         
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
         from labrad.types import Error
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.apt_motor_server
-        availableDevices = yield self.server.get_available_devices()
+        try:
+            self.server = yield self.cxn.apt_motor_server
+            availableDevices = yield self.server.get_available_devices()
+        except Exception ,e:
+            print 'server not connected: {}'.format(e)
+            availableDevices = []
         self.setupUI(availableDevices)
 
     @inlineCallbacks
