@@ -10,7 +10,7 @@ import dataProcessor
 
 minpower = -60.0
 maxpower = -0.1#-0.1max #5.0 for axial
-steps = 30
+steps = 2
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
@@ -18,7 +18,6 @@ cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
 dpass = cxn.double_pass
 axial = cxnlab.rohdeschwarz_server#axial = cxn.lattice_pc_hp_server
-print axial
 axial.select_device(0)#don't do this for axial
 initpower = axial.amplitude()
 print 'initial power',initpower
@@ -42,8 +41,8 @@ def initialize():
     pulser.program_sequence()
     #make sure 110 dpass is on
     dpass.select('110DP')
-    dpass.output(True)
-    axial.output(True)
+####    dpass.output(True)
+####    axial.output(True)
     #set logic
     pulser.switch_auto('axial',  True) #high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF

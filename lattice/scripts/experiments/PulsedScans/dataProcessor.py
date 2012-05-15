@@ -15,10 +15,7 @@ class dataProcessor():
     
     def addData(self, timetags):
         self.timetags = timetags
-        self.addData = self.appendData
-            
-    def appendData(self, timetags):
-        self.timetags = np.append(self.timetags, timetags)
+        self.addData = None
     
     def sliceArr(self, arr, start, duration, cyclenumber = 1, cycleduration = 0 ):
         '''Takes a np array arr, and returns a new array that consists of all elements between start and start + duration modulo the start time
@@ -35,6 +32,24 @@ class dataProcessor():
         return result
     
     def process(self):
+        self.processBinning()
+        self.processPowerScan()
+    
+    def processBinning(self):
+        '''shows binning at the highest power'''
+        times = self.timetags[:,1]
+        powers = self.timetags[:,0]
+        maxpower =  np.max(np.unique(self.timetags[:,0]))
+        tags = times[np.where(powers == maxpower)]
+        tags = np.mod(tags, self.cycleTime)
+        binTime = 25.0*10**-6
+        self.bins = np.arange(self.cycleTime / binTime) * binTime
+        self.binned = np.histogram(tags, self.bins)[0]
+        collectionTime = self.cycleTime * self.iterations
+        self.binned = self.binned / (self.iterations * binTime) #Counts per sec
+        
+    def processPowerScan(self):
+        '''plots the total number of differential counts during the pulsed times vs the power at the time of pulsing'''
         times = self.timetags[:,1]
         powers = self.timetags[:,0]
         self.pwrList =  np.unique(self.timetags[:,0])
@@ -44,14 +59,23 @@ class dataProcessor():
             countsBackground = self.sliceArr(tags,  start = self.coolingTime + self.switching, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
             countsSignal = self.sliceArr(tags,  start = self.coolingTime + self.switching + self.pulsedTime, duration =  self.pulsedTime, cyclenumber = self.iterations, cycleduration = self.cycleTime)
             bgsubtracted = countsSignal.size - countsBackground.size
+            #converting to Counts/Sec
+            collectionTime = self.pulsedTime * self.iterations
+            bgsubtracted = bgsubtracted / float(collectionTime)
             fluor.append(bgsubtracted)
         self.fluor = np.array(fluor)
-    
+        
     def makePlot(self):
         pyplot.figure()
-        pyplot.plot(self.pwrList, self.fluor)
+        ax = pyplot.subplot(121) 
+        pyplot.plot(self.bins[0:-1],self.binned)
+        pyplot.title('Max Power Average Iteration')
+        pyplot.xlabel('Sec')
+        pyplot.ylabel('Counts/Sec')
+        pyplot.subplot(122, sharey = ax) 
         pyplot.title('Power Scan')
-        pyplot.xlabel('Power dBM')
+        pyplot.plot(self.pwrList, self.fluor)
+        pyplot.xlabel('AO Power dBM')
         pyplot.ylabel('Counts/Sec')
         pyplot.show()
         
@@ -70,7 +94,8 @@ class dataProcessor():
         return result
 
 if __name__ == '__main__':
-    dataset = '2012Apr26_1345_55'
+    #dataset = '2012May11_1555_17'
+    dataset = '2012May11_1644_53'
     experiment = 'pulsedScanAxialPower'
     #objects we need
     cxn = labrad.connect()

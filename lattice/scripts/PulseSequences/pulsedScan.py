@@ -21,7 +21,6 @@ class PulsedScan(Sequence):
         pulsedPulses = [('axial',start, 2*p.pulsedTime) for start in startPulses ]
         repumpOffPulses = [('866DP',start, p.pulsedTime) for start in startPulses ]
         
-        
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
         for pulses in [coolingPulses, pulsedPulses,repumpOffPulses]:
             pulser.add_ttl_pulses(pulses)
