@@ -10,7 +10,7 @@ import dataProcessor
 
 minpower = -60.0
 maxpower = -0.1#-0.1max #5.0 for axial
-steps = 2
+steps = 60
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
@@ -26,7 +26,7 @@ experimentName = 'pulsedScanAxialPower'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
 params = {
-          'coolingTime':20.0*10**-3,
+          'coolingTime':5.0*10**-3,
           'switching':1.0*10**-3,
           'pulsedTime':1.0*10**-3,
           'iterations':100,
@@ -52,8 +52,8 @@ def initialize():
 
     dv.cd(['','Experiments', experimentName, dirappend], True)
     dv.new('timetags',[('Power', 'dBm')],[('TimeTag','Sec','Sec')] )
+    params['cycleTime'] = seq.parameters.cycleTime
     dvParameters.saveParameters(dv, params)
-    dv.add_parameter('cycleTime', seq.parameters.cycleTime )
     
 def sequence():
     for i,pwr in enumerate(powers):
@@ -80,7 +80,12 @@ def process():
     params = dict(dv.get_parameters())
     dp = dataProcessor.dataProcessor(params)
     dp.addData(data)
-    dp.process()
+    #get information from processor and add it to data vault
+    pwr,fluor = dp.process()
+    dv.new('scan',[('Power', 'dBm')],[('Counts','Counts/sec','Counts/sec')] )
+    dvParameters.saveParameters(dv, params)
+    dv.add_parameter('plotLive',True)
+    dv.add(np.vstack((pwr,fluor)).transpose())
     dp.makePlot()
     
 initialize()
