@@ -4,7 +4,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
         super(LATTICE_GUI, self).__init__(parent)
         self.reactor = reactor
-        
         lightControlTab = self.makeLightWidget(reactor)
         voltageControlTab = self.makeVoltageWidget(reactor)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor)
