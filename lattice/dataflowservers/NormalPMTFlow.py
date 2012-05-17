@@ -30,6 +30,7 @@ class NormalPMTFlow( LabradServer):
     
     name = 'NormalPMTFlow'
     onNewCount = Signal(SIGNALID, 'signal: new count', 'v')
+    onNewSetting = Signal(SIGNALID+1, 'signal: new setting', '(ss)')
     
     @inlineCallbacks
     def initServer(self):
@@ -45,7 +46,20 @@ class NormalPMTFlow( LabradServer):
         self.currentMode = 'Normal'
         self.recording = LoopingCall(self._record)
         self.requestList = []
-            
+        self.listeners = set()
+    
+    def initContext(self, c):
+        """Initialize a new context object."""
+        self.listeners.add(c.ID)
+
+    def expireContext(self, c):
+        self.listeners.remove(c.ID)
+  
+    def getOtherListeners(self,c):
+        notified = self.listeners.copy()
+        notified.remove(c.ID)
+        return notified  
+       
     @inlineCallbacks
     def makeNewDataSet(self):
         dir = self.saveFolder
@@ -54,6 +68,7 @@ class NormalPMTFlow( LabradServer):
         self.dataSet = yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
         self.startTime = time.time()
         yield self.addParameters()
+        returnValue(self.dataSet)
     
     @inlineCallbacks
     def addParameters(self):
@@ -65,11 +80,15 @@ class NormalPMTFlow( LabradServer):
         yield self.dv.cd(folder, True)
         self.saveFolder = folder
     
-    @setting(1, 'Start New Dataset', setName = 's', returns = '')
+    @setting(1, 'Start New Dataset', setName = 's', returns = 's')
     def setNewDataSet(self, c, setName = None):
         """Starts new dataset, if name not provided, it will be the same"""
         if setName is not None: self.dataSetName = setName
-        yield self.makeNewDataSet()
+        dataset = yield self.makeNewDataSet()
+        name = dataset[1]
+        otherListeners = self.getOtherListeners(c)
+        self.onNewSetting(('dataset', name), otherListeners)
+        returnValue(name)
     
     @setting( 2, "Set Mode", mode = 's', returns = '' )
     def setMode(self,c, mode):
@@ -85,6 +104,8 @@ class NormalPMTFlow( LabradServer):
             self.currentMode = mode
             yield self.pulser.set_mode(mode)
             yield self.dorecordData()
+        otherListeners = self.getOtherListeners(c)      
+        self.onNewSetting(('mode', mode), otherListeners)
 
     @setting(3, 'getCurrentMode', returns = 's')
     def getCurrentMode(self, c):
@@ -98,25 +119,34 @@ class NormalPMTFlow( LabradServer):
         """
         Starts recording data of the current PMT mode into datavault
         """
-        yield self.dorecordData()
+        setname = yield self.dorecordData()
+        otherListeners = self.getOtherListeners(c)
+        if setname is not None:
+            setname = setname[1]
+            self.onNewSetting(('dataset', setname), otherListeners)
+        self.onNewSetting(('state', 'on'), otherListeners)
     
     @inlineCallbacks
     def dorecordData(self):
+        newSet = None
         self.keepRunning = True
         yield self.pulser.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
         yield self.pulser.set_mode(self.currentMode)
         if self.currentMode == 'Differential':
             yield self._programPulserDiff()
         if self.dataSet is None:
-            yield self.makeNewDataSet()
+            newSet = yield self.makeNewDataSet()
         self.recording.start(self.collectTimes[self.currentMode]/2.0)
-    
+        returnValue(newSet)
+        
     @setting(5, returns = '')
     def stopRecording(self,c):
         """
         Stop recording counts into Data Vault
         """
         yield self.dostopRecording()
+        otherListeners = self.getOtherListeners(c)
+        self.onNewSetting(('state', 'off'), otherListeners)
     
     @inlineCallbacks
     def dostopRecording(self):
@@ -137,22 +167,22 @@ class NormalPMTFlow( LabradServer):
         name = self.dataSet[1]
         return name
     
-    @setting(8, 'Set Time Length', timelength = 'v', mode = 's')
-    def setTimeLength(self, c, timelength, mode = None):
-        if mode is None: mode = self.currentMode
+    @setting(8, 'Set Time Length', timelength = 'v')
+    def setTimeLength(self, c, timelength):
+        """Sets the time length for the current mode"""
+        mode = self.currentMode
         if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
         if not self.collectTimeRange[0] <= timelength <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
-        if mode == self.currentMode:
-            yield self.recording.stop()
-            yield self.pulser.set_collection_time(timelength, mode)
-            if mode == 'Differential':
-                yield self._stopPulserDiff()
-                yield self._programPulserDiff()
-            self.recording.start(timelength/2.0)
-        else:
-            yield self.pulser.set_collection_time(timelength, mode)
-        
+        yield self.recording.stop()
+        yield self.pulser.set_collection_time(timelength, mode)
+        if mode == 'Differential':
+            yield self._stopPulserDiff()
+            yield self._programPulserDiff()
+        self.recording.start(timelength/2.0)
+        otherListeners = self.getOtherListeners(c)      
+        self.onNewSetting(('timelength', str(timelength)), otherListeners)
+
     @setting(9, 'Get Next Counts', type = 's', number = 'w', average = 'b', returns = ['*v', 'v'])
     def getNextCounts(self, c, type, number, average = False):
         """
