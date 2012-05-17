@@ -5,15 +5,16 @@ import time
 nodeDict = {'node_lattice_pc':
 					['Data Vault', 'Serial Server', 'DC Box', 'HP Server', 'Compensation Box','Pulser',
 					'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','NormalPMTFlow',
-					'Compensation LineScan','Double Pass','ADCserver','FreqCounter',  'Trap Drive', 'HighVoltA', 'APT Motor Server'],
+					'Compensation LineScan','Double Pass','ADCserver',  'Trap Drive', 'HighVoltA', 'APT Motor Server'],
 		}
-
+#'FreqCounter'
 #connect to LabRAD
+errors = False
 try:
 	cxn = labrad.connect()
 except:
 	print 'Please start LabRAD Manager'
-	time.sleep(10)
+	errors = True
 else:
 	for node in nodeDict.keys():
 		#make sure all node servers are up
@@ -32,6 +33,7 @@ else:
 						cxn.servers[node].start(server)
 					except Exception as e:
 						print 'ERROR with ' + server
+						errors = True
 	
-	print 'DONE'		
+if errors:
 	time.sleep(10)
