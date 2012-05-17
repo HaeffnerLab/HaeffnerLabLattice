@@ -10,8 +10,12 @@ class uiContainerWidget(QtGui.QWidget):
         basepath = os.environ.get('LABRADPATH',None)
         if not basepath:
             raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/clients/qtui/compensationlinescan.ui')
+        #path = os.path.join(basepath,'lattice/clients/qtui/compensationlinescan.ui')
+        #uic.loadUi(path,self)
+        path = os.path.join("qtui", "compensationlinescan.ui")
+        print path
         uic.loadUi(path,self)
+        #uic.loadUi("qtui\compensationlinescan.ui",self)
 
 class COMPENSATION_LINESCAN_CONTROL(uiContainerWidget):
     def __init__(self, reactor,parent=None):
