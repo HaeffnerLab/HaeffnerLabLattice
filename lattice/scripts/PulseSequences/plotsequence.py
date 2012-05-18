@@ -67,18 +67,20 @@ if __name__ == '__main__':
     from darkHeat import darkHeat
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = darkHeat(pulser)
+    seq = LatentHeat(pulser)
     pulser.new_sequence()
     params = {
-              'coolingTime':2.5*10**-3,
-              'heatingTime':0.5*10**-3,
-              'pulsedTime':1.0*10**-6
-            }
+                  'initial_cooling': 50e-3,
+                  'heat_delay':10e-3,
+                  'axial_heat':35.0*10**-3,
+                  'readout_delay':100.0*10**-9, ####should implement 0
+                  'readout_time':10.0*10**-3,
+                  'xtal_record':50e-3
+                }
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence() 
     hr = pulser.human_readable().asarray
     channels = pulser.get_channels().asarray
-    #print hr
     sp = SequencePlotter(hr, channels)
     sp.makePlot()
