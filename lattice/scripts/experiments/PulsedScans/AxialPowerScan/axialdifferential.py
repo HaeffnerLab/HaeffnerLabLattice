@@ -19,10 +19,10 @@ params = {
           'coolingTime':5.0*10**-3,
           'switching':500.0*10**-9,
           'pulsedTime':1.0*10**-3,
-          'iterations':100,
+          'iterations':50,
         }
 
-repeatitions = 100
+repeatitions = 1000
 
 coolingTime = params['coolingTime']
 switching = params['switching']

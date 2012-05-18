@@ -18,7 +18,7 @@ dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 params = {
           'coolingTime':2.5*10**-3,
           'heatingTime':0.5*10**-3,
-          'pulsedTime':1.0*10**-6
+          'pulsedTime':50.0*10**-6
         }
 
 repeatSequence = 100
@@ -82,6 +82,7 @@ def sequence():
         timetags = pulser.get_timetags().asarray
         print 'got {0} timetags on repeatition {1}'.format(timetags.size, r + 1)
         diff = process(timetags)
+        print 'adding', r, diff
         dv.add([r, diff])
     
 initialize()

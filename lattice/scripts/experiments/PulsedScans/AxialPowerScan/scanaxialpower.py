@@ -10,7 +10,7 @@ import dataProcessor
 
 minpower = -60.0
 maxpower = -0.1#-0.1max #5.0 for axial
-steps = 60
+steps = 30
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
@@ -29,7 +29,7 @@ params = {
           'coolingTime':5.0*10**-3,
           'switching':1.0*10**-3,
           'pulsedTime':1.0*10**-3,
-          'iterations':100,
+          'iterations':50,
         }
 
 def initialize():

@@ -35,10 +35,10 @@ iterations = 100
 experimentName = 'LatentHeat_no729_autocrystal'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-xtalFreq = 103.0 #107, 120
-xtalPower = -2.2
-cooling = (103.0, -10.0) #MHz, dBm
-readout = (115.0, -10.0) 
+xtalFreq = 97.0 #107, 120
+xtalPower = -4.0
+cooling = (97.0, -8.1) #MHz, dBm
+readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
 rf_power = -3.5
 rf_settling_time = 0.3
@@ -46,12 +46,12 @@ rs110List = [cooling, readout,crystallization]
 auto_crystal = True
 #sequence parameters
 params = {
-              'initial_cooling': 50e-3,
+              'initial_cooling': 25e-3,
               'heat_delay':10e-3,
-              'axial_heat':35.0*10**-3,
+              'axial_heat':5.0*10**-3,
               'readout_delay':100.0*10**-9, ####should implement 0
               'readout_time':10.0*10**-3,
-              'xtal_record':50e-3
+              'xtal_record':25e-3
             }
 recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
 
@@ -225,6 +225,6 @@ print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
 dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
-dp.addParameter('threshold', 200)
+dp.addParameter('threshold', 250)
 dp.loadDataVault()
 dp.processAll()
