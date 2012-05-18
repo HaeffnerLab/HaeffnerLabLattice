@@ -210,12 +210,15 @@ class Pulser(LabradServer):
         return ans.tolist()
     
     
-    @setting(11, 'Get Channels', returns = '*s')
+    @setting(11, 'Get Channels', returns = '*(sw)')
     def getChannels(self, c):
         """
-        Returns all available channels
+        Returns all available channels, and the corresponding hardware numbers
         """
-        return self.channelDict.keys()
+        d = self.channelDict
+        keys = d.keys()
+        numbers = [d[key].channelnumber for key in keys]
+        return zip(keys,numbers)
     
     @setting(12, 'Switch Manual', channelName = 's', state= 'b')
     def switchManual(self, c, channelName, state = None):  
@@ -614,10 +617,12 @@ class Sequence():
         arr = arr.reshape(-1,4)
         times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolution
         channels = ( 65536  *  arr[:,2] + arr[:,3])
-        
+
         def expandChannel(ch):
             '''function for getting the binary representation, i.e 2**32 is 1000...0'''
-            return bin(ch)[2:].zfill(32)
+            expand = bin(ch)[2:].zfill(32)
+            reverse = expand[::-1]
+            return reverse
         
         channels = map(expandChannel,channels)
         return numpy.vstack((times,channels)).transpose()

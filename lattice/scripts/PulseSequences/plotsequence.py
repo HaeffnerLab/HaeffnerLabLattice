@@ -6,9 +6,19 @@ import numpy as np
 
 class SequencePlotter():
     """Can be used to plot the human readable form of a pulse sequence"""
-    def __init__(self, sequence):
+    def __init__(self, sequence, channels):
         self.seq = sequence
+        self.channels = channels
         self.plot = pyplot.figure()
+    
+    def makeNameDict(self):
+        #swapping names of channels first
+        chan = self.channels
+        names = np.copy(chan[:,0])
+        chan[:,0] = chan[:,1]
+        chan[:,1] = names
+        d = dict(chan)
+        return d
     
     def extractInfo(self):        
         times = np.array(self.seq.transpose()[0], dtype = np.float)
@@ -37,13 +47,15 @@ class SequencePlotter():
                  
     def makePlot(self):
         times,switches = self.extractInfo()
+        nameDict = self.makeNameDict()
         offset = 0
         for number,channel in enumerate(switches):
             if channel.any(): #ignore empty channels
                 x,y = self.getCoords(times, channel)
                 y = 3 * y + offset #offset the y coordinates
                 offset = offset + 4
-                pyplot.plot(x, y, label = str(number))
+                label = nameDict[str(number)]
+                pyplot.plot(x, y, label = label)
         pyplot.legend()
         pyplot.xlabel('Time (sec)')
         pyplot.show()
@@ -51,22 +63,22 @@ class SequencePlotter():
 
 if __name__ == '__main__':
     import labrad
-    from LatentHeat import LatentHeat
+    from latentHeat import LatentHeat
+    from darkHeat import darkHeat
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = LatentHeat(pulser)
+    seq = darkHeat(pulser)
     pulser.new_sequence()
     params = {
-                  'initial_cooling': 50e-3,
-                  'heat_delay':10e-3,
-                  'axial_heat':35.0*10**-3,
-                  'readout_delay':100.0*10**-9, ####should implement 0
-                  'readout_time':10.0*10**-3,
-                  'xtal_record':50e-3
-                }
+              'coolingTime':2.5*10**-3,
+              'heatingTime':0.5*10**-3,
+              'pulsedTime':1.0*10**-6
+            }
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence() 
     hr = pulser.human_readable().asarray
-    sp = SequencePlotter(hr)
+    channels = pulser.get_channels().asarray
+    #print hr
+    sp = SequencePlotter(hr, channels)
     sp.makePlot()
