@@ -64,10 +64,10 @@ class SequencePlotter():
 if __name__ == '__main__':
     import labrad
     from latentHeat import LatentHeat
-    from darkHeat import darkHeat
+    from latentHeat import LatentHeatBackground
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = LatentHeat(pulser)
+    seq = LatentHeatBackground(pulser)
     pulser.new_sequence()
     params = {
                   'initial_cooling': 50e-3,
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 }
     seq.setVariables(**params)
     seq.defineSequence()
-    pulser.program_sequence() 
+    #pulser.program_sequence() 
     hr = pulser.human_readable().asarray
     channels = pulser.get_channels().asarray
     sp = SequencePlotter(hr, channels)
