@@ -6,7 +6,7 @@ import numpy
 import time
 ####from scriptLibrary.parameter import Parameters
 from scriptLibrary import dvParameters 
-from PulseSequences.latentHeat import LatentHeat
+from PulseSequences.latentHeat import LatentHeatBackground
 from dataProcessor import data_process
 ''''
 This experiment involves studying the sharpness of crystal to cloud phase transition. 
@@ -31,13 +31,13 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 100
+iterations = 200
 experimentName = 'LatentHeat_no729_autocrystal'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-xtalFreq = 97.0 #107, 120
+xtalFreq = 103.0 #107, 120
 xtalPower = -4.0
-cooling = (97.0, -8.1) #MHz, dBm
+cooling = (103.0, -8.0) #MHz, dBm
 readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
 rf_power = -3.5
@@ -48,8 +48,8 @@ auto_crystal = True
 params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
-              'axial_heat':5.0*10**-3,
-              'readout_delay':100.0*10**-9, ####should implement 0
+              'axial_heat':8.5*10**-3,
+              'readout_delay':2000.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':25e-3
             }
@@ -95,7 +95,7 @@ def initialize():
     #pmt recording
     pmt.set_time_length(pmtresolution)
     #pulser sequence 
-    seq = LatentHeat(pulser)
+    seq = LatentHeatBackground(pulser)
     pulser.new_sequence()
     seq.setVariables(**params)
     seq.defineSequence()
@@ -225,6 +225,6 @@ print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
 dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
-dp.addParameter('threshold', 250)
+dp.addParameter('threshold', 300)
 dp.loadDataVault()
 dp.processAll()
