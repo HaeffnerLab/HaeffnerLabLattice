@@ -96,7 +96,7 @@ class data_process():
             axial_heat = self.params['axial_heat']
             readout_delay = self.params['readout_delay']
             readout_time = self.params['readout_time']
-            startReadout =  (initial_cooling + heat_delay + axial_heat + readout_delay ) 
+            startReadout =  (axial_heat + initial_cooling + heat_delay + axial_heat + readout_delay ) 
             stopReadout = startReadout + readout_time
             threshold = self.params.get('threshold') 
             self.process.append(histogramTimetags(startReadout, stopReadout, title = self.dataset, threshold = threshold))

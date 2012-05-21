@@ -8,10 +8,8 @@ class pmtWidget(QtGui.QWidget):
     def __init__(self, reactor, parent=None):
         super(pmtWidget, self).__init__(parent)
         self.reactor = reactor
-        basepath = os.environ.get('LABRADPATH',None)
-        if not basepath:
-            raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/clients/qtui/pmtfrontend.ui')
+        basepath =  os.path.dirname(__file__)
+        path = os.path.join(basepath,"qtui", "pmtfrontend.ui")
         uic.loadUi(path,self)
         self.connect()
         
@@ -31,7 +29,9 @@ class pmtWidget(QtGui.QWidget):
     @inlineCallbacks
     def setupListeners(self):
         yield self.server.signal__new_count(SIGNALID)
+        yield self.server.signal__new_setting(SIGNALID + 1)
         yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
+        yield self.server.addListener(listener = self.followSetting, source = None, ID = SIGNALID + 1)
     
     @inlineCallbacks
     def initializeContent(self):
@@ -48,6 +48,31 @@ class pmtWidget(QtGui.QWidget):
     def followSignal(self,signal,value):
         self.lcdNumber.display(value)
     
+    def followSetting(self, signal, message):
+        setting,val = message
+        if setting == "mode":
+            index = self.comboBox.findText(val)
+            self.comboBox.blockSignals(True)
+            self.comboBox.setCurrentIndex(index)
+            self.comboBox.blockSignals(False)
+        if setting == 'dataset':
+            self.lineEdit.blockSignals(True)
+            self.lineEdit.setText(val)
+            self.lineEdit.blockSignals(False)
+        if setting == 'state':
+            self.pushButton.blockSignals(True)
+            if val =='on':
+                self.pushButton.setChecked(True)
+            else:
+                self.pushButton.setChecked(False)
+                self.lcdNumber.display(0)
+            self.pushButton.blockSignals(False)
+            self.setText(self.pushButton)
+        if setting == 'timelength':
+            self.doubleSpinBox.blockSignals(True)
+            self.doubleSpinBox.setValue(float(val))
+            self.doubleSpinBox.blockSignals(False)
+            
     @inlineCallbacks
     def on_toggled(self, state):
         if state:
@@ -61,8 +86,7 @@ class pmtWidget(QtGui.QWidget):
     
     @inlineCallbacks
     def onNewSet(self, x):
-        yield self.server.start_new_dataset()
-        newset = yield self.server.currentdataset()
+        newset = yield self.server.start_new_dataset()
         self.lineEdit.setText(newset)
     
     @inlineCallbacks

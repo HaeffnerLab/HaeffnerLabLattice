@@ -93,7 +93,7 @@ class DP110(doublePass):
         self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542'
         yield self.server.select_device(self.deviceID , context = self.context)
         self.freqRange = (90,130) #MHZ
-        self.amplRange = (-145,-3.99) #dBM
+        self.amplRange = (-145,-2.19) #dBM
         self.calibDomain = (90,130) # domain where calibration is valid
         yield self.populateInfo()
         self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)

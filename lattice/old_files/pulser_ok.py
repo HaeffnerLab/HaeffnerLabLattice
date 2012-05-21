@@ -113,9 +113,8 @@ class Pulser(LabradServer):
     def startInfinite(self,c):
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._setNumberRepeatitions, 0)
         yield deferToThread(self._resetSeqCounter)
-        yield deferToThread(self._startLooped)
+        yield deferToThread(self._startInfinite)
         self.sequenceType = 'Infinite'
         self.inCommunication.release()
     
@@ -170,36 +169,20 @@ class Pulser(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.extendSequenceLength(timeLength)
         
+    
     @setting(8, "Stop Sequence")
     def stopSequence(self, c):
         """Stops any currently running  sequence"""
         yield self.inCommunication.acquire()
         yield deferToThread(self._resetRam)
         if self.sequenceType =='Infinite':
-            yield deferToThread(self._stopLooped)
+            yield deferToThread(self._stopInfinite)
         elif self.sequenceType =='One':
             yield deferToThread(self._stopSingle)
-        elif self.sequenceType =='Number':
-            yield deferToThread(self._stopLooped)
         self.inCommunication.release()
         self.sequenceType = None
     
-    @setting(9, "Start Number", repeatitions = 'w')
-    def startNumber(self, c, repeatitions):
-        """
-        Starts the repeatitions number of iterations
-        """
-        if not self.isProgrammed: raise Exception ("No Programmed Sequence")
-        repeatitions = int(repeatitions)
-        if not 1 <= repeatitions <= (2**16 - 1): raise Exception ("Incorrect number of pulses")
-        yield self.inCommunication.acquire()
-        yield deferToThread(self._setNumberRepeatitions, repeatitions)
-        yield deferToThread(self._resetSeqCounter)
-        yield deferToThread(self._startLooped)
-        self.sequenceType = 'Number'
-        self.inCommunication.release()
-
-    @setting(10, "Human Readable", returns = '*2s')
+    @setting(9, "Human Readable", returns = '*2s')
     def humanReadable(self, c):
         """
         Returns a readable form of the programmed sequence for debugging
@@ -209,16 +192,12 @@ class Pulser(LabradServer):
         ans = sequence.humanRepresentation()
         return ans.tolist()
     
-    
-    @setting(11, 'Get Channels', returns = '*(sw)')
+    @setting(11, 'Get Channels', returns = '*s')
     def getChannels(self, c):
         """
-        Returns all available channels, and the corresponding hardware numbers
+        Returns all available channels
         """
-        d = self.channelDict
-        keys = d.keys()
-        numbers = [d[key].channelnumber for key in keys]
-        return zip(keys,numbers)
+        return self.channelDict.keys()
     
     @setting(12, 'Switch Manual', channelName = 's', state= 'b')
     def switchManual(self, c, channelName, state = None):  
@@ -283,15 +262,6 @@ class Pulser(LabradServer):
             if done: returnValue(True)
             yield self.wait(0.050)
         returnValue(False)
-    
-    @setting(16, 'Repeatitions Completed', returns = 'w')
-    def repeatitionsCompleted(self, c):
-        """Check how many repeatitions have been completed in for the infinite or number modes"""
-        yield self.inCommunication.acquire()
-        completed = yield deferToThread(self._howManySequencesDone)
-        self.inCommunication.release()
-        returnValue(completed)
-
     
     @setting(21, 'Set Mode', mode = 's', returns = '')
     def setMode(self, c, mode):
@@ -437,11 +407,11 @@ class Pulser(LabradServer):
     def _programBoard(self, sequence):
         self.xem.WriteToBlockPipeIn(0x80, 2, sequence)
   
-    def _startLooped(self):
+    def _startInfinite(self):
         self.xem.SetWireInValue(0x00,0x06,0x06)
         self.xem.UpdateWireIns()
     
-    def _stopLooped(self):
+    def _stopInfinite(self):
         self.xem.SetWireInValue(0x00,0x02,0x06)
         self.xem.UpdateWireIns()
         
@@ -451,10 +421,6 @@ class Pulser(LabradServer):
     
     def _stopSingle(self):
         self.xem.SetWireInValue(0x00,0x00,0x06)
-        self.xem.UpdateWireIns()
-    
-    def _setNumberRepeatitions(self, number):
-        self.xem.SetWireInValue(0x05, number)
         self.xem.UpdateWireIns()
     
     def _resetRam(self):
@@ -512,7 +478,7 @@ class Pulser(LabradServer):
         self.xem.SetWireInValue(0x00,0x20,0xf0)
         self.xem.UpdateWireIns()
         self.xem.UpdateWireOuts()
-        completed = self.xem.GetWireOutValue(0x21)
+        completed = xem.GetWireOutValue(0x21)
         return completed
     
     def _setPMTCountRate(self, time):
@@ -543,7 +509,7 @@ class Pulser(LabradServer):
     
     def notifyOtherListeners(self, context, message, f):
         """
-        Notifies all listeners except the one in the given context, executing function f
+        Notifies all listeners except the one in the given context, excuting function of
         """
         notified = self.listeners.copy()
         notified.remove(context.ID)
@@ -556,6 +522,7 @@ class Pulser(LabradServer):
     def expireContext(self, c):
         self.listeners.remove(c.ID)
 
+            
 class Sequence():
     """Sequence for programming pulses"""
     def __init__(self):
@@ -617,12 +584,10 @@ class Sequence():
         arr = arr.reshape(-1,4)
         times =( 65536  *  arr[:,0] + arr[:,1]) * timeResolution
         channels = ( 65536  *  arr[:,2] + arr[:,3])
-
+        
         def expandChannel(ch):
             '''function for getting the binary representation, i.e 2**32 is 1000...0'''
-            expand = bin(ch)[2:].zfill(32)
-            reverse = expand[::-1]
-            return reverse
+            return bin(ch)[2:].zfill(32)
         
         channels = map(expandChannel,channels)
         return numpy.vstack((times,channels)).transpose()

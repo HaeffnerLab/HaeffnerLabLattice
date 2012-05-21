@@ -8,10 +8,8 @@ class DCONRF_CONTROL(QtGui.QWidget):
     def __init__(self, reactor, parent=None):
         self.reactor = reactor
         super(DCONRF_CONTROL, self).__init__(parent)
-        basepath = os.environ.get('LABRADPATH',None)
-        if not basepath:
-            raise Exception('Please set your LABRADPATH environment variable')
-        path = os.path.join(basepath,'lattice/clients/qtui/dconrf.ui')
+        basepath =  os.path.dirname(__file__)
+        path = os.path.join(basepath,"qtui", "dconrf.ui")
         uic.loadUi(path,self)
         self.connect()
    

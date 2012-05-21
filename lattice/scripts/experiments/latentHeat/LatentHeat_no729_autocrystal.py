@@ -6,7 +6,7 @@ import numpy
 import time
 ####from scriptLibrary.parameter import Parameters
 from scriptLibrary import dvParameters 
-from PulseSequences.latentHeat import LatentHeat
+from PulseSequences.latentHeat import LatentHeatBackground
 from dataProcessor import data_process
 ''''
 This experiment involves studying the sharpness of crystal to cloud phase transition. 
@@ -31,14 +31,14 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 50
+iterations = 200
 experimentName = 'LatentHeat_no729_autocrystal'
-axfreq = 250.0 #heating double pass frequency #MHz
+#axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
 xtalFreq = 103.0 #107, 120
 xtalPower = -4.0
-cooling = (103.0, -11.0) #MHz, dBm
-readout = (118.0, -11.0) 
+cooling = (103.0, -8.0) #MHz, dBm
+readout = (115.0, -8.0) 
 crystallization = (xtalFreq, xtalPower)
 rf_power = -3.5
 rf_settling_time = 0.3
@@ -46,19 +46,19 @@ rs110List = [cooling, readout,crystallization]
 auto_crystal = True
 #sequence parameters
 params = {
-              'initial_cooling': 100e-3,
-              'heat_delay':30e-3,
-              'axial_heat':12.5*10**-3,
-              'readout_delay':100.0*10**-9, ####should implement 0
+              'initial_cooling': 25e-3,
+              'heat_delay':10e-3,
+              'axial_heat':8.5*10**-3,
+              'readout_delay':2000.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
-              'xtal_record':50e-3
+              'xtal_record':25e-3
             }
 recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
 
 globalDict = {
               'iterations':iterations,
               'experimentName':experimentName,
-              'axfreq':axfreq,
+#              'axfreq':axfreq,
               'recordTime':recordTime, 
               'cooling':cooling,
               'readout':readout,
@@ -95,7 +95,7 @@ def initialize():
     #pmt recording
     pmt.set_time_length(pmtresolution)
     #pulser sequence 
-    seq = LatentHeat(pulser)
+    seq = LatentHeatBackground(pulser)
     pulser.new_sequence()
     seq.setVariables(**params)
     seq.defineSequence()
@@ -107,9 +107,9 @@ def initialize():
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
     #make sure r&s synthesizers are on, and are of correct frequency
     #heating
-    dpass.select('axial')
-    dpass.frequency(axfreq)
-    dpass.output(True)
+####    dpass.select('axial')
+####    dpass.frequency(axfreq)
+####    dpass.output(True)
     #readout / cooling
     dpass.select('110DP')
     dpass.output(True)
@@ -225,6 +225,6 @@ print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
 dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
-dp.addParameter('threshold', 75)
+dp.addParameter('threshold', 300)
 dp.loadDataVault()
 dp.processAll()

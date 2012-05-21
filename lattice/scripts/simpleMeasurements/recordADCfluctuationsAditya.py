@@ -12,7 +12,7 @@ CHANNEL = '3'
 RESOLUTION = 1 # seconds
 DURATION = 1
 NUM_STEPS = DURATION / RESOLUTION
-DEGREE_ROT = '01' #degrees
+DEGREE_ROT = '40' #degrees
 
 #set up data vault
 dv.cd(['','QuickMeasurements','Power Fluctuations'],True)

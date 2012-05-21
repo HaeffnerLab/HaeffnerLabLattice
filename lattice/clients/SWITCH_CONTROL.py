@@ -27,6 +27,7 @@ class switchWidget(QtGui.QFrame):
         #get switch names and add them to the layout, and connect their function
         layout.addWidget(QtGui.QLabel('Switches'),0,0)
         switchNames = yield self.server.get_channels()
+        switchNames = [el[0] for el in switchNames] #picking first of the tuple
         for order,name in enumerate(switchNames):
             #setting up physical container
             groupBox = QtGui.QGroupBox(name) 

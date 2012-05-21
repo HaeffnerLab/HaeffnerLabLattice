@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 BLOCKSIGNAL = 1
 
@@ -50,18 +50,16 @@ class DevicePanel(QtGui.QWidget):
 #        self.positionDoubleSpinBox.valueChanged[int].connect(self.moveAbsoluteSignal(1))
         self.positionDoubleSpinBox.setDecimals(4)
         self.positionDoubleSpinBox.setSingleStep(.001)
-        self.positionDoubleSpinBox.setMinimum(0)
-        self.positionDoubleSpinBox.setMaximum(6)
+        self.positionDoubleSpinBox.setMinimum(-6.5)####
+        self.positionDoubleSpinBox.setMaximum(6.5)
+        self.positionDoubleSpinBox.setKeyboardTracking(False)
         self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-        self.stepSizeEdit = QtGui.QLineEdit()
-        self.stepSizeEdit.setMaximumWidth(43)
-        self.stepSizeEdit.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         self.stepSizeDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.stepSizeDoubleSpinBox.setDecimals(4)
         self.stepSizeDoubleSpinBox.setSingleStep(.001)
         self.stepSizeDoubleSpinBox.setMinimum(0)
+        self.stepSizeDoubleSpinBox.setKeyboardTracking(False)
         self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Layout        
@@ -162,7 +160,6 @@ class DevicePanel(QtGui.QWidget):
     def setupListeners(self):               
         yield self.parent.server.signal__position_change(88888, context = self.context)
         yield self.parent.server.addListener(listener = self.positionChange, source = None, ID = 88888)    
-        print 'listeners set up'
 
     def positionChange(self, x, y):
         self.getPositionSignal(1)
@@ -291,21 +288,28 @@ class ParameterWindow(QtGui.QWidget):
     def closeEvent(self, evt):
         self.hide()
         
-class MainPanel(QtGui.QWidget):
+class APTMotorClient(QtGui.QWidget):
     def __init__(self, reactor):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
         self.devDict = {}
-        self.connect()              
+        try:
+            self.connect()
+        except Exception:
+            print 'excepting'
+            self.setDisabled(True)        
         
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
         from labrad.types import Error
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.apt_motor_server
-        availableDevices = yield self.server.get_available_devices()
-        print availableDevices
+        try:
+            self.server = yield self.cxn.apt_motor_server
+            availableDevices = yield self.server.get_available_devices()
+        except Exception ,e:
+            print 'server not connected: {}'.format(e)
+            availableDevices = []
         self.setupUI(availableDevices)
 
     @inlineCallbacks
@@ -326,11 +330,14 @@ class MainPanel(QtGui.QWidget):
                 grid.addWidget(devPanel, (i / 2) , 0)
             else:
                 grid.addWidget(devPanel, ((i - 1) / 2) , 1)
-        #self.setGeometry(300, 300, 350, 300)
         self.show()        
+    
+    
+#    def sizeHint(self):
+#        return QtCore.QSize(100,100)
         
-        def closeEvent(self, evt):
-            self.reactor.stop()
+    def closeEvent(self, evt):
+        self.reactor.stop()
             
     
 if __name__ == "__main__":
@@ -338,5 +345,5 @@ if __name__ == "__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    mainPanel = MainPanel(reactor)
+    mainPanel = APTMotorClient(reactor)
     reactor.run()

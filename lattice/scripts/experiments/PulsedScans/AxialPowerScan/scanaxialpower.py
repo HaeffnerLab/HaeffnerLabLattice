@@ -8,26 +8,28 @@ from PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 
-minpower = -20.0
-maxpower = 5.0
-steps = 75
+minpower = -60.0
+maxpower = -0.1#-0.1max #5.0 for axial
+steps = 30
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
-cxnlab = labrad.connect() #connection to labwide network
+cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
 dpass = cxn.double_pass
-axial = cxn.lattice_pc_hp_server
+axial = cxnlab.rohdeschwarz_server#axial = cxn.lattice_pc_hp_server
+axial.select_device(0)#don't do this for axial
 initpower = axial.amplitude()
+print 'initial power',initpower
 pulser = cxn.pulser
 experimentName = 'pulsedScanAxialPower'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
 
 params = {
-          'coolingTime':20.0*10**-3,
+          'coolingTime':5.0*10**-3,
           'switching':1.0*10**-3,
           'pulsedTime':1.0*10**-3,
-          'iterations':100,
+          'iterations':50,
         }
 
 def initialize():
@@ -39,8 +41,8 @@ def initialize():
     pulser.program_sequence()
     #make sure 110 dpass is on
     dpass.select('110DP')
-    dpass.output(True)
-    axial.output(True)
+####    dpass.output(True)
+####    axial.output(True)
     #set logic
     pulser.switch_auto('axial',  True) #high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
@@ -50,8 +52,8 @@ def initialize():
 
     dv.cd(['','Experiments', experimentName, dirappend], True)
     dv.new('timetags',[('Power', 'dBm')],[('TimeTag','Sec','Sec')] )
+    params['cycleTime'] = seq.parameters.cycleTime
     dvParameters.saveParameters(dv, params)
-    dv.add_parameter('cycleTime', seq.parameters.cycleTime )
     
 def sequence():
     for i,pwr in enumerate(powers):
@@ -78,7 +80,12 @@ def process():
     params = dict(dv.get_parameters())
     dp = dataProcessor.dataProcessor(params)
     dp.addData(data)
-    dp.process()
+    #get information from processor and add it to data vault
+    pwr,fluor = dp.process()
+    dv.new('scan',[('Power', 'dBm')],[('Counts','Counts/sec','Counts/sec')] )
+    dvParameters.saveParameters(dv, params)
+    dv.add_parameter('plotLive',True)
+    dv.add(np.vstack((pwr,fluor)).transpose())
     dp.makePlot()
     
 initialize()
