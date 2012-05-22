@@ -6,14 +6,11 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
-#info in the format, [(label, melting threshold, totalTraces, list of datasets),...]
+kb = 2.08366*10**10 #botlzmann contant in units of Hz / Kelvin
+#info in the format, [(label, melting threshold, totalTraces, list of datasets),...], ion number
+
 info =[
-       ('10ions RF -3.5dBm', 225, 50, ['2012Apr19_1636_17','2012Apr19_1639_12','2012Apr19_1637_26','2012Apr19_1640_40','2012Apr19_1643_10','2012Apr19_1645_06']),
-       ('10ions RF -4.2dBm', 187, 50, ['2012Apr19_1709_12','2012Apr19_1710_14','2012Apr19_1712_08','2012Apr19_1713_19','2012Apr19_1717_32']),
-       ('10ions RF -5.0dBm', 200, 50, ['2012Apr19_1749_14','2012Apr19_1750_24','2012Apr19_1751_39','2012Apr19_1753_24','2012Apr19_1754_39','2012Apr19_1756_20']),
-       ('10ions RF -7.0dBm (close to zigzag)', 180, 50, ['2012Apr19_1812_35','2012Apr19_1811_24','2012Apr19_1813_37','2012Apr19_1814_42','2012Apr19_1815_43']),
-       ('15ions RF -3.5dBm', 250, 50, ['2012Apr19_1935_17', '2012Apr19_1937_28','2012Apr19_1939_32', '2012Apr19_1940_47','2012Apr19_1942_22']),
-       ('15ions RF -7.0dBm, zigzag', 250, 50, ['2012Apr19_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [203455,203604,203812,203942,204211]]),
+       ('5 ions RF -3.5dBm', 30000, 200, ['2012May18_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [174535,174755,175012,175234]], 5)
        ] 
 
 #make figure
@@ -21,16 +18,11 @@ figure = pyplot.figure()
 figure.clf()
 pyplot.suptitle('Melting percentage during heating, no delay')
 
-
 def energyAdded(photonsScattered):
-    ###need to verify these numbers and subtract the background
-    detuning = 280*10.0**6#Hz
-    objectiveEfficiency= 0.025 #Kirchmair thesis, 2.5% of solid angle
-    pelicalSplit = .70
-    PMTEfficiency = .50
-    recordEffieincy = .50 #FPGA
-    detectionEfficiency = PMTEfficiency * pelicalSplit * objectiveEfficiency * recordEffieincy
-    energy = detuning * photonsScattered / detectionEfficiency
+    detuning = 250*10.0**6#Hz
+    collectionEfficiency = 1.0*10**-3
+    inelasticFraction = 0.95
+    energy = detuning * photonsScattered * inelasticFraction / collectionEfficiency
     return energy
 
 def errorBarSimple(trials, prob):
@@ -55,6 +47,7 @@ for i in range(len(info)):
     meltingThreshold = info[i][1]
     totalTraces = info[i][2]
     datasets = info[i][3]
+    ionnumber = info[i][4]
     energyHeat = []
     percent_melt = []
     error_bars = []
@@ -69,7 +62,7 @@ for i in range(len(info)):
         readout_delay = dv.get_parameter('readout_delay')
         readout_time = dv.get_parameter('readout_time')
         #heatRange
-        startHeat = initial_cooling + heat_delay
+        startHeat = axial_heat + initial_cooling + heat_delay
         endHeat = startHeat + axial_heat
         #readout range
         startReadout =  endHeat + readout_delay
@@ -82,22 +75,27 @@ for i in range(len(info)):
             dv.open(int(dataset))
             timetags = dv.get().asarray[:,0]
             countsReadout = numpy.count_nonzero((startReadout <= timetags) * (timetags <= stopReadout))
-            heatingPhotons += numpy.count_nonzero((startHeat <= timetags) * (timetags <= endHeat))
+            countsReadout = countsReadout / float(readout_time) #now on counts / sec
+            heatingPhotonsSignal = numpy.count_nonzero((startHeat <= timetags) * (timetags <= endHeat))
+            heatingPhotonsBackground = numpy.count_nonzero((0 <= timetags) * (timetags <= axial_heat))
+            heatingPhotons += heatingPhotonsSignal - heatingPhotonsBackground
             if countsReadout < meltingThreshold: # melting is less counts
                 melted +=1
+        print 'heating photons', heatingPhotons / float(totalTraces)
         energy = energyAdded(heatingPhotons / float(totalTraces))
         energyHeat.append(energy)       
         perc = melted / float(totalTraces)
         percent_melt.append(perc)
         error_bars.append(errorBarSimple(totalTraces, perc))
-    energyHeatTHZ = numpy.array(energyHeat) / 10.0**12
+    energyHeat = numpy.array(energyHeat)
     percent_melt = numpy.array(percent_melt)
     error_bars = numpy.array(error_bars)
-    energyHeatTHZ, [percent_melt,error_bars] = arangeByFirst(energyHeatTHZ, [percent_melt,error_bars])
-    pyplot.errorbar(energyHeatTHZ, percent_melt, fmt = '-o', label = label, yerr = error_bars.transpose())
+    energyHeat, [percent_melt,error_bars] = arangeByFirst(energyHeat, [percent_melt,error_bars])
+    temperaturePerIon = energyHeat / (kb * ionnumber)
+    pyplot.errorbar(temperaturePerIon, percent_melt, fmt = '-o', label = label, yerr = error_bars.transpose())
     pyplot.hold('True')
 
-pyplot.xlabel('Energy added (THz)')
+pyplot.xlabel('Temperature per ion (K)')
 pyplot.ylabel('Melted fraction')
 pyplot.legend()
 #redo x domain
