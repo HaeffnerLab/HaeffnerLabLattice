@@ -88,14 +88,15 @@ for i in range(len(info)):
         percent_melt.append(perc)
         error_bars.append(errorBarSimple(totalTraces, perc))
     energyHeat = numpy.array(energyHeat)
+    energyHeatTHZ = energyHeat / 10.0**12 
     percent_melt = numpy.array(percent_melt)
     error_bars = numpy.array(error_bars)
-    energyHeat, [percent_melt,error_bars] = arangeByFirst(energyHeat, [percent_melt,error_bars])
+    energyHeatTHZ, [percent_melt,error_bars] = arangeByFirst(energyHeatTHZ, [percent_melt,error_bars])
     temperaturePerIon = energyHeat / (kb * ionnumber)
-    pyplot.errorbar(temperaturePerIon, percent_melt, fmt = '-o', label = label, yerr = error_bars.transpose())
+    pyplot.errorbar(energyHeatTHZ, percent_melt, fmt = '-o', label = label, yerr = error_bars.transpose())
     pyplot.hold('True')
 
-pyplot.xlabel('Temperature per ion (K)')
+pyplot.xlabel('Energy Added (THz)')
 pyplot.ylabel('Melted fraction')
 pyplot.legend()
 #redo x domain
