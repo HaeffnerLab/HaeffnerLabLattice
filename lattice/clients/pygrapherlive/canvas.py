@@ -384,13 +384,13 @@ class Qt4MplCanvas(FigureCanvas):
         currentYmin = None
         for i in range(numberOfDependentVariables):
             if (currentYmax == None):
-                currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
-                currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
+                currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
+                currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
             else:
                 if (self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] > currentYmax):
-                    currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
+                    currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
                 elif ((self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] < currentYmin)):
-                    currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1]
+                    currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
         
         xmin, xmax = self.ax.get_xlim()
         xwidth = xmax - xmin
