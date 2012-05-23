@@ -8,11 +8,11 @@ from scriptLibrary import dvParameters
 from PulseSequences.collectionEfficiency import collectionEfficiency
 import dataProcessor
 
-repeatitions = 2500;
+repeatitions = 100;
 params = {
           'dopplerCooling':50e-3,
           'iterDelay':1e-3,
-          'iterationsCycle': 10000,
+          'iterationsCycle': 100,
           'repumpD':20.0*10**-6,
           'repumpDelay':10.0*10**-6,
           'exciteP':20.0*10**-6,
