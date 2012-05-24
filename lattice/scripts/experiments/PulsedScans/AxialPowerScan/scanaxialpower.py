@@ -10,7 +10,7 @@ import dataProcessor
 
 minpower = -60.0
 maxpower = -0.1#-0.1max #5.0 for axial
-steps = 30
+steps = 60
 powers = np.linspace(minpower, maxpower, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()

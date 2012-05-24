@@ -31,7 +31,7 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 1000
+iterations = 1
 experimentName = 'LatentHeat_no729_autocrystal'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
@@ -47,13 +47,18 @@ auto_crystal = True
 #sequence parameters
 params = {
               'initial_cooling': 25e-3,
-              'heat_delay':20e-6,#10e-3,
-              'axial_heat':1.0*10**-3,#8.5*10**-3,
+              'heat_delay':10e-3,
+              'axial_heat':18.0*10**-3,
               'readout_delay':1.0*10**-3, ####should implement 0
               'readout_time':10.0*10**-3,
               'xtal_record':25e-3
             }
-recordTime = params['initial_cooling'] + params['heat_delay'] +params['axial_heat'] + params['readout_delay'] + params['readout_time'] +  params['xtal_record']
+seq = LatentHeatBackground(pulser)
+pulser.new_sequence()
+seq.setVariables(**params)
+seq.defineSequence()
+pulser.program_sequence()
+recordTime = seq.parameters.recordTime
 
 globalDict = {
               'iterations':iterations,
@@ -66,9 +71,10 @@ globalDict = {
               'rf_power':rf_power,
               'rf_settling_time':rf_settling_time
               }
+print 'recording for {}'.format(recordTime)
 
 #Binning on the fly
-binTime =10.0*10**-6
+binTime =250.0*10**-6
 binNumber = int(recordTime / binTime)
 binArray = binTime * numpy.arange(binNumber + 1)
 #directory name
@@ -95,11 +101,6 @@ def initialize():
     #pmt recording
     pmt.set_time_length(pmtresolution)
     #pulser sequence 
-    seq = LatentHeatBackground(pulser)
-    pulser.new_sequence()
-    seq.setVariables(**params)
-    seq.defineSequence()
-    pulser.program_sequence()
     pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
     pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
@@ -225,6 +226,6 @@ print 'DONE'
 print dirappend
 print 'melted {0} times'.format(meltedTimes)
 dp =  data_process(cxn, dirappend, ['','Experiments', experimentName], ['histogram'])
-dp.addParameter('threshold', 300)
+dp.addParameter('threshold', 200)
 dp.loadDataVault()
 dp.processAll()
