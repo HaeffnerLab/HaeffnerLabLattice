@@ -26,4 +26,9 @@ class hardwareConfiguration():
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
+                   
+                   ###
+                   #----- 18 ----- dds step to next value
+                   #----- 19 ----- reset dds
+                   ####
                    }
