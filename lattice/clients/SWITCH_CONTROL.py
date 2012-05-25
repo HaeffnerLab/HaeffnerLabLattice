@@ -6,7 +6,8 @@ SIGNALID = 378902
 class switchWidget(QtGui.QFrame):
     def __init__(self, reactor, parent=None):
         super(switchWidget, self).__init__(parent)
-        self.setFrameStyle(0x0001 | 0x0030)
+        #which channels to show and in what order, if None, then shows all
+        self.channels = ['axial','866DP','110DP','crystallization','bluePI']
         self.reactor = reactor
         self.connect()
         
@@ -24,11 +25,16 @@ class switchWidget(QtGui.QFrame):
         #set layout
         layout = QtGui.QGridLayout()
         self.setLayout(layout)
+        self.setFrameStyle(0x0001 | 0x0030)
         #get switch names and add them to the layout, and connect their function
         layout.addWidget(QtGui.QLabel('Switches'),0,0)
         switchNames = yield self.server.get_channels()
         switchNames = [el[0] for el in switchNames] #picking first of the tuple
-        for order,name in enumerate(switchNames):
+        if self.channels is not None:
+            channels = [name for name in self.channels if name in switchNames]
+        else:
+            channels = switchNames
+        for order,name in enumerate(channels):
             #setting up physical container
             groupBox = QtGui.QGroupBox(name) 
             groupBoxLayout = QtGui.QVBoxLayout()
