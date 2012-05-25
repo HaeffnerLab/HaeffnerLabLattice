@@ -11,7 +11,6 @@ class Sequence():
         #time is expressed as timestep with the given resolution
         #which channels to switch is a channelTotal-long array with 1 to switch ON, -1 to switch OFF, 0 to do nothing
         self.switchingTimes = {0:numpy.zeros(self.channelTotal, dtype = numpy.int8)} 
-        
         self.ddsInfo
         self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
     
