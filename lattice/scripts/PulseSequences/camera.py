@@ -12,18 +12,20 @@ class Camera(Sequence):
         pulser = self.pulser
         p = self.parameters
         
-        for i in range(p.iterations):  
-            self.pulser.add_ttl_pulse('camera', 0.0, recordTime) #record the whole time
+        for i in range(p.iterations):
+            print 'once and twice'  
+            self.pulser.add_ttl_pulse('camera', (i*p.period), 10e-6) #record the whole time
 
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     pulser = cxn.pulser
     seq = Camera(pulser)
+    #pulser.switch_auto('camera',  True)
     pulser.new_sequence()
     params = {
-              'recordTime': 0.001,
-              'iterations':1,
+              'iterations': 300,
+              'period': .030,
               }
     seq.setVariables(**params)
     seq.defineSequence()

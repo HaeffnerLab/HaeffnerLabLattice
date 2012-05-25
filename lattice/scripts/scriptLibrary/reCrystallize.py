@@ -7,6 +7,7 @@ from msvcrt import getch, kbhit
 cxn = labrad.connect()
 cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 rf = cxn.trap_drive
+dc = cxn.dc_box
 ld = cxnlab.laserdac
 pulser = cxn.pulser
 
@@ -35,10 +36,14 @@ while 1:
     		rf.amplitude(-7.0)
 		pulser.switch_manual('crystallization',  True) # crystallization shutter open
 		pulser.switch_manual('110DP',  False) # 110DP off 
+		#dc.setendcap(1,0.695)
+		#dc.setendcap(2,5.305)
 		time.sleep(2)	
 		pulser.switch_manual('110DP',  True)
 		#pulser.switch_manual('crystallization',  False)
 		rf.amplitude(initpower)
+		#dc.setendcap(1,3.695)
+		#dc.setendcap(2,8.305)
    		#for voltage in numpy.arange(initcavity, min, -1):
    		 #   print voltage
    		 #   time.sleep(0.05)
