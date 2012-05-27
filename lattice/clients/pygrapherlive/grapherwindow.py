@@ -10,15 +10,18 @@ import time
 
 class GrapherWindow(QtGui.QMainWindow):
     """Creates the window for the new plot"""
-    def __init__(self, parent, context):
+    def __init__(self, parent, context, windowName):
+#    def __init__(self, parent, context):
         self.parent = parent
         self.context = context
+        self.windowName = windowName
         self.parameterWindows = {}
         self.datasetCheckboxes = {}
         self.datasetCheckboxCounter = 0
         self.manuallyLoaded = True
         QtGui.QMainWindow.__init__(self)
-        self.setWindowTitle("Live Grapher")
+        self.setWindowTitle(self.windowName)
+#        self.setWindowTitle("Live Grapher")
         self.main_widget = QtGui.QWidget(self)     
         self.setCentralWidget(self.main_widget)
         # create a vertical box layout widget
@@ -74,12 +77,17 @@ class GrapherWindow(QtGui.QMainWindow):
         #fitButton.move(390, 32)
         fitButton.clicked.connect(self.fitDataSignal)
         
+        windowNameButton = QtGui.QPushButton("Change Window Name", self)
+        windowNameButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        windowNameButton.clicked.connect(self.changeWindowName)
+        
         # Layout that controls graph options
         buttonBox = QtGui.QHBoxLayout()
         buttonBox.addWidget(self.cb1) 
         buttonBox.addWidget(self.cb3)
         buttonBox.addWidget(self.cb2)  
-        buttonBox.addWidget(fitButton) 
+        buttonBox.addWidget(fitButton)
+        buttonBox.addWidget(windowNameButton) 
         
         grapherLayout.addLayout(buttonBox)
 
@@ -119,6 +127,16 @@ class GrapherWindow(QtGui.QMainWindow):
         elif (self.cb3.isChecked()): # makes sure autoFit is off otherwise it will undo this operation
             self.cb3.toggle()
         self.qmc.fitData()
+    
+    def changeWindowName(self):
+        text, ok = QtGui.QInputDialog.getText(self, 'Change Window Name', 'Enter a name:')        
+        if ok:
+            text = str(text)
+            self.parent.changeWindowName(self.windowName, text)
+            self.setWindowTitle(text)
+            self.windowName = text
+
+        
     
     def newParameterWindow(self, dataset, directory):
         win = ParameterWindow(self, dataset, directory)
@@ -205,7 +223,8 @@ class GrapherWindow(QtGui.QMainWindow):
         # Remove this window from the dictionary so that no datasets...
         # ... are drawn to this window
         self.parent.removeWindowFromDictionary(self)
-        self.parent.removeWindowFromWinList(self)
+        self.parent.removeWindowFromWinDict(self.windowName)
+#        self.parent.removeWindowFromWinList(self)
         self.parent.cleanUp()
         self.fileQuit()
 
