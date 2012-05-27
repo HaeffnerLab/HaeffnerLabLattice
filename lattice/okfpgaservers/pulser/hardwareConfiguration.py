@@ -13,19 +13,23 @@ class ddsConfiguration():
     """
     Stores complete configuration of each DDS board
     """
-    def __init__(self, address, boardfreqrange, allowedfreqrange, boardamplrange, allowedamplrange):
+    def __init__(self, address, boardfreqrange, allowedfreqrange, boardamplrange, allowedamplrange, frequency = None, amplitude = None):
         '''
         address is the hardware address
         board settings refer to the DIP settings on the board
         allowed settings are allowed to be set by the user
         frequencies are in MHz
         amplitudes are in dBm
+        
+        frequency and amplitude provide optional initialization parameters
         '''
         self.channelnumber = address
         self.boardfreqrange = boardfreqrange
         self.allowedfreqrange = allowedfreqrange
         self.boardamplrange = boardamplrange
         self.allowedamplrange = allowedamplrange
+        self.frequency = frequency
+        self.amplitude = amplitude
         
 class hardwareConfiguration():
     channelTotal = 32
@@ -37,6 +41,7 @@ class hardwareConfiguration():
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     
+    #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
                    '866DP':channelConfiguration(0, False, True, True, False),
                    'crystallization':channelConfiguration(1, True, False, False, False),
