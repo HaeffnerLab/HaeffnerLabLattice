@@ -36,6 +36,12 @@ class Dataset(QtCore.QObject):
             for (parameterName, value) in self.parameters:
                 if (str(parameterName) == 'plotLive'):
                     self.hasPlotParameter = True
+
+    def getWindowParameter(self):
+        for (parameterName, value) in self.parameters:
+            if (str(parameterName) == 'Window'):
+                return value
+
                     
     # open dataset in order to listen for new data signals in current context        
     @inlineCallbacks
@@ -56,7 +62,7 @@ class Dataset(QtCore.QObject):
                 returnValue(self.hasPlotParameter)
 #            yield deferToThread(time.sleep, .5)
             yield self.wait(.5)
-        returnValue(self.hasPlotParameter)
+        returnValue(self.hasPlotParameter)        
             
     def updateParameter(self, x, y):
         self.checkForPlotParameter()
