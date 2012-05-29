@@ -65,6 +65,7 @@ class DevicePanel(QtGui.QWidget):
         # Layout        
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(5)
+        
 
         self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(setVelParamsButton, 4, 2, QtCore.Qt.AlignCenter)
@@ -78,7 +79,8 @@ class DevicePanel(QtGui.QWidget):
         self.grid.addWidget(stepRightButton, 2, 2, QtCore.Qt.AlignCenter)
         self.grid.addWidget(stepSize, 1, 1)
 
-        self.setLayout(self.grid)        
+        self.setLayout(self.grid)
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)        
         self.show()        
         
     @inlineCallbacks
