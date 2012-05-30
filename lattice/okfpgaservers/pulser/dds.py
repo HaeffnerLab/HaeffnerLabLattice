@@ -69,7 +69,7 @@ class DDS(LabradServer):
         if hardwareAddr is None: raise Exception("Unknown DDS channel {}".format(channel))
         if not sequence: raise Exception ("Please create new sequence first")
         for start,freq,ampl in values:
-            sett = 
+            sett = self._valToInt(channel, freq, ampl)
             sequence.addDDS(hardwareAddr, start, sett)
     
     def _checkRange(self, t, name, val):
@@ -92,31 +92,53 @@ class DDS(LabradServer):
         yield self.inCommunication.acquire()
         yield deferToThread(self._setParameters, chan, freq, ampl)
         self.inCommunication.release()
-        
+    
+    def _programDDS(self, dds):
+        '''takes the parsed dds sequence and programs the board with it'''
+        for chan,buf in enumerate(dds):
+            self._resetAllDDS()
+            self._setDDSchannel(chan)
+            self._programDDS(buf)
+            
     def _setParameters(self, chan, freq, ampl):
         self._resetAllDDS()
         addr = self.ddsDict[chan].channelnumber
         self._setDDSchannel(addr)
-        buf = self._valsToBuffer(chan, freq, ampl)
-        buf = buf + 2*'\x00\x00\x00\x00' #add termination ####
+        num = self._valToInt(chan, freq, ampl)
+        buf = self._intToBuf(num)
+        buf = buf + '\x00\x00\x00\x00' #adding termination
         self._programDDS(buf)
     
-    def _valsToInt(self, chan, freq, ampl):
+    def _addDDSInitial(self, seq):
+        for chan in self.ddsDict.iterkeys():
+            freq,ampl = (self.ddsDict[chan].frequency, self.ddsDict[chan].amplitude)
+            self._checkRange('amplitude', chan, ampl)
+            self._checkRange('frequency', chan, freq)
+            addr = self.ddsDict[chan].channelnumber
+            num = self._valToInt(chan, freq, ampl)
+            seq.addDDS(addr, 0, num)
+        
+    def _valToInt(self, chan, freq, ampl):
         '''
         takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
         freq is in MHz
         power is in dbm
         '''
         config = self.ddsDict[chan]
-        ans = ''
-        for val,r in [(freq,config.boardfreqrange), (ampl,config.boardamplrange)]:
+        ans = 0
+        for val,r,m in [(freq,config.boardfreqrange, 256**2), (ampl,config.boardamplrange), 1]:
             minim, maxim = r
             resolution = (maxim - minim) / float(16**4 - 1)
             seq = int((val - minim)/resolution) #sequential representation
-            print 'in val set: '
-            print val, seq
-            add = array.array('B', [seq % 256 ,seq // 256]).tostring() #convets value to buffer string, i.e 128 -> \x00\x80 
-            ans += add
+            ans += m*seq
+        return ans
+    
+    def _intToBuf(self, num):
+        '''
+        takes the integer representing the setting and returns the buffer string for dds programming
+        '''
+        a, b = num // 256**2, num % 256**2
+        ans = array.array('B', [a % 256 ,a // 256, b % 256, b // 256]).tostring() #convets value to buffer string, i.e 128 -> \x00\x00\x00\x80 
         return ans
     
     def _resetAllDDS(self):

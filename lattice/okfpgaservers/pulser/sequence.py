@@ -12,27 +12,34 @@ class Sequence():
         #time is expressed as timestep with the given resolution
         #which channels to switch is a channelTotal-long array with 1 to switch ON, -1 to switch OFF, 0 to do nothing
         self.switchingTimes = {0:numpy.zeros(self.channelTotal, dtype = numpy.int8)} 
+        self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
         #dictionary for storing information about dds switches, in the format:
         #timestep: channel settings where channel settings is a channel-long list of integers representing the state
-        self.ddsInfo = {}
-        self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
-    
+        self.ddsSettings = {}
+        self.advanceDDS = hardwareConfiguration.channlDict['AdvanceDDS'].channelnumber
+        self.resetDDS = hardwareConfiguration.channlDict['ResetDDS'].channelnumber
+        
     def addDDS(self, chan, start, setting):
         '''add DDS setting'''
         timeStep = self.secToStep(start)
-        if self.switchingTimes.has_key(timeStep):
-            if self.switchingTimes[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(t, chan))
+        if self.ddsSettings.has_key(timeStep):
+            #if dds settings already exist, check for duplicate entry
+            if self.ddsSettings[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(t, chan))
         else:
-            self.ddsInfo[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint16)
-        self.ddsInfo[timeStep][chan] = setting
+            #else, create it
+            self.ddsSettings[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint16)
+        self.ddsSettings[timeStep][chan] = setting
             
     def addPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
+        start = self.secToStep(start)
+        duration = self.secToStep(duration)
         self._addNewSwitch(start, channel, 1)
         self._addNewSwitch(start + duration, channel, -1)
     
     def extendSequenceLength(self, timeLength):
         """Allows to extend the total length of the sequence"""
+        timeLength = self.secToStep(timeLength)
         self._addNewSwitch(timeLength,0,0)
 
     def secToStep(self, sec):
@@ -45,8 +52,7 @@ class Sequence():
         a,b = number // 65536, number % 65536
         return str(numpy.uint16([a,b]).data)
 
-    def _addNewSwitch(self, t, chan, value):
-        timeStep = self.secToStep(t)
+    def _addNewSwitch(self, timeStep, chan, value):
         if self.switchingTimes.has_key(timeStep):
             if self.switchingTimes[timeStep][chan]: raise Exception ('Double switch at time {} for channel {}'.format(t, chan))
             self.switchingTimes[timeStep][chan] = value
@@ -55,8 +61,39 @@ class Sequence():
             self.switchingTimes[timeStep] = numpy.zeros(self.channelTotal, dtype = numpy.int8)
             self.switches += 1
             self.switchingTimes[timeStep][chan] = value
-           
+    
     def progRepresentation(self):
+        ddsSettings = self.parseDDS()
+        ttlProgram = self.parseTTL()
+        return ddsSettings, ttlProgram
+    
+    def parseDDS(self):
+        '''uses the ddsSettings dictionary to create an easily programmable list in the form
+        [buf_for_chan0, buf_for_chan1,...]
+        The length of each bufstring is equal to the number of total number of dds settings because all the ttl settings are advanced together:
+        If a setting doesn't change, it's repeated.
+        During the parsing the necessary ttls to advance dds settings are added automatically.
+        At the end of the pulse sequence, the ram position of dds is set again to the initial value of 0.
+        '''
+        totalState = ['']*self.ddsChannelTotal
+        state = numpy.zeros(self.ddsChannelTotal)
+        for key,settings in sorted(self.ddsSettings.iteritems()):
+            state[settings.non_zero] = settings
+            for i in range(len(lastState)):
+                totalState[i] += self.numToHex(state[i])
+            #advance the state of the dds by settings the advance channel high for one timestep
+            self._addNewSwitch(key,self.advanceDDS,1)
+            self._addNewSwitch(key + 1,self.advanceDDS,-1)
+        #at the end of the sequence, reset dds
+        lastTTL = max(self.switchingTimes.keys())
+        self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
+        self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
+        #add termination
+        for i in range(len(totalState)):
+            totalState[i] +=  2*self.numToHex(0)
+        return totalState
+        
+    def parseTTL(self):
         """Returns the representation of the sequence for programming the FPGA"""
         rep = ''
         lastChannels = numpy.zeros(self.channelTotal)

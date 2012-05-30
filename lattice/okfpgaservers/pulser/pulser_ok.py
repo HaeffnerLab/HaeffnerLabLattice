@@ -105,9 +105,11 @@ class Pulser(LabradServer, DDS):
         if self.xem is None: raise Exception('Board not connected')
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
-        parsedSequence = sequence.progRepresentation()
+        self._addDDSInitial(sequence)
+        dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
-        yield deferToThread(self._programBoard, parsedSequence)    
+        yield deferToThread(self._programBoard, ttl)
+        yield deferToThread(self._programDDS, dds)
         self.inCommunication.release()
         self.isProgrammed = True
     
