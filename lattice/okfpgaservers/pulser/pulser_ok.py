@@ -66,6 +66,7 @@ class Pulser(LabradServer, DDS):
                 print 'Connected to {}'.format(id)
                 self.programOKBoard()
                 self.initializeSettings()
+                self.initializeDDS()
                 return
         print 'Not found {}'.format(okDeviceID)
         print 'Will try again in {} seconds'.format(devicePollingPeriod)
@@ -89,7 +90,6 @@ class Pulser(LabradServer, DDS):
             else:
                 self._setAuto(channelnumber, channel.autoinv)
 
-    
     @setting(0, "New Sequence", returns = '')
     def newSequence(self, c):
         """

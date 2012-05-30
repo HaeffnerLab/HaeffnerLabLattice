@@ -65,7 +65,8 @@ class DevicePanel(QtGui.QWidget):
         # Layout        
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(5)
-
+        #self.grid.setColumnStretch(0, 1)
+        
         self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(setVelParamsButton, 4, 2, QtCore.Qt.AlignCenter)
 #        self.grid.addWidget(moveAbsoluteButton, 4, 0, QtCore.Qt.AlignCenter)
