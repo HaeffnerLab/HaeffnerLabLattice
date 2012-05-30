@@ -5,7 +5,7 @@
 [info]
 name = Pulser
 version = 0.3
-description = 
+description =
 instancename = Pulser
 
 [startup]
@@ -39,7 +39,7 @@ class Pulser(LabradServer, DDS):
     onSwitch = Signal(611051, 'signal: switch toggled', '(ss)')
     
     def initServer(self):
-        self.channelDict =  hardwareConfiguration.channelDict
+        self.channelDict = hardwareConfiguration.channelDict
         self.collectionTime = hardwareConfiguration.collectionTime
         self.collectionMode = hardwareConfiguration.collectionMode
         self.sequenceType = hardwareConfiguration.sequenceType
@@ -105,11 +105,12 @@ class Pulser(LabradServer, DDS):
         if self.xem is None: raise Exception('Board not connected')
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
-        self._addDDSInitial(sequence)
+        if sequence.userAddedDDS():
+            self._addDDSInitial(sequence)
         dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
         yield deferToThread(self._programBoard, ttl)
-        yield deferToThread(self._programDDS, dds)
+        if dds is not None: yield deferToThread(self._programDDS, dds)
         self.inCommunication.release()
         self.isProgrammed = True
     
@@ -144,12 +145,12 @@ class Pulser(LabradServer, DDS):
         """
         Add a TTL Pulse to the sequence, times are in seconds
         """
+        if channel not in self.channelDict.keys(): raise Exception("Unknown Channel {}".format(channel))
         hardwareAddr = self.channelDict.get(channel).channelnumber
         sequence = c.get('sequence')
         #simple error checking
-        if hardwareAddr is None: raise Exception("Unknown Channel {}".format(channel))
         if not (MIN_SEQUENCE <= start,start + duration <= MAX_SEQUENCE): raise Exception ("Time boundaries are out of range")
-        if not duration >= self.timeResolution: raise Exception ("Incorrect duration") 
+        if not duration >= self.timeResolution: raise Exception ("Incorrect duration")
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addPulse(hardwareAddr, start, duration)
     
@@ -167,7 +168,7 @@ class Pulser(LabradServer, DDS):
     @setting(7, "Extend Sequence Length", timeLength = 'v')
     def extendSequenceLength(self, c, timeLength):
         """
-        Allows to optionally extend the total length of the sequence beyond the last TTL pulse. 
+        Allows to optionally extend the total length of the sequence beyond the last TTL pulse.
         """
         sequence = c.get('sequence')
         if not (MIN_SEQUENCE <= timeLength <= MAX_SEQUENCE): raise Exception ("Time boundaries are out of range")
@@ -176,7 +177,7 @@ class Pulser(LabradServer, DDS):
         
     @setting(8, "Stop Sequence")
     def stopSequence(self, c):
-        """Stops any currently running  sequence"""
+        """Stops any currently running sequence"""
         yield self.inCommunication.acquire()
         yield deferToThread(self._resetRam)
         if self.sequenceType =='Infinite':
@@ -224,7 +225,7 @@ class Pulser(LabradServer, DDS):
         return zip(keys,numbers)
     
     @setting(12, 'Switch Manual', channelName = 's', state= 'b')
-    def switchManual(self, c, channelName, state = None):  
+    def switchManual(self, c, channelName, state = None):
         """
         Switches the given channel into the manual mode, by default will go into the last remembered state but can also
         pass the argument which state it should go into.
@@ -246,7 +247,7 @@ class Pulser(LabradServer, DDS):
             self.notifyOtherListeners(c,(channelName,'ManualOff'), self.onSwitch)
     
     @setting(13, 'Switch Auto', channelName = 's', invert= 'b')
-    def switchAuto(self, c, channelName, invert = None):  
+    def switchAuto(self, c, channelName, invert = None):
         """
         Switches the given channel into the automatic mode, with an optional inversion.
         """
@@ -353,7 +354,6 @@ class Pulser(LabradServer, DDS):
         Returns the list of counts stored on the FPGA in the form (v,s1,s2) where v is the count rate in KC/SEC
         and s can be 'ON' in normal mode or in Differential mode with 866 on and 'OFF' for differential
         mode when 866 is off. s2 is the approximate time of acquisition.
-        
         NOTE: For some reason, FGPA ReadFromBlockPipeOut never time outs, so can not implement requesting more packets than
         currently stored because it may hang the device.
         """
@@ -392,7 +392,7 @@ class Pulser(LabradServer, DDS):
         #in the case that we received multiple PMT counts, uses the current time
         #and the collectionTime to guess the arrival time of the previous readings
         #i.e ( [[1,2],[2,3]] , timeLAst = 1.0, normalupdatetime = 0.1) ->
-        #    ( [(1,2,0.9),(2,3,1.0)])
+        # ( [(1,2,0.9),(2,3,1.0)])
         collectionTime = self.collectionTime[self.collectionMode]
         for i in range(len(list)):
             list[-i - 1].append(timeLast - i * collectionTime)
@@ -424,7 +424,7 @@ class Pulser(LabradServer, DDS):
         arr = numpy.fromstring(raw, dtype = numpy.uint16)
         del(raw)
         arr = arr.reshape(-1,2)
-        timetags =( 65536  *  arr[:,0] + arr[:,1]) * self.timeResolvedResolution
+        timetags =( 65536 * arr[:,0] + arr[:,1]) * self.timeResolvedResolution
         returnValue(timetags)
     
     @setting(33, "Get TimeTag Resolution", returns = 'v')
@@ -550,7 +550,7 @@ class Pulser(LabradServer, DDS):
         """
         notified = self.listeners.copy()
         notified.remove(context.ID)
-        f(message,notified)   
+        f(message,notified)
     
     def initContext(self, c):
         """Initialize a new context object."""

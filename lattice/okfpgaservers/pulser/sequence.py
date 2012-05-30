@@ -16,8 +16,8 @@ class Sequence():
         #dictionary for storing information about dds switches, in the format:
         #timestep: channel settings where channel settings is a channel-long list of integers representing the state
         self.ddsSettings = {}
-        self.advanceDDS = hardwareConfiguration.channlDict['AdvanceDDS'].channelnumber
-        self.resetDDS = hardwareConfiguration.channlDict['ResetDDS'].channelnumber
+        self.advanceDDS = hardwareConfiguration.channelDict['AdvanceDDS'].channelnumber
+        self.resetDDS = hardwareConfiguration.channelDict['ResetDDS'].channelnumber
         
     def addDDS(self, chan, start, setting):
         '''add DDS setting'''
@@ -67,6 +67,9 @@ class Sequence():
         ttlProgram = self.parseTTL()
         return ddsSettings, ttlProgram
     
+    def userAddedDDS(self):
+        return bool(len(self.ddsSettings.keys()))
+    
     def parseDDS(self):
         '''uses the ddsSettings dictionary to create an easily programmable list in the form
         [buf_for_chan0, buf_for_chan1,...]
@@ -75,6 +78,7 @@ class Sequence():
         During the parsing the necessary ttls to advance dds settings are added automatically.
         At the end of the pulse sequence, the ram position of dds is set again to the initial value of 0.
         '''
+        if not self.userAddedDDS(): return None
         totalState = ['']*self.ddsChannelTotal
         state = numpy.zeros(self.ddsChannelTotal)
         for key,settings in sorted(self.ddsSettings.iteritems()):
@@ -109,7 +113,7 @@ class Sequence():
     
     def humanRepresentation(self):
         """Returns the human readable version of the sequence for FPGA for debugging"""
-        rep = self.progRepresentation()
+        dds,rep = self.progRepresentation()
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)

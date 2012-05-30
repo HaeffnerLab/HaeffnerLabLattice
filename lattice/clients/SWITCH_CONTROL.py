@@ -96,6 +96,7 @@ class switchWidget(QtGui.QFrame):
         yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
     
     def followSignal(self, x, (switchName, state)):
+        if switchName not in self.d.keys(): return None
         if state == 'Auto':
             button = self.d[switchName]['AUTO']
         elif state == 'ManualOn':
