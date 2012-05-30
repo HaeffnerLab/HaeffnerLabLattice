@@ -211,7 +211,6 @@ class Pulser(LabradServer, DDS):
         ans = sequence.humanRepresentation()
         return ans.tolist()
     
-    
     @setting(11, 'Get Channels', returns = '*(sw)')
     def getChannels(self, c):
         """

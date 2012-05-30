@@ -33,6 +33,7 @@ class ddsConfiguration():
         
 class hardwareConfiguration():
     channelTotal = 32
+    ddsChannelTotal = 8
     timeResolution = 40.0e-9 #seconds
     timeResolvedResolution = timeResolution/4.0
     maxSwitches = 1022
@@ -60,5 +61,5 @@ class hardwareConfiguration():
     
     ddsDict = {
                '110DP':ddsConfiguration(0, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-3.0), 110.0, -63.0),
-#               '866DP':ddsConfiguration(1, (60.0,160.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -63.0)
+               #'866DP':ddsConfiguration(1, (60.0,160.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -63.0)
                }

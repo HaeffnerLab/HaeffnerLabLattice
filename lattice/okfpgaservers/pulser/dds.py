@@ -6,11 +6,8 @@ import array
 class DDS(LabradServer):
     """Contains the DDS functionality for the pulser server"""
     
-    ####newDDS = Signal() pass
-    
     def initializeDDS(self):
         self._initializeDDS()
-#        self._resetAllDDS()
         for chan in self.ddsDict.iterkeys():
             freq,ampl = (self.ddsDict[chan].frequency, self.ddsDict[chan].amplitude)
             self._checkRange('amplitude', chan, ampl)
@@ -61,7 +58,7 @@ class DDS(LabradServer):
         frequency = self.ddsDict[name].frequency
         returnValue(frequency)
     
-    @setting(45, 'Add DDS Pulses', channel = 's', values = '*(vv)')
+    @setting(45, 'Add DDS Pulses', channel = 's', values = '*(vvv)')
     def addDDSPulse(self, c, channel, values):
         """Takes the name of the DDS channel, and the list of values in the form [(start, frequency, amplitude)]
         where frequency is in MHz, and amplitude is in dBm
@@ -71,7 +68,9 @@ class DDS(LabradServer):
         #simple error checking
         if hardwareAddr is None: raise Exception("Unknown DDS channel {}".format(channel))
         if not sequence: raise Exception ("Please create new sequence first")
-        pass
+        for start,freq,ampl in values:
+            sett = 
+            sequence.addDDS(hardwareAddr, start, sett)
     
     def _checkRange(self, t, name, val):
         if t == 'amplitude':
@@ -83,13 +82,17 @@ class DDS(LabradServer):
     @inlineCallbacks
     def _setAmplitude(self, chan, ampl):
         freq = self.ddsDict[chan].frequency
+        yield self.inCommunication.acquire()
         yield deferToThread(self._setParameters, chan, freq, ampl)
-    
+        self.inCommunication.release()
+        
     @inlineCallbacks
     def _setFrequency(self, chan, freq):
         ampl = self.ddsDict[chan].amplitude
+        yield self.inCommunication.acquire()
         yield deferToThread(self._setParameters, chan, freq, ampl)
-    
+        self.inCommunication.release()
+        
     def _setParameters(self, chan, freq, ampl):
         self._resetAllDDS()
         addr = self.ddsDict[chan].channelnumber
@@ -98,9 +101,9 @@ class DDS(LabradServer):
         buf = buf + 2*'\x00\x00\x00\x00' #add termination ####
         self._programDDS(buf)
     
-    def _valsToBuffer(self, chan, freq, ampl):
+    def _valsToInt(self, chan, freq, ampl):
         '''
-        takes the frequency and amplitude values for the specific channel and returns the byte string
+        takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
         freq is in MHz
         power is in dbm
         '''
@@ -108,7 +111,7 @@ class DDS(LabradServer):
         ans = ''
         for val,r in [(freq,config.boardfreqrange), (ampl,config.boardamplrange)]:
             minim, maxim = r
-            resolution = (maxim - minim) / 16.0**4
+            resolution = (maxim - minim) / float(16**4 - 1)
             seq = int((val - minim)/resolution) #sequential representation
             print 'in val set: '
             print val, seq

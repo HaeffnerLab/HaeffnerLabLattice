@@ -5,15 +5,27 @@ class Sequence():
     """Sequence for programming pulses"""
     def __init__(self):
         self.channelTotal = hardwareConfiguration.channelTotal
+        self.ddsChannelTotal = hardwareConfiguration.ddsChannelTotal
         self.timeResolution = hardwareConfiguration.timeResolution
         self.MAX_SWITCHES = hardwareConfiguration.maxSwitches
         #dictionary in the form time:which channels to switch
         #time is expressed as timestep with the given resolution
         #which channels to switch is a channelTotal-long array with 1 to switch ON, -1 to switch OFF, 0 to do nothing
         self.switchingTimes = {0:numpy.zeros(self.channelTotal, dtype = numpy.int8)} 
-        self.ddsInfo
+        #dictionary for storing information about dds switches, in the format:
+        #timestep: channel settings where channel settings is a channel-long list of integers representing the state
+        self.ddsInfo = {}
         self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
     
+    def addDDS(self, chan, start, setting):
+        '''add DDS setting'''
+        timeStep = self.secToStep(start)
+        if self.switchingTimes.has_key(timeStep):
+            if self.switchingTimes[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(t, chan))
+        else:
+            self.ddsInfo[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint16)
+        self.ddsInfo[timeStep][chan] = setting
+            
     def addPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
         self._addNewSwitch(start, channel, 1)
