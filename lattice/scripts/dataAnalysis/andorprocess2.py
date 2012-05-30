@@ -20,6 +20,7 @@ for s in choose:
         try:   
             #rawdata = np.loadtxt('/home/lattice/Downloads/andorimages/andorprocess/s' + str(j+1) + '.asc')
             rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions\s' + str(s) + '000' + str(j+1) + '.asc')
+            #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
             rows, cols = rawdata.shape
             
             axialSumRegions = []
