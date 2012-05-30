@@ -110,7 +110,7 @@ class Pulser(LabradServer, DDS):
         dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
         yield deferToThread(self._programBoard, ttl)
-        if dds is not None: yield deferToThread(self._programDDS, dds)
+        if dds is not None: yield deferToThread(self._programDDSSequence, dds)
         self.inCommunication.release()
         self.isProgrammed = True
     

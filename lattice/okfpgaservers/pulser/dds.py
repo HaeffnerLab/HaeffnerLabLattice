@@ -63,10 +63,10 @@ class DDS(LabradServer):
         """Takes the name of the DDS channel, and the list of values in the form [(start, frequency, amplitude)]
         where frequency is in MHz, and amplitude is in dBm
         """
+        if channel not in self.ddsDict.keys(): raise Exception("Unknown DDS channel {}".format(channel))
         hardwareAddr = self.ddsDict.get(channel).channelnumber
         sequence = c.get('sequence')
         #simple error checking
-        if hardwareAddr is None: raise Exception("Unknown DDS channel {}".format(channel))
         if not sequence: raise Exception ("Please create new sequence first")
         for start,freq,ampl in values:
             sett = self._valToInt(channel, freq, ampl)
@@ -93,7 +93,7 @@ class DDS(LabradServer):
         yield deferToThread(self._setParameters, chan, freq, ampl)
         self.inCommunication.release()
     
-    def _programDDS(self, dds):
+    def _programDDSSequence(self, dds):
         '''takes the parsed dds sequence and programs the board with it'''
         for chan,buf in enumerate(dds):
             self._resetAllDDS()
@@ -137,7 +137,7 @@ class DDS(LabradServer):
         '''
         takes the integer representing the setting and returns the buffer string for dds programming
         '''
-        #convets value to buffer string, i.e 128 -> \x00\x00\x00\x80
+        #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
         a, b = num // 256**2, num % 256**2
         arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
         print arr

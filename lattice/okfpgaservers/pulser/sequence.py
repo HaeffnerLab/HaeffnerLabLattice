@@ -1,5 +1,6 @@
 import numpy
 from hardwareConfiguration import hardwareConfiguration
+import array ####
 
 class Sequence():
     """Sequence for programming pulses"""
@@ -27,7 +28,8 @@ class Sequence():
             if self.ddsSettings[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(t, chan))
         else:
             #else, create it
-            self.ddsSettings[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint16)
+            self.ddsSettings[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
+        print 'adding setting', setting
         self.ddsSettings[timeStep][chan] = setting
             
     def addPulse(self, channel, start, duration):
@@ -80,11 +82,13 @@ class Sequence():
         '''
         if not self.userAddedDDS(): return None
         totalState = ['']*self.ddsChannelTotal
-        state = numpy.zeros(self.ddsChannelTotal)
+        state = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
+        print self.ddsSettings
         for key,settings in sorted(self.ddsSettings.iteritems()):
-            state[settings.non_zero] = settings
-            for i in range(len(lastState)):
-                totalState[i] += self.numToHex(state[i])
+            print state
+            state[settings.nonzero()] = settings
+            for i in range(len(state)):
+                totalState[i] += self._intToBuf(state[i])####self.numToHex(state[i])
             #advance the state of the dds by settings the advance channel high for one timestep
             self._addNewSwitch(key,self.advanceDDS,1)
             self._addNewSwitch(key + 1,self.advanceDDS,-1)
@@ -96,6 +100,17 @@ class Sequence():
         for i in range(len(totalState)):
             totalState[i] +=  2*self.numToHex(0)
         return totalState
+    
+    ####same as hex???
+    def _intToBuf(self, num):
+        '''
+        takes the integer representing the setting and returns the buffer string for dds programming
+        '''
+        #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
+        a, b = num // 256**2, num % 256**2
+        arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
+        ans = arr.tostring()
+        return ans
         
     def parseTTL(self):
         """Returns the representation of the sequence for programming the FPGA"""

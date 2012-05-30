@@ -31,7 +31,7 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 10
+iterations = 1
 experimentName = 'LatentHeat_no729_autocrystal'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
@@ -151,6 +151,9 @@ def sequence():
             success = auto_crystalize()
             if not success: break
     # getting result and adding to data vault
+    #normalize
+    binnedFlour = binnedFlour / float(iterations)
+    binnedFlour = binnedFlour / binTime
     dv.cd(['','Experiments', experimentName, dirappend] )
     dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
     data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
