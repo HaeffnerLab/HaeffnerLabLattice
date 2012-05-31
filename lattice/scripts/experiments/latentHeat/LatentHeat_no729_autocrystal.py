@@ -31,7 +31,7 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 1
+iterations = 50
 experimentName = 'LatentHeat_no729_autocrystal'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP

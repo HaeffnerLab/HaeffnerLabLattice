@@ -95,7 +95,11 @@ class DDS(LabradServer):
     
     def _programDDSSequence(self, dds):
         '''takes the parsed dds sequence and programs the board with it'''
-        for chan,buf in enumerate(dds):
+        print 'programming dds now'
+        for config in self.ddsDict.itervalues():
+            chan = config.channelnumber
+            buf = dds[chan]
+            print chan,[buf]
             self._resetAllDDS()
             self._setDDSchannel(chan)
             self._programDDS(buf)
@@ -106,7 +110,7 @@ class DDS(LabradServer):
         self._setDDSchannel(addr)
         num = self._valToInt(chan, freq, ampl)
         buf = self._intToBuf(num)
-        buf = buf + '\x00\x00\x00\x00' #adding termination
+        buf = buf + '\x00\x00' #adding termination
         self._programDDS(buf)
     
     def _addDDSInitial(self, seq):
@@ -140,7 +144,7 @@ class DDS(LabradServer):
         #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
         a, b = num // 256**2, num % 256**2
         arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
-        print arr
+        #print arr
         ans = arr.tostring()
         return ans
     

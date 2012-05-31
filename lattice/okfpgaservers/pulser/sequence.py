@@ -25,7 +25,7 @@ class Sequence():
         timeStep = self.secToStep(start)
         if self.ddsSettings.has_key(timeStep):
             #if dds settings already exist, check for duplicate entry
-            if self.ddsSettings[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(t, chan))
+            if self.ddsSettings[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(timeStep, chan))
         else:
             #else, create it
             self.ddsSettings[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
@@ -85,20 +85,20 @@ class Sequence():
         state = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
         print self.ddsSettings
         for key,settings in sorted(self.ddsSettings.iteritems()):
-            print state
             state[settings.nonzero()] = settings
             for i in range(len(state)):
                 totalState[i] += self._intToBuf(state[i])####self.numToHex(state[i])
             #advance the state of the dds by settings the advance channel high for one timestep
-            self._addNewSwitch(key,self.advanceDDS,1)
-            self._addNewSwitch(key + 1,self.advanceDDS,-1)
+            if not key == 0: ####
+                self._addNewSwitch(key,self.advanceDDS,1)
+                self._addNewSwitch(key + 1,self.advanceDDS,-1)
         #at the end of the sequence, reset dds
         lastTTL = max(self.switchingTimes.keys())
         self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
         self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
         #add termination
         for i in range(len(totalState)):
-            totalState[i] +=  2*self.numToHex(0)
+            totalState[i] +=  '\x00\x00'
         return totalState
     
     ####same as hex???
