@@ -6,7 +6,7 @@ from matplotlib import pyplot
 from scipy import ndimage
 import peakdetect
 
-iterations = 1
+iterations = 2
 
 initialDarkIonPositions = []
 finalDarkIonPositions = []
@@ -23,22 +23,19 @@ imagesWithIncorrectInitialDarkIonNumber = 0
 imagesWithIncorrectFinalDarkIonNumber = 0
 
 
-choose = [6] #range(iterations)
-
 # loop through all the files
-for s in choose:
+for s in range(iterations):
     dataArray = []   
-    for j in range(3):
+    for j in np.arange(1,4):
         #j = 4
         try:
             #rawdata = np.loadtxt('/home/lattice/Downloads/andorimages/andorprocess/s' + str(j+1) + '.asc')
-            rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s' + str(s) + '000' + str(j+1) + '.asc')
+            rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s6000' + str(3*s + j) + '.asc')
             #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
             rows, cols = rawdata.shape
             
             axialSumRegions = []
             axialData = np.sum(rawdata, 0)
-            #meanRadialData = np.mean(radialData)
             
             # find the sum of the intensities of each strip
             intensitySum = 0
@@ -132,15 +129,9 @@ for s in choose:
     pyplot.plot(range(rows), finalDarkImageData_denoised)
     
    
-#    print 'Initial Dark Ion Positions: ', initialDarkIonPositions
-#    print 'Final Dark Ion Positions: ', finalDarkIonPositions
-#    print 'Ion Movements: ', ionMovements
-    print 'Number of Swaps: ', len(np.where(ionMovements == 1))
+ionMovements = np.array(ionMovements)
+print 'Number of Swaps: ', len(np.where(ionMovements == 1)[0])
 
-    
-        
-        
-                            
             
 #pyplot.figure(3)
 #pyplot.plot(range(len(numberOfIons)), numberOfIons)
