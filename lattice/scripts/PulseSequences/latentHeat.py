@@ -45,7 +45,9 @@ class LatentHeatBackground(Sequence):
                          'axial_heat':(float, 10e-9, 5.0, 100e-3),
                          'readout_delay':(float, 10e-9, 5.0, 100e-3),
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
-                         'xtal_record':(float, 10e-9, 5.0, 100e-3)
+                         'xtal_record':(float, 10e-9, 5.0, 100e-3),
+                         'readout_ampl_866':(float, -63.0, -3.0, -63.0),
+                         'cooling_ampl_866':(float, -63.0, -3.0, -43.0)
                     }
     
     def defineSequence(self):   
@@ -75,20 +77,26 @@ class LatentHeatBackground(Sequence):
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
         pulser.add_ttl_pulse('camera', startReadout, 10e-6)
         pulser.add_ttl_pulse('110DPlist', start_xtal, 10e-6) #advance frequency of RS at the end of the sequence
+        #adding dds settings for the 866DP
+        pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
+        pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
+        pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.cooling_ampl_866)])
+        
 
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = LatentHeat(pulser)
+    seq = LatentHeatBackground(pulser)
     pulser.new_sequence()
     params = {
-              'initial_cooling': 1.,
-              'heat_delay':1.,
-              'axial_heat':1.,
-              'readout_delay':1.,
-              'readout_time':1.
-              }
+              'initial_cooling': 25e-3,
+              'heat_delay':10e-3,
+              'axial_heat':18.0*10**-3,
+              'readout_delay':1.0*10**-3,
+              'readout_time':10.0*10**-3,
+              'xtal_record':25e-3
+            }
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
@@ -97,4 +105,4 @@ if __name__ == '__main__':
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
-    print timetags
+    print 'got {} timetags'.format(timetags.size)
