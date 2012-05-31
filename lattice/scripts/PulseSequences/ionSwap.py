@@ -1,5 +1,6 @@
 from sequence import Sequence
 
+
 class IonSwapBackground(Sequence):
     """Ion Swap pulse sequence that also includes a period of heating beam on, 866 off to measure the background from that beam"""
     #dictionary of variable: (type, min, max, default)
@@ -19,6 +20,7 @@ class IonSwapBackground(Sequence):
     def defineSequence(self):   
         p = self.parameters
         pulser = self.pulser
+        cameraPulse = 10e-6
         
         #p.backgroundMeasure = p.exposure #measure background for the same time as camera exposure
         
@@ -37,20 +39,20 @@ class IonSwapBackground(Sequence):
 
         # measure background for the same time as camera exposure        
         startFirstExposure = 0.0
-        endFirstExposure = p.exposure
+        endFirstExposure = p.exposure + cameraPulse
         firstExposureDuration = endFirstExposure - startFirstExposure
         
         startSecondExposure = endFirstExposure + p.camera_delay + p.initial_cooling
-        endSecondExposure = startSecondExposure + p.exposure 
-        secondExposureDuration = endSecondExposure - startSecondExposure
+        endSecondExposure = startSecondExposure + p.exposure + cameraPulse
+#        secondExposureDuration = endSecondExposure - startSecondExposure
         
         startDarkening = endSecondExposure + p.camera_delay
         endDarkening = startDarkening + p.darkening
         darkeningDuration = endDarkening - startDarkening
         
         startThirdExposure = endDarkening
-        endThirdExposure = endDarkening + p.exposure
-        thirdExposureDuration = endSecondExposure - startSecondExposure
+        endThirdExposure = endDarkening + p.exposure + cameraPulse
+#        thirdExposureDuration = endSecondExposure - startSecondExposure
          
         startGlobalOff = endThirdExposure + p.camera_delay
         endGlobalOff = startGlobalOff + p.heat_delay + p.axial_heat + p.readout_delay
@@ -60,24 +62,29 @@ class IonSwapBackground(Sequence):
         endHeat = startHeat + p.axial_heat
         heatDuration = endHeat - startHeat
         
-        startFourthExposure = endHeat + p.heat_delay + p.readout_time + p.rextal_time
-        endFourthExposure = startFourthExposure + p.exposure
-        fourthExposureDuration = endFourthExposure - startFourthExposure
+        p.startReadout = endHeat + p.readout_delay
+        p.stopReadout = p.startReadout + p.readout_time
+        
+        startFourthExposure = endHeat + p.readout_delay + p.readout_time + p.rextal_time
+        endFourthExposure = startFourthExposure + p.exposure + cameraPulse
+#        fourthExposureDuration = endFourthExposure - startFourthExposure
 
         startBrightening = endFourthExposure + p.camera_delay
         endBrightening = startBrightening + p.brightening
         brighteningDuration = endBrightening - startBrightening
         
-        pulser.add_ttl_pulse('TimeResolvedCount', startBackground, p.recordTime) #record the whole time
+        p.recordTime =  startBrightening + brighteningDuration - startFirstExposure
+              
+        pulser.add_ttl_pulse('TimeResolvedCount', startFirstExposure, p.recordTime) #record the whole time
         #measure the background first: switch off 866 and keep 110DP on
         pulser.add_ttl_pulse('866DP', startFirstExposure, firstExposureDuration)
-        pulser.add_ttl_pulse('camera', startFirstExposure, firstExposureDuration)        
+        pulser.add_ttl_pulse('camera', startFirstExposure, cameraPulse)        
         # wait through the camera delay and initial cooling  before taking the 'initial' picture
-        pulser.add_ttl_pulse('camera', startSecondExposure, secondExposureDuration)        
+        pulser.add_ttl_pulse('camera', startSecondExposure, cameraPulse)        
         # wait through the camera delay and shine the 729
         pulser.add_ttl_pulse('729DP', startDarkening, darkeningDuration)
         # take a picture of the dark ions
-        pulser.add_ttl_pulse('camera', endDarkening, thirdExposureDuration)
+        pulser.add_ttl_pulse('camera', endDarkening, cameraPulse)
         # when DDS works, comment out!
         # DDS should happen right before readout (but enough time before so that it switches completely
         # , and after readout (during recrystalization
@@ -92,13 +99,13 @@ class IonSwapBackground(Sequence):
         # another DDS move (amplitude increased)
 #        pulser.add_ttl_pulse('110DPlist..
         # take the last picture
-        pulser.add_ttl_pulse('camera', startFourthExposure, fourthExposureDuration)
+        pulser.add_ttl_pulse('camera', startFourthExposure, cameraPulse)
         # make all the ions bright again
         pulser.add_ttl_pulse('854DP', startBrightening, brighteningDuration)
 
 if __name__ == '__main__':
     import labrad
-    import plotsequence
+    from plotsequence import SequencePlotter
     cxn = labrad.connect()
     pulser = cxn.pulser
     seq = IonSwapBackground(pulser)
@@ -106,12 +113,12 @@ if __name__ == '__main__':
     params = { 
               'exposure': .1,
               'camera_delay': .02, 
-              'initial_cooling': 1.,
+              'initial_cooling': .115, #includes delay 15ms delay after background collection
               'darkening': .1,
-              'heat_delay':1.,
-              'axial_heat':1.,
-              'readout_delay':1.,
-              'readout_time':1.,
+              'heat_delay':.005,
+              'axial_heat':.02,
+              'readout_delay':.005,
+              'readout_time':.01,
               'rextal_time': .05,
               'brightening': .01,
               }
