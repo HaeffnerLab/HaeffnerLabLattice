@@ -6,6 +6,8 @@ from matplotlib import pyplot
 from scipy import ndimage
 import peakdetect
 
+iterations = 1
+
 initialDarkIonPositions = []
 finalDarkIonPositions = []
 ionMovements = []
@@ -16,7 +18,12 @@ maximumCorrectedIonIntensity = -150
 expectedNumberOfIons = 5
 peakVicinity = 3
 
-choose = [6]
+imagesWithIncorrectInitialIonNumber = 0
+imagesWithIncorrectInitialDarkIonNumber = 0
+imagesWithIncorrectFinalDarkIonNumber = 0
+
+
+choose = [6] #range(iterations)
 
 # loop through all the files
 for s in choose:
@@ -111,11 +118,13 @@ for s in choose:
                                     
             else:
                 print 'The incorrect number of ions are dark after recrystallization'
-            
+                imagesWithIncorrectFinalalDarkIonNumber += 1
         else:
             print 'The incorrect number of ions went dark.'
+            imagesWithIncorrectInitialDarkIonNumber += 1
     else:
         print 'An incorrect number of initial ions is present.'
+        imagesWithIncorrectInitialIonNumber += 1
      
         
     pyplot.plot(range(rows), initialData_denoised)
@@ -123,9 +132,10 @@ for s in choose:
     pyplot.plot(range(rows), finalDarkImageData_denoised)
     
    
-    print 'Initial Dark Ion Positions: ', initialDarkIonPositions
-    print 'Final Dark Ion Positions: ', finalDarkIonPositions
-    print 'Ion Movements: ', ionMovements
+#    print 'Initial Dark Ion Positions: ', initialDarkIonPositions
+#    print 'Final Dark Ion Positions: ', finalDarkIonPositions
+#    print 'Ion Movements: ', ionMovements
+    print 'Number of Swaps: ', len(np.where(ionMovements == 1))
 
     
         
