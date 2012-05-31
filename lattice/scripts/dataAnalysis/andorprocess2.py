@@ -7,9 +7,10 @@ from scipy import ndimage
 import peakdetect
 
 numberOfIons = []
+ionDistances = []
 
 typicalIonDiameter = 6 # compare sections of this size in the image
-minimumIonIntensity = 3300
+minimumIonIntensity = 530
 
 choose = range(20) #[12, 14]
 
@@ -46,9 +47,11 @@ for s in choose:
                     maxIndex = i
     
             # use this strip to create the 1-dimensional array of intensity sums
-            procdata = rawdata[:, (maxIndex*typicalIonDiameter):(maxIndex*typicalIonDiameter + typicalIonDiameter)]      
+            procdata = rawdata[:, (maxIndex*typicalIonDiameter):(maxIndex*typicalIonDiameter + typicalIonDiameter)]
             data = np.array(rows)
-            data = np.sum(procdata, 1)
+            data = np.sum(procdata, 1) / typicalIonDiameter
+            
+            #print data[:]/means[:]
             
             pyplot.figure(1)
             pyplot.plot(range(rows), data, label=str(j+1))
@@ -64,6 +67,21 @@ for s in choose:
     
     
             maxPeaks, minPeaks = peakdetect.peakdetect(gauss_denoised, range(rows), 2, 25)
+
+#            # find 1st moment of a gaussian around each peak
+#            moments = []
+#            for peak in maxPeaks:
+#               print 'peak: ',peak[0] 
+#               minRange = peak[0] - 2*typicalIonDiameter
+#               maxRange = peak[0] + 2*typicalIonDiameter
+#               print 'range: ', minRange, maxRange
+#               peakData = gauss_denoised[minRange:maxRange]
+#               X = np.arange(minRange, maxRange)
+#               peakMean = np.sum(X*peakData)/np.sum(peakData)
+#               peakWidth = np.sqrt(abs(np.sum((X-peakMean)**2*peakData)/np.sum(peakData))) 
+#               moments.append(peakWidth)
+#            
+#            print moments
             outlyingPeaks = []
             
             # find outlyers                
@@ -80,10 +98,24 @@ for s in choose:
                     peaks.append(r)
             
             print 'Number of ions for: ' + str(s) + '-' + str(j) + ': ' + str(len(peaks)) 
+                        
             numberOfIons.append(len(peaks))
+            
+            graphIonDistances = []
+            for i in range(len(peaks) - 1):
+                graphIonDistances.append(peaks[i+1][0] - peaks[i][0])
+                
+            #print 'Average Ion distance: ', np.mean(graphIonDistances)
+            ionDistances.append(np.mean(graphIonDistances))
+                
+                
+            
             #matshow(rawdata)
         except IOError:
             pass
             #print 'failed', j+1
 print 'Average number of ions: ', np.mean(numberOfIons)
+print 'Average Ion distance: ', np.mean(ionDistances)
+pyplot.figure(3)
+pyplot.plot(range(len(numberOfIons)), numberOfIons)
 show()
