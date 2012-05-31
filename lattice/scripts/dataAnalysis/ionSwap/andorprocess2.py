@@ -12,15 +12,15 @@ ionDistances = []
 typicalIonDiameter = 6 # compare sections of this size in the image
 minimumIonIntensity = 530
 
-choose = range(20) #[12, 14]
+choose = [6]
 
 # loop through all the files
 for s in choose:
-    for j in range(2):
+    for j in range(3):
         #j = 4
         try:   
             #rawdata = np.loadtxt('/home/lattice/Downloads/andorimages/andorprocess/s' + str(j+1) + '.asc')
-            rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions\s' + str(s) + '000' + str(j+1) + '.asc')
+            rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s' + str(s) + '000' + str(j+1) + '.asc')
             #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
             rows, cols = rawdata.shape
             
@@ -55,18 +55,22 @@ for s in choose:
             
             pyplot.figure(1)
             pyplot.plot(range(rows), data, label=str(j+1))
+            pyplot.xlabel('Axial Direction (pixels)')
+            pyplot.ylabel('Average Intensity (counts/sec)')
             #matshow(rawdata)
             
             # find the number of ions
             # start with the highest peaks and apply gaussians?
-            gauss_denoised = ndimage.gaussian_filter(data, 2)
+            gauss_denoised = ndimage.gaussian_filter(data, 3)
             pyplot.figure(2)
-            gauss_denoised = gauss_denoised[0:rows] 
+            #gauss_denoised = gauss_denoised[0:rows] 
             pyplot.plot(range(rows), gauss_denoised, label=(str(s) + '-'+ str(j+1)))
             pyplot.legend(loc='best')
+            pyplot.xlabel('Axial Direction (pixels)')
+            pyplot.ylabel('Average Intensity (counts/sec)')
     
     
-            maxPeaks, minPeaks = peakdetect.peakdetect(gauss_denoised, range(rows), 2, 25)
+            maxPeaks, minPeaks = peakdetect.peakdetect(gauss_denoised, range(rows), 1, 1)
 
 #            # find 1st moment of a gaussian around each peak
 #            moments = []
@@ -118,4 +122,7 @@ print 'Average number of ions: ', np.mean(numberOfIons)
 print 'Average Ion distance: ', np.mean(ionDistances)
 pyplot.figure(3)
 pyplot.plot(range(len(numberOfIons)), numberOfIons)
+pyplot.xlabel('Image Number')
+pyplot.ylabel('Number of Ions')
+
 show()
