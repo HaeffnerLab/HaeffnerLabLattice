@@ -135,11 +135,12 @@ DATAINITIALIZED = 4
 
 class Qt4MplCanvas(FigureCanvas):
     """Class to represent the FigureCanvas widget"""
-    def __init__(self, parent, appWindowParent):    
+    def __init__(self, parent):    
         # instantiate figure
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
-        self.appWindowParent = appWindowParent      
+        #self.parent = parent
+        self.parent = parent      
         self.datasetLabelsDict = {}
         self.plotParametersDict = {}
         self.dataDict = {}
@@ -211,7 +212,7 @@ class Qt4MplCanvas(FigureCanvas):
                 self.parseData(dataset, directory, numberOfDependentVariables, data, numberOfDataPoints, dataIndex, dataIndexOffset)               
 #                     COME BACK HERE AND FIX INITIALXMIN!!                   
 #                    self.initialxmin = self.dataDict[dataset, directory].transpose()[INDEPENDENT][self.plotParametersDict[dataset, directory][DATAINDEX]] # new minimum?                                 
-#            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+#            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
             self.drawGraph()
 
 #    def switchArray(self, dataset, directory):
@@ -251,6 +252,7 @@ class Qt4MplCanvas(FigureCanvas):
 
         else:
             # This will occur if data is coming at the rate of 1 data point per signal, at most.
+            # This might be incorrect (what's written above)
             self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data, data.shape[0], dataIndex, dataIndexOffset)
             print dataIndex, ' ',dataIndexOffset, ' ', numberOfDataPoints
 
@@ -312,8 +314,8 @@ class Qt4MplCanvas(FigureCanvas):
 #        handles, labels = self.ax.get_legend_handles_labels()
         handles = []
         labels = []
-        for dataset,directory in self.appWindowParent.datasetCheckboxes.keys():
-            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+        for dataset,directory in self.parent.datasetCheckboxes.keys():
+            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in self.plotDict[dataset, directory]:
                     handles.append(i)
                     labels.append(str(dataset) + ' - ' + i.get_label())
@@ -324,7 +326,7 @@ class Qt4MplCanvas(FigureCanvas):
 #        tstartupdate = time.clock()
         for dataset, directory in self.dataDict:
             # if dataset is intended to be drawn (a checkbox governs this)
-            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 self.drawPlot(dataset, directory)
 #        tstopupdate = time.clock()
 #        print tstopupdate - tstartupdate
@@ -400,14 +402,14 @@ class Qt4MplCanvas(FigureCanvas):
         ywidth = ymax - ymin
 
         # if current x position exceeds certain x coordinate, update the screen
-        if self.appWindowParent.cb1.isChecked(): 
+        if self.parent.cb1.isChecked(): 
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 xmin = currentX - xwidth/4
                 xmax = xmin + xwidth
                 self.ax.set_xlim(xmin, xmax)
                 self.draw()
             
-        elif self.appWindowParent.cb3.isChecked():
+        elif self.parent.cb3.isChecked():
             if (currentX > SCROLLFRACTION * xwidth + xmin):
                 self.autofitDataX(currentX, MAX)
             elif (currentX < (1 - SCROLLFRACTION- .15) * xwidth + xmin): # -.15 since usually data travels right
@@ -420,8 +422,8 @@ class Qt4MplCanvas(FigureCanvas):
     def getDataXLimits(self):
         xmin = None
         xmax = None
-        for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
-            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+        for dataset, directory in self.parent.datasetCheckboxes.keys():
+            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT]:
                     if (xmin == None):
                         xmin = i
@@ -436,8 +438,8 @@ class Qt4MplCanvas(FigureCanvas):
     def getDataYLimits(self):
         ymin = None
         ymax = None
-        for dataset, directory in self.appWindowParent.datasetCheckboxes.keys():
-            if self.appWindowParent.datasetCheckboxes[dataset, directory].isChecked():
+        for dataset, directory in self.parent.datasetCheckboxes.keys():
+            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in range(len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT])):
                     for j in self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i]:
                         if (ymin == None):
