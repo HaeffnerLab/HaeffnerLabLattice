@@ -56,6 +56,15 @@ params = {
           'readout_time':.01,
           'rextal_time': .05,
           'brightening': .01,
+          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
+          'cooling_ampl_866':(float, -63.0, -3.0, -63.0),
+          'xtal_ampl_866':(float, -63.0, -3.0, -63.0),
+          'cooling_freq_397':(float, 90.0,130.0, 110.0),
+          'cooling_ampl_397':(float,-63.0, -3.0, -63.0),
+          'readout_freq_397':(float, 90.0,130.0, 110.0),
+          'readout_ampl_397':(float,-63.0, -3.0, -63.0),
+          'xtal_freq_397':(float, 90.0,130.0, 110.0),
+          'xtal_ampl_397':(float,-63.0, -3.0, -63.0)  
           }
 seq = IonSwapBackground(pulser)
 pulser.new_sequence()
@@ -91,9 +100,11 @@ optimal_cool_time = 0.150
 pmtresolution = 0.075 #seconds 
 shutter_delay = 0.025
 rf_crystal_power = -7.0
-#dpass.select('110DP')
-#dpass.frequency(xtalFreq)
-#dpass.amplitude(xtalPower)
+pulser.select_dds_channel('110DP')
+pulser.frequency(xtalFreq)
+pulser.amplitude(xtalPower)
+pulser.select_dds_channel('866DP')
+pulser.amplitude(xtalPower866)
 countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
 print 'initial countrate', countRate
 crystal_threshold = 0.7 * countRate #kcounts per sec #changes from .8 4/19

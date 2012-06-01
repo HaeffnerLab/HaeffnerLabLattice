@@ -136,8 +136,6 @@ class GrapherWindow(QtGui.QWidget):
         if (self.cb2.isChecked()):
             # "uncheck" the overlay checkbox
             self.cb2.toggle()
-        #print 'delering datadict'
-        #del self.qmc.dataDict
         # Remove this window from the dictionary so that no datasets...
         # ... are drawn to this window
         self.parent.removeWindowFromDictionary(self)
