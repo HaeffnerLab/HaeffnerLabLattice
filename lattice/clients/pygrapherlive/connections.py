@@ -106,8 +106,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     def addDirItem(self,x,y):
         #directory = tuple(eval(str(y))) 
         self.introWindow.datavaultwidget.populateList()
-        for i in self.winDict.values():
-            i.datavaultwidget.populateList()
+#        for i in self.winDict.values():
+#            i.datavaultwidget.populateList()
 #        for i in self.winList:
 #            i.datavaultwidget.populateList()
            
@@ -124,8 +124,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
  
     def addDatasetItem(self, itemLabel, directory):
         self.introWindow.datavaultwidget.addDatasetItem(itemLabel, directory)
-        for i in self.winDict.values():
-            i.datavaultwidget.addDatasetItem(itemLabel, directory)
+#        for i in self.winDict.values():
+#            i.datavaultwidget.addDatasetItem(itemLabel, directory)
 #        for i in self.winList:
 #            i.datavaultwidget.addDatasetItem(itemLabel, directory)
  
