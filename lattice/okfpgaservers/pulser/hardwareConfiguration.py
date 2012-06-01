@@ -48,10 +48,9 @@ class hardwareConfiguration():
                    'crystallization':channelConfiguration(1, True, False, False, False),
                    'bluePI':channelConfiguration(2, True, False, True, False),
                    '110DP':channelConfiguration(3, False, True, True, False),
-                   'axial':channelConfiguration(4, False, True, True, False),
+                   'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
-                   '110DPlist':channelConfiguration(6, True, True, True, False),
-                   #wrong channels
+                   #future channels
                    '729DP':channelConfiguration(10, False, True, True, False),
                    '854DP':channelConfiguration(11, False, True, True, False),
                    #------------INTERNAL CHANNELS----------------------------------------#

@@ -8,9 +8,11 @@ def measureParameters(cxn, cxnlab, list):
     dict = {}
     for item in list:
         if item == 'trapdrive':
-            server = cxn.lattice_pc_hp_server
-            dict['rffreq'] = cxn.trap_drive.frequency()
-            dict['rfpower'] = cxn.trap_drive.amplitude()
+            ####fix trapdrive measure
+            pass
+#            server = cxn.lattice_pc_hp_server
+#            dict['rffreq'] = cxn.trap_drive.frequency()
+#            dict['rfpower'] = cxn.trap_drive.amplitude()
         elif item == 'endcaps':
             server = cxn.dc_box
             [endcap1,endcap2] = [server.getendcap(ch) for ch in [1,2]]
@@ -37,17 +39,19 @@ def measureParameters(cxn, cxnlab, list):
             server = cxnlab.multiplexer_server
             dict['frequency866'] = server.get_frequency('866')
         elif item == 'axialDP':
-            server = cxn.double_pass
-            server.select('axial')
-            dict['frequency_axialDP'] = server.frequency()
-            dict['power_axialDP'] = server.amplitude()
-            dict['output_axialDP'] = server.output()
+            pass
+#            server = cxn.double_pass
+#            server.select('axial')
+#            dict['frequency_axialDP'] = server.frequency()
+#            dict['power_axialDP'] = server.amplitude()
+#            dict['output_axialDP'] = server.output()
         elif item == 'radialDP':
-            server = cxn.double_pass
-            server.select('radial')
-            dict['frequency_radialDP'] = server.frequency()
-            dict['power_radialDP'] = server.amplitude()
-            dict['output_radialDP'] = server.output()
+            pass
+#            server = cxn.double_pass
+#            server.select('radial')
+#            dict['frequency_radialDP'] = server.frequency()
+#            dict['power_radialDP'] = server.amplitude()
+#            dict['output_radialDP'] = server.output()
         elif item == 'pulser':
             dict['timetag_resolution'] = cxn.pulser.get_timetag_resolution()
     return dict

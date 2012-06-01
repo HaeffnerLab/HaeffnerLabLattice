@@ -15,7 +15,7 @@ dv.cd(['','QuickMeasurements','Power Monitoring'],True)
 dependVariables = [('Power',channelName,'mV') for channelName in CHANNELS]
 dv.new('Power Measurement',[('Time', 'sec')], dependVariables )
 tinit = time.time()
-dv.add_parameter('Window',['Window 0','hello'])
+#dv.add_parameter('Window',['Power Measurement'])
 dv.add_parameter('plotLive','True')
 dv.add_parameter('startTime',tinit)
 

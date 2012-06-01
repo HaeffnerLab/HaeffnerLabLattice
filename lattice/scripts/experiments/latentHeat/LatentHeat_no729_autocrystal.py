@@ -29,7 +29,7 @@ pulser = cxn.pulser
 pmt = cxn.normalpmtflow
 
 #Global parameters
-iterations = 50
+iterations = 10
 experimentName = 'LatentHeat_no729_autocrystal'
 xtalFreq397 = 103.0
 xtalPower397 = -4.0 
@@ -88,8 +88,8 @@ shutter_delay = 0.025
 rf_crystal_power = -7.0
 #get the count rate for the crystal at the same parameters as crystallization
 pulser.select_dds_channel('110DP')
-pulser.frequency(xtalFreq)
-pulser.amplitude(xtalPower)
+pulser.frequency(xtalFreq397)
+pulser.amplitude(xtalPower397)
 pulser.select_dds_channel('866DP')
 pulser.amplitude(xtalPower866)
 countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
