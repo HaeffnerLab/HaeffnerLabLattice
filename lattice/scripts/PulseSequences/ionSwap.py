@@ -31,40 +31,18 @@ class IonSwapBackground(Sequence):
         p = self.parameters
         pulser = self.pulser
         cameraPulse = 10e-6
+               
+        startFirstExposure = p.initial_cooling
+        endFirstExposure = startFirstExposure + p.exposure + cameraPulse
         
-        #p.backgroundMeasure = p.exposure #measure background for the same time as camera exposure
-        
-        #globalofftime = p.heat_delay + p.axial_heat + p.readout_delay
-        # recordTime will add some more stuff
-        #p.recordTime = p.backgroundMeasure + p.initial_cooling + globalofftime + p.readout_time + p.xtal_record
-        
-        #startHeat = p.backgroundMeasure + p.initial_cooling + p.heat_delay
-        #endHeat = startHeat + p.axial_heat
-        #startReadout = endHeat + p.readout_delay
-        #start_xtal = startReadout + p.readout_time
-        
-#        startBackground = 0.0
-#        endBackground = p.exposure
-#        backgroundDuration = endBackground - startBackground
-
-        # measure background for the same time as camera exposure        
-        startFirstExposure = 0.0
-        endFirstExposure = p.exposure + cameraPulse
-        firstExposureDuration = endFirstExposure - startFirstExposure
-        
-        startSecondExposure = endFirstExposure + p.camera_delay + p.initial_cooling
-        endSecondExposure = startSecondExposure + p.exposure + cameraPulse
-#        secondExposureDuration = endSecondExposure - startSecondExposure
-        
-        startDarkening = endSecondExposure + p.camera_delay
-        endDarkening = startDarkening + p.darkening
+        startDarkening = endFirstExposure + p.camera_delay        
+        endDarkening = startDarkening + p.darkening        
         darkeningDuration = endDarkening - startDarkening
         
-        startThirdExposure = endDarkening
-        endThirdExposure = endDarkening + p.exposure + cameraPulse
-#        thirdExposureDuration = endSecondExposure - startSecondExposure
+        startSecondExposure = endDarkening        
+        endSecondExposure = endDarkening + p.exposure + cameraPulse
          
-        startGlobalOff = endThirdExposure + p.camera_delay
+        startGlobalOff = endSecondExposure + p.camera_delay
         endGlobalOff = startGlobalOff + p.heat_delay + p.axial_heat + p.readout_delay
         globalOffDuration = endGlobalOff - startGlobalOff
         
@@ -74,53 +52,45 @@ class IonSwapBackground(Sequence):
         
         p.startReadout = endHeat + p.readout_delay
         p.stopReadout = p.startReadout + p.readout_time
-        
-        startFourthExposure = endHeat + p.readout_delay + p.readout_time + p.rextal_time
-        endFourthExposure = startFourthExposure + p.exposure + cameraPulse
-#        fourthExposureDuration = endFourthExposure - startFourthExposure
+              
+        start_rextal = endHeat + p.readout_delay + p.readout_time
 
-        startBrightening = endFourthExposure + p.camera_delay
+        startThirdExposure = start_rextal + p.rextal_time
+        endThirdExposure = startThirdExposure + p.exposure + cameraPulse
+        
+        startBrightening = endThirdExposure + p.camera_delay
         endBrightening = startBrightening + p.brightening
         brighteningDuration = endBrightening - startBrightening
         
-        p.recordTime =  startBrightening + brighteningDuration - startFirstExposure
+        p.recordTime =  startBrightening + brighteningDuration
               
-#        pulser.add_ttl_pulse('TimeResolvedCount', startFirstExposure, p.recordTime) #record the whole time
-        #measure the background first: switch off 866 and keep 110DP on
-#        pulser.add_ttl_pulse('866DP', startFirstExposure, firstExposureDuration)
-#        pulser.add_ttl_pulse('camera', startFirstExposure, cameraPulse)        
-        # wait through the camera delay and initial cooling  before taking the 'initial' picture
+        pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
+        pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
+
+        # wait through the initial cooling before taking the 'initial' picture
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
-        pulser.add_ttl_pulse('camera', startSecondExposure, cameraPulse)        
+        pulser.add_ttl_pulse('camera', startFirstExposure, cameraPulse)        
         # wait through the camera delay and shine the 729
         pulser.add_ttl_pulse('729DP', startDarkening, darkeningDuration)
         # take a picture of the dark ions
-        pulser.add_ttl_pulse('camera', endDarkening, cameraPulse)
-        # when DDS works, comment out!
-        # DDS should happen right before readout (but enough time before so that it switches completely
-        # , and after readout (during recrystalization
-#        pulser.add_ttl_pulse('110DPlist', p.backgroundMeasure + p.initial_cooling, 10e-6) #advance frequency of RS
-        
+        pulser.add_ttl_pulse('camera', startSecondExposure, cameraPulse)  
         # stop cooling during heating
         pulser.add_ttl_pulse('110DP', startGlobalOff, globalOffDuration)
-        #make sure there is no cooling by also switching off 866 when there is no 397 light.
+        # make sure there is no cooling by also switching off 866 when there is no global 397 light.
         pulser.add_ttl_pulse('866DP', startGlobalOff, p.heat_delay )
         pulser.add_ttl_pulse('axial', startHeat, heatDuration) #heat with the far blue axial beam
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
+        # again, make sure there is no cooling right before readout
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay)
-        # another DDS move (amplitude increased)
-#        pulser.add_ttl_pulse('110DPlist..
+        pulser.add_dds_pulses('110DP', [(endHeat, p.readout_freq_397 , p.readout_ampl_397)]) #readout
+        # after readout, adjust amplitudes for recrystalization
+        pulser.add_dds_pulses('866DP', [(start_rextal, 80.0 , p.xtal_ampl_866)])
+        pulser.add_dds_pulses('110DP', [(start_rextal, p.xtal_freq_397 , p.xtal_ampl_397)]) #xtal
+
         # take the last picture
-        pulser.add_ttl_pulse('camera', startFourthExposure, cameraPulse)
+        pulser.add_ttl_pulse('camera', startThirdExposure, cameraPulse)
         # make all the ions bright again
         pulser.add_ttl_pulse('854DP', startBrightening, brighteningDuration)
-        
-        #adding dds settings for the 866DP
-        pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])
-        #adding dds settings for the 110DP
-        pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
-        pulser.add_dds_pulses('110DP', [(endHeat, p.readout_freq_397 , p.readout_ampl_397)]) #readout
-        pulser.add_dds_pulses('110DP', [(start_xtal, p.xtal_freq_397 , p.xtal_ampl_397)]) #xtal
         
 
 if __name__ == '__main__':

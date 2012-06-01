@@ -1,6 +1,8 @@
 import sys; 
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+sys.path.append('/home/lattice/Desktop/LabRAD/lattice/scripts')
+sys.path.append('/home/lattice/Desktop/LabRAD/lattice/PulseSequences')
 import labrad
 import numpy
 import time
@@ -35,11 +37,11 @@ iterations = 100
 experimentName = 'IonSwap'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
-xtalFreq = 103.0 #107, 120
-xtalPower = -4.0
+xtalFreq397 = 103.0
+xtalPower397 = -4.0 
+xtalPower866 = -4.0
 #cooling = (103.0, -8.0) #MHz, dBm
 #readout = (115.0, -8.0) 
-crystallization = (xtalFreq, xtalPower)
 rf_power = -3.5
 rf_settling_time = 0.3
 #rs110List = [cooling, readout,crystallization] 
@@ -56,15 +58,15 @@ params = {
           'readout_time':.01,
           'rextal_time': .05,
           'brightening': .01,
-          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
-          'cooling_ampl_866':(float, -63.0, -3.0, -63.0),
-          'xtal_ampl_866':(float, -63.0, -3.0, -63.0),
-          'cooling_freq_397':(float, 90.0,130.0, 110.0),
-          'cooling_ampl_397':(float,-63.0, -3.0, -63.0),
-          'readout_freq_397':(float, 90.0,130.0, 110.0),
-          'readout_ampl_397':(float,-63.0, -3.0, -63.0),
-          'xtal_freq_397':(float, 90.0,130.0, 110.0),
-          'xtal_ampl_397':(float,-63.0, -3.0, -63.0)  
+          'cooling_ampl_866':-3.0,
+          'readout_ampl_866':-10.0,
+          'xtal_ampl_866':xtalPower866,
+          'cooling_freq_397':103.0,
+          'cooling_ampl_397':-8.0,
+          'readout_freq_397':115.0,
+          'readout_ampl_397':-8.0,
+          'xtal_freq_397':xtalFreq397,
+          'xtal_ampl_397':xtalPower397,
           }
 seq = IonSwapBackground(pulser)
 pulser.new_sequence()
@@ -76,11 +78,7 @@ recordTime = seq.parameters.recordTime
 globalDict = {
               'iterations':iterations,
               'experimentName':experimentName,
-#              'axfreq':axfreq,
               'recordTime':recordTime, 
-#              'cooling':cooling,
-#              'readout':readout,
-              'crystallization':crystallization,
               'rf_power':rf_power,
               'rf_settling_time':rf_settling_time
               }
@@ -101,8 +99,8 @@ pmtresolution = 0.075 #seconds
 shutter_delay = 0.025
 rf_crystal_power = -7.0
 pulser.select_dds_channel('110DP')
-pulser.frequency(xtalFreq)
-pulser.amplitude(xtalPower)
+pulser.frequency(xtalFreq397)
+pulser.amplitude(xtalPower397)
 pulser.select_dds_channel('866DP')
 pulser.amplitude(xtalPower866)
 countRate = pmt.get_next_counts('ON',int(detect_time / pmtresolution), True)
@@ -127,33 +125,10 @@ def initialize():
     dv.add_parameter('totalIterations',iterations)
 
     
-    #make sure r&s synthesizers are on, and are of correct frequency
-    #heating
-####    dpass.select('axial')
-####    dpass.frequency(axfreq)
-####    dpass.output(True)
-    #readout / cooling
-#    dpass.select('110DP')
-#    dpass.output(True)
-#    rs110DP.select_device(dpass.device_id())
-    #make sure the list is in range:
-#    freqRange = dpass.frequency_range()
-#    powerRange = dpass.amplitude_range()
-#    for freq,power in rs110List:
-#        if not (freqRange[0] <= freq <= freqRange[1]):
-#            raise Exception('frequency list parameters out of range')
-#        if not (powerRange[0] <= power <= powerRange[1]):
-#            raise Exception('power list parameters out of range')
-    #create list and enter the list mode
-#    rs110DP.new_list(rs110List)
-#    rs110DP.activate_list_mode(True)
-#    time.sleep(0.50) #letting list mode activate
-
 def sequence():
     binnedFlour = numpy.zeros(binNumber)
     for iteration in range(iterations):
         print 'recording trace {0} out of {1}'.format(iteration+1, iterations)
-#        rs110DP.reset_list()
         pulser.reset_timetags()
         pulser.start_single()
         pulser.wait_sequence_done()
