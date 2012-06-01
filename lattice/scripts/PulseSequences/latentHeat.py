@@ -1,41 +1,5 @@
 from sequence import Sequence
 
-class LatentHeat(Sequence):
-    #dictionary of variable: (type, min, max, default)
-    requiredVars = {
-                         'initial_cooling':(float, 10e-9, 5.0, 100e-3),
-                         'heat_delay':(float, 10e-9, 5.0, 100e-3),
-                         'axial_heat':(float, 10e-9, 5.0, 100e-3),
-                         'readout_delay':(float, 10e-9, 5.0, 100e-3),
-                         'readout_time':(float, 10e-9, 5.0, 100e-3),
-                         'xtal_record':(float, 10e-9, 5.0, 100e-3)
-                    }
-    
-    def defineSequence(self):
-        initial_cooling = self.vars['initial_cooling']
-        heat_delay = self.vars['heat_delay']
-        axial_heat = self.vars['axial_heat']
-        readout_delay = self.vars['readout_delay']
-        readout_time = self.vars['readout_time']
-        xtal_record =  self.vars['xtal_record']
-        
-        globalofftime = heat_delay + axial_heat + readout_delay
-        recordTime = initial_cooling + heat_delay + axial_heat + readout_delay + readout_time + xtal_record
-        startHeat = initial_cooling + heat_delay
-        endHeat = initial_cooling + heat_delay + axial_heat
-        startReadout = endHeat + readout_delay
-        start_xtal = startReadout + readout_time
-        
-        self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
-        self.pulser.add_ttl_pulse('110DP', initial_cooling, globalofftime) #turn off blue light during heating
-        self.pulser.add_ttl_pulse('110DPlist', initial_cooling, 10e-6) #advance frequency of RS
-        self.pulser.add_ttl_pulse('axial', startHeat, axial_heat) #heat with the far blue axial beam
-        #make sure there is no cooling by also switching off 866 when there is no 397 light.
-        self.pulser.add_ttl_pulse('866DP', initial_cooling, heat_delay )
-        self.pulser.add_ttl_pulse('866DP', endHeat, readout_delay )
-        self.pulser.add_ttl_pulse('camera', startReadout, 10e-6)
-        self.pulser.add_ttl_pulse('110DPlist', start_xtal, 10e-6) #advance frequency of RS at the end of the sequence
-
 class LatentHeatBackground(Sequence):
     """Same as Latent Heat pulse sequence but also includes a period of heating beam on, 866 off to measure the background from that beam"""
     #dictionary of variable: (type, min, max, default)
@@ -47,8 +11,15 @@ class LatentHeatBackground(Sequence):
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
                          'xtal_record':(float, 10e-9, 5.0, 100e-3),
                          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
-                         'cooling_ampl_866':(float, -63.0, -3.0, -43.0)
-                    }
+                         'cooling_ampl_866':(float, -63.0, -3.0, -63.0),
+                         'xtal_ampl_866':(float, -63.0, -3.0, -63.0),
+                         'cooling_freq_397':(float, 90.0,130.0, 110.0),
+                         'cooling_ampl_397':(float,-63.0, -3.0, -63.0),
+                         'readout_freq_397':(float, 90.0,130.0, 110.0),
+                         'readout_ampl_397':(float,-63.0, -3.0, -63.0),
+                         'xtal_freq_397':(float, 90.0,130.0, 110.0),
+                         'xtal_ampl_397':(float,-63.0, -3.0, -63.0)
+    }
     
     def defineSequence(self):   
         p = self.parameters
@@ -70,24 +41,29 @@ class LatentHeatBackground(Sequence):
         pulser.add_ttl_pulse('110DP', 0.0, p.backgroundMeasure)
         #let it cool until time to switch off the global again
         pulser.add_ttl_pulse('110DP', p.backgroundMeasure + p.initial_cooling, globalofftime) #turn off blue light during heating
-        pulser.add_ttl_pulse('110DPlist', p.backgroundMeasure + p.initial_cooling, 10e-6) #advance frequency of RS
         pulser.add_ttl_pulse('axial', startHeat, p.axial_heat) #heat with the far blue axial beam
         #make sure there is no cooling by also switching off 866 when there is no 397 light.
         pulser.add_ttl_pulse('866DP', p.backgroundMeasure + p.initial_cooling, p.heat_delay )
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
-        pulser.add_ttl_pulse('camera', startReadout, 10e-6)
-        pulser.add_ttl_pulse('110DPlist', start_xtal, 10e-6) #advance frequency of RS at the end of the sequence
         #adding dds settings for the 866DP
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
-        pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.cooling_ampl_866)])
-
+        pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])
+        #adding dds settings for the 110DP
+        pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
+        pulser.add_dds_pulses('110DP', [(endHeat, p.readout_freq_397 , p.readout_ampl_397)]) #readout
+        pulser.add_dds_pulses('110DP', [(start_xtal, p.xtal_freq_397 , p.xtal_ampl_397)]) #xtal
+        
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     pulser = cxn.pulser
     seq = LatentHeatBackground(pulser)
     pulser.new_sequence()
+    xtalFreq397 = 103.0
+    xtalPower397 = -4.0 
+    xtalPower866 = -4.0
+    #sequence parameters
     params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
@@ -96,8 +72,15 @@ if __name__ == '__main__':
               'readout_time':10.0*10**-3,
               'xtal_record':25e-3,
               'cooling_ampl_866':-3.0,
-              'readout_ampl_866':-33.0
-            }
+              'readout_ampl_866':-10.0,
+              'xtal_ampl_866':xtalPower866,
+              'cooling_freq_397':103.0,
+              'cooling_ampl_397':-8.0,
+              'readout_freq_397':115.0,
+              'readout_ampl_397':-8.0,
+              'xtal_freq_397':xtalFreq397,
+              'xtal_ampl_397':xtalPower397,
+              }
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
