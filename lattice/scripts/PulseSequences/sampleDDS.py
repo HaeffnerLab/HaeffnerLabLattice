@@ -12,8 +12,11 @@ class sampleDDS(Sequence):
         pulser = self.pulser
         p = self.parameters
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , -3.0)])
+        pulser.add_dds_pulses('110DP', [(40e-9, 110.0 , -63.0)])
         pulser.add_dds_pulses('866DP', [(1.1, 80.0 , -63.0)])
+        pulser.add_dds_pulses('110DP', [(1.1, 110.0 , -3.0)])
         pulser.add_dds_pulses('866DP', [(2.1, 80.0 , -3.0)])
+        pulser.add_dds_pulses('110DP', [(2.1, 110.0 , -63.0)])
         pulser.extend_sequence_length(3.1)
             
 if __name__ == '__main__':

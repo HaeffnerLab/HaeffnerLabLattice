@@ -81,7 +81,6 @@ class LatentHeatBackground(Sequence):
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
         pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.cooling_ampl_866)])
-        
 
 if __name__ == '__main__':
     import labrad
@@ -95,7 +94,9 @@ if __name__ == '__main__':
               'axial_heat':18.0*10**-3,
               'readout_delay':1.0*10**-3,
               'readout_time':10.0*10**-3,
-              'xtal_record':25e-3
+              'xtal_record':25e-3,
+              'cooling_ampl_866':-3.0,
+              'readout_ampl_866':-33.0
             }
     seq.setVariables(**params)
     seq.defineSequence()

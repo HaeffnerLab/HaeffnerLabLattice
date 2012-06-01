@@ -44,15 +44,19 @@ rf_power = -3.5
 rf_settling_time = 0.3
 rs110List = [cooling, readout,crystallization] 
 auto_crystal = True
+
 #sequence parameters
 params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
               'axial_heat':18.0*10**-3,
-              'readout_delay':1.0*10**-3, ####should implement 0
+              'readout_delay':1.0*10**-3,
               'readout_time':10.0*10**-3,
-              'xtal_record':25e-3
-            }
+              'xtal_record':25e-3,
+              'cooling_ampl_866':-3.0,
+              'readout_ampl_866':-33.0 
+              }
+
 seq = LatentHeatBackground(pulser)
 pulser.new_sequence()
 seq.setVariables(**params)
@@ -106,14 +110,8 @@ def initialize():
     pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
     pulser.switch_auto('110DPlist', False) #high TTL corresponds to light OFF
     pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
-    #make sure r&s synthesizers are on, and are of correct frequency
-    #heating
-####    dpass.select('axial')
-####    dpass.frequency(axfreq)
-####    dpass.output(True)
     #readout / cooling
     dpass.select('110DP')
-    dpass.output(True)
     rs110DP.select_device(dpass.device_id())
     #make sure the list is in range:
     freqRange = dpass.frequency_range()

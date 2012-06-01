@@ -37,12 +37,16 @@ class doublePass(object):
         self.freqToCalibAmpl = None #function to get calibrated amplitude for the given frequency
         self.freqRange = None
         self.amplRange = None
+        self.canTurnOff = True #allows for synthesizers that can not be fully swithced off, i.e DDS
          
     @inlineCallbacks
     def populateInfo(self):
         self.freq = yield self.freqFunc()
         self.ampl = yield self.amplFunc()
-        self.outp = yield self.outputFunc()
+        if self.canTurnOff:
+            self.outp = yield self.outputFunc()
+        else:
+            self.outp = True
     
     @inlineCallbacks
     def frequency(self, freq):
@@ -84,11 +88,11 @@ class doublePass(object):
 class DP110(doublePass):
     def __init__(self, name, cxn, context):
         super(DP110,self).__init__(name)
+        self.server = cxn.rohdeschwarz_server
         self.selectFuncs(cxn, context)
     
     @inlineCallbacks
     def selectFuncs(self, cxn, context):
-        self.server = cxn.rohdeschwarz_server
         self.context = context
         self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104542'
         yield self.server.select_device(self.deviceID , context = self.context)
@@ -134,17 +138,53 @@ class DP110(doublePass):
 class axialDP(doublePass):
     def __init__(self, name, cxn, context):
         super(axialDP,self).__init__(name)
-        self.selectFuncs(cxn, context)
-    
+        self.selectFuncs(cxn,context)
+
     @inlineCallbacks
     def selectFuncs(self, cxn, context):
-        self.server = cxn.lattice_pc_hp_server
+        self.server = cxn.latti
         self.context = context
         self.freqRange = (190,250) #MHZ
         self.amplRange = (-145,5.01) #dBM
         self.calibDomain = (190,250)
         yield self.populateInfo()
-#        self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
+        self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
+        
+    def freqToCalibAmpl(self, freq):
+        return self.ampl 
+    
+    @inlineCallbacks
+    def freqFunc(self, freq = None):
+        freq = yield self.server.frequency(freq, context = self.context)
+        returnValue(freq) 
+    
+    @inlineCallbacks
+    def amplFunc(self, ampl = None):
+        ampl = yield self.server.amplitude(ampl, context = self.context)
+        returnValue(ampl)
+    
+    @inlineCallbacks
+    def outputFunc(self, outp= None):
+        outp = yield self.server.output(outp, context = self.context)
+        returnValue(outp)    
+        
+class DP866(doublePass):
+    def __init__(self, name, cxn, context):
+        super(DP866,self).__init__(name)
+        self.selectFuncs(cxn, context)
+        print self.freqRange
+    
+    @inlineCallbacks
+    def selectFuncs(self, cxn, context):
+        self.server = cxn.pulser
+        self.context = context
+        self.deviceID = '866DP'
+        yield self.server.select_dds_channel(self.deviceID, context = self.context)
+        ####get these from dds
+        self.freqRange = (70,90) #MHZ
+        self.amplRange = (-63.0,-3.0) #dBM
+        yield self.populateInfo()
+        #self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
         
     def freqToCalibAmpl(self, freq):
         return self.ampl 
@@ -175,54 +215,6 @@ class axialDP(doublePass):
 #        calibration = calibration.asarray
 #        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
 #        returnValue(func)
-        
-        
-#class repumpDP(doublePass):
-#    def __init__(self, name, cxn, context):
-#        super(repumpDP,self).__init__(name)
-#        self.selectFuncs(cxn, context)
-#    
-#    @inlineCallbacks
-#    def selectFuncs(self, cxn, context):
-#        self.server = cxn.rohdeschwarz_server
-#        self.context = context
-#        self.deviceID = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549'
-#        yield self.server.select_device(self.deviceID, context = self.context)
-#        self.freqRange = (70,90) #MHZ
-#        self.amplRange = (-145,0.01) #dBM
-#        self.calibDomain = (70,90)
-#        yield self.populateInfo()
-#        #self.freqToCalibAmpl = yield self.setupCalibration(cxn, self.context)
-#        
-#    def freqToCalibAmpl(self, freq):
-#        return self.ampl 
-#    
-#    @inlineCallbacks
-#    def freqFunc(self, freq = None):
-#        freq = yield self.server.frequency(freq, context = self.context)
-#        returnValue(freq) 
-#    
-#    @inlineCallbacks
-#    def amplFunc(self, ampl = None):
-#        ampl = yield self.server.amplitude(ampl, context = self.context)
-#        returnValue(ampl)
-#    
-#    @inlineCallbacks
-#    def outputFunc(self, outp= None):
-#        outp = yield self.server.output(outp, context = self.context)
-#        returnValue(outp)    
-#    
-##    @inlineCallbacks
-##    def setupCalibration(self, cxn, context):
-##        from scipy.interpolate import interp1d
-##        dv = cxn.data_vault
-##        dir = yield dv.cd(context = context)
-##        yield dv.cd(['','Calibrations','Double Pass axial'],True, context = context)
-##        yield dv.open(17, context = context)
-##        calibration = yield dv.get(context = context)
-##        calibration = calibration.asarray
-##        func = interp1d(calibration[:,0],calibration[:,1],kind = 'cubic')
-##        returnValue(func)
 
 class doublePassServer( LabradServer ):
     name = 'Double Pass'
@@ -233,10 +225,15 @@ class doublePassServer( LabradServer ):
         self.listeners = set()
         
     def createDict(self):
-        self.d = {'axial':axialDP('axial',self.client, self.client.context()),
-                  '110DP':DP110('110DP',self.client, self.client.context()),
-                  #'repump':repumpDP('repump',self.client, self.client.context())
-                  }
+        ####
+        doublePases = [('110DP',DP110), ('866DP',DP866)]#, ('axialDP', axialDP)]
+        self.d = {}
+        for dp,cl in doublePases:
+            try:
+                self.d[dp] = cl(dp, self.client, self.client.context())
+                print 'initialized {}'.format(dp)
+            except:
+                print "{} not able to connected".format(dp)
         
     @setting(0, "Get Double Pass List", returns = '*s')
     def getDPList(self, c,):

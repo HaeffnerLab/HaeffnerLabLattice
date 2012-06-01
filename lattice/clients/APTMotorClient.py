@@ -333,10 +333,6 @@ class APTMotorClient(QtGui.QWidget):
             else:
                 grid.addWidget(devPanel, ((i - 1) / 2) , 1)
         self.show()
-    
-    
-# def sizeHint(self):
-# return QtCore.QSize(100,100)
         
     def closeEvent(self, evt):
         self.reactor.stop()
