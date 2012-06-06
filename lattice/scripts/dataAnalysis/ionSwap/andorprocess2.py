@@ -10,19 +10,22 @@ numberOfIons = []
 ionDistances = []
 
 typicalIonDiameter = 6 # compare sections of this size in the image
-minimumIonIntensity = 530
+minimumIonIntensity = 505
 
-choose = [6]
+choose = [1]
 
 # loop through all the files
 for s in choose:
-    for j in range(3):
+    for j in range(9):
         #j = 4
         try:   
             #rawdata = np.loadtxt('/home/lattice/Downloads/andorimages/andorprocess/s' + str(j+1) + '.asc')
-            rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s' + str(s) + '000' + str(j+1) + '.asc')
+            #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s' + str(s) + '000' + str(j+1) + '.asc')
             #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
+            rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s' + str(s) + '000' + str(j+1) + '.asc')
             rows, cols = rawdata.shape
+            
+            print rows
             
             axialSumRegions = []
             axialData = np.sum(rawdata, 0)
@@ -52,16 +55,14 @@ for s in choose:
             data = np.sum(procdata, 1) / typicalIonDiameter
             
             #print data[:]/means[:]
-            
             pyplot.figure(1)
             pyplot.plot(range(rows), data, label=str(j+1))
             pyplot.xlabel('Axial Direction (pixels)')
             pyplot.ylabel('Average Intensity (counts/sec)')
-            #matshow(rawdata)
             
             # find the number of ions
             # start with the highest peaks and apply gaussians?
-            gauss_denoised = ndimage.gaussian_filter(data, 3)
+            gauss_denoised = ndimage.gaussian_filter(data, 2)
             pyplot.figure(2)
             #gauss_denoised = gauss_denoised[0:rows] 
             pyplot.plot(range(rows), gauss_denoised, label=(str(s) + '-'+ str(j+1)))
@@ -112,11 +113,10 @@ for s in choose:
             #print 'Average Ion distance: ', np.mean(graphIonDistances)
             ionDistances.append(np.mean(graphIonDistances))
                 
-                
+            matshow(rawdata)    
             
-            #matshow(rawdata)
         except IOError:
-            pass
+            print 'what?'
             #print 'failed', j+1
 print 'Average number of ions: ', np.mean(numberOfIons)
 print 'Average Ion distance: ', np.mean(ionDistances)
