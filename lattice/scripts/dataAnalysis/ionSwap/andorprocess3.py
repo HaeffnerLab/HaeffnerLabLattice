@@ -95,7 +95,7 @@ for s in range(iterations):
                 ########### find the number of ions, peak positions of final dark image ###########
                 
                 finalDarkImageData = dataArray[2] - dataArray[0]
-                uncorrectedfinalDarkImageData_denoised = ndimage.gaussian_filter(dataArray[2], 2)
+                uncorrectedFinalDarkImageData_denoised = ndimage.gaussian_filter(dataArray[2], 2)
                 finalDarkImageData_denoised = ndimage.gaussian_filter(finalDarkImageData, 2)
                 finalDarkMaxPeaks, finalDarkMinPeaks = peakdetect.peakdetect(finalDarkImageData_denoised, range(rows), 1, 1)
                 finalDarkPeakPositions = []
@@ -137,9 +137,9 @@ for s in range(iterations):
         xaxis = range(rows)
         pyplot.plot(xaxis, initialData_denoised, label='initial')
         pyplot.plot(xaxis, uncorrectedInitialDarkImageData_denoised, label='uncorrected-dark')
-        #pyplot.plot(xaxis, uncorrectedFinalDarkImageData_denoised, label='uncorrected-rextal')
+        pyplot.plot(xaxis, uncorrectedFinalDarkImageData_denoised, label='uncorrected-rextal')
         pyplot.plot(xaxis, initialDarkImageData_denoised, label='corrected-dark')
-        #pyplot.plot(xaxis, finalDarkImageData_denoised, label='corrected-rextal')
+        pyplot.plot(xaxis, finalDarkImageData_denoised, label='corrected-rextal')
         pyplot.legend(loc='best')
 
 
