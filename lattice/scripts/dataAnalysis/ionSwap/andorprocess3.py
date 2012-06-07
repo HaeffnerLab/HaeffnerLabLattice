@@ -26,14 +26,18 @@ imagesWithIncorrectFinalDarkIonNumber = 0
 # loop through all the files
 for s in range(iterations):
     dataArray = []
-    try:   
+    try:
         for j in np.arange(1,4):
             #j = 4
                 #rawdata = np.loadtxt('/home/lattice/Downloads/andorimages/andorprocess/s' + str(j+1) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s6000' + str(3*s + j) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\camera-test\s100' + str(3*s + j) + '.asc')
-                rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s100' + str(3*s + j + 10) + '.asc')
+                try:
+                    rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s1000' + str(3*s + j) + '.asc')
+                except IOError:
+                    print 'first pass didnt work'
+                    rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s100' + str(3*s + j) + '.asc')
                 rows, cols = rawdata.shape
                 
                 axialSumRegions = []
