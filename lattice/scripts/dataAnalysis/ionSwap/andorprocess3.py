@@ -8,8 +8,8 @@ import peakdetect
 
 iterations = 5
 
-initialDarkIonPositions = []
-finalDarkIonPositions = []
+#initialDarkIonPositionsHistory = []
+#finalDarkIonPositionsHistory = []
 ionMovements = []
 
 typicalIonDiameter = 5 # compare sections of this size in the image
@@ -26,6 +26,7 @@ imagesWithIncorrectFinalDarkIonNumber = 0
 # loop through all the files
 for s in range(iterations):
     dataArray = []
+    print 'Iteration: ', s
     try:
         for j in np.arange(1,4):
             #j = 4
@@ -34,10 +35,9 @@ for s in range(iterations):
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\camera-test\s100' + str(3*s + j) + '.asc')
                 try:
-                    rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s1000' + str(3*s + j) + '.asc')
-                except IOError:
-                    print 'first pass didnt work'
-                    rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s100' + str(3*s + j) + '.asc')
+                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s100' + str(3*s + j) + '.asc')
+                except IOError: #only 9 of these
+                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060612\1\processed\1\s1000' + str(3*s + j) + '.asc')
                 rows, cols = rawdata.shape
                 
                 axialSumRegions = []
@@ -60,7 +60,7 @@ for s in range(iterations):
                     if axialSumRegions[i] > temp:
                         temp = axialSumRegions[i]
                         maxIndex = i
-                print 'Region picked with highest intensity: ', maxIndex        
+                print 'Image ' + str(j) + ' - Region picked with highest intensity: ', maxIndex        
         
                 # use this strip to create the 1-dimensional array of intensity sums
                 procdata = rawdata[:, (maxIndex*typicalIonDiameter):(maxIndex*typicalIonDiameter + typicalIonDiameter)]
@@ -109,16 +109,22 @@ for s in range(iterations):
                 print 'final dark peak positions: ', finalDarkPeakPositions
                
                 if (len(finalDarkPeakPositions) == len(initialDarkPeakPositions)):
+                    initialDarkIonPositions = []
                     for q in initialPeakPositions:
                         if (abs(q - initialDarkPeakPositions[0]) < peakVicinity):
                             initialDarkIonPosition = np.where(initialPeakPositions == q)[0][0]
                             initialDarkIonPositions.append(initialDarkIonPosition)
-                            break
+#                            initialDarkIonPositionsHistory.append(initialDarkIonPosition)
+                    print 'initial dark ion positions: ', initialDarkIonPositions
+                            #break
+                    finalDarkIonPositions = []
                     for q in initialPeakPositions:
                         if (abs(q - finalDarkPeakPositions[0]) < peakVicinity):
                             finalDarkIonPosition = np.where(initialPeakPositions == q)[0][0]
                             finalDarkIonPositions.append(finalDarkIonPosition)
-                            break
+#                            finalDarkIonPositionsHistory.append(finalDarkIonPosition)
+                            #break
+                    print 'final dark ion positions: ', finalDarkIonPositions
                     
                     ionMovements.append(abs(finalDarkIonPosition - initialDarkIonPosition))
                                         
