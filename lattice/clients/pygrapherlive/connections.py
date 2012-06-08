@@ -12,6 +12,10 @@ import gc
 MAXWINDOWS = 10
 GraphRefreshTime = .1; # s, how often the plot updates
 
+class COMMUNICATE(QtCore.QObject):
+    
+    connectionReady = QtCore.pyqtSignal()
+
 class CONNECTIONS(QtGui.QGraphicsObject):
     '''
     The CONNECTIONS serves as a mediator between the Dataset class and the GrapherWindow
@@ -64,21 +68,28 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.winDict = {}
         self.attemptLabRadConnect()               
         self.startTimer()
+        self.communicate = COMMUNICATE()
 
     def attemptLabRadConnect(self):
         from labrad.errors import LoginFailedError
-        deferred = self.connect()
+        deferred = self.connectLabRAD()
         def handleLabRadError(failure):
             if (failure.trap(ConnectionRefusedError)):
-                self.retryLabradConnectDialog = RetryConnectingDialog(self)
+                self.retryLabradConnectDialog = RetryConnectingDialog(self, 'LabRAD')
                 self.retryLabradConnectDialog.show()
         deferred.addErrback(handleLabRadError)
 
-#    def attemptDataVaultConnect(self):
-    
+    def attemptDataVaultConnect(self):
+        deferred = self.connectDataVault()
+        def handleDataVaultError(failure):
+            if (failure.trap(AttributeError)):
+                self.retryLabradConnectDialog = RetryConnectingDialog(self, 'DataVault')
+                self.retryLabradConnectDialog.show()
+        deferred.addErrback(handleDataVaultError)
+
     # connect to the data vault    
     @inlineCallbacks    
-    def connect(self):
+    def connectLabRAD(self):
         from labrad.wrappers import connectAsync
         from labrad.types import Error
         try: # if the connection failed and was retried, close the dialog
@@ -86,15 +97,24 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         except AttributeError:
             pass
         self.cxn = yield connectAsync()
-        try:
-            self.server = yield self.cxn.data_vault
-            yield self.setupListeners()
-            context = yield self.cxn.context() # create a new context
-            self.introWindow = FirstWindow(self, context, self.reactor)
-            self.introWindow.show()
-            print 'Connection established: now listening dataset.'
+        self.attemptDataVaultConnect()
+
+    @inlineCallbacks
+    def connectDataVault(self):
+        try: # if the connection failed and was retried, close the dialog
+            self.retryLabradConnectDialog.close()
         except AttributeError:
-            print 'no data vault'
+            pass
+        self.server = yield self.cxn.data_vault
+        yield self.setupListeners()
+        context = yield self.cxn.context() # create a new context
+        self.introWindow = FirstWindow(self, context, self.reactor)
+        self.introWindow.show()
+        print 'Connection established: now listening dataset.'
+        self.communicate.connectionReady.emit()
+        
+        
+        
     # set up dataset listener    
     @inlineCallbacks
     def setupListeners(self):               
@@ -297,9 +317,10 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         gc.collect()
                 
 class RetryConnectingDialog(QtGui.QDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, destination):
         QtGui.QDialog.__init__(self)
         self.parent = parent
+        self.destination = destination
         self.setupUi(self)
         
     def setupUi(self, Dialog):
@@ -312,10 +333,13 @@ class RetryConnectingDialog(QtGui.QDialog):
         self.declineButton = QtGui.QPushButton(Dialog)
         self.declineButton.setText('Exit')
         self.gridLayout.addWidget(self.declineButton,1,1)
-        self.label = QtGui.QLabel('Could not connect to Labrad!')
+        self.label = QtGui.QLabel('Could not connect to ' + str(self.destination) + '!')
         self.font = QtGui.QFont()
         self.font.setPointSize(20)
         self.label.setFont(self.font)
         self.gridLayout.addWidget(self.label,0,0)
-        self.confirmButton.clicked.connect(self.parent.attemptLabRadConnect)
+        if (self.destination == 'LabRAD'):
+            self.confirmButton.clicked.connect(self.parent.attemptLabRadConnect)
+        elif (self.destination == 'DataVault'):
+            self.confirmButton.clicked.connect(self.parent.attemptDataVaultConnect)
         self.declineButton.clicked.connect(self.parent.reactor.stop)

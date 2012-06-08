@@ -1,4 +1,7 @@
 from PyQt4 import QtGui, QtCore
+import time
+from twisted.internet.threads import deferToThread
+from twisted.internet.defer import Deferred, inlineCallbacks, returnValue
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -8,23 +11,35 @@ class LATTICE_GUI(QtGui.QMainWindow):
         voltageControlTab = self.makeVoltageWidget(reactor)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor)
         translationStageWidget = self.makeTranslationStageWidget(reactor)
-        grapher = self.makeGrapherWidget(reactor)
-        tabWidget = QtGui.QTabWidget()
-        tabWidget.addTab(voltageControlTab,'&Trap Voltages')
-        tabWidget.addTab(lightControlTab,'&LaserRoom')
-        tabWidget.addTab(tableOpticsWidget,'&Optics')
-        tabWidget.addTab(translationStageWidget,'&Translation Stages')
+        self.tabWidget = QtGui.QTabWidget()
+        self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
+        self.tabWidget.addTab(lightControlTab,'&LaserRoom')
+        self.tabWidget.addTab(tableOpticsWidget,'&Optics')
+        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         #tabWidget.addTab(grapher, '&Grapher')
-        self.setCentralWidget(tabWidget)
+        self.createGrapherTab()
+        self.setCentralWidget(self.tabWidget)
     
+    @inlineCallbacks
+    def createGrapherTab(self):
+        grapher = yield self.makeGrapherWidget(reactor)
+        self.tabWidget.addTab(grapher, '&Grapher')
+    
+    @inlineCallbacks
     def makeGrapherWidget(self, reactor):
-        pass
-#        widget = QtGui.QWidget()
-#        from pygrapherlive.connections import CONNECTIONS
-#        vboxlayout = QtGui.QVBoxLayout()
-#        vboxlayout.addWidget(CONNECTIONS(reactor))
-#        widget.setLayout(vboxlayout)
-#        return widget
+        widget = QtGui.QWidget()
+        from pygrapherlive.connections import CONNECTIONS
+        from pygrapherlive.connections import COMMUNICATE
+        vboxlayout = QtGui.QVBoxLayout()
+        Connections = CONNECTIONS(reactor)
+        @inlineCallbacks
+        def widgetReady():
+            window = yield Connections.introWindow
+            vboxlayout.addWidget(window)
+            widget.setLayout(vboxlayout)
+        #yield deferToThread(time.sleep, 3)
+        yield Connections.communicate.connectionReady.connect(widgetReady)
+        returnValue(widget)
 
     def makeTranslationStageWidget(self, reactor):
         widget = QtGui.QWidget()
