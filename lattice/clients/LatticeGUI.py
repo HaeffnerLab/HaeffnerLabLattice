@@ -16,7 +16,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
         self.tabWidget.addTab(tableOpticsWidget,'&Optics')
         self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
-        #tabWidget.addTab(grapher, '&Grapher')
         self.createGrapherTab()
         self.setCentralWidget(self.tabWidget)
     
@@ -65,7 +64,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
         from COMPENSATION_CONTROL import COMPENSATION_CONTROL as compensationWidget
         from DCONRF_CONTROL import DCONRF_CONTROL as dconrfWidget
-        from TRAPDRIVE_MODULATION_CONTROL import TRAPDRIVE_MODULATION_CONTROL as trapModWidget
+        #from TRAPDRIVE_MODULATION_CONTROL import TRAPDRIVE_MODULATION_CONTROL as trapModWidget
         from COMPENSATION_LINESCAN import COMPENSATION_LINESCAN_CONTROL as compLineWidget
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(endcapWidget(reactor),0,0,1,2)
@@ -73,7 +72,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout.addWidget(compLineWidget(reactor),2,1)
         gridLayout.addWidget(trapDriveWidget(reactor),3,0)
         gridLayout.addWidget(dconrfWidget(reactor),3,1)
-        gridLayout.addWidget(trapModWidget(reactor),4,0)
+        #gridLayout.addWidget(trapModWidget(reactor),4,0)
         widget.setLayout(gridLayout)
         return widget
     

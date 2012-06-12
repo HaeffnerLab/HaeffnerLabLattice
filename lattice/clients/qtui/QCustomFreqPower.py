@@ -1,17 +1,48 @@
 import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore,uic
-import os
+from PyQt4 import QtGui, QtCore
 
-class QCustomFreqPower(QtGui.QWidget):
-    def __init__(self, title, parent=None):
+class QCustomFreqPower(QtGui.QFrame):
+    def __init__(self, title, switchable = True, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        basepath =  os.path.dirname(__file__)
-        path = os.path.join(basepath, 'powerfreqspin.ui')
-        uic.loadUi(path,self)
-        self.title.setText(title)
-        self.buttonSwitch.clicked.connect(self.setText)
-        self.buttonSwitch.toggled.connect(self.setText)
+        self.setFrameStyle(0x0001 | 0x0030)
+        self.makeLayout(title, switchable)
+        self.connectSignals(switchable)
+    
+    def makeLayout(self, title, switchable):
+        layout = QtGui.QGridLayout()
+        #labels
+        title = QtGui.QLabel(title)
+        title.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        freqlabel = QtGui.QLabel('Frequency (MHz)')
+        powerlabel = QtGui.QLabel('Power (dBM)')
+        layout.addWidget(title,     0, 0, 1, 3)
+        layout.addWidget(freqlabel, 1, 0, 1, 1)
+        layout.addWidget(powerlabel, 1, 1, 1, 1)
+        #editable fields
+        self.spinFreq = QtGui.QDoubleSpinBox()
+        self.spinFreq.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        self.spinFreq.setDecimals(3)
+        self.spinFreq.setSingleStep(0.1)
+        self.spinFreq.setRange(10.0,250.0)
+        self.spinPower = QtGui.QDoubleSpinBox()
+        self.spinPower.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        self.spinPower.setDecimals(1)
+        self.spinPower.setSingleStep(0.1)
+        self.spinPower.setRange(-145.0,-13.0)
+        layout.addWidget(self.spinFreq,     2, 0)
+        layout.addWidget(self.spinPower,    2, 1)
+        if switchable:
+            self.buttonSwitch = QtGui.QPushButton('On/Off')
+            self.buttonSwitch.setCheckable(True)
+            self.buttonSwitch.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=10))
+            layout.addWidget(self.buttonSwitch, 2, 2)
+        self.setLayout(layout)
+        
+    def connectSignals(self, switchable):
+        if switchable:
+            self.buttonSwitch.clicked.connect(self.setText)
+            self.buttonSwitch.toggled.connect(self.setText)
     
     def setPowerRange(self, powerrange):
         self.spinPower.setRange(*powerrange)

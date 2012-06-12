@@ -7,7 +7,7 @@ SIGNAL_ID2 = 187572
 
 class TRAPDRIVE_CONTROL(QCustomFreqPower):
     def __init__(self,reactor, parent=None):
-        super(TRAPDRIVE_CONTROL, self).__init__('Trap Drive', parent)
+        super(TRAPDRIVE_CONTROL, self).__init__('Trap Drive', True, parent)
         self.reactor = reactor
         self.connect()
         
