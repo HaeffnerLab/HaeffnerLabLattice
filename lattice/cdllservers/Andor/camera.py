@@ -85,14 +85,20 @@ def snap(name, iterator):
 def snap_continuous():
     global cam
     
+    width = cam.width
+    height = cam.height
+    
     print "Ready for Acquisition..."
     cam.StartAcquisition()
     
     cam.dll.WaitForAcquisition()
     data = []
     cam.GetMostRecentImage(data)
-    newdata = np.array(data)
-    newdata = np.reshape(newdata, (cam.width, -1))
+    #newdata = np.array(cam.imageArray[0:3000])
+    #print newdata.shape
+    #newdata = np.reshape(newdata, (height, width))
+    newdata = np.reshape(cam.imageArray, (height, width))
+ 
   
     fig = plt.figure()
         
@@ -102,9 +108,10 @@ def snap_continuous():
         cam.dll.WaitForAcquisition()
         data = []
         cam.GetMostRecentImage(data)
-        newdata = np.array(cam.imageArray[0:3000])
-        print newdata.shape
-        newdata = np.reshape(newdata, (30, 100))
+        #newdata = np.array(cam.imageArray[0:3000])
+        #print newdata.shape
+        #newdata = np.reshape(newdata, (height, width))
+        newdata = np.reshape(cam.imageArray, (height, width))
         im.set_array(newdata)
         return im,
 
