@@ -19,6 +19,7 @@ import time
 from PIL import Image
 import sys
 import numpy as np
+import time
 
 """Andor class which is meant to provide the Python version of the same
    functions that are defined in the Andor's SDK. Since Python does not
@@ -147,17 +148,21 @@ class Andor:
         return ERROR_CODE[error]
     
     def GetMostRecentImage(self, imageArray):
+        start = time.clock()
         dim = self.width * self.height
         cimageArray = c_int * dim
         cimage = cimageArray()
         error = self.dll.GetMostRecentImage(pointer(cimage),dim)
         self.verbose(ERROR_CODE[error], sys._getframe().f_code.co_name)
 
-        for i in range(len(cimage)):
-            imageArray.append(cimage[i])
+        #for i in range(len(cimage)):
+        #    imageArray.append(cimage[i])
 
-        self.imageArray = imageArray[:]
+        #self.imageArray = imageArray[:]
+        self.imageArray = cimage[:]
         print 'data acquired'
+        stop = time.clock()
+        print 'Time to get most recent image: ', (stop - start)
         self.verbose(ERROR_CODE[error], sys._getframe().f_code.co_name)
         return ERROR_CODE[error]        
 

@@ -5,8 +5,8 @@ import signal
 from optparse import OptionParser
 import menusystem
 import numpy as np
-#import matplotlib
-#matplotlib.use('Qt4Agg')
+import matplotlib
+matplotlib.use('Qt4Agg')
 from pylab import *
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation
@@ -102,8 +102,7 @@ def snap_continuous():
   
     fig = plt.figure()
         
-    im = plt.imshow(newdata, cmap=plt.get_cmap('jet'))
-    
+    im = plt.matshow(newdata)#, cmap=plt.get_cmap('jet'))
     def updatefig(*args):
         cam.dll.WaitForAcquisition()
         data = []
