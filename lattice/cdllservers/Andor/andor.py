@@ -132,10 +132,12 @@ class Andor:
         self.verbose(ERROR_CODE[error], sys._getframe().f_code.co_name)
         return ERROR_CODE[error]
 
-    def GetAcquiredData(self,imageArray):
-        dim = self.width * self.height
+    def GetAcquiredData(self,imageArray,numKin=1):
+        
+        dim = self.width * self.height * numKin
         cimageArray = c_int * dim
         cimage = cimageArray()
+        self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         self.verbose(ERROR_CODE[error], sys._getframe().f_code.co_name)
 
