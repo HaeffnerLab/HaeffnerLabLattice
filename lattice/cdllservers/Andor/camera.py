@@ -16,7 +16,7 @@ import matplotlib.animation as animation
 #############################
 
 parser = OptionParser()
-parser.add_option("-T", "--temperature", dest="Tset", help="setpoint temperature in C [-95 to +25]", default=-70, type="int")
+parser.add_option("-T", "--temperature", dest="Tset", help="setpoint temperature in C [-95 to +25]", default=-20, type="int")
 parser.add_option("-G", "--gain", dest="EMCCDGain", help="EMCCD gain [2 to 300]", default=200, type="int")
 parser.add_option("-p", "--preamp-gain", dest="PreAmpGain", help="preamp gain [0 to 2]", default=0, type="int")
 parser.add_option("-t", "--exposure-time", dest="ExposureTime", help="exposure time in seconds", default=0.1, type="float")
@@ -76,10 +76,10 @@ def snap(name, iterator):
     #cam.SaveAsBmpNormalised("%s%03g.bmp" %(name, iterator))
     #cam.SaveAsBmp("test.bmp")
     print "captured %s%03g" %(name, iterator)
-    newdata = np.array(cam.imageArray)
-    newdata = np.reshape(newdata, (cam.width, -1))
-    matshow(newdata)
-    show()
+#    newdata = np.array(cam.imageArray)
+#    newdata = np.reshape(newdata, (cam.width, -1))
+#    matshow(newdata)
+#    show()
     cam.SaveAsTxt("%s%03g.txt" %(name, iterator))   
 
 def snap_continuous():
@@ -118,16 +118,24 @@ def snap_continuous():
     plt.show()    
     
     cam.AbortAcquisition()
-#    for i in range(20):
-#        cam.dll.WaitForAcquisition()
-#        data = []
-#        cam.GetMostRecentImage(data)
-##        newdata = np.array(data)
-##        newdata = np.reshape(newdata, (cam.width, -1))
-##        matshow(newdata)
-##        show()
-##        time.sleep(1)
-#        print data[0:10]
+
+def snap_kinetic_internal(name, iterator):
+    global cam
+    
+    numKin = int(raw_input('Enter number of snapshots: '))    
+    cam.SetNumberKinetics(numKin)
+    
+    kinCycleTime = float(raw_input('Enter kinetic cycle time: '))
+    cam.SetKineticCycleTime(kinCycleTime)    
+    
+    cam.StartAcquisition()
+    cam.dll.WaitForAcquisition()
+    
+    data = []
+    cam.GetAcquiredData(data, numKin)    
+
+    print "captured %s%03g" %(name, iterator)
+    cam.SaveAsTxt("%s%03g.txt" %(name, iterator))
         
 def menu_status():
     global menu
@@ -199,9 +207,21 @@ def menu_capture_video():
     global cam
     
     cam.SetTriggerMode(0)
-    cam.SetAcquisitionMode(5)    
+    cam.SetAcquisitionMode(5) 
     
     snap_continuous()
+    
+    return False
+
+def menu_start_kinetic_internal():
+    global cam
+    global filename
+    global iteration
+        
+    cam.SetTriggerMode(0)
+    cam.SetAcquisitionMode(3)
+    
+    snap_kinetic_internal(filename, iteration)
     
     return False
 
@@ -260,8 +280,9 @@ menu.add_entry('5', 'set the exposure time', menu_set_exposure)
 menu.add_entry('6', 'capture a single snapshot [Soft Trig]', menu_capture_snapshot)
 menu.add_entry('7', 'turn off the cooler', menu_turn_off_cooler)
 menu.add_entry('8', 'capture in video mode', menu_capture_video)
+menu.add_entry('9', 'start a kinetic series [Soft Trig]', menu_start_kinetic_internal)
 menu.add_seperator()
-menu.add_entry('9', 'quit', menu_quit)
+menu.add_entry('q', 'quit', menu_quit)
 
 iteration = 0
 
