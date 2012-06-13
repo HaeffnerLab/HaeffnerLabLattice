@@ -41,8 +41,6 @@ def initialize():
     pulser.program_sequence()
     #make sure 110 dpass is on
     dpass.select('110DP')
-####    dpass.output(True)
-####    axial.output(True)
     #set logic
     pulser.switch_auto('axial',  True) #high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
@@ -81,11 +79,11 @@ def process():
     dp = dataProcessor.dataProcessor(params)
     dp.addData(data)
     #get information from processor and add it to data vault
-    pwr,fluor = dp.process()
-    dv.new('scan',[('Power', 'dBm')],[('Counts','Counts/sec','Counts/sec')] )
+    freq,fluor = dp.process()
+    dv.new('scan',[('Freq', 'MHz')],[('Counts','Counts/sec','Counts/sec')] )
     dvParameters.saveParameters(dv, params)
     dv.add_parameter('plotLive',True)
-    dv.add(np.vstack((pwr,fluor)).transpose())
+    dv.add(np.vstack((freq,fluor)).transpose())
     dp.makePlot()
     
 initialize()
