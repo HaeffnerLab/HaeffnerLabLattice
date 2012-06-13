@@ -80,13 +80,15 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget = QtGui.QWidget()
         from PMT_CONTROL import pmtWidget
         from SWITCH_CONTROL import switchWidget
-        from INTENSITY_CONTROL import INTENSITY_CONTROL as intensityWidget
+        from DDS_CONTROL import RS_CONTROL_LAB, RS_CONTROL_LOCAL, DDS_CONTROL
         #from doublePassWidget import doublePassWidget
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(switchWidget(reactor),0,0)
         gridLayout.addWidget(pmtWidget(reactor),0,1)
-        gridLayout.addWidget(intensityWidget(reactor),1,0,1,2)
         #gridLayout.addWidget(doublePassWidget(reactor),2,0,1,2)
+        gridLayout.addWidget(DDS_CONTROL(reactor),1,0)
+        gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
+        gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
         widget.setLayout(gridLayout)
         return widget
 

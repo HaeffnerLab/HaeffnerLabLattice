@@ -72,6 +72,18 @@ class DDS(LabradServer):
             sett = self._valToInt(channel, freq, ampl)
             sequence.addDDS(hardwareAddr, start, sett)
     
+    @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
+    def getDDSAmplRange(self, c):
+        name = c.get('ddschan')
+        if name is None: raise Exception ("Channel not provided and not selected")
+        return self.ddsDict[name].allowedamplrange
+        
+    @setting(47, 'Get DDS Frequency Range', returns = '(vv)')
+    def getDDSFreqRange(self, c):
+        name = c.get('ddschan')
+        if name is None: raise Exception ("Channel not provided and not selected")
+        return self.ddsDict[name].allowedfreqrange
+    
     def _checkRange(self, t, name, val):
         if t == 'amplitude':
             r = self.ddsDict[name].allowedamplrange
