@@ -17,22 +17,24 @@ class QCustomFreqPower(QtGui.QFrame):
         freqlabel = QtGui.QLabel('Frequency (MHz)')
         powerlabel = QtGui.QLabel('Power (dBM)')
         if switchable:
-            layout.addWidget(title,     0, 0, 1, 3)
+            layout.addWidget(title,0, 0, 1, 3)
         else:
-            layout.addWidget(title,     0, 0, 1, 2)
-        layout.addWidget(freqlabel, 1, 0, 1, 1)
-        layout.addWidget(powerlabel, 1, 1, 1, 1)
+            layout.addWidget(title,0, 0, 1, 2)
+        layout.addWidget(freqlabel,1, 0, 1, 1)
+        layout.addWidget(powerlabel,1, 1, 1, 1)
         #editable fields
         self.spinFreq = QtGui.QDoubleSpinBox()
         self.spinFreq.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
         self.spinFreq.setDecimals(3)
         self.spinFreq.setSingleStep(0.1)
         self.spinFreq.setRange(10.0,250.0)
+        self.spinFreq.setKeyboardTracking(False)
         self.spinPower = QtGui.QDoubleSpinBox()
         self.spinPower.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
         self.spinPower.setDecimals(1)
         self.spinPower.setSingleStep(0.1)
         self.spinPower.setRange(-145.0, 30.0)
+        self.spinPower.setKeyboardTracking(False)
         layout.addWidget(self.spinFreq,     2, 0)
         layout.addWidget(self.spinPower,    2, 1)
         if switchable:

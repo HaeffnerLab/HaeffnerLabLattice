@@ -8,19 +8,17 @@ from PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 
-minfreq = 210.0
-maxfreq = 240.0
-steps = 60
+minfreq = 190.0
+maxfreq = 250.0
+steps = 20
 freqs = np.linspace(minfreq, maxfreq, steps)
 #connect and define servers we'll be using
 cxn = labrad.connect()
-cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
 dv = cxn.data_vault
-dpass = cxn.double_pass
-axial = cxnlab.rohdeschwarz_server#axial = cxn.lattice_pc_hp_server
-axial.select_device(0)#don't do this for axial
-initpower = axial.amplitude()
-print 'initial power',initpower
+axial = cxn.rohdeschwarz_server
+axial.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543')
+initfreq = axial.frequency()
+print 'initial power',initfreq
 pulser = cxn.pulser
 experimentName = 'pulsedScanAxialPower'
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
@@ -39,8 +37,6 @@ def initialize():
     seq.setVariables(**params)
     seq.defineSequence()
     pulser.program_sequence()
-    #make sure 110 dpass is on
-    dpass.select('110DP')
     #set logic
     pulser.switch_auto('axial',  True) #high TTL corresponds to light ON
     pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
@@ -55,6 +51,7 @@ def initialize():
     
 def sequence():
     for i,freq in enumerate(freqs):
+        print freq
         axial.frequency(freq)
         pulser.reset_timetags()
         pulser.start_single()
@@ -62,7 +59,7 @@ def sequence():
         pulser.stop_sequence()
         timetags = pulser.get_timetags().asarray
         print 'got {0} timetags on iteration {1}'.format(timetags.size, i + 1)
-        print 'power {}'.format(pwr)
+        print 'freq {}'.format(freq)
         frqs = np.ones_like(timetags) * freq
         dv.add(np.vstack((frqs,timetags)).transpose())
         
@@ -70,7 +67,7 @@ def finalize():
     for name in ['axial', '110DP']:
         pulser.switch_manual(name)
     pulser.switch_manual('crystallization',  True)
-    axial.amplitude(initpower)
+    axial.frequency(initfreq)
 
 def process():
     dv.open(1)

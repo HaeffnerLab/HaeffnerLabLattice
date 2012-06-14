@@ -6,16 +6,18 @@ from scipy.cluster.vq import whiten, kmeans, vq
 
 class histogramTimetags():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''
-    def __init__(self, start, end, bins = 50, title = None, threshold = None ):
+    def __init__(self, start, end, bins = 50, title = None, threshold = None, readout_time = None ):
         self.start = start
         self.end = end
         self.bins = bins
         self.threshold = threshold
         self.title = title
+        self.readout_time = readout_time
         self.counts = []
 
     def addTrace(self, timetags):
         counts = np.count_nonzero((self.start <= timetags) * (timetags <= self.end))
+        counts = counts / float(self.readout_time) #normalize
         self.counts.append(counts)
         
     def processTraces(self):
@@ -41,7 +43,7 @@ class histogramTimetags():
 
     def analyzeThreshold(self, threshold):
         counts = np.array(self.counts)
-        below = np.count_nonzero(counts < threshold) / float(counts.size)
+        below = np.count_nonzero(counts <= threshold) / float(counts.size)
         above = np.count_nonzero(counts > threshold) / float(counts.size)
         print '{0}% of samples are below {1} '.format(100 * below, threshold)
         print '{0}% of samples are above {1} '.format(100 * above, threshold)
@@ -99,7 +101,7 @@ class data_process():
             startReadout =  (axial_heat + initial_cooling + heat_delay + axial_heat + readout_delay ) 
             stopReadout = startReadout + readout_time
             threshold = self.params.get('threshold') 
-            self.process.append(histogramTimetags(startReadout, stopReadout, title = self.dataset, threshold = threshold))
+            self.process.append(histogramTimetags(startReadout, stopReadout, title = self.dataset, threshold = threshold, readout_time = readout_time))
         
     def loadParameters(self):
         self.dv.open(1)    

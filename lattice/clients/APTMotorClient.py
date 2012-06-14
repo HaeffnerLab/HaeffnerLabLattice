@@ -19,10 +19,11 @@ class DevicePanel(QtGui.QWidget):
            
     def setupUI(self):
         # Labels
-        position = QtGui.QLabel('Position (mm)')
+        position = QtGui.QLabel()
+        position.setText(position.tr('Position (\265m)'))
         deviceName = QtGui.QLabel(self.deviceName)
-        stepSize = QtGui.QLabel('Step Size (mm)')
-
+        deviceName.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        stepSize = QtGui.QLabel('Step Size (\265m)')
         # Buttons
         
         setVelParamsButton = QtGui.QPushButton("Parameters", self)
@@ -39,25 +40,22 @@ class DevicePanel(QtGui.QWidget):
         stepRightButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         stepRightButton.clicked.connect(self.moveRelativeRightSignal)
         stepRightButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-# moveAbsoluteButton = QtGui.QPushButton("Move Absolute", self)
-# moveAbsoluteButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-# moveAbsoluteButton.clicked.connect(self.moveAbsoluteSignal)
-# moveAbsoluteButton.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
+               
         self.positionDoubleSpinBox = QtGui.QDoubleSpinBox()
         self.connect(self.positionDoubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.moveAbsoluteSignal)
-# self.positionDoubleSpinBox.valueChanged[int].connect(self.moveAbsoluteSignal(1))
-        self.positionDoubleSpinBox.setDecimals(4)
-        self.positionDoubleSpinBox.setSingleStep(.001)
-        self.positionDoubleSpinBox.setMinimum(-6.5)####
-        self.positionDoubleSpinBox.setMaximum(6.5)
+        
+        self.positionDoubleSpinBox.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        self.positionDoubleSpinBox.setDecimals(1)
+        self.positionDoubleSpinBox.setSingleStep(1)
+        self.positionDoubleSpinBox.setMinimum(-6500)
+        self.positionDoubleSpinBox.setMaximum(6500)
         self.positionDoubleSpinBox.setKeyboardTracking(False)
         self.positionDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         self.stepSizeDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.stepSizeDoubleSpinBox.setDecimals(4)
-        self.stepSizeDoubleSpinBox.setSingleStep(.001)
+        self.stepSizeDoubleSpinBox.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+        self.stepSizeDoubleSpinBox.setDecimals(1)
+        self.stepSizeDoubleSpinBox.setSingleStep(1)
         self.stepSizeDoubleSpinBox.setMinimum(0)
         self.stepSizeDoubleSpinBox.setKeyboardTracking(False)
         self.stepSizeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -69,7 +67,6 @@ class DevicePanel(QtGui.QWidget):
 
         self.grid.addWidget(deviceName, 1, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(setVelParamsButton, 4, 2, QtCore.Qt.AlignCenter)
-# self.grid.addWidget(moveAbsoluteButton, 4, 0, QtCore.Qt.AlignCenter)
 
         self.grid.addWidget(self.positionDoubleSpinBox, 4, 1, QtCore.Qt.AlignCenter)
         self.grid.addWidget(position, 4, 0, QtCore.Qt.AlignCenter)
@@ -86,8 +83,8 @@ class DevicePanel(QtGui.QWidget):
     @inlineCallbacks
     def getPositionLimits(self):
         stageAxisInformation = yield self.parent.server.get_stage_axis_information(context = self.context)
-        self.minimumPosition = stageAxisInformation[0]
-        self.maximumPosition = stageAxisInformation[1]
+        self.minimumPosition = stageAxisInformation[0] * 1000
+        self.maximumPosition = stageAxisInformation[1] * 1000
 
     @inlineCallbacks
     def setSerialNumber(self):
@@ -115,8 +112,10 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def moveRelativeLeftSignal(self, evt):
-        if ((self.positionDoubleSpinBox.value() - self.stepSizeDoubleSpinBox.value()) > self.minimumPosition):
-            ok = yield self.parent.server.move_relative(-self.stepSizeDoubleSpinBox.value(), context = self.context)
+        newvalmm = (self.positionDoubleSpinBox.value() - self.stepSizeDoubleSpinBox.value()) / 1000.0
+        if (newvalmm > self.minimumPosition):
+            relmm = self.stepSizeDoubleSpinBox.value() / 1000.0
+            ok = yield self.parent.server.move_relative(-relmm, context = self.context)
             if (ok == True):
                 self.getPositionSignal(BLOCKSIGNAL)
         else:
@@ -124,8 +123,10 @@ class DevicePanel(QtGui.QWidget):
 
     @inlineCallbacks
     def moveRelativeRightSignal(self, evt):
-        if ((self.positionDoubleSpinBox.value() + self.stepSizeDoubleSpinBox.value()) < self.maximumPosition):
-            ok = yield self.parent.server.move_relative(self.stepSizeDoubleSpinBox.value(), context = self.context)
+        newvalmm = (self.positionDoubleSpinBox.value() + self.stepSizeDoubleSpinBox.value()) / 1000.0
+        if (newvalmm < self.maximumPosition):
+            relmm = self.stepSizeDoubleSpinBox.value() / 1000.0
+            ok = yield self.parent.server.move_relative(relmm, context = self.context)
             if (ok == True):
                 self.getPositionSignal(BLOCKSIGNAL)
         else:
@@ -134,7 +135,8 @@ class DevicePanel(QtGui.QWidget):
     @inlineCallbacks
     def moveAbsoluteSignal(self, evt):
         self.positionDoubleSpinBox.blockSignals(True)
-        ok = yield self.parent.server.move_absolute(self.positionDoubleSpinBox.value(), context = self.context)
+        valmm = self.positionDoubleSpinBox.value() / 1000.0
+        ok = yield self.parent.server.move_absolute(valmm, context = self.context)
         if (ok == True):
             self.getPositionSignal(BLOCKSIGNAL)
 
@@ -155,7 +157,7 @@ class DevicePanel(QtGui.QWidget):
         if (evt == BLOCKSIGNAL):
             self.positionDoubleSpinBox.blockSignals(True)
         position = yield self.parent.server.get_position(context = self.context)
-        self.positionDoubleSpinBox.setValue(position)
+        self.positionDoubleSpinBox.setValue(position * 1000)
         self.positionDoubleSpinBox.blockSignals(False)
 
     @inlineCallbacks
