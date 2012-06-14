@@ -17,7 +17,7 @@ import matplotlib.animation as animation
 
 parser = OptionParser()
 parser.add_option("-T", "--temperature", dest="Tset", help="setpoint temperature in C [-95 to +25]", default=-20, type="int")
-parser.add_option("-G", "--gain", dest="EMCCDGain", help="EMCCD gain [2 to 300]", default=200, type="int")
+parser.add_option("-G", "--gain", dest="EMCCDGain", help="EMCCD gain [2 to 300]", default=255, type="int")
 parser.add_option("-p", "--preamp-gain", dest="PreAmpGain", help="preamp gain [0 to 2]", default=0, type="int")
 parser.add_option("-t", "--exposure-time", dest="ExposureTime", help="exposure time in seconds", default=0.1, type="float")
 parser.add_option("--trigger-mode", dest="TriggerMode", help="trigger mode (0: int, 1: ext, 7: bulb, 10: soft)", default=7, type="int")

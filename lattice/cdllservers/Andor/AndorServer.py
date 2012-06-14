@@ -55,7 +55,7 @@ class Andor:
 #        self.verticalStart     = 1
 #        self.verticalEnd       = self.height
         self.imageRegion        = [1, 1, 1, self.width, 1, self.height]
-        self.imageArray         = np.zeros((self.height * self.width))
+        #self.imageArray         = np.zeros((self.height * self.width))
         
 
     def __del__(self):
@@ -135,6 +135,7 @@ class Andor:
         return ERROR_CODE[error]
     
     def GetMostRecentImage(self):
+        self.dll.WaitForAcquisition()
         dim = self.width * self.height
         cimageArray = c_int * dim
         cimage = cimageArray()
@@ -686,22 +687,22 @@ class AndorServer(LabradServer):
         returnValue(error)        
     
     @setting(25, "Get Most Recent Image", returns = '*i')
-    def getMostRecentImage(self):
+    def getMostRecentImage(self, c):
         """Gets Most Recent Image"""
-        error = yield deferToThread(self.camera.GetMostRecentImage())
+        error = yield deferToThread(self.camera.GetMostRecentImage)
         if (error == 'DRV_SUCCESS'):
             returnValue(self.camera.imageArray)
         else:
             raise Exception(error)
         
     @setting(26, "Wait For Acquisition", returns = 's')
-    def waitForAcquisition(self):
+    def waitForAcquisition(self, c):
         error = yield deferToThread(self.camera.WaitForAcquisition)
-        returnValue(ERROR_CODE[error])
+        returnValue(error)
 
     @setting(27, "Get Acquired Data", numKin = 'i', returns = '*i')
-    def getAcquiredData(self, numKin):
-        """Gets Most Recent Image"""
+    def getAcquiredData(self, c, numKin=1):
+        """Gets Most Recent Scan"""
         error = yield deferToThread(self.camera.GetAcquiredData, numKin)
         if (error == 'DRV_SUCCESS'):
             returnValue(self.camera.imageArray)
@@ -709,19 +710,24 @@ class AndorServer(LabradServer):
             raise Exception(error)
 
     @setting(28, "Save As Text", path = 's', returns = '')
-    def saveAsText(self, path):
+    def saveAsText(self, c, path):
         """Saves Current Image As A Text File"""
         error = yield deferToThread(self.camera.SaveAsTxt(path)) 
+        
+    @setting(29, "Start Acquisition", returns = 's')
+    def startAcquisition(self, c):
+        error = yield deferToThread(self.camera.StartAcquisition)
+        returnValue(error)
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):
         error = yield deferToThread(self.camera.AbortAcquisition)
-        returnValue(ERROR_CODE[error])
+        returnValue(error)
 
     @setting(99, "Shutdown", returns = 's')
     def shutdown(self, c):
         error = yield deferToThread(self.camera.ShutDown)
-        returnValue(ERROR_CODE[error])
+        returnValue(error)
     
     def stopServer(self):  
         """Shuts down camera before closing"""
