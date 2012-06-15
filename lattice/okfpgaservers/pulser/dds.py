@@ -117,12 +117,17 @@ class DDS(LabradServer):
             self._programDDS(buf)
             
     def _setParameters(self, chan, freq, ampl):
+        import time
+        #####
         self._resetAllDDS()
         addr = self.ddsDict[chan].channelnumber
-        self._setDDSchannel(addr)
+        print 'setting chan', addr
+        self._setDDSchannel(addr)  
         num = self._valToInt(chan, freq, ampl)
+        print num
         buf = self._intToBuf(num)
         buf = buf + '\x00\x00' #adding termination
+        print [buf]
         self._programDDS(buf)
     
     def _addDDSInitial(self, seq):

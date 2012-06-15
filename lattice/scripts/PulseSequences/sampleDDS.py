@@ -8,16 +8,27 @@ class sampleDDS(Sequence):
     requiredVars = {
                     }
     
+
     def defineSequence(self):
         pulser = self.pulser
         p = self.parameters
-        pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , -3.0)])
-        pulser.add_dds_pulses('110DP', [(40e-9, 110.0 , -63.0)])
-        pulser.add_dds_pulses('866DP', [(1.1, 80.0 , -63.0)])
-        pulser.add_dds_pulses('110DP', [(1.1, 110.0 , -3.0)])
-        pulser.add_dds_pulses('866DP', [(2.1, 80.0 , -3.0)])
-        pulser.add_dds_pulses('110DP', [(2.1, 110.0 , -63.0)])
-        pulser.extend_sequence_length(3.1)
+        pulser.add_dds_pulses('866DP', [(100e-9, 65.0 , -33.0)])
+        pulser.add_dds_pulses('866DP', [(.1 + 100e-9, 70.0 , -33.0)])
+        pulser.add_dds_pulses('866DP', [(.2 + 100e-9, 75.0 , -33.0)])
+        pulser.add_dds_pulses('866DP', [(.3 + 100e-9, 80.0 , -33.0)])
+        pulser.add_dds_pulses('axial', [(100e-9, 95.0 , -3.0)])
+        pulser.add_dds_pulses('axial', [(.1 + 100e-9, 90.0 , -3.0)])
+        pulser.add_dds_pulses('axial', [(.2 + 100e-9, 85.0 , -3.0)])
+        pulser.add_dds_pulses('854DP', [(100e-9, 95.0 + 5, -13.0)])
+        pulser.add_dds_pulses('854DP', [(.1 + 100e-9, 90.0 + 5 , -13.0)])
+        pulser.add_dds_pulses('854DP', [(.2 + 100e-9, 85.0 + 5 , -13.0)])
+        pulser.add_dds_pulses('110DP', [(100e-9, 60.0 , -23.0)])
+        pulser.add_dds_pulses('110DP', [(.1 + 100e-9, 65.0 , -23.0)])
+        pulser.add_dds_pulses('110DP', [(.2 + 100e-9, 70.0 , -23.0)])
+        pulser.add_dds_pulses('110DP', [(.3 + 100e-9, 75.0 , -23.0)])
+        
+        
+        pulser.extend_sequence_length(0.5)
             
 if __name__ == '__main__':
     import labrad
@@ -27,10 +38,10 @@ if __name__ == '__main__':
     pulser.new_sequence()
     seq.defineSequence()
     pulser.program_sequence()
-    pulser.start_single()
-    #pulser.start_number(100)
+#    pulser.start_single()
+    pulser.start_number(100)
     #time.sleep(2)
-    pulser.wait_sequence_done(10.0)
+    pulser.wait_sequence_done(1000.0)
     #print 'completed', pulser.repeatitions_completed()
     pulser.stop_sequence()
     #print 'completed', pulser.repeatitions_completed()
@@ -38,3 +49,4 @@ if __name__ == '__main__':
 #    channels = pulser.get_channels().asarray
 #    sp = SequencePlotter(hr, channels)
 #    sp.makePlot()
+    print 'done'

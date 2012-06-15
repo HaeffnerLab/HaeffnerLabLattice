@@ -83,9 +83,9 @@ class Sequence():
         if not self.userAddedDDS(): return None
         totalState = ['']*self.ddsChannelTotal
         state = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
-        print self.ddsSettings
         for key,settings in sorted(self.ddsSettings.iteritems()):
-            state[settings.nonzero()] = settings
+            updated = settings.nonzero()
+            state[updated] = settings[updated]
             for i in range(len(state)):
                 totalState[i] += self._intToBuf(state[i])####self.numToHex(state[i])
             #advance the state of the dds by settings the advance channel high for one timestep
