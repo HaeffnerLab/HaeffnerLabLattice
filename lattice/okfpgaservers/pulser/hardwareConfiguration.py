@@ -50,9 +50,7 @@ class hardwareConfiguration():
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
-                   #future channels
-                   '729DP':channelConfiguration(10, False, True, True, False),
-                   '854DP':channelConfiguration(11, False, True, True, False),
+                    '729DP':channelConfiguration(6, False, True, True, True),
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
