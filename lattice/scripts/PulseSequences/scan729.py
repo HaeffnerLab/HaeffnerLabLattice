@@ -3,49 +3,41 @@ from sequence import Sequence
 class scan729(Sequence):
     
     requiredVars = {
-                         'initial_cooling':(float, 10e-9, 5.0, 100e-3),
-                         'pump':(float, 10e-9, 5.0, 100e-3),
-                         'rabitime':(float, 10e-9, 5.0, 100e-3),
-                         'backgroundMeasure':(float, 10e-9, 5.0, 100e-3),
-                         'readout_time':(float, 10e-9, 5.0, 100e-3),
+                    'backgroundMeasure':(float, 10e-9, 5.0, 100e-3),
+                    'initial_cooling':(float, 10e-9, 5.0, 100e-3),
+                    'optical_pumping':(float, 10e-9, 5.0, 100e-3),
+                    'rabitime':(float, 10e-9, 5.0, 100e-3),
+                    'readout_time':(float, 10e-9, 5.0, 100e-3),
+                    'repump854':(float, 10e-9, 5.0, 100e-3),
+                    'repumpPower':(float, -63.0, -3.0, -3.0)
                     }
     
     def defineSequence(self):   
         p = self.parameters
         pulser = self.pulser
         
-        pulser.add_ttl_pulse('729DP', 0.0, 1.0)
-        #backgroundMeasure = p.backgroundMeasure 
+        self.recordTime =  p.backgroundMeasure  + p.initial_cooling + p.optical_pumping + p.rabitime + p.readout_time + p.repump854
+        self.startRabi = p.backgroundMeasure +  p.initial_cooling + p.optical_pumping
+        self.startReadout = self.startRabi + p.rabitime
+        self.stopReadout =  self.startReadout + p.readout_time
         
-#        self.inital_cool = p.backgroundMeasure + p.initial_cooling
-#        self.readytime = p.backgroundMeasure + p.initial_cooling + p.pump
-#        self.rabitempus = p.backgroundMeasure + p.initial_cooling + p.pump + p.rabitime 
-#        self.readtime = self.rabitempus + p.readout_time
-#        
-#        
-#        pulser.add_ttl_pulse('TimeResolvedCount', 0.0 , self.readtime )
-#        #cooling + optical pumping
-#        pulser.add_dds_pulses('397DP', [(0.0 +100e-9 , 80.0 , -3.0)])
-#        pulser.add_dds_pulses('866DP', [(0.0 +100e-9 , 80.0 , -63.0)])
-#        pulser.add_dds_pulses('866DP', [(p.backgroundMeasure , 220.0 , -3.0)])
-#        pulser.add_dds_pulses('397DP', [(self.inital_cool , 220.0 , -63.0)])
-#        pulser.add_dds_pulses('397pump', [(self.inital_cool, 220.0 , -3.0)])
-#        pulser.add_dds_pulses('397pump', [(self.readytime , 220.0 , -63.0)])
-#        pulser.add_dds_pulses('866DP', [(self.readytime , 80.0 , -63.0)])
-#        
-#        #pulser.add_dds_pulse('729DP', [(readytime* t, 80 , -3.0)])
-#        pulser.add_dds_pulses('854DP', [(self.readytime , 80.0 , -3.0)])
-#        pulser.add_ttl_pulse('729DP', self.readytime, p.rabitime)  #running to the laser room
-#        #pulser.add_dds_pulse('729DP', [(rabitempus+ t, 80, -63.0)])
-#        pulser.add_dds_pulses('854DP', [(self.rabitempus , 80.0 , -63.0)])
-#        
-#        pulser.add_dds_pulses('866DP', [(self.rabitempus , 80.0 , -3.0)])
-#        pulser.add_dds_pulses('397DP', [(self.rabitempus , 220.0 , -3.0)])
-#        pulser.add_dds_pulses('866DP', [(self.readtime , 80.0 , -63.0)])
-#        pulser.add_dds_pulses('397DP', [(self.readtime , 220.0 , -63.0)])
-           
+        pulser.add_ttl_pulse('TimeResolvedCount', 0.0 ,  self.recordTime )
+        #measure_background
+        pulser.add_ttl_pulse('866DP', 0.0, p.backgroundMeasure) #switch off 866 for background measure
         
-    
+        #optical pumping after p.backgroundMeasure + p.initial_cooling
+        #also switch off 110DP here
+        
+        #rabi flop
+        pulser.add_ttl_pulse('729DP', self.startRabi, p.rabitime)
+        #switch off cooling while 729 is on
+        pulser.add_ttl_pulse('866DP', self.startRabi, p.rabitime)
+        pulser.add_ttl_pulse('110DP', self.startRabi, p.rabitime)
+        #readout happens as both 866 and 397 are now on
+        #after readout, repump back
+        pulser.add_dds_pulses('854DP', [(40e-9 , 80.0 , -63.0)])
+        pulser.add_dds_pulses('854DP', [(self.stopReadout , 80.0 , p.repumpPower)])
+        pulser.add_dds_pulses('854DP', [(self.recordTime , 80.0 , -63.0)])
         
 if __name__ == '__main__':
     import labrad
@@ -54,12 +46,13 @@ if __name__ == '__main__':
     seq = scan729(pulser)
     pulser.new_sequence()
     params = {
-              
-              'initial_cooling':0.01,
-              'pump':0.01,
-              'rabitime':0.01,
-              'backgroundMeasure':0.01,
-              'readout_time':0.01,
+                'backgroundMeasure':1*10**-3,
+                'initial_cooling':5*10**-3,
+                'optical_pumping':1*10**-3,
+                'rabitime':5*10**-3,
+                'readout_time':10*10**-3,
+                'repump854':5*10**-3,
+                'repumpPower':-3.0
               }
     seq.setVariables(**params)
     seq.defineSequence()
