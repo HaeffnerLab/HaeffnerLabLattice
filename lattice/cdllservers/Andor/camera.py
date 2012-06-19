@@ -91,7 +91,7 @@ def snap_continuous():
     print "Ready for Acquisition..."
     cam.StartAcquisition()
     
-    cam.dll.WaitForAcquisition()
+    #cam.dll.WaitForAcquisition()
     data = []
     cam.GetMostRecentImage(data)
     #newdata = np.array(cam.imageArray[0:3000])

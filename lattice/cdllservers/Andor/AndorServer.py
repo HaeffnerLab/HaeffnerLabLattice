@@ -127,15 +127,15 @@ class Andor:
         dim = self.width * self.height * numKin
         cimageArray = c_int * dim
         cimage = cimageArray()
-        self.dll.WaitForAcquisition()
+        #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
-
+        print ERROR_CODE[error]
         self.imageArray = cimage[:]
 
         return ERROR_CODE[error]
     
     def GetMostRecentImage(self):
-        self.dll.WaitForAcquisition()
+        #self.dll.WaitForAcquisition()
         dim = self.width * self.height
         cimageArray = c_int * dim
         cimage = cimageArray()
@@ -693,6 +693,7 @@ class AndorServer(LabradServer):
         if (error == 'DRV_SUCCESS'):
             returnValue(self.camera.imageArray)
         else:
+            print error
             raise Exception(error)
         
     @setting(26, "Wait For Acquisition", returns = 's')
@@ -717,6 +718,7 @@ class AndorServer(LabradServer):
     @setting(29, "Start Acquisition", returns = 's')
     def startAcquisition(self, c):
         error = yield deferToThread(self.camera.StartAcquisition)
+        print 'starting acquisition: ', error
         returnValue(error)
 
     @setting(98, "Abort Acquisition", returns = 's')
