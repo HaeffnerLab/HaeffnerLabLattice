@@ -68,6 +68,10 @@ class Andor:
     def SetVerbose(self, state=True):
         self.verbose = state
 
+    def setDimensions(self, width, height):
+        self.width = width
+        self.height = height
+    
     def AbortAcquisition(self):
         error = self.dll.AbortAcquisition()
         return ERROR_CODE[error]
@@ -608,6 +612,7 @@ class AndorServer(LabradServer):
         error = yield deferToThread(self.camera.SetImage, horizontalBinning, verticalBinning, horizontalStart, horizontalEnd, verticalStart, verticalEnd)
         if (error == 'DRV_SUCCESS'):
             c['Image Region'] = self.camera.imageRegion
+            self.camera.setDimensions((horizontalEnd - horizontalStart + 1), (verticalEnd - verticalStart + 1))
             returnValue(c['Image Region'])
         else:
             raise Exception(error)
