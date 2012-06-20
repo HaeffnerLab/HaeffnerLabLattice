@@ -42,7 +42,7 @@ class freqscan():
     
     def _splitTags(self, tags):
         '''splits timetags from multiple back to back sequences into a list timetags separated by sequences'''
-        ix = np.where(np.ediff1d(tags) < 0 )[0] #when the next sequence starts, timetags decrease
+        ix = np.where(np.ediff1d(tags) < -1*10**-3 )[0] #when the next sequence starts, timetags decrease #####fix this 
         split = np.split(tags, ix + 1)
         return split
     
@@ -90,13 +90,13 @@ class freqscan():
     
     def addPlot(self, freq, mean, prob):
         try:
-            self.dv.add((freq, prob, mean), context = self.cntxprob)
+            self.dv.add((freq, prob), context = self.cntxprob)
         except:
             #need to make the plot first
-            self.dv.new('Spectrum',[('Freq', 'MHz')],[('Prob','Arb','Prob'),('Fluor','Count/Sec','Mean Fluor')] , context = self.cntxprob )
+            self.dv.new('Spectrum',[('Freq', 'MHz')],[('Prob','Arb','Prob')] , context = self.cntxprob )
             self.dv.add_parameter('Window',['Spectrum729'], context = self.cntxprob)
             self.dv.add_parameter('plotLive',True, context = self.cntxprob)
-            self.dv.add((freq, prob, mean), context = self.cntxprob)
+            self.dv.add((freq, prob), context = self.cntxprob)
         
     def makeHistPlot(self, counts = None):
         if counts is None: counts = self.allcounts

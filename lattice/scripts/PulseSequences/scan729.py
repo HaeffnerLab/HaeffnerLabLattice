@@ -10,7 +10,8 @@ class scan729(Sequence):
                     'readout_time':(float, 10e-9, 5.0, 100e-3),
                     'repump854':(float, 10e-9, 5.0, 100e-3),
                     'repumpPower':(float, -63.0, -3.0, -3.0),
-                    'freq397':(float, 90.0, 130.0, 110.0),
+                    'coolingFreq397':(float, 90.0, 130.0, 110.0),
+                    'readoutFreq397':(float, 90.0, 130.0, 120.0),
                     'coolingPower397':(float, -63.0, -3.0, -11.0),
                     'readoutPower397':(float, -63.0, -3.0, -11.0),
                     }
@@ -28,8 +29,11 @@ class scan729(Sequence):
         #measure_background
         pulser.add_ttl_pulse('866DP', 0.0, p.backgroundMeasure) #switch off 866 for background measure
         #initialize dds
-        pulser.add_dds_pulses('110DP',[(40e-9 , p.freq397 , p.coolingPower397)])
+        pulser.add_dds_pulses('110DP',[(40e-9 , p.coolingFreq397 , p.coolingPower397)])
         pulser.add_dds_pulses('854DP', [(40e-9 , 80.0 , -63.0)])
+        #set dds
+        pulser.add_dds_pulses('854DP', [(p.backgroundMeasure , 80.0 , p.repumpPower)])
+        pulser.add_dds_pulses('854DP', [(p.backgroundMeasure +  p.initial_cooling , 80.0 , -63.0)])
         #optical pumping after p.backgroundMeasure + p.initial_cooling
         #also switch off 110DP here
         #rabi flop
@@ -38,11 +42,9 @@ class scan729(Sequence):
         pulser.add_ttl_pulse('866DP', self.startRabi, p.rabitime)
         pulser.add_ttl_pulse('110DP', self.startRabi, p.rabitime)
         #increase 397 intensity during readout
-        pulser.add_dds_pulses('110DP',[(self.startReadout , p.freq397 , p.readoutPower397)])
+        pulser.add_dds_pulses('110DP',[(self.startReadout , p.readoutFreq397 , p.readoutPower397)])
         #after readout, repump back
-        pulser.add_dds_pulses('110DP',[(self.stopReadout , p.freq397 , p.coolingPower397)])
-        pulser.add_dds_pulses('854DP', [(self.stopReadout , 80.0 , p.repumpPower)])
-        pulser.add_dds_pulses('854DP', [(self.recordTime , 80.0 , -63.0)])
+        pulser.add_dds_pulses('110DP',[(self.stopReadout , p.coolingFreq397 , p.coolingPower397)])
         
 if __name__ == '__main__':
     import labrad
