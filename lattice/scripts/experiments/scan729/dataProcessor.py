@@ -6,38 +6,73 @@ from scipy.cluster.vq import whiten, kmeans, vq
 
 class freqscan():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''
-    def __init__(self, start, end, threshold = None, dv = None):
+    def __init__(self, start, end, dv, directory, threshold = None):
         self.start = start
         self.end = end
         self.threshold = threshold
         self.dv = dv
         self.cntxprob = self.dv.context()
-        self.dv.new('Spectrum',[('Freq', 'MHz')],[('Prob','Arb','Prob'),('Fluor','Count/Sec','Mean Fluor')] , context = self.cntxprob )
-        self.dv.add_parameter('Window',['Spectrum729'], context = self.cntxprob)
-        self.dv.add_parameter('plotLive',True, context = self.cntxprob)
+        self.dv.cd(directory, context = self.cntxprob)
+        self.madePlot = False
+   
+        self.d = {}
+        self.allcounts = []
 
-    def addTrace(self, timetags):
-        self.timetags = timetags
-        
-    def processTraces(self):
-        self.timetags = self.timetags.transpose()
-        self.freqs = np.unique(self.timetags[0])
-        for freq in self.freqs:
-            tags = self.timetags[1][np.where(self.timetags[0] == freq)] #get all timetags for a specific frequency
-            ix = np.where(np.ediff1d(tags) < 0 )[0] #when the next sequence starts, timetags decrease
-            split = np.split(tags, ix + 1)
-            counts = []
-            for iter in split:
-                cnt = np.count_nonzero( (iter <= self.end) * (iter >= self.start))
-                counts.append(cnt)
-            counts = np.array(counts) / (self.end - self.start) #rate in counts / sec
-            mean = np.mean(counts)
-            prob = -1.0
-            if self.threshold is None:
-                self.threshold = self.clusterkmeans(counts)    
-            if self.threshold is not None:
-                prob = np.count_nonzero(counts < self.threshold) / float(len(split))
+    def setThreshold(self, threshold):
+        self.threshold = threshold
+    
+    def addFrequency(self, freq, tags, addToPlot = False):
+        split = self._splitTags(tags)
+        counts = self._countReadout(split)
+        self.d[freq] = counts
+        self.allcounts.extend(counts)
+        if addToPlot:
+            mean,prob = self._extractProb(counts)
             self.addPlot(freq,mean,prob)
+    
+    def _extractProb(self, counts):
+        counts = np.array(counts)
+        mean = counts.mean() / (self.end - self.start)
+        try:
+            prob = np.count_nonzero(counts < self.threshold) / float(len(counts))
+        except:
+            print 'ERROR: threshold not set'
+            prob = -1.0
+        return mean, prob
+    
+    def _splitTags(self, tags):
+        '''splits timetags from multiple back to back sequences into a list timetags separated by sequences'''
+        ix = np.where(np.ediff1d(tags) < 0 )[0] #when the next sequence starts, timetags decrease
+        split = np.split(tags, ix + 1)
+        return split
+    
+    def _countReadout(self, split):
+        '''takes a list of timetag sequences and returns the corresponding list of how many timetags occured during readout'''
+        counts = []
+        for iter in split:
+            cnt = np.count_nonzero( (iter <= self.end) * (iter >= self.start))
+            counts.append(cnt)
+        return counts
+
+    def _organizRaw(self, data):
+        '''takes the data and puts it into a dictionary by frequency. The key is an array of total counts recorded during readout'''
+        timetags = data.transpose()
+        freqs = np.unique(timetags[0])
+        for freq in freqs:
+            tags = timetags[1][np.where(timetags[0] == freq)] #get all timetags for a specific frequency
+            split = self._splitTags(tags)
+            counts = self._countReadout(split)
+            self.d[freq] = counts
+            self.allcounts.extend(counts)
+        return freqs
+            
+    def addAllData(self, data, addToPlot = False):
+        freqs = self._organizRaw(data)
+        if addToPlot:
+            for freq in freqs:
+                counts = self.d[freq]
+                mean,prob = self._extractProb(counts)
+                self.addPlot(freq,mean,prob)
     
     def clusterkmeans(self, counts):
         wh = whiten(counts) #normalizes the counts for easier clustering
@@ -54,64 +89,41 @@ class freqscan():
         return threshold
     
     def addPlot(self, freq, mean, prob):
-        self.dv.add((freq, prob, mean), context = self.cntxprob)
-
-class data_process():
-    def __init__(self, cxn , dataset, directory, processNames):
-        self.dv = cxn.data_vault
-        self.dataset = dataset
-        self.directory = directory
-        self.processNames = processNames
-        self.availableProcesses = ['freqscan']
-        self.confirmProcesses()
-        self.process = []
-        self.params = {}
-    
-    def addParameter(self, name, value):
-        self.params[name] = value
-    
-    def confirmProcesses(self):
-        for pr in self.processNames:
-            if pr not in self.availableProcesses: raise Exception ("Process not found")
-            
-    def navigateDirectory(self):
-        self.dv.cd(self.directory)
-        self.dv.open(1)
-    
-    def loadDataVault(self):
-        self.navigateDirectory()
-        self.loadParameters()
-        self.createProcesses()
-        timetags = self.dv.get().asarray
-        self.addAll(timetags)
-    
-    def createProcesses(self):
-        if 'freqscan' in self.processNames:
-            startReadout =  self.params.get('startReadout') 
-            stopReadout = self.params.get('stopReadout') 
-            threshold = self.params.get('threshold') 
-            self.process.append(freqscan(startReadout, stopReadout, threshold = threshold, dv = self.dv))
+        try:
+            self.dv.add((freq, prob, mean), context = self.cntxprob)
+        except:
+            #need to make the plot first
+            self.dv.new('Spectrum',[('Freq', 'MHz')],[('Prob','Arb','Prob'),('Fluor','Count/Sec','Mean Fluor')] , context = self.cntxprob )
+            self.dv.add_parameter('Window',['Spectrum729'], context = self.cntxprob)
+            self.dv.add_parameter('plotLive',True, context = self.cntxprob)
+            self.dv.add((freq, prob, mean), context = self.cntxprob)
         
-    def loadParameters(self):
-        for par in ['startReadout', 'stopReadout','backgroundMeasure', 'initial_cooling', 'optical_pumping','rabitime','readout_time','repump854','repumpPower']:
-            self.params[par] =  self.dv.get_parameter(par)
-    
-    def addAll(self, trace):
-        for pr in self.process:
-            pr.addTrace(trace)
-
-    def processAll(self):
-        for pr in self.process:
-            pr.processTraces()
-
+    def makeHistPlot(self, counts = None):
+        if counts is None: counts = self.allcounts
+        binned,edges = np.histogram(counts, bins = 30)
+        edges = edges[:-1] #excluding last edge
+        self.dv.new('Histogram',[('Fluor', 'Counts/sec')],[('Occurance','Num','Num')] , context = self.cntxprob )
+        self.dv.add_parameter('Window',['CountHistogram'], context = self.cntxprob)
+        self.dv.add_parameter('plotLive',True, context = self.cntxprob)
+        data = np.vstack((edges,binned)).transpose()
+        self.dv.add(data, context = self.cntxprob)
+                  
 if __name__ == '__main__':
-#    dataset = '2012Apr16_2133_32'
-#    directory = ['','Experiments','scan729']
-#    import labrad
-#    cxn = labrad.connect()
-#    dp = data_process(cxn, dataset, directory, ['freqscan'])
-#    #dp.addParameter('threshold', 100)
-#    dp.loadDataVault()
-#    dp.processAll()
-#    print 'done'
-    pass
+    dataset = '2012Jun19_1614_30'
+    directory = ['','Experiments','scan729', dataset]
+    threshold = 10
+    
+    
+    import labrad
+    cxn = labrad.connect()
+    dv = cxn.data_vault
+    dv.cd(directory)
+    dv.open('00001 - timetags')
+    startReadout = dv.get_parameter('startReadout')
+    stopReadout = dv.get_parameter('stopReadout')
+    
+    dp =  freqscan(startReadout, stopReadout, dv, directory, threshold)
+    data = dv.get().asarray
+    dp.addAllData(data, addToPlot = True)
+    dp.makeHistPlot()
+    print 'Done running analysis'
