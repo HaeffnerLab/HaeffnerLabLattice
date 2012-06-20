@@ -119,26 +119,27 @@ class scan729():
 if __name__ == '__main__':
   
     params = {
-        'freq397':110.0,
-        'coolingPower397':-14.0,
+        'coolingFreq397':110.0,
+        'coolingPower397':-19.0,
+        'readoutFreq397':110.0,
         'readoutPower397':-11.0,
         'backgroundMeasure':1*10**-3,
         'initial_cooling':5*10**-3,
         'optical_pumping':1*10**-3,
-        'rabitime':.5*10**-3,
-        'readout_time':10*10**-3,
+        'rabitime':5*10**-6,
+        'readout_time':20*10**-3,
         'repump854':5*10**-3,
         'repumpPower':-3.0
           }
     exprtParams = {
-        'freqMin':219.0,
-        'freqMax':222.0,
-        'freqStep':0.1,
-        'iterations':100,
+        'freqMin':216.069,
+        'freqMax':216.071,
+        'freqStep':0.000002,
+        'iterations':75,
         }
     
     analysis = {
-        'threshold':5,
+        'threshold':170,
         }
     exprt = scan729(params,exprtParams, analysis)
     exprt.run()
