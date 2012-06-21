@@ -244,7 +244,7 @@ class Canvas(FigureCanvas):
             self.im.axes.figure.canvas.draw()
         except AttributeError:
             self.im = self.ax.matshow(self.data, cmap=cm.hot)#gist_heat)
-            self.ax.axis([self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])
+            #self.ax.axis([self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])
             self.im.axes.figure.canvas.draw()
     
     def onselect(self, eclick, erelease):
@@ -259,6 +259,8 @@ class Canvas(FigureCanvas):
         
         # data sent will always have the eclick point be the left point and the erelease point be the right point
         self.parent.parent.changeImageRegion(int(eclick.xdata), int(eclick.ydata), int(erelease.xdata), int(erelease.ydata))
+        self.ax.axis([int(eclick.xdata), int(erelease.xdata), int(eclick.ydata), int(erelease.ydata)])
+
     
     def setupSelector(self):
         self.rectSelect = RectangleSelector(self.ax, self.onselect, drawtype='box', rectprops = dict(facecolor='red', edgecolor = 'white',
@@ -365,6 +367,7 @@ class AppWindow(QtGui.QWidget):
         
     def resetScale(self, evt):
         self.parent.changeImageRegion(self.parent.originalHStart,self.parent.originalVStart,self.parent.originalHEnd,self.parent.originalVEnd)
+        self.cmon.ax.axis([self.parent.originalHStart, self.parent.originalHEnd, self.parent.originalVStart, self.parent.originalVEnd])
     
     def closeEvent(self, evt):
         self.parent.abortVideo()
@@ -414,7 +417,7 @@ class AndorClient():
         yield self.server.cooler_on()
         
         
-        self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
+        #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
 
         # original window size can be changed here
         self.originalHStart = 1
@@ -489,6 +492,7 @@ class AndorClient():
         yield self.cxn.data_vault.new(dateTime, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])         
         toDataVault = np.array(np.vstack((Height, Width, self.newdata)).transpose(), dtype=float)
         yield self.cxn.data_vault.add(toDataVault)
+        print 'saved!'
 #            newarray = np.reshape(newdata, (height, width))
 #            ax.matshow(newarray)
 #                
