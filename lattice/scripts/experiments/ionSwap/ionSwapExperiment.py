@@ -38,8 +38,8 @@ experimentName = 'IonSwap'
 #axfreq = 250.0 #heating double pass frequency #MHz
 #110DP
 xtalFreq397 = 103.0
-xtalPower397 = -4.0 
-xtalPower866 = -4.0
+xtalPower397 = -11.0 
+xtalPower866 = -3.0
 #cooling = (103.0, -8.0) #MHz, dBm
 #readout = (115.0, -8.0) 
 rf_power = -3.5
@@ -48,23 +48,23 @@ rf_settling_time = 0.3
 auto_crystal = True
 #sequence parameters
 params = { 
-          'exposure': .1,
-          'camera_delay': .02, 
-          'initial_cooling': .115, #includes delay 15ms delay after background collection
-          'darkening': .1,
-          'heat_delay':.005,
-          'axial_heat':.02,
-          'readout_delay':.005,
-          'readout_time':.01,
-          'rextal_time': .05,
-          'brightening': .01,
-          'cooling_ampl_866':-3.0,
-          'readout_ampl_866':-10.0,
+          'exposure': 100*10**-3,
+          'camera_delay': 20*10**-3, 
+          'initial_cooling': 65*10**-3, #includes delay 15ms delay after background collection
+          'darkening': 100*10**-3,
+          'heat_delay':5*10**-3,
+          'axial_heat':9*10**-3,
+          'readout_delay':100*10**-9,
+          'readout_time':10*10**-3,
+          'rextal_time': 25*10**-3,
+          'brightening': 5*10**-3,
+          'cooling_ampl_866':-15.0,
+          'readout_ampl_866':-11.0,
           'xtal_ampl_866':xtalPower866,
           'cooling_freq_397':103.0,
-          'cooling_ampl_397':-8.0,
+          'cooling_ampl_397':-13.0,
           'readout_freq_397':115.0,
-          'readout_ampl_397':-8.0,
+          'readout_ampl_397':-15.0,
           'xtal_freq_397':xtalFreq397,
           'xtal_ampl_397':xtalPower397,
           }

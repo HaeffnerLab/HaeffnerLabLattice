@@ -90,7 +90,7 @@ class IonSwapBackground(Sequence):
         # take the last picture
         pulser.add_ttl_pulse('camera', startThirdExposure, cameraPulse)
         # make all the ions bright again
-        pulser.add_ttl_pulse('854DP', startBrightening, brighteningDuration)
+        #pulser.add_ttl_pulse('854DP', startBrightening, brighteningDuration)
         
 
 if __name__ == '__main__':

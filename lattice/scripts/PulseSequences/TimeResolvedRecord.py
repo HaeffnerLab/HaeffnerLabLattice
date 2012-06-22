@@ -19,7 +19,7 @@ if __name__ == '__main__':
     seq = TimeResolved(pulser)
     pulser.new_sequence()
     params = {
-              'recordTime': 0.010
+              'recordTime': 0.15
               }
     seq.setVariables(**params)
     seq.defineSequence()
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     pulser.stop_sequence()
     print 'completed', pulser.repeatitions_completed()
     timetags = pulser.get_timetags().asarray
+    print timetags[0:249]
     counts = []
     print 'measured {0} timetags'.format(timetags.size)
     ix = np.where(np.ediff1d(timetags) < 0 )[0] #when the next sequence starts, timetags decrease

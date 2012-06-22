@@ -13,6 +13,7 @@ class LatentHeatBackground(Sequence):
                          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
                          'cooling_ampl_866':(float, -63.0, -3.0, -63.0),
                          'xtal_ampl_866':(float, -63.0, -3.0, -63.0),
+                         'heating_ampl_866':(float, -63.0, -3.0, -63.0),
                          'cooling_freq_397':(float, 90.0,130.0, 110.0),
                          'cooling_ampl_397':(float,-63.0, -3.0, -63.0),
                          'readout_freq_397':(float, 90.0,130.0, 110.0),
@@ -47,6 +48,7 @@ class LatentHeatBackground(Sequence):
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
         #adding dds settings for the 866DP
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
+        pulser.add_dds_pulses('866DP', [(startHeat, 80.0 , p.heating_ampl_866)])
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
         pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])
         #adding dds settings for the 110DP
@@ -80,6 +82,7 @@ if __name__ == '__main__':
               'readout_ampl_397':-8.0,
               'xtal_freq_397':xtalFreq397,
               'xtal_ampl_397':xtalPower397,
+              'heating_ampl_866':-3.0
               }
     seq.setVariables(**params)
     seq.defineSequence()

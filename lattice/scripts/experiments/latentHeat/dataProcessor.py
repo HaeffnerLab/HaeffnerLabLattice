@@ -117,12 +117,12 @@ class data_process():
             pr.processTraces()
 
 if __name__ == '__main__':
-    dataset = '2012Apr16_2133_32'
+    dataset = '2012Jun21_1644_58'
     directory = ['','Experiments','LatentHeat_no729_autocrystal']
     import labrad
     cxn = labrad.connect()
     dp = data_process(cxn, dataset, directory, ['histogram'])
-    #dp.addParameter('threshold', 100)
+    dp.addParameter('threshold', 100)
     dp.loadDataVault()
     dp.processAll()
     print 'done'

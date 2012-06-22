@@ -57,10 +57,10 @@ class LatentHeat():
         ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
-        self.pulser.frequency(xtalFreq397)
-        self.pulser.amplitude(xtalPower397)
+        self.pulser.frequency(self.seqP.xtal_freq_397)
+        self.pulser.amplitude(self.seqP.xtal_ampl_397)
         self.pulser.select_dds_channel('866DP')
-        self.pulser.amplitude(xtalPower866)
+        self.pulser.amplitude(self.seqP.xtal_ampl_866)
         countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
         self.crystal_threshold = 0.7 * countRate #kcounts per sec
         self.crystallization_attempts = 10
@@ -194,32 +194,29 @@ class LatentHeat():
         self.cxn.disconnect()
         
 if __name__ == '__main__':
-    #sequence parameters
-    xtalFreq397 = 103.0
-    xtalPower397 = -11.0 
-    xtalPower866 = -4.0
     #experiment parameters
     for i in range(1):
         params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
-              'axial_heat':5.5e-3,
-              'readout_delay':100.0*10**-9,
+              'axial_heat':4.75*10**-3,
+              'readout_delay':5000.0*10**-3,
               'readout_time':10.0*10**-3,
               'xtal_record':25e-3,
-              'cooling_ampl_866':-4.0,
-              'readout_ampl_866':-14.0,
-              'xtal_ampl_866':xtalPower866,
-              'cooling_freq_397':103.0,
-              'cooling_ampl_397':-13.0,
-              'readout_freq_397':115.0,
-              'readout_ampl_397':-13.0,
-              'xtal_freq_397':xtalFreq397,
-              'xtal_ampl_397':xtalPower397,
+              'cooling_ampl_866':-11.0,
+              'heating_ampl_866':-3.0,
+              'readout_ampl_866':-12.0,
+              'xtal_ampl_866':-11.0,
+              'cooling_freq_397':105.0,
+              'cooling_ampl_397':-11.0,
+              'readout_freq_397':120.0,
+              'readout_ampl_397':-11.0,
+              'xtal_freq_397':105.0,
+              'xtal_ampl_397':-11.0,
               }
         
         exprtParams = {
-                       'iterations':100,
+                       'iterations':1000,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
                        'auto_crystal':True,
@@ -230,6 +227,6 @@ if __name__ == '__main__':
         exprt = LatentHeat(params,exprtParams)
         exprt.run()
         dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 13000)
+        dp.addParameter('threshold', 10000)
         dp.loadDataVault()
         dp.processAll()
