@@ -242,8 +242,9 @@ class Canvas(FigureCanvas):
         try: 
             self.im.set_data(self.data)
             self.im.axes.figure.canvas.draw()
-        except AttributeError:
-            self.im = self.ax.matshow(self.data, cmap=cm.hot)#gist_heat)
+        except:
+            print self.data.shape
+            self.im = self.ax.matshow(self.data)#, extent=[self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])#, cmap=cm.hot)#gist_heat)
             #self.ax.axis([self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])
             self.im.axes.figure.canvas.draw()
     
@@ -259,7 +260,9 @@ class Canvas(FigureCanvas):
         
         # data sent will always have the eclick point be the left point and the erelease point be the right point
         self.parent.parent.changeImageRegion(int(eclick.xdata), int(eclick.ydata), int(erelease.xdata), int(erelease.ydata))
-        self.ax.axis([int(eclick.xdata), int(erelease.xdata), int(eclick.ydata), int(erelease.ydata)])
+        #self.ax.axis([int(eclick.xdata), int(erelease.xdata), int(eclick.ydata), int(erelease.ydata)])
+        #self.ax.set_xlim(int(eclick.xdata), int(erelease.xdata))
+        #self.ax.set_ylim(int(eclick.ydata), int(erelease.ydata))
 
     
     def setupSelector(self):
@@ -297,6 +300,31 @@ class AppWindow(QtGui.QWidget):
         singleButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         singleButton.clicked.connect(self.singleScan)
         
+        kineticButton = QtGui.QPushButton("Kinetic", self)
+        kineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        kineticButton.clicked.connect(self.kineticScan)      
+        
+        
+        numKineticLabel = QtGui.QLabel()
+        numKineticLabel.setText('Number of Scans: ')
+                
+        self.numKineticSpinBox = QtGui.QSpinBox()
+        self.numKineticSpinBox.setMinimum(0)
+        self.numKineticSpinBox.setMaximum(1000)
+        self.numKineticSpinBox.setSingleStep(1)  
+        self.numKineticSpinBox.setValue(10)     
+        self.numKineticSpinBox.setKeyboardTracking(False) 
+        
+        kineticCycleTimeLabel = QtGui.QLabel()
+        kineticCycleTimeLabel.setText('Kinetic Cycle Time (ms): ')
+                
+        self.kineticCycleTimeSpinBox = QtGui.QSpinBox()
+        self.kineticCycleTimeSpinBox.setMinimum(0)
+        self.kineticCycleTimeSpinBox.setMaximum(1000)
+        self.kineticCycleTimeSpinBox.setSingleStep(1)  
+        self.kineticCycleTimeSpinBox.setValue(10)     
+        self.kineticCycleTimeSpinBox.setKeyboardTracking(False)        
+        
         abortButton = QtGui.QPushButton("Abort Video", self)
         abortButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         abortButton.clicked.connect(self.abortVideo)
@@ -320,7 +348,7 @@ class AppWindow(QtGui.QWidget):
         exposureLabel.setText('Exposure (ms): ')
         
         self.exposureSpinBox = QtGui.QSpinBox()
-        self.exposureSpinBox.setMinimum(0)
+        self.exposureSpinBox.setMinimum(100)
         self.exposureSpinBox.setMaximum(1000)
         self.exposureSpinBox.setSingleStep(1)  
         self.exposureSpinBox.setValue(EXPOSURE*1000)     
@@ -329,21 +357,33 @@ class AppWindow(QtGui.QWidget):
 
         
          # Layout
-        self.bottomPanel = QtGui.QHBoxLayout()
+        self.bottomPanel1 = QtGui.QHBoxLayout()
         
-        self.bottomPanel.addWidget(temperatureButton)
-        self.bottomPanel.addWidget(liveVideoButton)
-        self.bottomPanel.addWidget(abortButton)
-        self.bottomPanel.addWidget(resetScaleButton)
-        self.bottomPanel.addWidget(singleButton)
-        self.bottomPanel.addWidget(emGainLabel)
-        self.bottomPanel.addWidget(self.emGainSpinBox)
-        self.bottomPanel.addWidget(exposureLabel)
-        self.bottomPanel.addWidget(self.exposureSpinBox)
+        self.bottomPanel1.addWidget(temperatureButton)
+        self.bottomPanel1.addWidget(liveVideoButton)
+        self.bottomPanel1.addWidget(abortButton)
+        self.bottomPanel1.addWidget(resetScaleButton)
+        self.bottomPanel1.addWidget(singleButton)
+        self.bottomPanel1.addWidget(emGainLabel)
+        self.bottomPanel1.addWidget(self.emGainSpinBox)
+        self.bottomPanel1.addWidget(exposureLabel)
+        self.bottomPanel1.addWidget(self.exposureSpinBox)
     
-        self.bottomPanel.addStretch(0)
-        self.bottomPanel.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
-        layout.addLayout(self.bottomPanel)
+        self.bottomPanel1.addStretch(0)
+        self.bottomPanel1.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
+        layout.addLayout(self.bottomPanel1)
+        
+        self.bottomPanel2 = QtGui.QHBoxLayout()
+        
+        self.bottomPanel2.addWidget(kineticButton)
+        self.bottomPanel2.addWidget(numKineticLabel)
+        self.bottomPanel2.addWidget(self.numKineticSpinBox)
+        self.bottomPanel2.addWidget(kineticCycleTimeLabel)
+        self.bottomPanel2.addWidget(self.kineticCycleTimeSpinBox)
+            
+        self.bottomPanel2.addStretch(0)
+        self.bottomPanel2.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
+        layout.addLayout(self.bottomPanel2)
         
         self.setLayout(layout)
 
@@ -362,11 +402,15 @@ class AppWindow(QtGui.QWidget):
     def singleScan(self, evt):
         self.parent.singleScan()
     
+    def kineticScan(self, evt):
+        self.parent.kineticScan(self.numKineticSpinBox.value(),(self.kineticCycleTimeSpinBox.value()/1000.0))    
+    
     def liveVideo(self, evt):
         self.parent.liveVideo()
         
     def resetScale(self, evt):
         self.parent.changeImageRegion(self.parent.originalHStart,self.parent.originalVStart,self.parent.originalHEnd,self.parent.originalVEnd)
+        self.cmon.ax.relim()
         self.cmon.ax.axis([self.parent.originalHStart, self.parent.originalHEnd, self.parent.originalVStart, self.parent.originalVEnd])
     
     def closeEvent(self, evt):
@@ -395,10 +439,16 @@ class AndorClient():
         self.cxn = yield connectAsync()
         try:
             self.server = yield self.cxn.andor_server
+            self.setupListeners()
             self.setupCamera()
         except Exception ,e:
             print 'server not connected: {}'.format(e)
 
+    @inlineCallbacks
+    def setupListeners(self):
+        yield self.server.signal__kinetic_finish(88888)
+        yield self.server.addListener(listener = self.kineticFinish, source = None, ID = 88888)
+    
     @inlineCallbacks
     def setupCamera(self):
         temp = yield self.server.get_current_temperature()
@@ -497,8 +547,30 @@ class AndorClient():
 #            ax.matshow(newarray)
 #                
 #        fig.show()
-    
-    
+
+    @inlineCallbacks
+    def kineticScan(self, numKin, cycTime):
+        status = yield self.server.get_status()
+        if (status == 'DRV_IDLE'):
+            print numKin
+            self.numKin = numKin
+            yield self.server.set_acquisition_mode(3)
+            yield self.server.set_number_kinetics(numKin)
+            yield self.server.set_kinetic_cycle_time(cycTime)
+                
+            print "Ready for Acquisition..."
+            
+            yield self.server.start_acquisition_kinetic(numKin)
+            
+    @inlineCallbacks 
+    def kineticFinish(self,x,y): 
+        data = yield self.server.get_acquired_data_kinetic(self.numKin)
+        newdata = data.asarray
+        
+        print newdata[12:14]
+            
+            
+  
     @inlineCallbacks
     def liveVideo(self):
                
@@ -568,7 +640,7 @@ class AndorClient():
             self.liveVideo()
         else:
             error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
-            print 'image error: ', error     
+            print 'image error: ', error
     
 if __name__ == "__main__":
     a = QtGui.QApplication( [] )

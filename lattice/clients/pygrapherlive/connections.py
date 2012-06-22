@@ -254,7 +254,6 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 for i in windowsToDrawOn:
 #                    print 'still happening connections'
                     i.qmc.setPlotData(datasetObject.dataset, datasetObject.directory, data)
-                # del data?
     # Cycles through the values in each key for checked Overlay boxes, returns the windows...
     # ...with the overlay button checked
     def getOverlayingWindows(self):

@@ -6,7 +6,7 @@ import numpy as np
 import time
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 
 """Andor class which is meant to provide the Python version of the same
    functions that are defined in the Andor's SDK. Since Python does not
@@ -121,15 +121,29 @@ class Andor:
     def StartAcquisition(self):
         error = self.dll.StartAcquisition()
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.dll.WaitForAcquisition()
+            errorWait = self.dll.WaitForAcquisition()
+            if (ERROR_CODE[errorWait] == 'DRV_SUCCESS'):
+                return ERROR_CODE[errorWait]                
+        return ERROR_CODE[error]
+
+    def StartAcquisitionKinetic(self, numKin):
+        error = self.dll.StartAcquisition()
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            # WaitForAcquisition finishes after ONE image is finished, this for loop will ensure
+            # that this method will wait for all images to be taken.
+            for i in range(numKin):
+                errorWait = self.dll.WaitForAcquisition()
+                if (ERROR_CODE[errorWait] != 'DRV_SUCCESS'):
+                    return ERROR_CODE[errorWait]
+                                
         return ERROR_CODE[error]
 
     def WaitForAcquisition(self):
         error = self.dll.WaitForAcquisition()
         return ERROR_CODE[error]
     
-    def GetAcquiredData(self,imageArray,numKin=1):  
-        dim = self.width * self.height * numKin
+    def GetAcquiredData(self):  
+        dim = self.width * self.height
         cimageArray = c_int * dim
         cimage = cimageArray()
         #self.dll.WaitForAcquisition()
@@ -139,6 +153,17 @@ class Andor:
 
         return ERROR_CODE[error]
     
+    def GetAcquiredDataKinetic(self, numKin):  
+        dim = self.width * self.height * numKin
+        cimageArray = c_int * dim
+        cimage = cimageArray()
+        #self.dll.WaitForAcquisition()
+        error = self.dll.GetAcquiredData(pointer(cimage),dim)
+        print ERROR_CODE[error]
+        self.imageArray = cimage[:]
+
+        return ERROR_CODE[error]
+   
     def GetMostRecentImage(self):
         #self.dll.WaitForAcquisition()
         dim = self.width * self.height
@@ -167,7 +192,7 @@ class Andor:
         file = open(path, 'w')
         
         # self.imageArray is 1 dimensional!
-        count = 1
+        count = 0
         for i in self.imageArray:
             file.write(str(int(i)))
             count += 1
@@ -445,6 +470,8 @@ class AndorServer(LabradServer):
     """ Contains methods that interact with the Andor Luca"""
     
     name = "Andor Server"
+
+    onKineticFinish = Signal(111111, 'signal: kinetic finish', 's')
     
     def initServer(self):
 
@@ -707,10 +734,10 @@ class AndorServer(LabradServer):
         error = yield deferToThread(self.camera.WaitForAcquisition)
         returnValue(error)
 
-    @setting(27, "Get Acquired Data", numKin = 'i', returns = '*i')
-    def getAcquiredData(self, c, numKin=1):
-        """Gets Most Recent Scan"""
-        error = yield deferToThread(self.camera.GetAcquiredData, numKin)
+    @setting(27, "Get Acquired Data", returns = '*i')
+    def getAcquiredData(self, c):
+        """Get all Data"""
+        error = yield deferToThread(self.camera.GetAcquiredData)
         if (error == 'DRV_SUCCESS'):
             returnValue(self.camera.imageArray)
         else:
@@ -732,6 +759,23 @@ class AndorServer(LabradServer):
         c['Detector Dimensions'] = self.camera.detectorDimensions
         returnValue(c['Detector Dimensions'])
        
+    @setting(31, "Get Acquired Data Kinetic", numKin = 'i', returns = '*i')
+    def getAcquiredDataKinetic(self, c, numKin):
+        """Get all Data for a Number of Scans"""
+        error = yield deferToThread(self.camera.GetAcquiredDataKinetic, numKin)
+        if (error == 'DRV_SUCCESS'):
+            returnValue(self.camera.imageArray)
+        else:
+            raise Exception(error)
+
+    @setting(32, "Start Acquisition Kinetic", numKin = 'i', returns = 's')
+    def startAcquisitionKinetic(self, c, numKin):
+        error = yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
+        if (error == 'DRV_SUCCESS'):
+            notified = self.getOtherListeners(c)
+            self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
+            #not sure yet
+        returnValue(error)
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):
