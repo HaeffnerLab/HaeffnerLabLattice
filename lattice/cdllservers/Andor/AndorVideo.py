@@ -400,7 +400,7 @@ class AndorClient():
         self.cxn = yield connectAsync()
         try:
             self.server = yield self.cxn.andor_server
-            self.setupListeners()
+            #self.setupListeners()
             self.setupCamera()
         except Exception ,e:
             print 'server not connected: {}'.format(e)
@@ -414,7 +414,7 @@ class AndorClient():
     def setupCamera(self):
         temp = yield self.server.get_current_temperature()
         print temp
-
+        
         try:
             yield self.server.set_trigger_mode(0)
         except:
@@ -422,9 +422,8 @@ class AndorClient():
             self.abortVideo()
             yield self.server.set_trigger_mode(0)
         yield self.server.set_read_mode(4)
-
         yield self.server.set_emccd_gain(EMGAIN)
-        yield self.server.set_exposure_time(EXPOSURE)      
+        yield self.server.set_exposure_time(EXPOSURE)   
         yield self.server.cooler_on()
         
         
@@ -525,14 +524,18 @@ class AndorClient():
             print "Ready for Acquisition..."
             
             yield self.server.start_acquisition_kinetic(numKin)
+            data = yield self.server.get_acquired_data_kinetic(self.numKin)
+            newdata = data.asarray
             
-    @inlineCallbacks 
-    def kineticFinish(self,x,y): 
-        data = yield self.server.get_acquired_data_kinetic(self.numKin)
-        newdata = data.asarray
-        
-        print newdata[12:14]
+            print newdata[12:14]
             
+#    @inlineCallbacks 
+#    def kineticFinish(self,x,y): 
+#        data = yield self.server.get_acquired_data_kinetic(self.numKin)
+#        newdata = data.asarray
+#        
+#        print newdata[12:14]
+#            
             
   
     @inlineCallbacks
