@@ -166,87 +166,51 @@ EXPOSURE = .3 #sec
 class Canvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""
     def __init__(self, parent):
-
         self.parent = parent
         self.fig = Figure()
-        self.ax = self.fig.add_subplot(111)
         FigureCanvas.__init__(self, self.fig)
-        #self.cidPress = self.mpl_connect('button_press_event', self.onClick)
-        #self.cidRelease = self.mpl_connect('button_release_event', self.onRelease)
+#        hstart = self.parent.parent.hstart
+#        hend = self.parent.parent.hend
+#        vstart = self.parent.parent.vstart
+#        vend = self.parent.parent.vend
+#
+#        width = hend - hstart
+#        height = vend - vstart
 
-
-        #self.X = np.random.rand(5,5)
-        #rows,cols,self.slices = self.X.shape
-        #self.Y = np.random.rand(5,5)
-        #rows,cols,self.slices = self.X.shape
-        
-        newdata = np.ones(2*2)
-        newarray = np.reshape(newdata, (2, 2))
-        self.data = newarray
-
-        
-        #self.im = self.ax.matshow(self.X[:,:])
-        #self.im = self.ax.matshow(self.data)
-        self.update()
-        
-        self.fig.canvas.draw()
+        #dummy data for now
+        #blankData = np.zeros(width*height)
+        #self.data = np.reshape(blankData, (height, width))
+        #self.newAxes(hstart, hend, vstart, vend)
 
         self.cnt = 0
         
-        self.setupSelector()
-        # call the update method (to speed-up visualization)
-        #self.timerEvent(None)
-        # start timer, trigger event every 1000 millisecs (=1sec)
-        #self.timer = self.startTimer(500)
-
-#    def startYourEngines(self):
-#        self.timer = self.startTimer(50)
-    
-#    def timerEvent(self, evt):
-##        if (self.cnt == 12):
-##            self.im = self.ax.matshow(self.data)
-##            
-##        
-###        if (self.cnt == 0):
-###            self.cnt = 1
-###            self.im.set_data(self.X)
-###        elif (self.cnt == 1):
-###            self.im.set_data(self.Y)
-###            self.cnt = 0    
-##        elif (self.cnt > 12):    
-##            self.im.set_data(self.data)            
-##            #print self.data[0, 4:10]
-##            
-##            self.im.axes.figure.canvas.draw()
-#        try: 
-#            self.im.set_data(self.data)
-#            self.im.axes.figure.canvas.draw()
-#        except AttributeError:
-#            self.im = self.ax.matshow(self.data)
-#            self.im.axes.figure.canvas.draw()
-#        
-#        self.cnt += 1
         
+    def newAxes(self, hstart, hend, vstart, vend):
+        self.fig.clf()
+        self.ax = self.fig.add_subplot(111)
+        print hstart, hend, vstart, vend
+        self.im = self.ax.imshow(self.data, extent=[hstart, hend, vstart, vend], origin='lower', interpolation='nearest')#, cmap=cm.hot)#gist_heat)
+        self.setupSelector()
 
-#    def onClick(self, event):
-#        print 'click: ', event.xdata, event.ydata
-#    
-#    def onRelease(self, event):
-#        print 'release: ', event.xdata, event.ydata
 
     def updateData(self, data, width, height):
         try:
             self.data = np.reshape(data, (height, width))
         except ValueError:
             pass # happens if update data is called before the new width and height are calculated upon changing the image size
-        try: 
-            self.im.set_data(self.data)
-            self.im.axes.figure.canvas.draw()
-        except:
-            print self.data.shape
-            self.im = self.ax.matshow(self.data)#, extent=[self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])#, cmap=cm.hot)#gist_heat)
-            #self.ax.axis([self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])
-            self.im.axes.figure.canvas.draw()
+
+        self.im.set_data(self.data)
+        self.im.axes.figure.canvas.draw()
+
+
+#        try: 
+#            self.im.set_data(self.data)
+#            self.im.axes.figure.canvas.draw()
+#        except:
+#            print self.data.shape
+#            self.im = self.ax.matshow(self.data)#, extent=[self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])#, cmap=cm.hot)#gist_heat)
+#            #self.ax.axis([self.parent.parent.hstart, self.parent.parent.hend, self.parent.parent.vstart, self.parent.parent.vend])
+#            self.im.axes.figure.canvas.draw()
     
     def onselect(self, eclick, erelease):
         'eclick and erelease are matplotlib events at press and release'
@@ -410,8 +374,6 @@ class AppWindow(QtGui.QWidget):
         
     def resetScale(self, evt):
         self.parent.changeImageRegion(self.parent.originalHStart,self.parent.originalVStart,self.parent.originalHEnd,self.parent.originalVEnd)
-        self.cmon.ax.relim()
-        self.cmon.ax.axis([self.parent.originalHStart, self.parent.originalHEnd, self.parent.originalVStart, self.parent.originalVEnd])
     
     def closeEvent(self, evt):
         self.parent.abortVideo()
@@ -425,7 +387,6 @@ class AndorClient():
     def __init__(self, reactor):
         self.reactor = reactor
         self.live = False
-        self.openVideoWindow()
         self.connect()
 
     def openVideoWindow(self):
@@ -488,6 +449,9 @@ class AndorClient():
         
         error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
         print 'image: ', error
+        
+        self.openVideoWindow()
+
         
     @inlineCallbacks
     def printTemperature(self):
@@ -576,9 +540,6 @@ class AndorClient():
                
         width = self.width
         height = self.height
-             
-#        newdata = np.zeros(width*height)
-#        newarray = np.reshape(newdata, (height, width))
         
         print "Ready for Acquisition..."
         
@@ -586,23 +547,20 @@ class AndorClient():
         if (status == 'DRV_IDLE'):
             yield self.server.set_acquisition_mode(5)
             yield self.server.start_acquisition()
+            try:
+                self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
+            except AttributeError:
+                print 'yup outside the while'                    
             cnt = 0
             self.live = True
             while(self.live == True):
-#                t1 = time.clock()
                 data = yield self.server.get_most_recent_image()
                 self.newdata = data.asarray
-#                print newdata.shape
-#                t2 = time.clock()
-#                print 'Acquisition Time: ', (t2 - t1)
-                #self.data = newdata
-                #newarray = np.reshape(newdata, (height, width))
-                #print newarray[0, 4:7]
-                #self.data = newarray
-                self.win.cmon.updateData(self.newdata, (self.width + 1), (self.height + 1))
-#                if (cnt == 0):
-#                    self.win.cmon.startYourEngines()
-#                    cnt += 1
+                try:
+                    self.win.cmon.updateData(self.newdata, (width + 1), (height + 1))
+                except AttributeError:
+                    print 'yup in the while'
+                    self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
             yield self.server.abort_acquisition()
             
     @inlineCallbacks
@@ -641,7 +599,8 @@ class AndorClient():
         else:
             error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
             print 'image error: ', error
-    
+        #self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
+        
 if __name__ == "__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor

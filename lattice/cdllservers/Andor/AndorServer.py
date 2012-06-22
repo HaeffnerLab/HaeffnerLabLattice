@@ -726,7 +726,6 @@ class AndorServer(LabradServer):
         if (error == 'DRV_SUCCESS'):
             returnValue(self.camera.imageArray)
         else:
-            print error
             raise Exception(error)
         
     @setting(26, "Wait For Acquisition", returns = 's')
