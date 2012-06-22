@@ -110,6 +110,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
+from matplotlib.widgets import RectangleSelector 
 from matplotlib import pyplot
 from PyQt4 import QtCore
 import time
@@ -153,12 +154,13 @@ class Qt4MplCanvas(FigureCanvas):
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
-        self.ax.set_color_cycle(['b', 'g', 'r', 'm', 'k'])
-        lines = ["-","-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
+        #self.ax.set_color_cycle(['b', 'g', 'r', 'm', 'k'])
+        lines = ["-"]#,"-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
         self.linecycler = cycle(lines)
 
         self.background = self.copy_from_bbox(self.ax.bbox)
-        
+    
+    
     # This method is called upon whenever the plot axes change
     def on_draw(self, event):
         self.timer.start(TIMERREFRESH)
@@ -517,3 +519,71 @@ class Qt4MplCanvas(FigureCanvas):
                     else:
                             out.append(item)
             return out
+
+#
+#class HistogramCanvas(FigureCanvas):
+#    """Class to plot a histogram"""
+#    def __init__(self, parent):    
+#        # instantiate figure
+#        self.fig = Figure()
+#        FigureCanvas.__init__(self, self.fig)
+#        self.ax = self.fig.add_subplot(111)
+#        self.setupSelector()
+#        
+#
+#    
+#    
+#    
+#    # Initialize a place in the dictionary for the dataset
+#    def initializeDataset(self, dataset, directory, labels):
+#        self.dataDict[dataset, directory] = None
+#        self.datasetLabelsDict[dataset, directory] = labels     
+#        
+#
+#    # retrieve and store the new data from Connections
+#    def setPlotData(self, dataset, directory, data):
+#        # First Time
+#
+#        if (self.dataDict[dataset, directory] == None):        
+#            pass
+#            #do the intial plot stuff
+#        else:
+#            #update the data, tell it to redraw
+#            pass
+#
+#
+#
+#    def onselect(self, eclick, erelease):
+#        'eclick and erelease are matplotlib events at press and release'
+#        print ' startposition : (%f, %f)' % (eclick.xdata, eclick.ydata)
+#        print ' endposition   : (%f, %f)' % (erelease.xdata, erelease.ydata)
+#          
+#        if (eclick.ydata > erelease.ydata):
+#            eclick.ydata, erelease.ydata= erelease.ydata, eclick.ydata
+#        if (eclick.xdata > erelease.xdata):
+#            eclick.xdata, erelease.xdata = erelease.xdata, eclick.xdata
+#           
+#    def setupSelector(self):
+#        self.rectSelect = RectangleSelector(self.ax, self.onselect, drawtype='line', lineprops = dict(color='black', linestyle='-',
+#                 linewidth = 2, alpha=0.5))    
+#        
+#        
+#    def constantUpdate(self):
+#        self.drawCounter = self.drawCounter + 1
+#        if (self.drawCounter == 10): # 10*10ms = 100ms
+#            self.timer.stop()
+#            self.drawGraph()
+#
+#    def endTimer(self):
+#        try:
+#            self.timer.stop()
+#        except AttributeError:
+#            pass
+#
+#    # Check which datasets are meant to be plotted and draw them.
+#    def drawGraph(self):
+##        tstartupdate = time.clock()
+#        for dataset, directory in self.dataDict:
+#            # if dataset is intended to be drawn (a checkbox governs this)
+#            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
+#                self.drawPlot(dataset, directory)

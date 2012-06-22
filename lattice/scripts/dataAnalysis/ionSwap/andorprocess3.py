@@ -5,23 +5,27 @@ from pylab import *
 from matplotlib import pyplot
 from scipy import ndimage
 import peakdetect
+import time
 
-iterations = 20
+iterations = 1
 
 #initialDarkIonPositionsHistory = []
 #finalDarkIonPositionsHistory = []
 ionMovements = []
 
-typicalIonDiameter = 5 # compare sections of this size in the image
+typicalIonDiameter = 6 # compare sections of this size in the image
 minimumIonIntensity = 540
 maximumCorrectedIonIntensity = -50
-expectedNumberOfIons = 9
+expectedNumberOfIons = 3
 peakVicinity = 3
 
 imagesWithIncorrectInitialIonNumber = 0
 imagesWithIncorrectInitialDarkIonNumber = 0
 imagesWithIncorrectFinalDarkIonNumber = 0
 
+
+timeOpening = 0
+timeProcessing = 0
 
 # loop through all the files
 for s in range(iterations):
@@ -40,12 +44,16 @@ for s in range(iterations):
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s6000' + str(3*s + j) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-9ions-dark\s' + str(s) + '000' + str(j+1) + '.asc')
                 #rawdata = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\camera-test\s100' + str(3*s + j) + '.asc')
+                t1 = time.clock()
                 try:
-                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060712\5\processed\s100' + str(3*s + j) + '.asc')
+                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062112\4\processed\s100' + str(3*s + j) + '.asc')
                 except IOError: #only 9 of these
-                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\060712\5\processed\s1000' + str(3*s + j) + '.asc')
+                   rawdata = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062112\4\processed\s1000' + str(3*s + j) + '.asc')
                 rows, cols = rawdata.shape
+                t2 = time.clock()
+                timeOpening += (t2-t1)
                 
+                matshow(rawdata)
                 axialSumRegions = []
                 axialData = np.sum(rawdata, 0)
                 
@@ -86,10 +94,11 @@ for s in range(iterations):
                 initialPeakPositions.append(q[0])
         print 'initial peak positions: ', initialPeakPositions
         
-        if (len(initialPeakPositions) == expectedNumberOfIons):
+        if (len(initialPeakPositions) != expectedNumberOfIons):
             
             ########### find the number of ions, peak positions of initial dark image ###########
              
+            t3 = time.clock()
             initialDarkImageData = dataArray[1] - dataArray[0]
             uncorrectedInitialDarkImageData_denoised = ndimage.gaussian_filter(dataArray[1], 2)
             initialDarkImageData_denoised = ndimage.gaussian_filter(initialDarkImageData, 2)
@@ -99,6 +108,8 @@ for s in range(iterations):
                 if q[1] < maximumCorrectedIonIntensity:
                     initialDarkPeakPositions.append(q[0])
             print 'initial dark peak positions: ', initialDarkPeakPositions
+            t4 = time.clock()
+            timeProcessing += (t4-t3)
             
             if (len(initialDarkPeakPositions) == 1):
           
@@ -168,5 +179,7 @@ print 'Number of Swaps: ', len(np.where(ionMovements == 1)[0])
 #pyplot.plot(range(len(numberOfIons)), numberOfIons)
 #pyplot.xlabel('Image Number')
 #pyplot.ylabel('Number of Ions')
+print timeOpening
+print timeProcessing
 
 show()
