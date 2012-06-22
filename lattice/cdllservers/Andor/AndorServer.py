@@ -26,8 +26,9 @@ class Andor:
         ch = c_int()
         self.dll.GetDetector(byref(cw), byref(ch))
 
-        self.width              = cw.value
-        self.height             = ch.value
+        self.detectorDimensions = [cw.value, ch.value]
+        self.width              = self.detectorDimensions[0]
+        self.height             = self.detectorDimensions[1]
         self.coolerState        = 0 # Off
         self.currentTemperature = None
         self.setTemperature     = -20
@@ -725,6 +726,12 @@ class AndorServer(LabradServer):
         error = yield deferToThread(self.camera.StartAcquisition)
         print 'starting acquisition: ', error
         returnValue(error)
+    
+    @setting(30, "Get Detector Dimensions", returns = '*i')
+    def getDetectorDimensions(self, c):
+        c['Detector Dimensions'] = self.camera.detectorDimensions
+        returnValue(c['Detector Dimensions'])
+       
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):

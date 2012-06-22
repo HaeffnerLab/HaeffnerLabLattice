@@ -114,6 +114,8 @@ from matplotlib import pyplot
 from PyQt4 import QtCore
 import time
 import numpy as np
+from itertools import cycle
+
 
 TIMERREFRESH = .01 #s
 MAXDATASETSIZE = 20000
@@ -151,8 +153,12 @@ class Qt4MplCanvas(FigureCanvas):
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
+        self.ax.set_color_cycle(['b', 'g', 'r', 'm', 'k'])
+        lines = ["-","-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
+        self.linecycler = cycle(lines)
+
         self.background = self.copy_from_bbox(self.ax.bbox)
-    
+        
     # This method is called upon whenever the plot axes change
     def on_draw(self, event):
         self.timer.start(TIMERREFRESH)
@@ -260,7 +266,7 @@ class Qt4MplCanvas(FigureCanvas):
     def initializePlots(self, dataset, directory, numberOfDependentVariables):
         for i in range(numberOfDependentVariables):
             label = self.datasetLabelsDict[dataset, directory][i]
-            self.plotDict[dataset, directory][i] = self.ax.plot(self.dataDict[dataset, directory][FIRST][INDEPENDENT],self.dataDict[dataset, directory][FIRST][DEPENDENT][i], label = label,animated=True)#'ko', markersize=2
+            self.plotDict[dataset, directory][i] = self.ax.plot(self.dataDict[dataset, directory][FIRST][INDEPENDENT],self.dataDict[dataset, directory][FIRST][DEPENDENT][i], label = label,animated=True, linestyle = next(self.linecycler))#'ko', markersize=2
         self.plotDict[dataset, directory] = self.flatten(self.plotDict[dataset, directory])
         
     
