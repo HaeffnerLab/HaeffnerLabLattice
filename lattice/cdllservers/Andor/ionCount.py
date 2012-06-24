@@ -8,10 +8,6 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from datetime import datetime
 
-
-
-
-from matplotlib.widgets import RectangleSelector 
 import numpy as np
 
 EMGAIN = 255
@@ -138,17 +134,11 @@ class IonCount():
         
         
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
-
-        # original window size can be changed here
-        self.originalHStart = 1
-        self.originalHEnd = 658#self.detectorDimensions[0]
-        self.originalVStart = 1
-        self.originalVEnd = 496#self.detectorDimensions[1]      
         
-        self.hstart = self.originalHStart
-        self.hend = self.originalHEnd
-        self.vstart = self.originalVStart
-        self.vend = self.originalVEnd
+        self.hstart = 1
+        self.hend = 658
+        self.vstart = 1
+        self.vend = 496
         
         self.width = self.hend - self.hstart
         self.height = self.vend - self.vstart
@@ -168,9 +158,9 @@ class IonCount():
         print temp
     
     @inlineCallbacks
-    def ionCount(self, threshold, iterations):
-        avgNumberOfIons = yield self.server.count_ions(threshold, iterations)
-        print avgNumberOfIons 
+    def ionCount(self, iterations):
+        yield self.server.count_ions((self.height + 1), (self.width + 1), iterations)
+         
             
     @inlineCallbacks
     def changeEMGain(self, value):
