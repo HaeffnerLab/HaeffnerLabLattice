@@ -1,7 +1,5 @@
-from PyQt4 import QtGui, QtCore
-import time
-from twisted.internet.threads import deferToThread
-from twisted.internet.defer import Deferred, inlineCallbacks, returnValue
+from PyQt4 import QtGui
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -28,7 +26,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def makeGrapherWidget(self, reactor):
         widget = QtGui.QWidget()
         from pygrapherlive.connections import CONNECTIONS
-        from pygrapherlive.connections import COMMUNICATE
         vboxlayout = QtGui.QVBoxLayout()
         Connections = CONNECTIONS(reactor)
         @inlineCallbacks

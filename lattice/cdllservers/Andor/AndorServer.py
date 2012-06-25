@@ -86,45 +86,54 @@ class Andor:
         error = self.dll.GetCameraSerialNumber(byref(serial))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.serial = serial.value      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
     def SetReadMode(self, readMode):
         error = self.dll.SetReadMode(readMode)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.readMode = readMode      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
     def SetAcquisitionMode(self, acquisitionMode):
         error = self.dll.SetAcquisitionMode(acquisitionMode)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.acquisitionMode = acquisitionMode      
-        return ERROR_CODE[error]
-        
+        else:
+            raise Exception(ERROR_CODE[error])
+                
     def SetNumberKinetics(self, numKin):
         error = self.dll.SetNumberKinetics(numKin)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.numberKinetics = numKin      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
                   
     def SetKineticCycleTime(self, time):
         error = self.dll.SetKineticCycleTime(c_float(time))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.kineticCycleTime = time      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def SetImage(self, hbin, vbin, hstart, hend, vstart, vend):
         error = self.dll.SetImage(hbin, vbin, hstart, hend, vstart, vend)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.imageRegion = [hbin, vbin, hstart, hend, vstart, vend]
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def StartAcquisition(self):
         error = self.dll.StartAcquisition()
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             errorWait = self.dll.WaitForAcquisition()
             if (ERROR_CODE[errorWait] == 'DRV_SUCCESS'):
-                return ERROR_CODE[errorWait]                
-        return ERROR_CODE[error]
+                pass
+            else:
+                raise Exception(ERROR_CODE[errorWait])                
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def StartAcquisitionKinetic(self, numKin):
         error = self.dll.StartAcquisition()
@@ -134,9 +143,9 @@ class Andor:
             for i in range(numKin):
                 errorWait = self.dll.WaitForAcquisition()
                 if (ERROR_CODE[errorWait] != 'DRV_SUCCESS'):
-                    return ERROR_CODE[errorWait]
-                                
-        return ERROR_CODE[error]
+                    raise Exception(ERROR_CODE[errorWait])                                
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def WaitForAcquisition(self):
         error = self.dll.WaitForAcquisition()
@@ -148,10 +157,10 @@ class Andor:
         cimage = cimageArray()
         #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
-        print ERROR_CODE[error]
-        self.imageArray = cimage[:]
-
-        return ERROR_CODE[error]
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.imageArray = cimage[:]
+        else:
+            raise Exception(ERROR_CODE[error])        
     
     def GetAcquiredDataKinetic(self, numKin):  
         dim = self.width * self.height * numKin
@@ -159,10 +168,10 @@ class Andor:
         cimage = cimageArray()
         #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
-        print ERROR_CODE[error]
-        self.imageArray = cimage[:]
-
-        return ERROR_CODE[error]
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.imageArray = cimage[:]
+        else:
+            raise Exception(ERROR_CODE[error]) 
    
     def GetMostRecentImage(self):
         #self.dll.WaitForAcquisition()
@@ -170,22 +179,23 @@ class Andor:
         cimageArray = c_int * dim
         cimage = cimageArray()
         error = self.dll.GetMostRecentImage(pointer(cimage),dim)
-        self.imageArray = cimage[:]
-        return ERROR_CODE[error]        
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.imageArray = cimage[:]
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def SetExposureTime(self, time):
         error = self.dll.SetExposureTime(c_float(time))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.exposureTime = time        
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
         
     def SetSingleScan(self):
         self.SetReadMode(4)
         self.SetAcquisitionMode(1)
         self.SetImage(1,1,1,self.width,1,self.height)
 
-
-        im.save(path,"BMP")
 
     def SaveAsTxt(self, path):
                      
@@ -203,25 +213,49 @@ class Andor:
                 file.write(' ')
 
         file.close()
+        
+    def SaveAsTxtKinetic(self, path, numKin):
+        # split up the image array into an array of arrays
+        imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
+        cnt = 0
+        for image in np.arange(numKin):
+            file = open(path + str(cnt), 'w')
+            
+            # self.imageArray is 1 dimensional!
+            count = 0
+            for i in imageArray[image][0]:
+                file.write(str(int(i)))
+                count += 1
+                if (count == self.height):
+                    file.write("\n")
+                    count = 0
+                else:
+                    file.write(' ')
 
+            file.close()
+            cnt += 1
+            
     def getCoolerState(self):
         cCoolerState = c_int()
         error = self.dll.IsCoolerOn(byref(cCoolerState))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.coolerState = cCoolerState.value      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
     def CoolerON(self):
         error = self.dll.CoolerON()
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.coolerState = 1
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def CoolerOFF(self):
         error = self.dll.CoolerOFF()
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.coolerState = 0
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
 
     def GetCurrentTemperature(self):
         ctemperature = c_int()
@@ -234,33 +268,38 @@ class Andor:
         error = self.dll.SetTemperature(temperature)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.setTemperature = temperature
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
     def GetEMCCDGain(self):
         gain = c_int()
         error = self.dll.GetEMCCDGain(byref(gain))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.EMCCDGain = gain.value      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
         
     def SetEMCCDGain(self, gain):
         error = self.dll.SetEMCCDGain(gain)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.EMCCDGain = gain             
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
         
     def SetTriggerMode(self, mode):
         error = self.dll.SetTriggerMode(mode)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.triggerMode = mode
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
     def GetStatus(self):
         status = c_int()
         error = self.dll.GetStatus(byref(status))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.status = ERROR_CODE[status.value]      
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
         
     def GetSeriesProgress(self):
         acc = c_long()
@@ -268,7 +307,8 @@ class Andor:
         error = self.dll.GetAcquisitionProgress(byref(acc),byref(series))
         if ERROR_CODE[error] == "DRV_SUCCESS":
             self.seriesProgress = series.value
-        return ERROR_CODE[error]
+        else:
+            raise Exception(ERROR_CODE[error])
     
 #    def GetAcquisitionTimings(self):
 #        exposure   = c_float()
@@ -522,12 +562,10 @@ class AndorServer(LabradServer):
     @setting(1, "Get Cooler State", returns = 'i')
     def getCoolerState(self, c):
         """Returns Current Cooler State"""
-        error = yield deferToThread(self.camera.getCoolerState)
-        if (error == 'DRV_SUCCESS'):
-            c['Cooler State'] = self.camera.coolerState
-            returnValue(c['Cooler State'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.getCoolerState)
+        c['Cooler State'] = self.camera.coolerState
+        returnValue(c['Cooler State'])
+
     
     @setting(2, "Set Cooler State", returns = '?')
     def setCoolerState(self, c):
@@ -536,12 +574,9 @@ class AndorServer(LabradServer):
     @setting(3, "Set Temperature", setTemp = 'i', returns = 'i')
     def setTemperature(self, c, setTemp):
         """Sets The Target Temperature"""
-        error = yield deferToThread(self.camera.SetTemperature, setTemp)
-        if (error == 'DRV_SUCCESS'):
-            c['Set Temperature'] = self.camera.setTemperature
-            returnValue(c['Set Temperature'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetTemperature, setTemp)
+        c['Set Temperature'] = self.camera.setTemperature
+        returnValue(c['Set Temperature'])
 
     @setting(4, "Get Exposure Time", returns = 'v')
     def getExposureTime(self, c):
@@ -552,32 +587,25 @@ class AndorServer(LabradServer):
     @setting(5, "Set Exposure Time", expTime = 'v', returns = 'v')
     def setExposureTime(self, c, expTime):
         """Sets Current Exposure Time"""
-        error = yield deferToThread(self.camera.SetExposureTime, expTime)
-        if (error == 'DRV_SUCCESS'):
-            c['Exposure Time'] = self.camera.exposureTime
-            returnValue(c['Exposure Time'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetExposureTime, expTime)
+        c['Exposure Time'] = self.camera.exposureTime
+        returnValue(c['Exposure Time'])
         
     @setting(6, "Get EMCCD Gain", returns = 'i')
     def getEMCCDGain(self, c):
         """Gets Current EMCCD Gain"""
-        error = yield deferToThread(self.camera.GetEMCCDGain)
-        if (error == 'DRV_SUCCESS'):
-            c['EMCCD Gain'] = self.camera.EMCCDGain
-            returnValue(c['EMCCD Gain'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetEMCCDGain)
+        c['EMCCD Gain'] = self.camera.EMCCDGain
+        returnValue(c['EMCCD Gain'])
+
     
     @setting(7, "Set EMCCD Gain", gain = 'i', returns = 'i')
     def setEMCCDGain(self, c, gain):
         """Sets Current EMCCD Gain"""
-        error = yield deferToThread(self.camera.SetEMCCDGain, gain)
-        if (error == 'DRV_SUCCESS'):
-            c['EMCCD Gain'] = self.camera.EMCCDGain
-            returnValue(c['EMCCD Gain'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetEMCCDGain, gain)
+        c['EMCCD Gain'] = self.camera.EMCCDGain
+        returnValue(c['EMCCD Gain'])
+
         
     @setting(8, "Get Read Mode", returns = 'i')
     def getReadMode(self, c):
@@ -588,13 +616,10 @@ class AndorServer(LabradServer):
     @setting(9, "Set Read Mode", readMode = 'i', returns = 'i')
     def setReadMode(self, c, readMode):
         """Sets Current Read Mode"""
-        error = yield deferToThread(self.camera.SetReadMode, readMode)
-        if (error == 'DRV_SUCCESS'):
-            c['Read Mode'] = self.camera.readMode
-            returnValue(c['Read Mode'])
-        else:
-            raise Exception(error)
- 
+        yield deferToThread(self.camera.SetReadMode, readMode)
+        c['Read Mode'] = self.camera.readMode
+        returnValue(c['Read Mode'])
+
     @setting(10, "Get Acquisition Mode", returns = 'i')
     def getAcquisitionMode(self, c):
         """Gets Current Acquisition Mode"""
@@ -604,12 +629,9 @@ class AndorServer(LabradServer):
     @setting(11, "Set Acquisition Mode", acqMode = 'i', returns = 'i')
     def setAcquisitionMode(self, c, acqMode):
         """Sets Current Acquisition Mode"""
-        error = yield deferToThread(self.camera.SetAcquisitionMode, acqMode)
-        if (error == 'DRV_SUCCESS'):
-            c['Acquisition Mode'] = self.camera.acquisitionMode
-            returnValue(c['Acquisition Mode'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetAcquisitionMode, acqMode)
+        c['Acquisition Mode'] = self.camera.acquisitionMode
+        returnValue(c['Acquisition Mode'])
 
     @setting(12, "Get Trigger Mode", returns = 'i')
     def getTriggerMode(self, c):
@@ -620,13 +642,10 @@ class AndorServer(LabradServer):
     @setting(13, "Set Trigger Mode", triggerMode = 'i', returns = 'i')
     def setTriggerMode(self, c, triggerMode):
         """Sets Current Trigger Mode"""
-        error = yield deferToThread(self.camera.SetTriggerMode, triggerMode)
-        if (error == 'DRV_SUCCESS'):
-            c['Trigger Mode'] = self.camera.triggerMode
-            returnValue(c['Trigger Mode'])
-        else:
-            raise Exception(error)
-    
+        yield deferToThread(self.camera.SetTriggerMode, triggerMode)
+        c['Trigger Mode'] = self.camera.triggerMode
+        returnValue(c['Trigger Mode'])
+
     @setting(14, "Get Image Region", returns = '*i')
     def getImageRegion(self, c):
         """Gets Current Image Region"""
@@ -637,23 +656,17 @@ class AndorServer(LabradServer):
     @setting(15, "Set Image Region", horizontalBinning = 'i', verticalBinning = 'i', horizontalStart = 'i', horizontalEnd = 'i', verticalStart = 'i', verticalEnd = 'i', returns = '*i')
     def setImageRegion(self, c, horizontalBinning, verticalBinning, horizontalStart, horizontalEnd, verticalStart, verticalEnd):
         """Sets Current Image Region"""
-        error = yield deferToThread(self.camera.SetImage, horizontalBinning, verticalBinning, horizontalStart, horizontalEnd, verticalStart, verticalEnd)
-        if (error == 'DRV_SUCCESS'):
-            c['Image Region'] = self.camera.imageRegion
-            self.camera.setDimensions((horizontalEnd - horizontalStart + 1), (verticalEnd - verticalStart + 1))
-            returnValue(c['Image Region'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetImage, horizontalBinning, verticalBinning, horizontalStart, horizontalEnd, verticalStart, verticalEnd)
+        c['Image Region'] = self.camera.imageRegion
+        self.camera.setDimensions((horizontalEnd - horizontalStart + 1), (verticalEnd - verticalStart + 1))
+        returnValue(c['Image Region'])
         
     @setting(16, "Get Camera Serial Number", returns = 'i')
-    def getCameraSerialNumber(self):
+    def getCameraSerialNumber(self, c):
         """Gets Camera Serial Number"""
-        error = yield deferToThread(self.camera.GetCameraSerialNumber)
-        if (error == 'DRV_SUCCESS'):
-            c['Serial Number'] = self.camera.serial
-            returnValue(c['Serial Number'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetCameraSerialNumber)
+        c['Serial Number'] = self.camera.serial
+        returnValue(c['Serial Number'])
     
     @setting(17, "Get Number Kinetics", returns = 'i')
     def getNumberKinetics(self, c):
@@ -664,12 +677,9 @@ class AndorServer(LabradServer):
     @setting(18, "Set Number Kinetics", numKin = 'i', returns = 'i')
     def setNumberKinetics(self, c, numKin):
         """Sets Number Of Scans In A Kinetic Cycle"""
-        error = yield deferToThread(self.camera.SetNumberKinetics, numKin)
-        if (error == 'DRV_SUCCESS'):
-            c['Number Kinetics'] = self.camera.numberKinetics
-            returnValue(c['Number Kinetics'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.SetNumberKinetics, numKin)
+        c['Number Kinetics'] = self.camera.numberKinetics
+        returnValue(c['Number Kinetics'])
 
     @setting(19, "Get Kinetic Cycle Time", returns = 'v')
     def getKineticCycleTime(self, c):
@@ -680,53 +690,39 @@ class AndorServer(LabradServer):
     @setting(20, "Set Kinetic Cycle Time", kinCycleTime = 'v', returns = 'v')
     def setKineticCycleTime(self, c, kinCycleTime):
         """Sets Time Between Kinetic Cycles"""
-        error = yield deferToThread(self.camera.SetKineticCycleTime, kinCycleTime)
-        if (error == 'DRV_SUCCESS'):
-            c['Kinetic Cycle Time'] = self.camera.numberKinetics
-            returnValue(c['Kinetic Cycle Time'])
-        else:
-            raise Exception(error)
-   
+        yield deferToThread(self.camera.SetKineticCycleTime, kinCycleTime)
+        c['Kinetic Cycle Time'] = self.camera.numberKinetics
+        returnValue(c['Kinetic Cycle Time'])
+
     @setting(21, "Get Status", returns = 's')
     def getStatus(self, c):
         """Gets Current Camera Status"""
-        error = yield deferToThread(self.camera.GetStatus)
-        if (error == 'DRV_SUCCESS'):
-            c['Status'] = self.camera.status
-            returnValue(c['Status'])
-        else:
-            raise Exception(error)
-    
+        yield deferToThread(self.camera.GetStatus)
+        c['Status'] = self.camera.status
+        returnValue(c['Status'])
+
     @setting(22, "Get Series Progress", returns = 'w')
     def getSeriesProgress(self, c):
         """Gets Current Scan In Series"""
-        error = yield deferToThread(self.camera.GetSeriesProgress)
-        if (error == 'DRV_SUCCESS'):
-            c['Series Progress'] = self.camera.seriesProgress
-            returnValue(c['Series Progress'])
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetSeriesProgress)
+        c['Series Progress'] = self.camera.seriesProgress
+        returnValue(c['Series Progress'])
 
-    @setting(23, "Cooler ON", returns = 's')
+    @setting(23, "Cooler ON", returns = '')
     def coolerON(self, c):
         """Turns Cooler On"""
-        error = yield deferToThread(self.camera.CoolerON)
-        returnValue(error)
+        yield deferToThread(self.camera.CoolerON)
         
-    @setting(24, "Cooler OFF", returns = 's')
+    @setting(24, "Cooler OFF", returns = '')
     def coolerOFF(self, c):
         """Turns Cooler On"""
-        error = yield deferToThread(self.camera.CoolerOFF)
-        returnValue(error)        
+        yield deferToThread(self.camera.CoolerOFF)
     
     @setting(25, "Get Most Recent Image", returns = '*i')
     def getMostRecentImage(self, c):
         """Gets Most Recent Image"""
-        error = yield deferToThread(self.camera.GetMostRecentImage)
-        if (error == 'DRV_SUCCESS'):
-            returnValue(self.camera.imageArray)
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetMostRecentImage)
+        returnValue(self.camera.imageArray)
         
     @setting(26, "Wait For Acquisition", returns = 's')
     def waitForAcquisition(self, c):
@@ -736,22 +732,18 @@ class AndorServer(LabradServer):
     @setting(27, "Get Acquired Data", returns = '*i')
     def getAcquiredData(self, c):
         """Get all Data"""
-        error = yield deferToThread(self.camera.GetAcquiredData)
-        if (error == 'DRV_SUCCESS'):
-            returnValue(self.camera.imageArray)
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetAcquiredData)
+        returnValue(self.camera.imageArray)
 
     @setting(28, "Save As Text", path = 's', returns = '')
     def saveAsText(self, c, path):
         """Saves Current Image As A Text File"""
-        error = yield deferToThread(self.camera.SaveAsTxt(path)) 
+        yield deferToThread(self.camera.SaveAsTxt(path)) 
         
-    @setting(29, "Start Acquisition", returns = 's')
+    @setting(29, "Start Acquisition", returns = '')
     def startAcquisition(self, c):
-        error = yield deferToThread(self.camera.StartAcquisition)
-        print 'starting acquisition: ', error
-        returnValue(error)
+        yield deferToThread(self.camera.StartAcquisition)
+        print 'starting acquisition: DRV_SUCCESS'
     
     @setting(30, "Get Detector Dimensions", returns = '*i')
     def getDetectorDimensions(self, c):
@@ -761,20 +753,20 @@ class AndorServer(LabradServer):
     @setting(31, "Get Acquired Data Kinetic", numKin = 'i', returns = '*i')
     def getAcquiredDataKinetic(self, c, numKin):
         """Get all Data for a Number of Scans"""
-        error = yield deferToThread(self.camera.GetAcquiredDataKinetic, numKin)
-        if (error == 'DRV_SUCCESS'):
-            returnValue(self.camera.imageArray)
-        else:
-            raise Exception(error)
+        yield deferToThread(self.camera.GetAcquiredDataKinetic, numKin)
+        returnValue(self.camera.imageArray)
 
-    @setting(32, "Start Acquisition Kinetic", numKin = 'i', returns = 's')
+    @setting(32, "Start Acquisition Kinetic", numKin = 'i', returns = '')
     def startAcquisitionKinetic(self, c, numKin):
-        error = yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
-        if (error == 'DRV_SUCCESS'):
-            notified = self.getOtherListeners(c)
-            self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
+        yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
+        self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
             #not sure yet
-        returnValue(error)
+
+    @setting(33, "Save As Text Kinetic", path = 's', numKin = 'i', returns = '')
+    def saveAsTextKinetic(self, c, path, numKin):
+        """Saves Current Image As A Text File"""
+        yield deferToThread(self.camera.SaveAsTxtKinetic(path, numKin)) 
+
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):
