@@ -29,9 +29,17 @@ class AppWindow(QtGui.QWidget):
         temperatureButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         temperatureButton.clicked.connect(self.printTemperature)     
         
-        ionCountButton = QtGui.QPushButton("Count Ions", self)
-        ionCountButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        ionCountButton.clicked.connect(self.ionCount) 
+        darkIonCountButton = QtGui.QPushButton("Count Dark Ions", self)
+        darkIonCountButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        darkIonCountButton.clicked.connect(self.countDarkIons) 
+        
+        collectDataButton = QtGui.QPushButton("Collect Data", self)
+        collectDataButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        collectDataButton.clicked.connect(self.collectData)
+        
+        countIonSwapsButton = QtGui.QPushButton("Count Ion Swaps", self)
+        countIonSwapsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        countIonSwapsButton.clicked.connect(self.countIonSwaps)
         
         exposureLabel = QtGui.QLabel()
         exposureLabel.setText('Exposure (ms): ')
@@ -39,8 +47,11 @@ class AppWindow(QtGui.QWidget):
         iterationsLabel = QtGui.QLabel()
         iterationsLabel.setText('Iterations: ')
         
-        thresholdLabel = QtGui.QLabel()
-        thresholdLabel.setText('Threshold: ')
+        ionThresholdLabel = QtGui.QLabel()
+        ionThresholdLabel.setText('Ion Threshold: ')
+
+        darkIonThresholdLabel = QtGui.QLabel()
+        darkIonThresholdLabel.setText('Dark Ion Threshold: ')        
         
         self.exposureSpinBox = QtGui.QSpinBox()
         self.exposureSpinBox.setMinimum(100)
@@ -57,37 +68,99 @@ class AppWindow(QtGui.QWidget):
         self.iterationsSpinBox.setValue(2)     
         self.iterationsSpinBox.setKeyboardTracking(False)
 
-        self.thresholdSpinBox = QtGui.QSpinBox()
-        self.thresholdSpinBox.setMinimum(0)
-        self.thresholdSpinBox.setMaximum(1000)
-        self.thresholdSpinBox.setSingleStep(1)  
-        self.thresholdSpinBox.setValue(500)     
-        self.thresholdSpinBox.setKeyboardTracking(False)
+        self.ionThresholdSpinBox = QtGui.QSpinBox()
+        self.ionThresholdSpinBox.setMinimum(0)
+        self.ionThresholdSpinBox.setMaximum(1000)
+        self.ionThresholdSpinBox.setSingleStep(1)  
+        self.ionThresholdSpinBox.setValue(500)     
+        self.ionThresholdSpinBox.setKeyboardTracking(False)
 
+        self.darkIonThresholdSpinBox = QtGui.QSpinBox()
+        self.darkIonThresholdSpinBox.setMinimum(-1000)
+        self.darkIonThresholdSpinBox.setMaximum(0)
+        self.darkIonThresholdSpinBox.setSingleStep(1)  
+        self.darkIonThresholdSpinBox.setValue(-200)     
+        self.darkIonThresholdSpinBox.setKeyboardTracking(False)
+
+        
+        imageAnalyzedLabel = QtGui.QLabel()
+        imageAnalyzedLabel.setText('Images to analyze: ')
+
+        typIonDiameterLabel = QtGui.QLabel()
+        typIonDiameterLabel.setText('Typical Ion Diameter: ')
+        
+        peakVicinityLabel = QtGui.QLabel()
+        peakVicinityLabel.setText('Peak Vicinity: ')
+        
+        self.imageAnalyzedSpinBox = QtGui.QSpinBox()
+        self.imageAnalyzedSpinBox.setMinimum(1)
+        self.imageAnalyzedSpinBox.setMaximum(20)
+        self.imageAnalyzedSpinBox.setSingleStep(1)  
+        self.imageAnalyzedSpinBox.setValue(1)     
+        self.imageAnalyzedSpinBox.setKeyboardTracking(False)        
+
+        self.typIonDiameterSpinBox = QtGui.QSpinBox()
+        self.typIonDiameterSpinBox.setMinimum(1)
+        self.typIonDiameterSpinBox.setMaximum(20)
+        self.typIonDiameterSpinBox.setSingleStep(1)  
+        self.typIonDiameterSpinBox.setValue(5)     
+        self.typIonDiameterSpinBox.setKeyboardTracking(False) 
+
+        self.peakVicinitySpinBox = QtGui.QSpinBox()
+        self.peakVicinitySpinBox.setMinimum(0)
+        self.peakVicinitySpinBox.setMaximum(10)
+        self.peakVicinitySpinBox.setSingleStep(1)  
+        self.peakVicinitySpinBox.setValue(2)     
+        self.peakVicinitySpinBox.setKeyboardTracking(False) 
+
+         
          # Layout
         self.bottomPanel1 = QtGui.QHBoxLayout()
         
         self.bottomPanel1.addWidget(temperatureButton)
-        self.bottomPanel1.addWidget(ionCountButton)
+        self.bottomPanel1.addWidget(darkIonCountButton)
     
         self.bottomPanel1.addStretch(0)
         self.bottomPanel1.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
         self.bottomPanel1.addWidget(iterationsLabel)
         self.bottomPanel1.addWidget(self.iterationsSpinBox)
-        self.bottomPanel1.addWidget(thresholdLabel)
-        self.bottomPanel1.addWidget(self.thresholdSpinBox)
-        self.bottomPanel1.addWidget(exposureLabel)
-        self.bottomPanel1.addWidget(self.exposureSpinBox)
+        self.bottomPanel1.addWidget(ionThresholdLabel)
+        self.bottomPanel1.addWidget(self.ionThresholdSpinBox)
+        self.bottomPanel1.addWidget(darkIonThresholdLabel)
+        self.bottomPanel1.addWidget(self.darkIonThresholdSpinBox)
+
+        
+        self.bottomPanel2 = QtGui.QHBoxLayout()
+
+#        self.bottomPanel2.addStretch(0)
+        self.bottomPanel2.addWidget(collectDataButton)
+        self.bottomPanel2.addWidget(countIonSwapsButton)
+        self.bottomPanel2.addWidget(imageAnalyzedLabel)
+        self.bottomPanel2.addWidget(self.imageAnalyzedSpinBox)
+        self.bottomPanel2.addWidget(exposureLabel)
+        self.bottomPanel2.addWidget(self.exposureSpinBox)
+        self.bottomPanel2.addWidget(typIonDiameterLabel)
+        self.bottomPanel2.addWidget(self.typIonDiameterSpinBox)
+        self.bottomPanel2.addWidget(peakVicinityLabel)
+        self.bottomPanel2.addWidget(self.peakVicinitySpinBox)
 
         layout.addLayout(self.bottomPanel1)
-             
+        layout.addLayout(self.bottomPanel2)
+        
+        self.setWindowTitle('Dark Ion Analysis')  
         self.setLayout(layout)
 
     def printTemperature(self, evt):
         self.parent.printTemperature()
     
-    def ionCount(self, evt):
-        self.parent.ionCount(self.thresholdSpinBox.value(), self.iterationsSpinBox.value())
+    def countDarkIons(self, evt):
+        self.parent.countDarkIons(self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.ionThresholdSpinBox.value(), self.darkIonThresholdSpinBox.value(), self.iterationsSpinBox.value())
+        
+    def countIonSwaps(self, evt):
+        self.parent.countIonSwaps(self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.ionThresholdSpinBox.value(), self.darkIonThresholdSpinBox.value(), self.iterationsSpinBox.value(), self.peakVicinitySpinBox.value())
+    
+    def collectData(self, evt):
+        self.parent.collectData(self.iterationsSpinBox.value(), self.imageAnalyzedSpinBox.value())
     
     def changeExposure(self, value):
         self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s       
@@ -136,9 +209,9 @@ class IonCount():
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
         
         self.hstart = 1
-        self.hend = 658
+        self.hend = 141
         self.vstart = 1
-        self.vend = 496
+        self.vend = 52
         
         self.width = self.hend - self.hstart
         self.height = self.vend - self.vstart
@@ -158,10 +231,21 @@ class IonCount():
         print temp
     
     @inlineCallbacks
-    def ionCount(self, iterations):
-        yield self.server.count_ions((self.height + 1), (self.width + 1), iterations)
-         
-            
+    def collectData(self, iterations, numAnalyzedImages):
+        yield self.server.collect_data((self.height + 1), (self.width + 1), iterations, numAnalyzedImages)
+    
+    @inlineCallbacks
+    def countDarkIons(self, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+        numKin =  (numAnalyzedImages + 1)*iterations
+        darkIonCatalog = yield self.server.count_dark_ions(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+        print darkIonCatalog
+
+    @inlineCallbacks
+    def countIonSwaps(self, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
+        numKin =  (numAnalyzedImages + 1)*iterations
+        yield self.server.count_ion_swaps(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity)
+        
+    
     @inlineCallbacks
     def changeEMGain(self, value):
         yield self.server.set_emccd_gain(value)
