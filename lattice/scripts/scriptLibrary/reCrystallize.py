@@ -65,9 +65,6 @@ class ShortCutter(QtGui.QWidget):
         self.cxn = yield connectAsync()
         self.rf = self.cxn.trap_drive
         self.pulser = self.cxn.pulser
-        
-        self.initpower = yield self.rf.amplitude()
-
         self.setupWidget()
         
     def setupWidget(self):
@@ -79,11 +76,11 @@ class ShortCutter(QtGui.QWidget):
         singleButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         singleButton.clicked.connect(self.recrystallize)
         
-        self.shortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_R), self)
+        self.shortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_X), self)
         self.shortcut.activated.connect(self.recrystallize)
         
         shortcutLabel = QtGui.QLabel()
-        shortcutLabel.setText('Ctrl-r')
+        shortcutLabel.setText('Ctrl-X')
  
         self.grid.addWidget(singleButton, 0, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(shortcutLabel, 0, 1, QtCore.Qt.AlignCenter)
@@ -93,8 +90,9 @@ class ShortCutter(QtGui.QWidget):
         self.show()
 
     @inlineCallbacks    
-    def recrystallize(self, evt=1):
-        print 'Resetting rf & Switching on far-red beam..'        
+    def recrystallize(self, evt = None):
+        print 'Resetting rf & Switching on far-red beam..'  
+        initpower = yield self.rf.amplitude()      
         yield deferToThread(time.sleep, 0.1)
         yield self.rf.amplitude(-7.0)
         yield self.pulser.switch_manual('crystallization',  True) # crystallization shutter open
@@ -104,7 +102,7 @@ class ShortCutter(QtGui.QWidget):
         yield deferToThread(time.sleep, 2.0)  
         yield self.pulser.switch_manual('110DP',  True)
         #pulser.switch_manual('crystallization',  False)
-        yield self.rf.amplitude(self.initpower)
+        yield self.rf.amplitude(initpower)
         #dc.setendcap(1,3.695)
         #dc.setendcap(2,8.305)
            #for voltage in numpy.arange(initcavity, min, -1):
