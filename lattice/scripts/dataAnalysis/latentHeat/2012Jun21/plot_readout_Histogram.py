@@ -8,7 +8,11 @@ from matplotlib import pyplot
 
 totalTraces = 200
 
-title = '2012 June 21 delay time 5 ions' ; datasets = ['2012Jun21_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [192851,193305,193518,193826, 194101,194327,194601,194925,200802, 201806]] #heating time'
+#title = '2012 June 21 delay time 5 ions' ; datasets = ['2012Jun21_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [192851,193305,193518,193826, 194101,194327,194601,194925,200802, 201806]] #heating time'
+#title = '2012 June 21 delay time 10 ions' ; datasets = ['2012Jun21_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [204347,204755, 205035, 205356, 205735, 210012, 210252, 210519, 210742, 211338]]
+#title = '2012 June 21 delay time 15 ions' ; datasets = ['2012Jun21_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [213349, 213806, 214046, 214446, 214913, 215238, 215610, 215848, 223117, 223533, 223852, 224508]]
+#title = '2012 June 21 delay time 19 ions' ; datasets = ['2012Jun21_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [231600, 232030, 232357, 232707, 233111, 233359, 234121]]
+title = '2012 June 21 delay time 2 ions';  datasets = ['2012Jun22_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in [1335, 1743, 2050, 2314, 3047, 2550, 3417, 3946, 2824, 5047]]
 
 def arangeByParameter(datasets, parameter):
     parList = []
