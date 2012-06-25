@@ -189,15 +189,13 @@ class Andor:
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.exposureTime = time        
         else:
-           raise Exception(ERROR_CODE[error])
+            raise Exception(ERROR_CODE[error])
         
     def SetSingleScan(self):
         self.SetReadMode(4)
         self.SetAcquisitionMode(1)
         self.SetImage(1,1,1,self.width,1,self.height)
 
-
-        im.save(path,"BMP")
 
     def SaveAsTxt(self, path):
                      
@@ -215,7 +213,28 @@ class Andor:
                 file.write(' ')
 
         file.close()
+        
+    def SaveAsTxtKinetic(self, path, numKin):
+        # split up the image array into an array of arrays
+        imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
+        cnt = 0
+        for image in np.arange(numKin):
+            file = open(path + str(cnt), 'w')
+            
+            # self.imageArray is 1 dimensional!
+            count = 0
+            for i in imageArray[image][0]:
+                file.write(str(int(i)))
+                count += 1
+                if (count == self.height):
+                    file.write("\n")
+                    count = 0
+                else:
+                    file.write(' ')
 
+            file.close()
+            cnt += 1
+            
     def getCoolerState(self):
         cCoolerState = c_int()
         error = self.dll.IsCoolerOn(byref(cCoolerState))
@@ -643,7 +662,7 @@ class AndorServer(LabradServer):
         returnValue(c['Image Region'])
         
     @setting(16, "Get Camera Serial Number", returns = 'i')
-    def getCameraSerialNumber(self):
+    def getCameraSerialNumber(self, c):
         """Gets Camera Serial Number"""
         yield deferToThread(self.camera.GetCameraSerialNumber)
         c['Serial Number'] = self.camera.serial
@@ -742,6 +761,12 @@ class AndorServer(LabradServer):
         yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
         self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
             #not sure yet
+
+    @setting(33, "Save As Text Kinetic", path = 's', numKin = 'i', returns = '')
+    def saveAsTextKinetic(self, c, path, numKin):
+        """Saves Current Image As A Text File"""
+        yield deferToThread(self.camera.SaveAsTxtKinetic(path, numKin)) 
+
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):
