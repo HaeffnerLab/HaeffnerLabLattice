@@ -4,6 +4,10 @@ from matplotlib.figure import Figure
 from matplotlib import cm
 import time
 
+
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from datetime import datetime
@@ -13,6 +17,31 @@ import numpy as np
 EMGAIN = 255
 EXPOSURE = .3 #sec
        
+class Canvas(FigureCanvas):
+    """Matplotlib Figure widget to display CPU utilization"""
+    def __init__(self, darkIonCatalog):
+        self.fig = Figure()
+        FigureCanvas.__init__(self, self.fig)
+        self.ax = self.fig.add_subplot(111)
+        self.ax.hist(darkIonCatalog)
+
+class HistWindow(QtGui.QWidget):        
+    """Creates the window for the new plot"""
+    def __init__(self, parent):
+        QtGui.QWidget.__init__(self)
+        
+        self.parent = parent
+        
+        layout = QtGui.QVBoxLayout()
+        
+        canvas = Canvas(self.parent.parent.darkIonCatalog)
+        canvas.show()
+        ntb = NavigationToolbar(canvas, self)
+
+        layout.addWidget(canvas)
+        layout.addWidget(ntb)
+        self.setLayout(layout)
+        #self.show()
         
 class AppWindow(QtGui.QWidget):
     """Creates the window for the new plot"""
@@ -20,6 +49,8 @@ class AppWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         
         self.parent = parent
+        
+        self.histList = []
         
        
         layout = QtGui.QVBoxLayout()
@@ -36,11 +67,25 @@ class AppWindow(QtGui.QWidget):
         collectDataButton = QtGui.QPushButton("Collect Data", self)
         collectDataButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         collectDataButton.clicked.connect(self.collectData)
+#        collectDataButton.setEnabled(False)
         
         getIonPositionCatalogButton = QtGui.QPushButton("Get Ion Position Catalog", self)
         getIonPositionCatalogButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         getIonPositionCatalogButton.clicked.connect(self.getIonPositionCatalog)
         
+        countDarkIonsButton = QtGui.QPushButton("Count Dark Ions", self)
+        countDarkIonsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        countDarkIonsButton.clicked.connect(self.countDarkIons)
+        
+        openKineticButton = QtGui.QPushButton("Open Kinetic", self)
+        openKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        openKineticButton.clicked.connect(self.openKinetic)
+        
+        pathLabel = QtGui.QLabel()
+        pathLabel.setText('Path: ')
+        
+        self.pathEdit = QtGui.QLineEdit()        
+                        
         exposureLabel = QtGui.QLabel()
         exposureLabel.setText('Exposure (ms): ')
 
@@ -138,15 +183,24 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel2.addWidget(getIonPositionCatalogButton)
         self.bottomPanel2.addWidget(imageAnalyzedLabel)
         self.bottomPanel2.addWidget(self.imageAnalyzedSpinBox)
-        self.bottomPanel2.addWidget(exposureLabel)
-        self.bottomPanel2.addWidget(self.exposureSpinBox)
+#        self.bottomPanel2.addWidget(exposureLabel)
+#        self.bottomPanel2.addWidget(self.exposureSpinBox)
         self.bottomPanel2.addWidget(typIonDiameterLabel)
         self.bottomPanel2.addWidget(self.typIonDiameterSpinBox)
         self.bottomPanel2.addWidget(peakVicinityLabel)
         self.bottomPanel2.addWidget(self.peakVicinitySpinBox)
+        
+        self.bottomPanel3 = QtGui.QHBoxLayout()
+
+        self.bottomPanel3.addWidget(countDarkIonsButton)
+        self.bottomPanel3.addWidget(openKineticButton)
+        self.bottomPanel3.addWidget(pathLabel)
+        self.bottomPanel3.addWidget(self.pathEdit)
+        
 
         layout.addLayout(self.bottomPanel1)
         layout.addLayout(self.bottomPanel2)
+        layout.addLayout(self.bottomPanel3)
         
         self.setWindowTitle('Dark Ion Analysis')  
         self.setLayout(layout)
@@ -166,8 +220,14 @@ class AppWindow(QtGui.QWidget):
     def changeExposure(self, value):
         self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s     
         
-    def getSeriesProgress(self):
-        self.parent.getSeriesProgress()  
+    def countDarkIons(self):
+        histWindow = HistWindow(self)
+        self.histList.append(histWindow)
+        histWindow.show()
+        print np.mean(self.parent.darkIonCatalog)
+    
+    def openKinetic(self):
+        self.parent.openKinetic(str(self.pathEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
 
     def closeEvent(self, evt):
         self.parent.reactor.stop()           
@@ -212,10 +272,10 @@ class IonCount():
         
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
         
-        self.hstart = 1
-        self.hend = 141
-        self.vstart = 1
-        self.vend = 52
+        self.hstart = 496#1
+        self.hend = 536#141
+        self.vstart = 155#1
+        self.vend = 172#52
         
         self.width = self.hend - self.hstart
         self.height = self.vend - self.vstart
@@ -241,8 +301,8 @@ class IonCount():
     @inlineCallbacks
     def getDarkIonCatalog(self, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
         numKin =  (numAnalyzedImages + 1)*iterations
-        darkIonCatalog = yield self.server.get_dark_ion_catalog(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
-        print darkIonCatalog
+        self.darkIonCatalog = yield self.server.get_dark_ion_catalog(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+        print self.darkIonCatalog
 
     @inlineCallbacks
     def getIonPositionCatalog(self, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
@@ -258,6 +318,11 @@ class IonCount():
     @inlineCallbacks
     def changeExposure(self, value):
         yield self.server.set_exposure_time(value)
+        
+    @inlineCallbacks
+    def openKinetic(self, path, numKin):
+        yield self.server.open_as_text_kinetic(path, numKin)
+        print 'opened!'
     
     
     @inlineCallbacks
