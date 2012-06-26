@@ -15,10 +15,13 @@ from labrad.server import LabradServer, setting, Signal
    gain, gainRange, status etc. are stored in the class. """
 
 class Andor:
-    def __init__(self):
+    def __init__(self, parent):
         #cdll.LoadLibrary("/usr/local/lib/libandor.so")
         #self.dll = CDLL("/usr/local/lib/libandor.so")
         #error = self.dll.Initialize("/usr/local/etc/andor/")
+        
+        self.parent = parent
+        
         self.dll = windll.LoadLibrary(r'C:\Users\lattice\Desktop\LabRAD\lattice\cdllservers\Andor\atmcd32d.dll')
         error = self.dll.Initialize(r'C:\Users\lattice\Desktop\LabRAD\lattice\cdllservers\Andor')
 
@@ -136,6 +139,7 @@ class Andor:
             raise Exception(ERROR_CODE[error])
 
     def StartAcquisitionKinetic(self, numKin):
+        cnt = 0
         error = self.dll.StartAcquisition()
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             # WaitForAcquisition finishes after ONE image is finished, this for loop will ensure
@@ -143,7 +147,9 @@ class Andor:
             for i in range(numKin):
                 errorWait = self.dll.WaitForAcquisition()
                 if (ERROR_CODE[errorWait] != 'DRV_SUCCESS'):
-                    raise Exception(ERROR_CODE[errorWait])                                
+                    raise Exception(ERROR_CODE[errorWait])
+                cnt += 1
+                self.parent.onAcquisitionEvent("Acquired: {0} of {1}".format(cnt, numKin), self.parent.listeners)                                
         else:
             raise Exception(ERROR_CODE[error])
 
@@ -224,7 +230,7 @@ class Andor:
             # self.imageArray is 1 dimensional!
             count = 0
             for i in imageArray[image][0]:
-                file.write(str(int(i)))
+                file.write(str(cnt)+str(int(i)))
                 count += 1
                 if (count == self.height):
                     file.write("\n")
@@ -512,6 +518,7 @@ class AndorServer(LabradServer):
     name = "Andor Server"
 
     onKineticFinish = Signal(111111, 'signal: kinetic finish', 's')
+    onAcquisitionEvent = Signal(222222, 'signal: acquisition event', 's')
     
     def initServer(self):
 
@@ -531,7 +538,7 @@ class AndorServer(LabradServer):
         return notified
 
     def prepareCamera(self):
-        self.camera = Andor()
+        self.camera = Andor(self)
 #        camera.SetSingleScan()
 #        camera.SetTriggerMode(TriggerMode)
 #        camera.SetPreAmpGain(PreAmpGain)

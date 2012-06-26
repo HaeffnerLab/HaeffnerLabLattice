@@ -92,6 +92,7 @@ class AppWindow(QtGui.QWidget):
         peakVicinityLabel = QtGui.QLabel()
         peakVicinityLabel.setText('Peak Vicinity: ')
         
+        
         self.imageAnalyzedSpinBox = QtGui.QSpinBox()
         self.imageAnalyzedSpinBox.setMinimum(1)
         self.imageAnalyzedSpinBox.setMaximum(20)
@@ -163,7 +164,10 @@ class AppWindow(QtGui.QWidget):
         self.parent.collectData(self.iterationsSpinBox.value(), self.imageAnalyzedSpinBox.value())
     
     def changeExposure(self, value):
-        self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s       
+        self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s     
+        
+    def getSeriesProgress(self):
+        self.parent.getSeriesProgress()  
 
     def closeEvent(self, evt):
         self.parent.reactor.stop()           
@@ -243,8 +247,8 @@ class IonCount():
     @inlineCallbacks
     def countIonSwaps(self, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
         numKin =  (numAnalyzedImages + 1)*iterations
-        yield self.server.count_ion_swaps(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity)
-        
+        ionSwapCatalog = yield self.server.count_ion_swaps(numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity)
+        print ionSwapCatalog
     
     @inlineCallbacks
     def changeEMGain(self, value):
@@ -253,7 +257,7 @@ class IonCount():
     @inlineCallbacks
     def changeExposure(self, value):
         yield self.server.set_exposure_time(value)
-
+    
     
     @inlineCallbacks
     def abortVideo(self):

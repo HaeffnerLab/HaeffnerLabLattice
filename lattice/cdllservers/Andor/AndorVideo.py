@@ -400,15 +400,18 @@ class AndorClient():
         self.cxn = yield connectAsync()
         try:
             self.server = yield self.cxn.andor_server
-            #self.setupListeners()
+            self.setupListeners()
             self.setupCamera()
         except Exception ,e:
             print 'server not connected: {}'.format(e)
 
     @inlineCallbacks
     def setupListeners(self):
-        yield self.server.signal__kinetic_finish(88888)
-        yield self.server.addListener(listener = self.kineticFinish, source = None, ID = 88888)
+#        yield self.server.signal__kinetic_finish(88888)
+#        yield self.server.addListener(listener = self.kineticFinish, source = None, ID = 88888)
+        yield self.server.signal__acquisition_event(99999)
+        yield self.server.addListener(listener = self.acquisitionEvent, source = None, ID = 99999)
+        
     
     @inlineCallbacks
     def setupCamera(self):
@@ -524,10 +527,13 @@ class AndorClient():
             print "Ready for Acquisition..."
             
             yield self.server.start_acquisition_kinetic(numKin)
+            t1 = time.clock()
             data = yield self.server.get_acquired_data_kinetic(self.numKin)
             newdata = data.asarray
+            t2 = time.clock()
             
             print newdata[12:14]
+            print 'time of transfer: ', (t2 - t1)
             
 #    @inlineCallbacks 
 #    def kineticFinish(self,x,y): 
@@ -537,6 +543,9 @@ class AndorClient():
 #        print newdata[12:14]
 #            
             
+    def acquisitionEvent(self, x, y):
+        print y
+    
   
     @inlineCallbacks
     def liveVideo(self):

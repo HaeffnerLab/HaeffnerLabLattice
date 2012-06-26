@@ -77,14 +77,17 @@ class AndorIonCount(LabradServer, AndorServer):
              save the imagearray as a textfile, process it so you can get separate files for
              each image """
         
+       
         ionSwapCatalog = np.zeros(iterations)
         
         for imageSet in np.arange(iterations):
-            initialPosition = ionPositionCatalog[imageSet][1]
-            finalPosition = ionPositionCatalog[imageSet][2]
-            
-            ionSwapCatalog[imageSet] = abs(finalPosition - initialPosition)
-        
+            try:
+                initialPosition = ionPositionCatalog[imageSet][1]
+                finalPosition = ionPositionCatalog[imageSet][2]
+                
+                ionSwapCatalog[imageSet] = abs(finalPosition - initialPosition)
+            except IndexError:
+                print 'Either number of images to analyze is not 2, or there were no identified dark ions'
 #        print 'ion swap catalog:'
 #        print ionSwapCatalog
         return ionSwapCatalog
@@ -125,7 +128,7 @@ class AndorIonCount(LabradServer, AndorServer):
                             ionPositionCatalog[imageSet].append(result[0])
                         except:
                             print 'la gente esta muy loca!'
-        
+
 #        print 'ion position catalog: '
 #        print ionPositionCatalog
         return ionPositionCatalog
@@ -159,39 +162,39 @@ class AndorIonCount(LabradServer, AndorServer):
         numberImagesToAnalyze = (numKin / iterations) - 1
         
         # 3D array of each image
-        data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
+#        data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
         
-#        ###### TESTING TESTING TESTING 123 ################
-#        rawdata1 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60001.asc')
-#        rawdata1 = rawdata1.transpose()
-#        
-#        rawdata2 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60002.asc')
-#        rawdata2 = rawdata2.transpose()
-#
-#        rawdata3 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60003.asc')
-#        rawdata3 = rawdata3.transpose()
-#        
-#        
+        ###### TESTING TESTING TESTING 123 ################
+        rawdata1 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60001.asc')
+        rawdata1 = rawdata1.transpose()
+        
+        rawdata2 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60002.asc')
+        rawdata2 = rawdata2.transpose()
+
+        rawdata3 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60003.asc')
+        rawdata3 = rawdata3.transpose()
+        
+        
 #        #dark ion count
 #        arr = [[] for i in range(4)]
 #        arr[0] = rawdata1
 #        arr[1] = rawdata3
 #        arr[2] = rawdata1
 #        arr[3] = rawdata2
-#
-#     
-#        # ion swap
-##        arr = [[] for i in range(6)]
-##        arr[0] = rawdata1
-##        arr[1] = rawdata2
-##        arr[2] = rawdata3
-##        arr[3] = rawdata1
-##        arr[4] = rawdata2
-##        arr[5] = rawdata3
-#                        
-#        data = np.array(arr)
-#        
-#        ###### TESTING TESTING TESTING 123 ################
+
+     
+        # ion swap
+        arr = [[] for i in range(6)]
+        arr[0] = rawdata1
+        arr[1] = rawdata2
+        arr[2] = rawdata3
+        arr[3] = rawdata1
+        arr[4] = rawdata2
+        arr[5] = rawdata3
+                        
+        data = np.array(arr)
+        
+        ###### TESTING TESTING TESTING 123 ################
         
         peakPositionCatalog = [[] for i in range(iterations)] 
         
@@ -295,6 +298,7 @@ class AndorIonCount(LabradServer, AndorServer):
                 for peak in darkMinPeaks:
                     if peak[1] < darkThreshold:
                         darkPeakPositions.append(peak[0])
+
 #                print 'initial dark peak positions: ', darkPeakPositions
 #                print 'number of dark ions: ', len(darkPeakPositions)
                 peakPositionCatalog[imageSet].append(darkPeakPositions) # we're hoping there is only one peak here!
@@ -330,7 +334,7 @@ class AndorIonCount(LabradServer, AndorServer):
         #avgNumberDarkIons = self.GetAverageDarkIons(darkIonCatalog, numKin, iterations)
         return darkIonCatalog
     
-    @setting(42, "Count Ion Swaps", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', peakVicinity = 'i', returns = 'i')
+    @setting(42, "Count Ion Swaps", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', peakVicinity = 'i', returns = '*v')
     def countIonSwaps(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
         peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
         ionPositionCatalog = self.BuildIonPositionCatalog(peakPositionCatalog, iterations, numKin, peakVicinity)
