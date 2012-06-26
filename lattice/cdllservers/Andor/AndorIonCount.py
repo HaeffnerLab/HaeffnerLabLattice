@@ -163,6 +163,8 @@ class AndorIonCount(LabradServer, AndorServer):
         
         # 3D array of each image
 #        data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
+
+#        data = self.imageArray
         
         ###### TESTING TESTING TESTING 123 ################
         rawdata1 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60001.asc')

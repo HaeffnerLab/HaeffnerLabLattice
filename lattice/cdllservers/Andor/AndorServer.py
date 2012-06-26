@@ -222,6 +222,7 @@ class Andor:
         
     def SaveAsTxtKinetic(self, path, numKin):
         # split up the image array into an array of arrays
+        # ASSUMES CURRENT WIDTH AND HEIGHT ARE CORRECT FOR THE IMAGE!!!
         imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
         cnt = 0
         for image in np.arange(numKin):
@@ -230,9 +231,9 @@ class Andor:
             # self.imageArray is 1 dimensional!
             count = 0
             for i in imageArray[image][0]:
-                file.write(str(cnt)+str(int(i)))
+                file.write(str(int(i)))
                 count += 1
-                if (count == self.height):
+                if (count == self.width):
                     file.write("\n")
                     count = 0
                 else:
@@ -241,6 +242,18 @@ class Andor:
             file.close()
             cnt += 1
             
+    def OpenAsTxt(self, path):
+        self.imageArray = np.loadtxt(path)
+        
+    def OpenAsTxtKinetic(self, path, numKin):
+        """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image0, image1, image2..etc. """
+        imageArray = [[] for i in np.arange(numKin)]
+        for imageNumber in np.arange(numKin):
+            imageArray[imageNumber] = np.loadtxt(path+str(imageNumber))
+        imageArray = np.array(imageArray)
+        self.imageArray = np.ravel(np.array(imageArray)) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
+        del imageArray            
+    
     def getCoolerState(self):
         cCoolerState = c_int()
         error = self.dll.IsCoolerOn(byref(cCoolerState))
@@ -745,7 +758,7 @@ class AndorServer(LabradServer):
     @setting(28, "Save As Text", path = 's', returns = '')
     def saveAsText(self, c, path):
         """Saves Current Image As A Text File"""
-        yield deferToThread(self.camera.SaveAsTxt(path)) 
+        yield deferToThread(self.camera.SaveAsTxt, path) 
         
     @setting(29, "Start Acquisition", returns = '')
     def startAcquisition(self, c):
@@ -771,9 +784,18 @@ class AndorServer(LabradServer):
 
     @setting(33, "Save As Text Kinetic", path = 's', numKin = 'i', returns = '')
     def saveAsTextKinetic(self, c, path, numKin):
-        """Saves Current Image As A Text File"""
-        yield deferToThread(self.camera.SaveAsTxtKinetic(path, numKin)) 
+        """Saves a Series of Images As Text Files"""
+        yield deferToThread(self.camera.SaveAsTxtKinetic, path, numKin) 
 
+    @setting(34, "Open As Text", path = 's', returns = '')
+    def openAsText(self, c, path):
+        """Opens a Text File as Image"""
+        yield deferToThread(self.camera.OpenAsTxt, path) 
+    
+    @setting(35, "Open As Text Kinetic", path = 's', numKin = 'i', returns = '')
+    def openAsTextKinetic(self, c, path, numKin):
+        """Opens a Series of Text Files As Images"""
+        yield deferToThread(self.camera.OpenAsTxtKinetic, path, numKin) 
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):

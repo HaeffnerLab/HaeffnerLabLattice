@@ -266,8 +266,15 @@ class AppWindow(QtGui.QWidget):
         
         kineticButton = QtGui.QPushButton("Kinetic", self)
         kineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        kineticButton.clicked.connect(self.kineticScan)      
+        kineticButton.clicked.connect(self.kineticScan)
         
+        saveKineticButton = QtGui.QPushButton("Save Kinetic", self)
+        saveKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        saveKineticButton.clicked.connect(self.saveKinetic)
+    
+        openKineticButton = QtGui.QPushButton("Open Kinetic", self)
+        openKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        openKineticButton.clicked.connect(self.openKinetic)   
         
         numKineticLabel = QtGui.QLabel()
         numKineticLabel.setText('Number of Scans: ')
@@ -344,6 +351,8 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel2.addWidget(self.numKineticSpinBox)
         self.bottomPanel2.addWidget(kineticCycleTimeLabel)
         self.bottomPanel2.addWidget(self.kineticCycleTimeSpinBox)
+        self.bottomPanel2.addWidget(saveKineticButton)
+        self.bottomPanel2.addWidget(openKineticButton)
             
         self.bottomPanel2.addStretch(0)
         self.bottomPanel2.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
@@ -374,6 +383,12 @@ class AppWindow(QtGui.QWidget):
         
     def resetScale(self, evt):
         self.parent.changeImageRegion(self.parent.originalHStart,self.parent.originalVStart,self.parent.originalHEnd,self.parent.originalVEnd)
+        
+    def saveKinetic(self, evt):
+        self.parent.saveKinetic(self.numKineticSpinBox.value())
+    
+    def openKinetic(self, evt):
+        self.parent.openKinetic(self.numKineticSpinBox.value())
     
     def closeEvent(self, evt):
         self.parent.abortVideo()
@@ -527,9 +542,11 @@ class AndorClient():
             print "Ready for Acquisition..."
             
             yield self.server.start_acquisition_kinetic(numKin)
+            print 'acquired?'
             t1 = time.clock()
             data = yield self.server.get_acquired_data_kinetic(self.numKin)
             newdata = data.asarray
+            print 'data?'
             t2 = time.clock()
             
             print newdata[12:14]
@@ -612,6 +629,19 @@ class AndorClient():
             error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
             print 'image error: ', error
         #self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
+    
+    @inlineCallbacks
+    def saveKinetic(self, numKin):
+        path = 'image'
+        yield self.server.save_as_text_kinetic(path, numKin)
+        print 'saved!'
+    
+    @inlineCallbacks
+    def openKinetic(self, numKin):
+        path = 'image'
+        yield self.server.open_as_text_kinetic(path, numKin)
+        print 'opened!'
+        
         
 if __name__ == "__main__":
     a = QtGui.QApplication( [] )
