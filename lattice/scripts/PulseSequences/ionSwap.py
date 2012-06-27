@@ -16,6 +16,7 @@ class IonSwapBackground(Sequence):
                          'rextal_time': (float, 10e-9, 5.0, 50e-3),
                          'brightening': (float, 10e-9, 1.0, 10e-3),
                          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
+                         'heating_ampl_866':(float, -63.0, -3.0, -63.0),
                          'cooling_ampl_866':(float, -63.0, -3.0, -63.0),
                          'xtal_ampl_866':(float, -63.0, -3.0, -63.0),
                          'cooling_freq_397':(float, 90.0,130.0, 110.0),
@@ -23,7 +24,8 @@ class IonSwapBackground(Sequence):
                          'readout_freq_397':(float, 90.0,130.0, 110.0),
                          'readout_ampl_397':(float,-63.0, -3.0, -63.0),
                          'xtal_freq_397':(float, 90.0,130.0, 110.0),
-                         'xtal_ampl_397':(float,-63.0, -3.0, -63.0)
+                         'xtal_ampl_397':(float,-63.0, -3.0, -63.0),
+                         'repumpPower':(float, -63.0, -3.0, -3.0)
                          
                     }
     
@@ -65,8 +67,10 @@ class IonSwapBackground(Sequence):
         p.recordTime =  startBrightening + brighteningDuration
               
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
+        # make all the ions bright again
+        pulser.add_dds_pulses('854DP', [(40e-9, 80.0, p.repumpPower)])
         pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
-
+        pulser.add_dds_pulses('854DP', [(startFirstExposure, 80.0, -63.0)])
         # wait through the initial cooling before taking the 'initial' picture
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_ttl_pulse('camera', startFirstExposure, cameraPulse)        
@@ -89,8 +93,7 @@ class IonSwapBackground(Sequence):
 
         # take the last picture
         pulser.add_ttl_pulse('camera', startThirdExposure, cameraPulse)
-        # make all the ions bright again
-        #pulser.add_ttl_pulse('854DP', startBrightening, brighteningDuration)
+
         
 
 if __name__ == '__main__':

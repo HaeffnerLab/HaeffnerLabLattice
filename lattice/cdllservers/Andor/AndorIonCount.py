@@ -37,17 +37,19 @@ class AndorIonCount(LabradServer, AndorServer):
         totalNumberImagesAnalyzed = ((numKin / iterations) - 1) * iterations # = numKin - iterations # this excludes the 'initial' images
         return (np.sum(darkIonCatalog) / totalNumberImagesAnalyzed)         
     
-    def BuildDarkIonCatalog(self, ionPositionCatalog, iterations, numKin):
+    def BuildDarkIonCatalog(self, peakPositionCatalog, iterations, numKin):
         """ Returns a list of numbers of dark ions in each image (in order). 
 
            ionPositionCatalog is a list of lists of peak positions
             
             Ex:
-                ionPositionCatalog[1st iteration] = [[peak positions background], [peak positions analyzed image], [peak positions analyzed image]]
+                peakPositionCatalog[1st iteration] = [[peak positions background], [peak positions analyzed image], [peak positions analyzed image]]
                 
-                len(ionPositionCatalog[0][1]) = number of dark ions for the first image to be analyzed
+                len(peakPositionCatalog[0][1]) = number of dark ions for the first image to be analyzed
                 
         """
+        
+        print peakPositionCatalog
         
         numberImagesInSet = (numKin / iterations)
         
@@ -55,7 +57,7 @@ class AndorIonCount(LabradServer, AndorServer):
         
         for iteration in np.arange(iterations):
             for image in np.arange(1,numberImagesInSet): # skip the background images
-                darkIonCatalog.append(len(ionPositionCatalog[iteration][image]))
+                darkIonCatalog.append(len(peakPositionCatalog[iteration][image]))
         
         return darkIonCatalog
         
@@ -77,14 +79,17 @@ class AndorIonCount(LabradServer, AndorServer):
              save the imagearray as a textfile, process it so you can get separate files for
              each image """
         
+       
         ionSwapCatalog = np.zeros(iterations)
         
         for imageSet in np.arange(iterations):
-            initialPosition = ionPositionCatalog[imageSet][1]
-            finalPosition = ionPositionCatalog[imageSet][2]
-            
-            ionSwapCatalog[imageSet] = abs(finalPosition - initialPosition)
-        
+            try:
+                initialPosition = ionPositionCatalog[imageSet][1]
+                finalPosition = ionPositionCatalog[imageSet][2]
+                
+                ionSwapCatalog[imageSet] = abs(finalPosition - initialPosition)
+            except IndexError:
+                print 'Either number of images to analyze is not 2, or there were no identified dark ions'
 #        print 'ion swap catalog:'
 #        print ionSwapCatalog
         return ionSwapCatalog
@@ -100,34 +105,45 @@ class AndorIonCount(LabradServer, AndorServer):
         Ex:    (5 ions)
             
             peakPositionCatalog[1st iteration] = [[12, 26, 39, 53, 68], [24], [41]]
-            ionPositionCatalog[1st iteration] = [[0, 1, 2, 3, 4], [1], [2]]
+            ionPositionCatalog[1st iteration] = [5, 1, 2]
+            
+                                                 ^  ^
+                                                 |  | --> dark ion position in [0, 1, 2, 3, 4]
+                                            range of ions Ex: range(5) -> ion positions: [0, 1, 2, 3, 4]
+                                            
             
         Note: len(ionPositionCatalog[0][1]) = number of dark ions for the first image to be analyzed
+        
         """
 
-        ionPositionCatalog = [[] for i in range(iterations)] 
+        ionPositionCatalog = [[] for j in range(iterations)] 
+        #ionPositionCatalog = np.zeros_like(peakPositionCatalog)
 
         numberImagesInSet = (numKin / iterations)
 
         for imageSet in np.arange(iterations):
-            #ionPositionCatalog[imageSet][0] = np.arange(len(peakPositionCatalog[imageSet][0])) #background image
-            ionPositionCatalog[imageSet].append(np.arange(len(peakPositionCatalog[imageSet][0]))) #background image
+            #ionPositionCatalog[imageSet][0] = len(peakPositionCatalog[imageSet][0]) #background image
+            ionPositionCatalog[imageSet].append(len(peakPositionCatalog[imageSet][0])) #background image
             for image in np.arange(1, numberImagesInSet):
-               
-                for peakPosition in peakPositionCatalog[imageSet][image]:
-                    result = np.where(abs(np.subtract(peakPositionCatalog[imageSet][0], peakPosition)) <= peakVicinity)[0]
-                    # assumes that one dark ion will never be close enough to multiple initial ion position
-                    if (len(result) != 0):
-                        try:
-#                            print 'result[0]'
-#                            print result[0]
-                            #ionPositionCatalog[imageSet][image] = result[0]
-                            ionPositionCatalog[imageSet].append(result[0])
-                        except:
-                            print 'la gente esta muy loca!'
-        
-#        print 'ion position catalog: '
-#        print ionPositionCatalog
+                if (len(peakPositionCatalog[imageSet][image]) != 0):
+                    for peakPosition in peakPositionCatalog[imageSet][image]:
+                        result = np.where(abs(np.subtract(peakPositionCatalog[imageSet][0], peakPosition)) <= peakVicinity)[0]
+                        # assumes that one dark ion will never be close enough to multiple initial ion position
+                        if (len(result) != 0):
+                            try:
+    #                            print 'result[0]'
+    #                            print result[0]
+                                #ionPositionCatalog[imageSet][image] = result[0]
+                                ionPositionCatalog[imageSet].append(result[0])
+                            except:
+                                print 'la gente esta muy loca!'
+                        else:
+                            ionPositionCatalog[imageSet].append(-2) # -2 means no dark ions near initial positions
+                            print 'Found a dark ion, but nowhere near the ions in the initial image!'
+                else:
+                    ionPositionCatalog[imageSet].append(-1) # -1 means no dark ions
+                    print 'no dark ions :('
+
         return ionPositionCatalog
                 
     
@@ -158,8 +174,13 @@ class AndorIonCount(LabradServer, AndorServer):
         numberImagesInSet = (numKin / iterations)
         numberImagesToAnalyze = (numKin / iterations) - 1
         
+        
         # 3D array of each image
-        data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
+        try:
+            data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
+        except valueError:
+            raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
+#        data = self.imageArray
         
 #        ###### TESTING TESTING TESTING 123 ################
 #        rawdata1 = np.loadtxt(r'C:\Users\lattice\Downloads\testandor\count-5ions-sample-dark\s60001.asc')
@@ -172,22 +193,22 @@ class AndorIonCount(LabradServer, AndorServer):
 #        rawdata3 = rawdata3.transpose()
 #        
 #        
-#        #dark ion count
-#        arr = [[] for i in range(4)]
-#        arr[0] = rawdata1
-#        arr[1] = rawdata3
-#        arr[2] = rawdata1
-#        arr[3] = rawdata2
+##        #dark ion count
+##        arr = [[] for i in range(4)]
+##        arr[0] = rawdata1
+##        arr[1] = rawdata3
+##        arr[2] = rawdata1
+##        arr[3] = rawdata2
 #
 #     
 #        # ion swap
-##        arr = [[] for i in range(6)]
-##        arr[0] = rawdata1
-##        arr[1] = rawdata2
-##        arr[2] = rawdata3
-##        arr[3] = rawdata1
-##        arr[4] = rawdata2
-##        arr[5] = rawdata3
+#        arr = [[] for i in range(6)]
+#        arr[0] = rawdata1
+#        arr[1] = rawdata2
+#        arr[2] = rawdata3
+#        arr[3] = rawdata1
+#        arr[4] = rawdata1
+#        arr[5] = rawdata3
 #                        
 #        data = np.array(arr)
 #        
@@ -228,6 +249,7 @@ class AndorIonCount(LabradServer, AndorServer):
                 
                 axialSumSegments = []
                 axialData = np.sum(data[numberImagesInSet*imageSet + image], 1) # 1D vector: sum of intensities in the axial direction. length = rows
+
                 
                 """ choose each strip by only analyzing the 1D vector of sums
                     
@@ -295,6 +317,7 @@ class AndorIonCount(LabradServer, AndorServer):
                 for peak in darkMinPeaks:
                     if peak[1] < darkThreshold:
                         darkPeakPositions.append(peak[0])
+
 #                print 'initial dark peak positions: ', darkPeakPositions
 #                print 'number of dark ions: ', len(darkPeakPositions)
                 peakPositionCatalog[imageSet].append(darkPeakPositions) # we're hoping there is only one peak here!
@@ -323,20 +346,20 @@ class AndorIonCount(LabradServer, AndorServer):
         else:
             raise Exception(status)
         
-    @setting(41, "Count Dark Ions", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', returns = '*i')
-    def countDarkIons(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+    @setting(41, "Get Dark Ion Catalog", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', returns = '*i')
+    def getDarkIonCatalog(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
         peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
         darkIonCatalog = self.BuildDarkIonCatalog(peakPositionCatalog, iterations, numKin)
         #avgNumberDarkIons = self.GetAverageDarkIons(darkIonCatalog, numKin, iterations)
         return darkIonCatalog
     
-    @setting(42, "Count Ion Swaps", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', peakVicinity = 'i', returns = 'i')
-    def countIonSwaps(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
+    @setting(42, "Get Ion Position Catalog", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', peakVicinity = 'i', returns = '?')
+    def getIonPositionCatalog(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
         peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
         ionPositionCatalog = self.BuildIonPositionCatalog(peakPositionCatalog, iterations, numKin, peakVicinity)
-        ionSwapCatalog = self.BuildIonSwapCatalog(ionPositionCatalog, iterations)
+        #ionSwapCatalog = self.BuildIonSwapCatalog(ionPositionCatalog, iterations)
         #numIonSwaps = self.GetNumberSwaps(ionSwapCatalog)
-        return ionSwapCatalog
+        return ionPositionCatalog
         
 if __name__ == "__main__":
     from labrad import util
