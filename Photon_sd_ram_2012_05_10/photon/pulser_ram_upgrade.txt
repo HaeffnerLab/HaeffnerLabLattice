@@ -1,0 +1,5 @@
+Thu Jun 21 02:40:44 2012
+
+Upgraded pulser_ram from Block Memory Generator 6.3 to Block Memory Generator 7.1
+
+No changes made to parameter values.

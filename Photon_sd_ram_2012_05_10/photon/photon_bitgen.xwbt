@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=C:\Users\lattice\Desktop\Photon_sd_ram_2012_05_10\Photon_sd_ram_2012_05_10\photon\photon.ncd
+OUTFILE=C:\Users\lattice\Desktop\Photon_sd_ram_2012_05_10\Photon_sd_ram_2012_05_10\photon\photon.bit
+FAMILY=Spartan6
+PART=xc6slx45-2fgg484
+WORKINGDIR=C:\Users\lattice\Desktop\Photon_sd_ram_2012_05_10\Photon_sd_ram_2012_05_10\photon
+LICENSE=WebPack
+USER_INFO=206763184_0_0_154

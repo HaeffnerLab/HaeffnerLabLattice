@@ -1,0 +1,1173 @@
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "D:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "F:/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_02_15/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/3/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.xst" -ofn "C:/Users/lattice/Desktop/Photon_sd_ram_2012_05_10/Photon_sd_ram_2012_05_10/photon/photon.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 photon.ngc photon.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o photon_map.ncd photon.ngd photon.pcf 
+par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f photon.ut photon.ncd 

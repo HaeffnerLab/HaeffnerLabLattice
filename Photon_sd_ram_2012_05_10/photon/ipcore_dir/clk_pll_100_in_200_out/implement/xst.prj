@@ -1,0 +1,2 @@
+vhdl work ../../clk_pll_100_in_200_out.vhd
+vhdl work ../example_design/clk_pll_100_in_200_out_exdes.vhd

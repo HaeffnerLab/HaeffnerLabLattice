@@ -2,7 +2,7 @@ import labrad
 import time
 
 #global variables
-CHANNELS = ['397Table','866Table','422Table', 'axial']
+CHANNELS = ['397Table','866Table','422Table', '397Intensity']
 RESOLUTION = .01 # seconds
 
 #servers

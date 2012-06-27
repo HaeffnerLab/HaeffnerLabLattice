@@ -69,7 +69,7 @@ class ADCServer( SerialDeviceServer ):
                   '397Table':1,
                   '866Table':2,
                   '422Table':3,
-                  'axial':6
+                  '397Intensity':6
                   }
     
     @inlineCallbacks

@@ -33,7 +33,7 @@ refSigs = []
 
 for x in range(len(datasets)):
     if x == 0:
-        meltingThreshold = 1000 
+        meltingThreshold = 120 
         totalTraces = 100
     elif x == 1:
         meltingThreshold = 180 
@@ -50,6 +50,8 @@ for x in range(len(datasets)):
         refs = 0
         #getting parameters
         dv.cd(['','Experiments','LatentHeat_no729_autocrystal',datasetName])
+        print  'threshold', meltingThreshold
+        print 'totlal traces', totalTraces
         dv.open(1)    
         initial_cooling = dv.get_parameter('initial_cooling')
         heat_delay = dv.get_parameter('heat_delay')
@@ -71,6 +73,8 @@ for x in range(len(datasets)):
         print datasetName#, startReadout, stopReadout, heatStart, heatEnd
         dv.cd(['','Experiments','LatentHeat_no729_autocrystal',datasetName,'timetags'])
         melted = 0
+        print startReadout
+        print stopReadout
         for dataset in range(1,totalTraces+1):
             dv.open(int(dataset))
             timetags = dv.get().asarray[:,0]
