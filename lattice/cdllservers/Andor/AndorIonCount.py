@@ -179,7 +179,7 @@ class AndorIonCount(LabradServer, AndorServer):
         try:
             data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
         except valueError:
-            raise Exception("Trying to analyze more images than there is in the data?")
+            raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
 #        data = self.imageArray
         
 #        ###### TESTING TESTING TESTING 123 ################

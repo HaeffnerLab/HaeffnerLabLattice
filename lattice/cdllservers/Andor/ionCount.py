@@ -34,15 +34,31 @@ class HistWindow(QtGui.QWidget):
         
         layout = QtGui.QVBoxLayout()
         
-        canvas = Canvas(self.parent.parent.darkIonCatalog)
+        try:
+            canvas = Canvas(self.parent.parent.darkIonCatalog)
+        except AttributeError:
+            raise Exception("Has a Dark Ion Catalog Been Retrieved?")
         canvas.show()
         ntb = NavigationToolbar(canvas, self)
 
         layout.addWidget(canvas)
         layout.addWidget(ntb)
+        
+        changeWindowTitleButton = QtGui.QPushButton("Change Window Title", self)
+        changeWindowTitleButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        changeWindowTitleButton.clicked.connect(self.changeWindowTitle)
+        
+        layout.addWidget(changeWindowTitleButton)
+        
         self.setLayout(layout)
         #self.show()
-        
+    
+    def changeWindowTitle(self, evt):
+        text, ok = QtGui.QInputDialog.getText(self, 'Change Window Name', 'Enter a name:')        
+        if ok:
+            text = str(text)
+            self.setWindowTitle(text)
+            
 class AppWindow(QtGui.QWidget):
     """Creates the window for the new plot"""
     def __init__(self, parent):

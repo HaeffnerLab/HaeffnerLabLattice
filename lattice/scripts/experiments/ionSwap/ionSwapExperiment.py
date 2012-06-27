@@ -73,7 +73,7 @@ class IonSwap():
         # tell the camera to start waiting for data
         
         # height, width, iterations, numAnalyzedImages
-        self.cxn.andor_ion_count.collectData((self.expP.imageRegion[3] - self.expP.imageRegion[2] + 1), (self.expP.imageRegion[1] - self.expP.imageRegion[0] + 1), self.expP.iterations, self.expP.numAnalyzedImages)
+        self.cxn.andor_ion_count.collect_data((self.expP.vend - self.expP.vstart + 1), (self.expP.hend - self.expP.hstart + 1), self.expP.iterations, self.expP.numAnalyzedImages)
         
     def setupLogic(self):
         self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
@@ -241,10 +241,16 @@ if __name__ == '__main__':
                        'pmtresolution':0.075,
                        'detect_time':0.225,
                        'binTime':250.0*10**-6,
-                       'imageRegion': [1, 100, 1, 100],
-                       'numImagesAnalyzed': 2 # immediately before and after axial heating
+                       'hstart': 1,
+                       'hend': 100,
+                       'vstart': 1,
+                       'vend':100,
+                       'numImagesAnalyzed': 2, # immediately before and after axial heating
+                       'typicalIonDiameter': 5,
+                       'ionThreshold': 500,
+                       'darkIonThreshold:': -200
                        }
-        
+
         cxn = labrad.connect()
         cameraServer = cxn.andor_ion_count
         temp = cameraServer.get_current_temperature()
@@ -261,7 +267,7 @@ if __name__ == '__main__':
         cameraServer.set_emccd_gain(255)
         cameraServer.set_exposure_time(params['exposure'])   
         cameraServer.cooler_on()
-        cameraServer.set_image_region(1,1,exprtParams['imageRegion'][0],exprtParams['imageRegion'][1],exprtParams['imageRegion'][2],exprtParams['imageRegion'][3])
+        cameraServer.set_image_region(1, 1, exprtParams['hstart'], exprtParams['hend'], exprtParams['vstart'], exprtParams['vend'])
                 
         exprt = IonSwap(params,exprtParams, cxn)
         exprt.run()
@@ -269,6 +275,7 @@ if __name__ == '__main__':
         dp.addParameter('threshold', 10000)
         dp.addParameter('startReadout', exprt.seq.parameters.startReadout)
         dp.addParameter('stopReadout', exprt.seq.parameters.stopReadout)
-        dp.addParameter('iterations', iterations)        
+        darkIonCatalog = cameraServer.get_dark_ion_catalog(((exprtParams['numImagesAnalyzed'] + 1)*exprtParams['iterations']), (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
+        dp.addParameter('darkIonCatalog', darkIonCatalog)
         dp.loadDataVault()
         dp.processAll()
