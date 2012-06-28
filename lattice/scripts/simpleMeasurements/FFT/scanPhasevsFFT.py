@@ -9,8 +9,8 @@ rs = cxn.rohdeschwarz_server
 rs.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549')
 
 phaseMin = 24.0
-phaseMax = 26.0
-phaseStep = 2.5
+phaseMax = 24.5
+phaseStep = 0.25
 recordTime = 0.5 #seconds
 average = 4
 freqSpan = 300.0 #Hz 
@@ -26,6 +26,7 @@ print 'Saving {}'.format(name)
 phases = np.arange(phaseMin, phaseMax + phaseStep, phaseStep)
 
 for phase in phases:
+    print 'setting phase {}'.format(phase)
     rs.set_phase(phase)
     micromotion = fft.getPeakArea(ptsAround = 3)
     dv.add(phase, micromotion)

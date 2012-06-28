@@ -62,7 +62,7 @@ class LatentHeat():
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
         countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
-        self.crystal_threshold = 0.7 * countRate #kcounts per sec
+        self.crystal_threshold = 0.9 * countRate #kcounts per sec
         self.crystallization_attempts = 10
         print 'initial countrate', countRate
         print 'Crystallization threshold: ', self.crystal_threshold
@@ -145,7 +145,7 @@ class LatentHeat():
     def is_crystalized(self):
         detect_time = 0.225
         countRate = self.pmt.get_next_counts('ON',int(detect_time / self.expP.pmtresolution), True)
-        print 'auto crystalization: count rate {0} and threshold is {1}'.format(countRate, self.crystal_threshold)
+        print 'auto crystalization: count rate {0:.2f} and threshold is {1:.2f}'.format(countRate, self.crystal_threshold)
         return (countRate > self.crystal_threshold) 
     
     def auto_crystalize(self):
@@ -163,17 +163,18 @@ class LatentHeat():
             self.meltedTimes += 1
             self.pulser.switch_manual('crystallization',  True)
             initpower = self.rf.amplitude()
-            self.rf.amplitude(rf_crystal_power)
-            time.sleep(shutter_delay)
             for attempt in range(self.crystallization_attempts):
+                self.rf.amplitude(rf_crystal_power)
+                time.sleep(rf_settling_time)
+                time.sleep(shutter_delay)
                 self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
                 time.sleep(far_red_time)
                 self.pulser.switch_manual('110DP',  True) 
                 time.sleep(optimal_cool_time)
+                self.rf.amplitude(self.expP.rf_power)
+                time.sleep(rf_settling_time)
                 if self.is_crystalized():
-                    print 'Crysallized on attempt number {}'.format(attempt + 1)
-                    self.rf.amplitude(self.expP.rf_power)
-                    time.sleep(rf_settling_time)
+                    print 'Crystalized on attempt number {}'.format(attempt + 1)                    
                     self.pulser.switch_manual('crystallization',  False)
                     time.sleep(shutter_delay)
                     self.pulser.switch_auto('110DP',  False)
@@ -199,24 +200,24 @@ if __name__ == '__main__':
         params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
-              'axial_heat':4.75*10**-3,
-              'readout_delay':5000.0*10**-3,
+              'axial_heat':6.1*10**-3,
+              'readout_delay':100.0*10**-3,
               'readout_time':10.0*10**-3,
-              'xtal_record':25e-3,
+              'xtal_record':100e-3,
               'cooling_ampl_866':-11.0,
-              'heating_ampl_866':-3.0,
-              'readout_ampl_866':-12.0,
+              'heating_ampl_866':-11.0,
+              'readout_ampl_866':-11.0,
               'xtal_ampl_866':-11.0,
-              'cooling_freq_397':105.0,
-              'cooling_ampl_397':-11.0,
-              'readout_freq_397':120.0,
-              'readout_ampl_397':-11.0,
-              'xtal_freq_397':105.0,
+              'cooling_freq_397':103.0,
+              'cooling_ampl_397':-13.0,
+              'readout_freq_397':118.0,
+              'readout_ampl_397':-13.0,
+              'xtal_freq_397':103.0,
               'xtal_ampl_397':-11.0,
               }
         
         exprtParams = {
-                       'iterations':1000,
+                       'iterations':200,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
                        'auto_crystal':True,
@@ -227,6 +228,6 @@ if __name__ == '__main__':
         exprt = LatentHeat(params,exprtParams)
         exprt.run()
         dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 10000)
+        dp.addParameter('threshold', 19000)
         dp.loadDataVault()
         dp.processAll()
