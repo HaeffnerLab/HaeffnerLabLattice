@@ -414,7 +414,7 @@ class AndorClient():
         from labrad.types import Error
         self.cxn = yield connectAsync()
         try:
-            self.server = yield self.cxn.andor_server
+            self.server = yield self.cxn.andor_ion_count
             self.setupListeners()
             self.setupCamera()
         except Exception ,e:
@@ -543,14 +543,8 @@ class AndorClient():
             
             yield self.server.start_acquisition_kinetic(numKin)
             print 'acquired?'
-            t1 = time.clock()
-            data = yield self.server.get_acquired_data_kinetic(self.numKin)
-            newdata = data.asarray
-            print 'data?'
-            t2 = time.clock()
-            
-            print newdata[12:14]
-            print 'time of transfer: ', (t2 - t1)
+            yield self.server.get_acquired_data_kinetic(self.numKin)
+
             
 #    @inlineCallbacks 
 #    def kineticFinish(self,x,y): 

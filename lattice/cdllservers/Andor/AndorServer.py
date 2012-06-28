@@ -149,7 +149,15 @@ class Andor:
                 if (ERROR_CODE[errorWait] != 'DRV_SUCCESS'):
                     raise Exception(ERROR_CODE[errorWait])
                 cnt += 1
-                self.parent.onAcquisitionEvent("Acquired: {0} of {1}".format(cnt, numKin), self.parent.listeners)                                
+                self.parent.onAcquisitionEvent("Acquired: {0} of {1}".format(cnt, numKin), self.parent.listeners)
+                print "Acquired: {0} of {1}".format(cnt, numKin)                                
+        else:
+            raise Exception(ERROR_CODE[error])
+        
+    def StartAcquisitionKineticExternal(self):
+        error = self.dll.StartAcquisition()
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            pass
         else:
             raise Exception(ERROR_CODE[error])
 
@@ -176,6 +184,7 @@ class Andor:
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             self.imageArray = cimage[:]
+            print 'acquired kinetic!'
         else:
             raise Exception(ERROR_CODE[error]) 
    
@@ -220,27 +229,36 @@ class Andor:
 
         file.close()
         
+        #np.savetxt(path, np.reshape(self.imageArray, (self.height, self.width)))
+        
     def SaveAsTxtKinetic(self, path, numKin):
-        # split up the image array into an array of arrays
-        # ASSUMES CURRENT WIDTH AND HEIGHT ARE CORRECT FOR THE IMAGE!!!
-        imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
-        cnt = 0
-        for image in np.arange(numKin):
-            file = open(path + str(cnt), 'w')
-            
-            # self.imageArray is 1 dimensional!
-            count = 0
-            for i in imageArray[image][0]:
-                file.write(str(int(i)))
-                count += 1
-                if (count == self.width):
-                    file.write("\n")
-                    count = 0
-                else:
-                    file.write(' ')
-
-            file.close()
-            cnt += 1
+#        # split up the image array into an array of arrays
+#        # ASSUMES CURRENT WIDTH AND HEIGHT ARE CORRECT FOR THE IMAGE!!!
+#        print 'from saveastxtkinetc numKin: ', numKin
+#        print 'from saveastxtkinetic len(imarray): ', len(self.imageArray)
+#        imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
+#        cnt = 0
+#        for image in np.arange(numKin):
+#            file = open(path + str(cnt), 'w')
+#            
+#            # self.imageArray is 1 dimensional!
+#            count = 0
+#            for i in imageArray[image][0]:
+#                file.write(str(int(i)))
+#                count += 1
+#                if (count == self.width):
+#                    file.write("\n")
+#                    count = 0
+#                else:
+#                    file.write(' ')
+#
+#            file.close()
+#            cnt += 1
+        
+         imageArray = np.reshape(self.imageArray, (numKin, self.height, self.width))
+         for image in np.arange(numKin):
+             np.savetxt(path+str(image+1), imageArray[image], fmt='%d')
+        
             
     def OpenAsTxt(self, path):
         self.imageArray = np.loadtxt(path)
@@ -770,11 +788,11 @@ class AndorServer(LabradServer):
         c['Detector Dimensions'] = self.camera.detectorDimensions
         returnValue(c['Detector Dimensions'])
        
-    @setting(31, "Get Acquired Data Kinetic", numKin = 'i', returns = '*i')
+    @setting(31, "Get Acquired Data Kinetic", numKin = 'i', returns = '')
     def getAcquiredDataKinetic(self, c, numKin):
         """Get all Data for a Number of Scans"""
         yield deferToThread(self.camera.GetAcquiredDataKinetic, numKin)
-        returnValue(self.camera.imageArray)
+#        returnValue(self.camera.imageArray)
 
     @setting(32, "Start Acquisition Kinetic", numKin = 'i', returns = '')
     def startAcquisitionKinetic(self, c, numKin):
@@ -796,6 +814,10 @@ class AndorServer(LabradServer):
     def openAsTextKinetic(self, c, path, numKin):
         """Opens a Series of Text Files As Images"""
         yield deferToThread(self.camera.OpenAsTxtKinetic, path, numKin) 
+
+    @setting(36, "Start Acquisition Kinetic External", returns = '')
+    def startAcquisitionKineticExternal(self, c):
+        yield deferToThread(self.camera.StartAcquisitionKineticExternal)
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):

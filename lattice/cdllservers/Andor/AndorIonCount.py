@@ -178,7 +178,7 @@ class AndorIonCount(LabradServer, AndorServer):
         # 3D array of each image
         try:
             data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
-        except valueError:
+        except ValueError:
             raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
 #        data = self.imageArray
         
@@ -337,11 +337,11 @@ class AndorIonCount(LabradServer, AndorServer):
             numKin = (numAnalyzedImages + 1)*iterations # Number of images in kinetic series = numAnalyzedImages + the background image 
             self.camera.SetAcquisitionMode(3)
             self.camera.SetNumberKinetics(numKin)
-            self.camera.SetKineticCycleTime(0.02)
+#            self.camera.SetKineticCycleTime(0.01)
             print 'Starting Acquisition (Ion Count)'
-            yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
-            yield self.camera.GetAcquiredDataKinetic(numKin)
-            print 'Acquired!'
+            yield deferToThread(self.camera.StartAcquisitionKineticExternal)
+#            yield self.camera.GetAcquiredDataKinetic(numKin)
+            print 'Started!'
                                     
         else:
             raise Exception(status)

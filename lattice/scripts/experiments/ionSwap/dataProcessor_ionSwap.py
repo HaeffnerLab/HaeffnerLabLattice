@@ -6,7 +6,7 @@ from scipy.cluster.vq import whiten, kmeans, vq
 
 class histogramTimetags():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''
-    def __init__(self, start, end, bins = 50, title = None, threshold = None, readout_time = None, darkIonCatalog ):
+    def __init__(self, darkIonCatalog, start, end, bins = 50, title = None, threshold = None, readout_time = None):
         self.start = start
         self.end = end
         self.bins = bins
@@ -55,8 +55,10 @@ class histogramTimetags():
         if self.title is not None:
             pyplot.suptitle(self.title)
         pyplot.hist(self.counts, self.bins, range  = (0, max(self.counts)))
-        figure2 = pylot.figure(2)
+        figure2 = pyplot.figure(2)
+        print self.darkIonCatalog
         pyplot.hist(self.darkIonCatalog)
+        pyplot.suptitle('the dark!')
         pyplot.show()
 
 class data_process():
@@ -105,7 +107,7 @@ class data_process():
             stopReadout = self.params.get('stopReadout')
             threshold = self.params.get('threshold')
             darkIonCatalog = self.params.get('darkIonCatalog')
-            self.process.append(histogramTimetags(startReadout, stopReadout, title = self.dataset, threshold = threshold, readout_time = readout_time, darkIonCatalog))
+            self.process.append(histogramTimetags(darkIonCatalog, startReadout, stopReadout, title = self.dataset, threshold = threshold, readout_time = readout_time))
         
     def loadParameters(self):
         self.dv.open(1)    
