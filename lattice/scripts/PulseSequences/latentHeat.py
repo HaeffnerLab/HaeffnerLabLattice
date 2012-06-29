@@ -47,10 +47,11 @@ class LatentHeatBackground(Sequence):
         pulser.add_ttl_pulse('866DP', p.backgroundMeasure + p.initial_cooling, p.heat_delay )
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
         #adding dds settings for the 866DP
-        pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
-        pulser.add_dds_pulses('866DP', [(startHeat, 80.0 , p.heating_ampl_866)])
-        pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
-        pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])
+        ####
+        pulser.add_dds_pulses('866DP', [(200e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
+        pulser.add_dds_pulses('866DP', [(startHeat + 200e-9, 80.0 , p.heating_ampl_866)])
+        pulser.add_dds_pulses('866DP', [(endHeat + 200e-9, 80.0 , p.readout_ampl_866)]) #
+        pulser.add_dds_pulses('866DP', [(start_xtal + 200e-9, 80.0 , p.xtal_ampl_866)])
         #adding dds settings for the 110DP
         pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
         pulser.add_dds_pulses('110DP', [(endHeat, p.readout_freq_397 , p.readout_ampl_397)]) #readout
@@ -63,7 +64,7 @@ class LatentHeatGlobalHeat(Sequence):
     requiredVars = {
                          'initial_cooling':(float, 10e-9, 5.0, 100e-3),
                          'heat_delay':(float, 10e-9, 5.0, 100e-3),
-                         'global_heat':(float, 10e-9, 5.0, 100e-3),
+                         'axial_heat':(float, 10e-9, 5.0, 100e-3),
                          'readout_delay':(float, 10e-9, 5.0, 100e-3),
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
                          'xtal_record':(float, 10e-9, 5.0, 100e-3),
@@ -80,13 +81,10 @@ class LatentHeatGlobalHeat(Sequence):
                          'xtal_freq_397':(float, 90.0,130.0, 110.0),
                          'xtal_ampl_397':(float,-63.0, -3.0, -63.0)
     }
-    #global_heat
-    #heating_freq_397
-    #heating_ampl_397
+
     def defineSequence(self):   
         p = self.parameters
         pulser = self.pulser
-        
         p.backgroundMeasure = p.axial_heat #measure background for the same time as the heating
         
         globalofftime = p.heat_delay + p.axial_heat + p.readout_delay
@@ -103,7 +101,8 @@ class LatentHeatGlobalHeat(Sequence):
         pulser.add_ttl_pulse('866DP', p.backgroundMeasure + p.initial_cooling, p.heat_delay )
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
         #adding dds settings for the 866DP
-        pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
+        ####
+        pulser.add_dds_pulses('866DP', [(200e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_dds_pulses('866DP', [(startHeat, 80.0 , p.heating_ampl_866)])
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
         pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])

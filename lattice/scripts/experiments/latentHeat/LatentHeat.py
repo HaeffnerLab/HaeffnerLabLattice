@@ -140,7 +140,6 @@ class LatentHeat():
     def finalize(self):
         for name in ['axial', '110DP']:
             self.pulser.switch_manual(name)
-        self.pulser.switch_manual('crystallization',  True)
     
     def is_crystalized(self):
         detect_time = 0.225
@@ -199,9 +198,9 @@ if __name__ == '__main__':
     for i in range(1):
         params = {
               'initial_cooling': 25e-3,
-              'heat_delay':10e-3,
-              'axial_heat':6.1*10**-3,
-              'readout_delay':100.0*10**-3,
+              'heat_delay':10e-3,###DO NOT CHANGE
+              'axial_heat':10.9*10**-3,
+              'readout_delay':2000.0*10**-3,
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3,
               'cooling_ampl_866':-11.0,
@@ -209,9 +208,9 @@ if __name__ == '__main__':
               'readout_ampl_866':-11.0,
               'xtal_ampl_866':-11.0,
               'cooling_freq_397':103.0,
-              'cooling_ampl_397':-13.0,
-              'readout_freq_397':118.0,
-              'readout_ampl_397':-13.0,
+              'cooling_ampl_397':-13.5,
+              'readout_freq_397':115.0,
+              'readout_ampl_397':-13.5,
               'xtal_freq_397':103.0,
               'xtal_ampl_397':-11.0,
               }
@@ -228,6 +227,6 @@ if __name__ == '__main__':
         exprt = LatentHeat(params,exprtParams)
         exprt.run()
         dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 19000)
+        dp.addParameter('threshold', 35000)
         dp.loadDataVault()
         dp.processAll()

@@ -57,12 +57,12 @@ class LatentHeat():
         ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
-        self.pulser.frequency(xtalFreq397)
-        self.pulser.amplitude(xtalPower397)
+        self.pulser.frequency(self.seqP.xtal_freq_397)
+        self.pulser.amplitude(self.seqP.xtal_ampl_397)
         self.pulser.select_dds_channel('866DP')
-        self.pulser.amplitude(xtalPower866)
+        self.pulser.amplitude(self.seqP.xtal_ampl_866)
         countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
-        self.crystal_threshold = 0.7 * countRate #kcounts per sec
+        self.crystal_threshold = 0.9 * countRate #kcounts per sec
         self.crystallization_attempts = 10
         print 'initial countrate', countRate
         print 'Crystallization threshold: ', self.crystal_threshold
@@ -140,12 +140,11 @@ class LatentHeat():
     def finalize(self):
         for name in ['axial', '110DP']:
             self.pulser.switch_manual(name)
-        self.pulser.switch_manual('crystallization',  True)
     
     def is_crystalized(self):
         detect_time = 0.225
         countRate = self.pmt.get_next_counts('ON',int(detect_time / self.expP.pmtresolution), True)
-        print 'auto crystalization: count rate {0} and threshold is {1}'.format(countRate, self.crystal_threshold)
+        print 'auto crystalization: count rate {0:.2f} and threshold is {1:.2f}'.format(countRate, self.crystal_threshold)
         return (countRate > self.crystal_threshold) 
     
     def auto_crystalize(self):
@@ -154,25 +153,27 @@ class LatentHeat():
         optimal_cool_time = 0.150
         shutter_delay = 0.025
         rf_crystal_power = -7.0
+        rf_settling_time = 0.3
         if self.is_crystalized():
-            print 'Crystallized'
+            print 'Crystallized at the end'
             return True
         else:
             print 'Melted'
             self.meltedTimes += 1
             self.pulser.switch_manual('crystallization',  True)
             initpower = self.rf.amplitude()
-            self.rf.amplitude(rf_crystal_power)
-            time.sleep(shutter_delay)
             for attempt in range(self.crystallization_attempts):
+                self.rf.amplitude(rf_crystal_power)
+                time.sleep(rf_settling_time)
+                time.sleep(shutter_delay)
                 self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
                 time.sleep(far_red_time)
                 self.pulser.switch_manual('110DP',  True) 
                 time.sleep(optimal_cool_time)
+                self.rf.amplitude(self.expP.rf_power)
+                time.sleep(rf_settling_time)
                 if self.is_crystalized():
-                    print 'Crysallized on attempt number {}'.format(attempt + 1)
-                    self.rf.amplitude(rf_power)
-                    time.sleep(rf_settling_time)
+                    print 'Crystalized on attempt number {}'.format(attempt + 1)                    
                     self.pulser.switch_manual('crystallization',  False)
                     time.sleep(shutter_delay)
                     self.pulser.switch_auto('110DP',  False)
@@ -190,39 +191,35 @@ class LatentHeat():
                 return True
     
     def __del__(self):
-        print 'graceful exit'
         self.cxn.disconnect()
         
 if __name__ == '__main__':
-    #sequence parameters
-    xtalFreq397 = 103.0
-    xtalPower397 = -11.0 
-    xtalPower866 = -4.0
     #experiment parameters
-    for delay in [100e-9, 1e-3, 5e-3, 10e-3, 25e-3, 50e-3, 100e-3, 2000e-3]:
+    for delay in [500e-3, 1000e-3,2000e-3, 3000e-3, 4000e-3, 5000e-3, 7500e-3, 10000e-3]:
         params = {
               'initial_cooling': 25e-3,
-              'heat_delay':10e-3,
-              'axial_heat':15.0e-3,
+              'heat_delay':10e-3,###DO NOT CHANGE
+              'axial_heat':100e-9,
               'readout_delay':delay,
               'readout_time':10.0*10**-3,
-              'xtal_record':25e-3,
-              'cooling_ampl_866':-4.0,
-              'readout_ampl_866':-14.0,
-              'xtal_ampl_866':xtalPower866,
+              'xtal_record':100e-3,
+              'cooling_ampl_866':-11.0,
+              'heating_ampl_866':-11.0,
+              'readout_ampl_866':-11.0,
+              'xtal_ampl_866':-11.0,
               'cooling_freq_397':103.0,
-              'cooling_ampl_397':-15.0,
+              'cooling_ampl_397':-13.5,
               'readout_freq_397':115.0,
-              'readout_ampl_397':-14.0,
-              'xtal_freq_397':xtalFreq397,
-              'xtal_ampl_397':xtalPower397,
+              'readout_ampl_397':-13.5,
+              'xtal_freq_397':103.0,
+              'xtal_ampl_397':-11.0,
               }
         
         exprtParams = {
                        'iterations':200,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
-                       'auto_crystal':False,
+                       'auto_crystal':True,
                        'pmtresolution':0.075,
                        'detect_time':0.225,
                        'binTime':250.0*10**-6
@@ -230,6 +227,6 @@ if __name__ == '__main__':
         exprt = LatentHeat(params,exprtParams)
         exprt.run()
 #        dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-#        dp.addParameter('threshold', 200)
+#        dp.addParameter('threshold', 35000)
 #        dp.loadDataVault()
 #        dp.processAll()

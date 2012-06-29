@@ -200,8 +200,8 @@ if __name__ == '__main__':
         params = {
               'initial_cooling': 25e-3,
               'heat_delay':10e-3,
-              'global_heat':6.1*10**-3,
-              'readout_delay':100.0*10**-3,
+              'axial_heat':1.95*10**-3,
+              'readout_delay':50.0*10**-3,
               'readout_time':10.0*10**-3,
               'xtal_record':100e-3,
               'cooling_ampl_866':-11.0,
@@ -210,7 +210,7 @@ if __name__ == '__main__':
               'xtal_ampl_866':-11.0,
               'cooling_freq_397':103.0,
               'cooling_ampl_397':-13.0,
-              'readout_freq_397':118.0,
+              'readout_freq_397':115.0,
               'readout_ampl_397':-13.0,
               'xtal_freq_397':103.0,
               'xtal_ampl_397':-11.0,
@@ -219,7 +219,7 @@ if __name__ == '__main__':
               }
         
         exprtParams = {
-                       'iterations':200,
+                       'iterations':25,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
                        'auto_crystal':True,
@@ -230,6 +230,6 @@ if __name__ == '__main__':
         exprt = LatentHeat(params,exprtParams)
         exprt.run()
         dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 19000)
+        dp.addParameter('threshold', 35000)
         dp.loadDataVault()
         dp.processAll()
