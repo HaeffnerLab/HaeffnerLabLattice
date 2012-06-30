@@ -70,6 +70,7 @@ class DDS(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         for start,freq,ampl in values:
             sett = self._valToInt(channel, freq, ampl)
+            print 'adding to dds', start, freq, ampl, sett
             sequence.addDDS(hardwareAddr, start, sett)
     
     @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
@@ -117,8 +118,6 @@ class DDS(LabradServer):
             self._programDDS(buf)
             
     def _setParameters(self, chan, freq, ampl):
-        import time
-        #####
         self._resetAllDDS()
         addr = self.ddsDict[chan].channelnumber
         print 'setting chan', addr

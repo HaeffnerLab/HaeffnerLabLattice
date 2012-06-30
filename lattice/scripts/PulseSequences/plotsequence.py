@@ -63,19 +63,30 @@ class SequencePlotter():
 
 if __name__ == '__main__':
     import labrad
-    from scan729 import scan729
+    from latentHeat import LatentHeatGlobalHeat as sequence
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = scan729(pulser)
+    seq = sequence(pulser)
     pulser.new_sequence()
     params = {
-                'backgroundMeasure':1*10**-3,
-                'initial_cooling':5*10**-3,
-                'optical_pumping':1*10**-3,
-                'rabitime':5*10**-3,
-                'readout_time':10*10**-3,
-                'repump854':5*10**-3,
-                'repumpPower':-3.0
+              'initial_cooling': 1000e-3,
+              'heat_delay':1000e-3,
+              'axial_heat':1000e-3,
+              'readout_delay':1000e-3,
+              'readout_time':1000e-3,
+              'xtal_record':1000e-3,
+              'cooling_ampl_866':-11.0,
+              'heating_ampl_866':-11.0,
+              'readout_ampl_866':-11.0,
+              'xtal_ampl_866':-11.0,
+              'cooling_freq_397':103.0,
+              'cooling_ampl_397':-13.0,
+              'readout_freq_397':115.0,
+              'readout_ampl_397':-13.0,
+              'xtal_freq_397':103.0,
+              'xtal_ampl_397':-11.0,
+              'heating_freq_397':130.0,
+              'heating_ampl_397':-11.0,
               }
     seq.setVariables(**params)
     seq.defineSequence()
