@@ -4,7 +4,7 @@ class MinimalServer(LabradServer):
     """This docstring will appear in the LabRAD helptext."""
     name = "Minimal Server"
 
-    @setting(10, "Echo", data="?", returns="*2v")
+    @setting(10, "Echo", data="?", returns="?")
     def echo(self, c, data):
         """This docstring will appear in the setting helptext."""
         print type(data)

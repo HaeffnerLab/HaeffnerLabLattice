@@ -101,7 +101,7 @@ class ShortCutter(QtGui.QWidget):
         #dc.setendcap(2,5.305)
         yield deferToThread(time.sleep, 2.0)  
         yield self.pulser.switch_manual('110DP',  True)
-        #pulser.switch_manual('crystallization',  False)
+        yield self.pulser.switch_manual('crystallization',  False)
         yield self.rf.amplitude(initpower)
         #dc.setendcap(1,3.695)
         #dc.setendcap(2,8.305)

@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtGui, QtCore
 from matplotlib.figure import Figure
 from matplotlib import cm
+import matplotlib.pyplot as plt
 import time
 
 
@@ -12,6 +13,9 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from datetime import datetime
 
+import matplotlib.pyplot as plt
+
+
 import numpy as np
 
 EMGAIN = 255
@@ -19,25 +23,56 @@ EXPOSURE = .1 #sec
        
 class Canvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""
-    def __init__(self, darkIonCatalog):
+    def __init__(self, parent, ionCatalogArray, ionSwapCatalog):
+        self.parent = parent
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
-        self.ax = self.fig.add_subplot(111)
-        self.ax.hist(darkIonCatalog)
 
+        self.ax1 = self.fig.add_subplot(141)
+        self.ax2 = self.fig.add_subplot(142)
+        self.ax3 = self.fig.add_subplot(143)
+        self.ax4 = self.fig.add_subplot(144)
+        
+        self.setHist(self.ax1, ionCatalogArray[0], label = 'initial')
+        self.setHist(self.ax2, ionCatalogArray[1], label = 'shine729')
+        self.setHist(self.ax3, ionCatalogArray[2], label = 'final')
+        
+        self.ax1.set_xlabel('Number Of Bright Ions')
+        self.ax2.set_xlabel('Number Of Dark Ions')
+        self.ax2.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[1]) == 1)[0])/float(len(ionCatalogArray[1])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax2.transAxes)
+        self.ax2.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[1])) + ' ions dark', transform = self.ax2.transAxes)
+        self.ax2.set_ylim(0, 1)
+        self.ax3.set_xlabel('Number Of Dark Ions')
+        self.ax3.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[2]) == 1)[0])/float(len(ionCatalogArray[2])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax3.transAxes)
+        self.ax3.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[2])) + ' ions dark', transform = self.ax3.transAxes)
+        self.ax3.set_ylim(0, 1)
+
+        self.ax4.hist(ionSwapCatalog, bins=range(self.parent.parent.expectedNumberOfIonsSpinBox.value()), align='left', normed = True, label = 'Ion Swaps' )
+        self.ax4.legend(loc='best')
+        self.ax4.set_xlabel('Distance of Ion Movement')
+        self.ax4.text(.25, .8, 'Number Ion Swaps: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])), transform = self.ax4.transAxes)
+        self.ax4.text(0.025, .75, '1 ion dark in both shine729 and final: ' + str(len(ionSwapCatalog)/float(len(ionCatalogArray[0]))*100) + ' %', transform = self.ax4.transAxes)
+        self.ax4.text(0.10, .70, 'Probability of Ion Swap: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])/float(len(ionSwapCatalog))), transform = self.ax4.transAxes)
+
+    def setHist(self, ax, data, label):
+        ax.hist(data, bins=range(10), align='left', normed=True, label = label)
+        ax.legend(loc='best')
+        self.ax4.set_ylim(0, 1)
+        
+        
 class HistWindow(QtGui.QWidget):        
     """Creates the window for the new plot"""
-    def __init__(self, parent):
+    def __init__(self, parent, ionCatalogArray, ionSwapCatalog):
         QtGui.QWidget.__init__(self)
         
         self.parent = parent
         
         layout = QtGui.QVBoxLayout()
         
-        try:
-            canvas = Canvas(self.parent.parent.darkIonCatalog)
-        except AttributeError:
-            raise Exception("Has a Dark Ion Catalog Been Retrieved?")
+        #try:
+        canvas = Canvas(self, ionCatalogArray, ionSwapCatalog)
+        #except AttributeError:
+            #raise Exception("Has a Dark Ion Catalog Been Retrieved?")
         canvas.show()
         ntb = NavigationToolbar(canvas, self)
 
@@ -105,10 +140,16 @@ class AppWindow(QtGui.QWidget):
         getDataButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         getDataButton.clicked.connect(self.getData)
         
+        getIonNumberHistogramButton = QtGui.QPushButton("Ion Swap - Ion Number", self)
+        getIonNumberHistogramButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        getIonNumberHistogramButton.clicked.connect(self.getIonNumberHistogram)
+        
+        
         pathLabel = QtGui.QLabel()
         pathLabel.setText('Path: ')
         
-        self.pathEdit = QtGui.QLineEdit()        
+        self.pathEdit = QtGui.QLineEdit()
+        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image')        
                         
         exposureLabel = QtGui.QLabel()
         exposureLabel.setText('Exposure (ms): ')
@@ -120,7 +161,15 @@ class AppWindow(QtGui.QWidget):
         ionThresholdLabel.setText('Ion Threshold: ')
 
         darkIonThresholdLabel = QtGui.QLabel()
-        darkIonThresholdLabel.setText('Dark Ion Threshold: ')        
+        darkIonThresholdLabel.setText('Dark Ion Threshold: ')
+        
+        imageNumberLabel = QtGui.QLabel()
+        imageNumberLabel.setText('Image Number: ')
+        
+        expectedNumberOfIonsLabel = QtGui.QLabel()
+        expectedNumberOfIonsLabel.setText('Expected Number Of Ions: ') 
+        
+             
         
         self.exposureSpinBox = QtGui.QSpinBox()
         self.exposureSpinBox.setMinimum(100)
@@ -134,23 +183,36 @@ class AppWindow(QtGui.QWidget):
         self.iterationsSpinBox.setMinimum(0)
         self.iterationsSpinBox.setMaximum(1000)
         self.iterationsSpinBox.setSingleStep(1)  
-        self.iterationsSpinBox.setValue(2)     
+        self.iterationsSpinBox.setValue(100)     
         self.iterationsSpinBox.setKeyboardTracking(False)
 
         self.ionThresholdSpinBox = QtGui.QSpinBox()
         self.ionThresholdSpinBox.setMinimum(0)
         self.ionThresholdSpinBox.setMaximum(1000)
         self.ionThresholdSpinBox.setSingleStep(1)  
-        self.ionThresholdSpinBox.setValue(500)     
+        self.ionThresholdSpinBox.setValue(700)     
         self.ionThresholdSpinBox.setKeyboardTracking(False)
 
         self.darkIonThresholdSpinBox = QtGui.QSpinBox()
         self.darkIonThresholdSpinBox.setMinimum(-1000)
         self.darkIonThresholdSpinBox.setMaximum(0)
         self.darkIonThresholdSpinBox.setSingleStep(1)  
-        self.darkIonThresholdSpinBox.setValue(-200)     
+        self.darkIonThresholdSpinBox.setValue(-350)     
         self.darkIonThresholdSpinBox.setKeyboardTracking(False)
-
+        
+        self.imageNumberSpinBox = QtGui.QSpinBox()
+        self.imageNumberSpinBox.setMinimum(1)
+        self.imageNumberSpinBox.setMaximum(3)
+        self.imageNumberSpinBox.setSingleStep(1)  
+        self.imageNumberSpinBox.setValue(1)     
+        self.imageNumberSpinBox.setKeyboardTracking(False)
+        
+        self.expectedNumberOfIonsSpinBox = QtGui.QSpinBox()
+        self.expectedNumberOfIonsSpinBox.setMinimum(1)
+        self.expectedNumberOfIonsSpinBox.setMaximum(10)
+        self.expectedNumberOfIonsSpinBox.setSingleStep(1)  
+        self.expectedNumberOfIonsSpinBox.setValue(5)     
+        self.expectedNumberOfIonsSpinBox.setKeyboardTracking(False)               
         
         imageAnalyzedLabel = QtGui.QLabel()
         imageAnalyzedLabel.setText('Images to analyze: ')
@@ -189,6 +251,9 @@ class AppWindow(QtGui.QWidget):
         
         self.bottomPanel1.addWidget(temperatureButton)
         self.bottomPanel1.addWidget(getDarkIonCatalogButton)
+        self.bottomPanel1.addWidget(getIonNumberHistogramButton)
+        self.bottomPanel1.addWidget(imageNumberLabel)
+        self.bottomPanel1.addWidget(self.imageNumberSpinBox)
     
         self.bottomPanel1.addStretch(0)
         self.bottomPanel1.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
@@ -208,6 +273,8 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel2.addWidget(getIonPositionCatalogButton)
         self.bottomPanel2.addWidget(imageAnalyzedLabel)
         self.bottomPanel2.addWidget(self.imageAnalyzedSpinBox)
+        self.bottomPanel2.addWidget(expectedNumberOfIonsLabel)
+        self.bottomPanel2.addWidget(self.expectedNumberOfIonsSpinBox)
 #        self.bottomPanel2.addWidget(exposureLabel)
 #        self.bottomPanel2.addWidget(self.exposureSpinBox)
         self.bottomPanel2.addWidget(typIonDiameterLabel)
@@ -247,10 +314,21 @@ class AppWindow(QtGui.QWidget):
         self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s     
         
     def countDarkIons(self, evt):
-        histWindow = HistWindow(self)
+        histWindow = HistWindow(self, self.parent.darkIonCatalog)
         self.histList.append(histWindow)
         histWindow.show()
         print np.mean(self.parent.darkIonCatalog)
+        
+    @inlineCallbacks
+    def getIonNumberHistogram(self, evt):
+        ionNumberCatalogArray = []
+        for i in range(3):
+            ionNumberCatalog = yield self.parent.getIonNumberHistogram(i + 1, self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.ionThresholdSpinBox.value(), self.darkIonThresholdSpinBox.value(), self.iterationsSpinBox.value())
+            ionNumberCatalogArray.append(ionNumberCatalog)
+        ionSwapCatalog = yield self.parent.getIonSwapHistogram(self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.peakVicinitySpinBox.value(), self.expectedNumberOfIonsSpinBox.value())
+        histWindow = HistWindow(self, ionNumberCatalogArray, ionSwapCatalog)
+        self.histList.append(histWindow)
+        histWindow.show()
     
     def openKinetic(self, evt):
         self.parent.openKinetic(str(self.pathEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
@@ -304,10 +382,10 @@ class IonCount():
         
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
         
-        self.hstart = 450
+        self.hstart = 455
         self.hend = 530
-        self.vstart = 210
-        self.vend = 255
+        self.vstart = 217
+        self.vend = 242
         
         self.width = self.hend - self.hstart
         self.height = self.vend - self.vstart
@@ -359,6 +437,21 @@ class IonCount():
     @inlineCallbacks
     def getData(self, numKin):
         yield self.server.get_acquired_data_kinetic(numKin)
+        
+    @inlineCallbacks
+    def getIonNumberHistogram(self, imageNumber, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+        numKin =  (numAnalyzedImages + 1)*iterations      
+        ionNumberCatalog = yield self.server.get_ion_number_histogram(imageNumber, numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+        print ionNumberCatalog
+        returnValue(ionNumberCatalog)
+    
+    @inlineCallbacks
+    def getIonSwapHistogram(self, numAnalyzedImages, iterations, peakVicinity, expectedNumberOfIons):
+        numKin =  (numAnalyzedImages + 1)*iterations
+        ionSwapCatalog = yield self.server.get_ion_swap_histogram(iterations, numKin, peakVicinity, expectedNumberOfIons)
+        print ionSwapCatalog
+        returnValue(ionSwapCatalog)
+        
     
     @inlineCallbacks
     def abortAcquisition(self):

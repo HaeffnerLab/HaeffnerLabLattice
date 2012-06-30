@@ -177,17 +177,18 @@ class IonSwap():
             self.meltedTimes += 1
             self.pulser.switch_manual('crystallization',  True)
             initpower = self.rf.amplitude()
-            self.rf.amplitude(rf_crystal_power)
-            time.sleep(shutter_delay)
             for attempt in range(self.crystallization_attempts):
+                self.rf.amplitude(rf_crystal_power)
+                time.sleep(rf_settling_time)
+                time.sleep(shutter_delay)
                 self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
                 time.sleep(far_red_time)
                 self.pulser.switch_manual('110DP',  True) 
                 time.sleep(optimal_cool_time)
+                self.rf.amplitude(self.expP.rf_power)
+                time.sleep(rf_settling_time)
                 if self.is_crystalized():
-                    print 'Crysallized on attempt number {}'.format(attempt + 1)
-                    self.rf.amplitude(self.expP.rf_power)
-                    time.sleep(rf_settling_time)
+                    print 'Crystalized on attempt number {}'.format(attempt + 1)                    
                     self.pulser.switch_manual('crystallization',  False)
                     time.sleep(shutter_delay)
                     self.pulser.switch_auto('110DP',  False)
@@ -216,9 +217,9 @@ if __name__ == '__main__':
               'exposure': 100*10**-3,                 
               'initial_cooling': 25e-3,
               'camera_delay': 20*10**-3,
-              'darkening': 100*10**-3,
+              'darkening': 10*10**-3,
               'heat_delay':10e-3,
-              'axial_heat':100*10**-9,
+              'axial_heat':12*10**-3,
               'readout_delay':100.0*10**-9,
               'readout_time':10.0*10**-3,
               'rextal_time': 25*10**-3,
@@ -228,8 +229,8 @@ if __name__ == '__main__':
               'xtal_ampl_866':-11.0,
               'cooling_freq_397':103.0,
               'cooling_ampl_397':-13.5,
-              'readout_freq_397':118.0,
-              'readout_ampl_397':-13.0,
+              'readout_freq_397':115.0,
+              'readout_ampl_397':-13.5,
               'xtal_freq_397':103.0,
               'xtal_ampl_397':-11.0,
               'brightening': 5*10**-3,
@@ -237,17 +238,17 @@ if __name__ == '__main__':
               }
         
         exprtParams = {
-                       'iterations':30,
+                       'iterations':100,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
                        'auto_crystal':True,
                        'pmtresolution':0.075,
                        'detect_time':0.225,
                        'binTime':250.0*10**-6,
-                       'hstart': 450,
+                       'hstart': 455,
                        'hend': 530,
-                       'vstart': 210,
-                       'vend':255,
+                       'vstart': 217,
+                       'vend':242,
                        'numAnalyzedImages': 2, # immediately before and after axial heating
                        'typicalIonDiameter': 5,
                        'ionThreshold': 500,
@@ -275,13 +276,13 @@ if __name__ == '__main__':
         exprt = IonSwap(params,exprtParams, cxn)
         exprt.run()
         dp = data_process(cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 10000)
+        dp.addParameter('threshold', 35000)
         dp.addParameter('startReadout', exprt.seq.parameters.startReadout)
         dp.addParameter('stopReadout', exprt.seq.parameters.stopReadout)
         numKin = ((exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         print 'numKin: ',numKin
         cameraServer.get_acquired_data_kinetic(numKin)
-        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062712\7\image', (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
+        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062812\8\image', (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         darkIonCatalog = cameraServer.get_dark_ion_catalog(numKin, (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
         dp.addParameter('darkIonCatalog', darkIonCatalog)
         dp.loadDataVault()

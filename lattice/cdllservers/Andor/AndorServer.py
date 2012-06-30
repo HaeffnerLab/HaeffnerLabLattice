@@ -267,7 +267,7 @@ class Andor:
         """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image0, image1, image2..etc. """
         imageArray = [[] for i in np.arange(numKin)]
         for imageNumber in np.arange(numKin):
-            imageArray[imageNumber] = np.loadtxt(path+str(imageNumber))
+            imageArray[imageNumber] = np.loadtxt(path+str(imageNumber+1))
         imageArray = np.array(imageArray)
         self.imageArray = np.ravel(np.array(imageArray)) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
         del imageArray            
