@@ -68,9 +68,7 @@ class IonSwapBackground(Sequence):
               
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
         # make all the ions bright again
-        pulser.add_dds_pulses('854DP', [(40e-9, 80.0, p.repumpPower)])
         pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)]) #start by cooling
-        pulser.add_dds_pulses('854DP', [(startFirstExposure, 80.0, -63.0)])
         # wait through the initial cooling before taking the 'initial' picture
         pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_ttl_pulse('camera', startFirstExposure, cameraPulse)        
@@ -93,6 +91,9 @@ class IonSwapBackground(Sequence):
 
         # take the last picture
         pulser.add_ttl_pulse('camera', startThirdExposure, cameraPulse)
+        
+        pulser.add_dds_pulses('854DP', [(startBrightening, 80.0, p.repumpPower)])
+        pulser.add_dds_pulses('854DP', [(endBrightening, 80.0, -63.0)])
 
         
 
