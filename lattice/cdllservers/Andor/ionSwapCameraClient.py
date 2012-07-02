@@ -166,6 +166,9 @@ class AppWindow(QtGui.QWidget):
         imageNumberLabel = QtGui.QLabel()
         imageNumberLabel.setText('Image Number: ')
         
+        kineticSetsLabel = QtGui.QLabel()
+        kineticSetsLabel.setText('Kinetic Sets: ')
+        
         expectedNumberOfIonsLabel = QtGui.QLabel()
         expectedNumberOfIonsLabel.setText('Expected Number Of Ions: ') 
         
@@ -185,6 +188,14 @@ class AppWindow(QtGui.QWidget):
         self.iterationsSpinBox.setSingleStep(1)  
         self.iterationsSpinBox.setValue(100)     
         self.iterationsSpinBox.setKeyboardTracking(False)
+
+        self.kineticSetsSpinBox = QtGui.QSpinBox()
+        self.kineticSetsSpinBox.setMinimum(0)
+        self.kineticSetsSpinBox.setMaximum(100)
+        self.kineticSetsSpinBox.setSingleStep(1)  
+        self.kineticSetsSpinBox.setValue(1)     
+        self.kineticSetsSpinBox.setKeyboardTracking(False)
+
 
         self.ionThresholdSpinBox = QtGui.QSpinBox()
         self.ionThresholdSpinBox.setMinimum(0)
@@ -252,8 +263,8 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel1.addWidget(temperatureButton)
         self.bottomPanel1.addWidget(getDarkIonCatalogButton)
         self.bottomPanel1.addWidget(getIonNumberHistogramButton)
-        self.bottomPanel1.addWidget(imageNumberLabel)
-        self.bottomPanel1.addWidget(self.imageNumberSpinBox)
+        self.bottomPanel1.addWidget(kineticSetsLabel)
+        self.bottomPanel1.addWidget(self.kineticSetsSpinBox)
     
         self.bottomPanel1.addStretch(0)
         self.bottomPanel1.setSizeConstraint(QtGui.QLayout.SetFixedSize)        
@@ -323,15 +334,15 @@ class AppWindow(QtGui.QWidget):
     def getIonNumberHistogram(self, evt):
         ionNumberCatalogArray = []
         for i in range(3):
-            ionNumberCatalog = yield self.parent.getIonNumberHistogram(i + 1, self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.ionThresholdSpinBox.value(), self.darkIonThresholdSpinBox.value(), self.iterationsSpinBox.value())
+            ionNumberCatalog = yield self.parent.getIonNumberHistogram(i + 1, self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.ionThresholdSpinBox.value(), self.darkIonThresholdSpinBox.value(), self.iterationsSpinBox.value(), self.kineticSetsSpinBox.value())
             ionNumberCatalogArray.append(ionNumberCatalog)
-        ionSwapCatalog = yield self.parent.getIonSwapHistogram(self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.peakVicinitySpinBox.value(), self.expectedNumberOfIonsSpinBox.value())
+        ionSwapCatalog = yield self.parent.getIonSwapHistogram(self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.peakVicinitySpinBox.value(), self.expectedNumberOfIonsSpinBox.value(), self.kineticSetsSpinBox.value())
         histWindow = HistWindow(self, ionNumberCatalogArray, ionSwapCatalog)
         self.histList.append(histWindow)
         histWindow.show()
     
     def openKinetic(self, evt):
-        self.parent.openKinetic(str(self.pathEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
+        self.parent.openKinetic(str(self.pathEdit.text()), self.kineticSetsSpinBox.value(), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
         
     def abortAcquisition(self, evt):
         self.parent.abortAcquisition()
@@ -430,8 +441,8 @@ class IonCount():
         yield self.server.set_exposure_time(value)
         
     @inlineCallbacks
-    def openKinetic(self, path, numKin):
-        yield self.server.open_as_text_kinetic(path, numKin)
+    def openKinetic(self, path, kinSet, numKin):
+        yield self.server.open_as_text_kinetic(path, kinSet, numKin)
         print 'opened!'
     
     @inlineCallbacks
@@ -439,16 +450,16 @@ class IonCount():
         yield self.server.get_acquired_data_kinetic(numKin)
         
     @inlineCallbacks
-    def getIonNumberHistogram(self, imageNumber, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+    def getIonNumberHistogram(self, imageNumber, numAnalyzedImages, typicalIonDiameter, initialThreshold, darkThreshold, iterations, kinSet):
         numKin =  (numAnalyzedImages + 1)*iterations      
-        ionNumberCatalog = yield self.server.get_ion_number_histogram(imageNumber, numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+        ionNumberCatalog = yield self.server.get_ion_number_histogram(imageNumber, kinSet, numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, initialThreshold, darkThreshold, iterations)
         print ionNumberCatalog
         returnValue(ionNumberCatalog)
     
     @inlineCallbacks
-    def getIonSwapHistogram(self, numAnalyzedImages, iterations, peakVicinity, expectedNumberOfIons):
+    def getIonSwapHistogram(self, numAnalyzedImages, iterations, peakVicinity, expectedNumberOfIons, kinSet):
         numKin =  (numAnalyzedImages + 1)*iterations
-        ionSwapCatalog = yield self.server.get_ion_swap_histogram(iterations, numKin, peakVicinity, expectedNumberOfIons)
+        ionSwapCatalog = yield self.server.get_ion_swap_histogram(iterations, kinSet, numKin, peakVicinity, expectedNumberOfIons)
         print ionSwapCatalog
         returnValue(ionSwapCatalog)
         

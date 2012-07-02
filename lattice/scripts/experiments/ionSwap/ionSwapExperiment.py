@@ -54,7 +54,6 @@ class IonSwap():
         self.meltedTimes = 0
         self.dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
         self.pmt.set_time_length(self.expP.pmtresolution)
-        self.programPulser()
         self.setupLogic()
         ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
@@ -63,6 +62,7 @@ class IonSwap():
         self.pulser.amplitude(self.seqP.xtal_ampl_397)
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
+        self.programPulser()
         countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
         self.crystal_threshold = 0.9 * countRate #kcounts per sec
         self.crystallization_attempts = 10
@@ -212,9 +212,36 @@ class IonSwap():
 
 if __name__ == '__main__':
     #experiment parameters
-    for i in range(1):
+    exposure = 100*10**-3
+    hstart   = 455
+    hend     = 530
+    vstart   = 217
+    vend     = 242    
+
+
+    cxn = labrad.connect()
+    cameraServer = cxn.andor_ion_count
+    temp = cameraServer.get_current_temperature()
+    print temp
+    
+    # set up camera
+    try:
+        cameraServer.set_trigger_mode(1)
+    except:
+        print 'still acquiring, aborting..'
+        cameraServer.abort_acquisition()
+        cameraServer.set_trigger_mode(1)
+    cameraServer.set_read_mode(4)
+    cameraServer.set_emccd_gain(255)
+    cameraServer.set_exposure_time(exposure)   
+    cameraServer.cooler_on()
+    cameraServer.set_image_region(1, 1, hstart, hend, vstart, vend)
+    
+    
+    numberKineticSets = 1
+    for kinSet in range(numberKineticSets):
         params = {
-              'exposure': 100*10**-3,                 
+              'exposure': exposure,                 
               'initial_cooling': 25e-3,
               'camera_delay': 20*10**-3,
               'darkening': 10*10**-3,
@@ -238,40 +265,23 @@ if __name__ == '__main__':
               }
         
         exprtParams = {
-                       'iterations':100,
+                       'iterations':2,
                        'rf_power':-3.5, #### make optional
                        'rf_settling_time':0.3,
                        'auto_crystal':True,
                        'pmtresolution':0.075,
                        'detect_time':0.225,
                        'binTime':250.0*10**-6,
-                       'hstart': 455,
-                       'hend': 530,
-                       'vstart': 217,
-                       'vend':242,
+                       'hstart': hstart,
+                       'hend': hend,
+                       'vstart': vstart,
+                       'vend': vend,
                        'numAnalyzedImages': 2, # immediately before and after axial heating
                        'typicalIonDiameter': 5,
                        'ionThreshold': 500,
                        'darkIonThreshold': -200
                        }
 
-        cxn = labrad.connect()
-        cameraServer = cxn.andor_ion_count
-        temp = cameraServer.get_current_temperature()
-        print temp
-        
-        # set up camera
-        try:
-            cameraServer.set_trigger_mode(1)
-        except:
-            print 'still acquiring, aborting..'
-            cameraServer.abort_acquisition()
-            cameraServer.set_trigger_mode(1)
-        cameraServer.set_read_mode(4)
-        cameraServer.set_emccd_gain(255)
-        cameraServer.set_exposure_time(params['exposure'])   
-        cameraServer.cooler_on()
-        cameraServer.set_image_region(1, 1, exprtParams['hstart'], exprtParams['hend'], exprtParams['vstart'], exprtParams['vend'])
                 
         exprt = IonSwap(params,exprtParams, cxn)
         exprt.run()
@@ -280,10 +290,9 @@ if __name__ == '__main__':
         dp.addParameter('startReadout', exprt.seq.parameters.startReadout)
         dp.addParameter('stopReadout', exprt.seq.parameters.stopReadout)
         numKin = ((exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
-        print 'numKin: ',numKin
         cameraServer.get_acquired_data_kinetic(numKin)
-        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062812\8\image', (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
-        darkIonCatalog = cameraServer.get_dark_ion_catalog(numKin, (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
-        dp.addParameter('darkIonCatalog', darkIonCatalog)
+        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062912\1\image', kinSet, (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
+        #darkIonCatalog = cameraServer.get_dark_ion_catalog(numKin, (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
+        #dp.addParameter('darkIonCatalog', darkIonCatalog)
         dp.loadDataVault()
         dp.processAll()

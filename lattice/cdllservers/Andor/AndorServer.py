@@ -60,6 +60,7 @@ class Andor:
 #        self.verticalEnd       = self.height
         self.imageRegion        = [1, 1, 1, self.width, 1, self.height]
         #self.imageArray         = np.zeros((self.height * self.width))
+        self.imageArray         = []
         
 
     def __del__(self):
@@ -183,7 +184,7 @@ class Andor:
         #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.imageArray = cimage[:]
+            self.imageArray.append(cimage[:])
             print 'acquired kinetic!'
         else:
             raise Exception(ERROR_CODE[error]) 
@@ -231,7 +232,7 @@ class Andor:
         
         #np.savetxt(path, np.reshape(self.imageArray, (self.height, self.width)))
         
-    def SaveAsTxtKinetic(self, path, numKin):
+    def SaveAsTxtKinetic(self, path, kinSet, numKin):
 #        # split up the image array into an array of arrays
 #        # ASSUMES CURRENT WIDTH AND HEIGHT ARE CORRECT FOR THE IMAGE!!!
 #        print 'from saveastxtkinetc numKin: ', numKin
@@ -255,21 +256,41 @@ class Andor:
 #            file.close()
 #            cnt += 1
         
+         """ saving scheme: name-kinSet-numKin
+                        Ex: image-1-1
+                        Ex: image-1-27
+         """
+        
          imageArray = np.reshape(self.imageArray, (numKin, self.height, self.width))
-         for image in np.arange(numKin):
-             np.savetxt(path+str(image+1), imageArray[image], fmt='%d')
+         for kinSetNumber in np.arange(kinSet):            
+             for image in np.arange(numKin):
+                 np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')
         
             
     def OpenAsTxt(self, path):
         self.imageArray = np.loadtxt(path)
         
-    def OpenAsTxtKinetic(self, path, numKin):
-        """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image0, image1, image2..etc. """
+    def OpenAsTxtKinetic(self, path, kinSet, numKin):
+        """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image1, image2, image3..etc. 
+            
+            image12 means kinetic set 1, image 2
+            image122 means kinetic set 1, image 22
+            
+            The image array returned is 1 dimensional, with the images in sequential order. The images are sliced into rows.
+            
+            Ex: 2 sets of 3 images of size (2 rows, 3 cols)
+                array of shape: (2, 3, 2, 3) -> (36)
+                
+                
+        
+            """
+        self.imageArray = []
         imageArray = [[] for i in np.arange(numKin)]
-        for imageNumber in np.arange(numKin):
-            imageArray[imageNumber] = np.loadtxt(path+str(imageNumber+1))
-        imageArray = np.array(imageArray)
-        self.imageArray = np.ravel(np.array(imageArray)) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
+        for kinSetNumber in np.arange(kinSet):
+            for imageNumber in np.arange(numKin):
+                imageArray[imageNumber] = np.loadtxt(path+'-'+str(kinSetNumber + 1)+'-'+str(imageNumber+1))
+#            imageArray = np.array(imageArray)
+            self.imageArray.append(np.ravel(np.array(imageArray))) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
         del imageArray            
     
     def getCoolerState(self):
@@ -800,20 +821,20 @@ class AndorServer(LabradServer):
         self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
             #not sure yet
 
-    @setting(33, "Save As Text Kinetic", path = 's', numKin = 'i', returns = '')
-    def saveAsTextKinetic(self, c, path, numKin):
+    @setting(33, "Save As Text Kinetic", path = 's', kinSet = 'i', numKin = 'i', returns = '')
+    def saveAsTextKinetic(self, c, path, kinSet, numKin):
         """Saves a Series of Images As Text Files"""
-        yield deferToThread(self.camera.SaveAsTxtKinetic, path, numKin) 
+        yield deferToThread(self.camera.SaveAsTxtKinetic, path, kinSet, numKin) 
 
     @setting(34, "Open As Text", path = 's', returns = '')
     def openAsText(self, c, path):
         """Opens a Text File as Image"""
         yield deferToThread(self.camera.OpenAsTxt, path) 
     
-    @setting(35, "Open As Text Kinetic", path = 's', numKin = 'i', returns = '')
-    def openAsTextKinetic(self, c, path, numKin):
+    @setting(35, "Open As Text Kinetic", path = 's', kinSet = 'i', numKin = 'i', returns = '')
+    def openAsTextKinetic(self, c, path, kinSet, numKin):
         """Opens a Series of Text Files As Images"""
-        yield deferToThread(self.camera.OpenAsTxtKinetic, path, numKin) 
+        yield deferToThread(self.camera.OpenAsTxtKinetic, path, kinSet, numKin) 
 
     @setting(36, "Start Acquisition Kinetic External", returns = '')
     def startAcquisitionKineticExternal(self, c):

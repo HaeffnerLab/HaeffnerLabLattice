@@ -61,15 +61,20 @@ class AndorIonCount(LabradServer, AndorServer):
         
         return darkIonCatalog
     
-    def GetIonNumberCatalog(self, image, peakPositionCatalog, iterations, numKin):
-        """image = 1, 2, or 3 """
+    def GetIonNumberCatalog(self, image, peakPositionCatalog, iterations, kinSet, numKin):
+        """image = 1, 2, or 3 
+        
+           Note: the array is in order of kinetic set
+        """
         
         numberImagesInSet = (numKin / iterations)
+        numberKineticSets = kinSet
         
         ionNumberCatalog = []
         
-        for iteration in np.arange(iterations):
-            ionNumberCatalog.append(len(peakPositionCatalog[iteration][image - 1]))
+        for kinSet in np.arange(numberKineticSets):
+            for iteration in np.arange(iterations):
+                ionNumberCatalog.append(len(peakPositionCatalog[kinSet][iteration][image - 1]))
         
         return ionNumberCatalog
         
@@ -80,35 +85,39 @@ class AndorIonCount(LabradServer, AndorServer):
         """returns the number of instances an ion moves a distance of one ion after heating """
         return (len(np.where(ionSwapCatalog == 1)))
     
-    def BuildIonSwapCatalog(self, ionPositionCatalog, iterations, expectedNumberOfIons):
+    def BuildIonSwapCatalog(self, ionPositionCatalog, kinSet, iterations, expectedNumberOfIons):
         """  returns a 1D array describing the distance an ion travelled by comparing the initial
              and final images.
          
              this assumes 2 images to be analyzed per background image. Also assumes that there is 
              only ONE dark ion in both images.
              
+             Note: the array is in order of kinetic set
+             
          """
         
        
+        numberKineticSets = kinSet
         ionSwapCatalog = []
         
-        for imageSet in np.arange(iterations):
-            if (len(self.peakPositionCatalog[imageSet][0]) == expectedNumberOfIons and len(self.peakPositionCatalog[imageSet][1]) == 1 and len(self.peakPositionCatalog[imageSet][2]) == 1): #right number of bright ions and 1 dark ion in the shine729 and final images
-                initialPosition = ionPositionCatalog[imageSet][1]
-                finalPosition = ionPositionCatalog[imageSet][2]
-                
-                ionSwapCatalog.append(abs(finalPosition - initialPosition))
-            else:
-                print 'initial ions: ', len(self.peakPositionCatalog[imageSet][0])
-                print 'number dark ions in first image: ', len(self.peakPositionCatalog[imageSet][1])
-                print 'number dark ions in second image: ', len(self.peakPositionCatalog[imageSet][2])
+        for kinSet in np.arange(numberKineticSets):
+            for imageSet in np.arange(iterations):
+                if (len(self.peakPositionCatalog[kinSet][imageSet][0]) == expectedNumberOfIons and len(self.peakPositionCatalog[kinSet][imageSet][1]) == 1 and len(self.peakPositionCatalog[kinSet][imageSet][2]) == 1): #right number of bright ions and 1 dark ion in the shine729 and final images
+                    initialPosition = ionPositionCatalog[kinSet][imageSet][1]
+                    finalPosition = ionPositionCatalog[kinSet][imageSet][2]
+                    
+                    ionSwapCatalog.append(abs(finalPosition - initialPosition))
+                else:
+                    print 'initial ions: ', len(self.peakPositionCatalog[kinSet][imageSet][0])
+                    print 'number dark ions in first image: ', len(self.peakPositionCatalog[kinSet][imageSet][1])
+                    print 'number dark ions in second image: ', len(self.peakPositionCatalog[kinSet][imageSet][2])
 
 #        print 'ion swap catalog:'
 #        print ionSwapCatalog
         print 'len of ion swap catalog: ', len(ionSwapCatalog)
         return ionSwapCatalog
     
-    def BuildIonPositionCatalog(self, peakPositionCatalog, iterations, numKin, peakVicinity):
+    def BuildIonPositionCatalog(self, peakPositionCatalog, iterations, kinSet, numKin, peakVicinity):
         """
         ionPositionCatalog is a list of lists of ion positions in the chain
 
@@ -129,39 +138,43 @@ class AndorIonCount(LabradServer, AndorServer):
         Note: len(ionPositionCatalog[0][1]) = number of dark ions for the first image to be analyzed
         
         """
-
-        ionPositionCatalog = [[] for j in range(iterations)] 
-        #ionPositionCatalog = np.zeros_like(peakPositionCatalog)
-
+        numberKineticSets = kinSet
         numberImagesInSet = (numKin / iterations)
 
-        for imageSet in np.arange(iterations):
-            #ionPositionCatalog[imageSet][0] = len(peakPositionCatalog[imageSet][0]) #background image
-            ionPositionCatalog[imageSet].append(len(peakPositionCatalog[imageSet][0])) #background image
-            for image in np.arange(1, numberImagesInSet):
-                if (len(peakPositionCatalog[imageSet][image]) != 0):
-                    for peakPosition in peakPositionCatalog[imageSet][image]:
-                        result = np.where(abs(np.subtract(peakPositionCatalog[imageSet][0], peakPosition)) <= peakVicinity)[0]
-                        # assumes that one dark ion will never be close enough to multiple initial ion position
-                        if (len(result) != 0):
-                            try:
-    #                            print 'result[0]'
-    #                            print result[0]
-                                #ionPositionCatalog[imageSet][image] = result[0]
-                                ionPositionCatalog[imageSet].append(result[0])
-                            except:
-                                print 'la gente esta muy loca!'
-                        else:
-                            ionPositionCatalog[imageSet].append(-2) # -2 means no dark ions near initial positions
-                            print 'Found a dark ion, but nowhere near the ions in the initial image!'
-                else:
-                    ionPositionCatalog[imageSet].append(-1) # -1 means no dark ions
-                    print 'no dark ions :('
+        
+        ionPositionCatalog = [[[] for i in range(iterations)] for j in range(numberKineticSets)] 
+        #ionPositionCatalog = np.zeros_like(peakPositionCatalog)
 
+        for kinSet in np.arange(numberKineticSets):
+            for imageSet in np.arange(iterations):
+                #ionPositionCatalog[imageSet][0] = len(peakPositionCatalog[imageSet][0]) #background image
+                ionPositionCatalog[kinSet][imageSet].append(len(peakPositionCatalog[kinSet][imageSet][0])) #background image
+                for image in np.arange(1, numberImagesInSet):
+                    if (len(peakPositionCatalog[kinSet][imageSet][image]) != 0):
+                        for peakPosition in peakPositionCatalog[kinSet][imageSet][image]:
+                            result = np.where(abs(np.subtract(peakPositionCatalog[kinSet][imageSet][0], peakPosition)) <= peakVicinity)[0]
+                            # assumes that one dark ion will never be close enough to multiple initial ion position
+                            if (len(result) != 0):
+                                try:
+        #                            print 'result[0]'
+        #                            print result[0]
+                                    #ionPositionCatalog[imageSet][image] = result[0]
+                                    ionPositionCatalog[kinSet][imageSet].append(result[0])
+                                except:
+                                    print 'la gente esta muy loca!'
+                            else:
+                                ionPositionCatalog[kinSet][imageSet].append(-2) # -2 means no dark ions near initial positions
+                                print 'Found a dark ion, but nowhere near the ions in the initial image!'
+                    else:
+                        ionPositionCatalog[kinSet][imageSet].append(-1) # -1 means no dark ions
+                        print 'no dark ions :('
+
+        print 'ion position catalog: '
+        print ionPositionCatalog
         return ionPositionCatalog
                 
     
-    def GetPeakPositionCatalog(self, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+    def GetPeakPositionCatalog(self, kinSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
         """This method counts the number of dark ions (and their positions) in 
             an ion chain. It is required that the background image contain a 
             fully illuminated chain of ions.
@@ -181,17 +194,17 @@ class AndorIonCount(LabradServer, AndorServer):
                     
                     Therefore: 10 'sets' of 5 images.
                     
-            NOTE: Assumes collectData was just run!
+            NOTE: Assumes data exists in AndorServer's imageArray
                     
         """
-        
+        numberKineticSets = kinSet
         numberImagesInSet = (numKin / iterations)
         numberImagesToAnalyze = (numKin / iterations) - 1
         
         
         # 3D array of each image
         try:
-            data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
+            data = np.reshape(np.array(self.camera.imageArray), (kinSet, numKin, rows, cols))
         except ValueError:
             raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
 #        data = self.imageArray
@@ -228,127 +241,129 @@ class AndorIonCount(LabradServer, AndorServer):
 #        
 #        ###### TESTING TESTING TESTING 123 ################
         
-        peakPositionCatalog = [[] for i in range(iterations)] 
+        peakPositionCatalog = [[[] for i in range(iterations)] for j in range(kinSet)] 
         
-        """ peakPositionCatalog is a list of lists of peak positions
+        """ peakPositionCatalog is a list of list of lists of peak positions
             
             Ex:
-                peakPositionCatalog[1st iteration] = [[peak positions background], [peak positions analyzed image], [peak positions analyzed image]]
+                peakPositionCatalog[1st kinetic set, 1st iteration] = [[peak positions initial], [peak positions analyzed image], [peak positions analyzed image]]
                 
-                len(peakPositionCatalog[0][1]) = number of dark ions for the first image to be analyzed
+                len(peakPositionCatalog[0][0][1]) = number of dark ions for the first analyzed image in the first kinetic set
             
         """
         
-        for imageSet in np.arange(iterations):
-            sumArray = []
-            for image in np.arange(numberImagesInSet):
-                """ The image, assumed to be have more columns than rows, will first be analyzed
-                    in the axial direction. The sums of the intensities will be collected in the
-                    axial direction first. This will help narrow down which section of the image,
-                    in order to exclude noise.
-                    
-                    Example:   |  [[ # # # # # # # # # # # # # # # # # # # # # #],       |
-                               0   [ # # # # # # # # # # # # # # # # # # # # # #], avgIonDiameter
-                               |   [ # # # # # # # # # # # # # # # # # # # # # #],       |
-                              |    [ * * * * * * * * * * * * * * * * * * * * * *], <-- strip of highest intensity,
-                              1    [ * * * * * * * * * * * * * * * * * * * * * *], <-- will only be used for 
-                              |    [ * * * * * * * * * * * * * * * * * * * * * *], <-- proceeding calculations
-                               |   [ % % % % % % % % % % % % % % % % % % % % % %],
-                               2   [ % % % % % % % % % % % % % % % % % % % % % %],
-                               |   [ % % % % % % % % % % % % % % % % % % % % % %]]
-                                          
-                                                     Axial   
-                """
-                
-                
-                axialSumSegments = []
-                axialData = np.sum(data[numberImagesInSet*imageSet + image], 1) # 1D vector: sum of intensities in the axial direction. length = rows
-
-                
-                """ choose each strip by only analyzing the 1D vector of sums
-                    
-                    [ # # # * * * % % %] -> [# * %]
-                                             0 1 2
-                              ^                ^
-                              |                |
-                            Segment           most
-                                            intense
-                                              sum
-                """
-                intensitySum = 0
-                cnt = 0
-                for i in np.arange(rows):
-                    intensitySum += axialData[i]
-                    cnt += 1
-                    if (cnt == typicalIonDiameter):
-                        axialSumSegments.append(intensitySum)
-                        cnt = 0
-                        intensitySum = 0 
+        #for loop here over kinset?
+        for kinSet in np.arange(numberKineticSets):
+            for imageSet in np.arange(iterations):
+                sumArray = []
+                for image in np.arange(numberImagesInSet):
+                    """ The image, assumed to be have more columns than rows, will first be analyzed
+                        in the axial direction. The sums of the intensities will be collected in the
+                        axial direction first. This will help narrow down which section of the image,
+                        in order to exclude noise.
                         
-                # find the index of the strip with the highest intensity
-                mostIntenseRegionIndex = np.where(axialSumSegments == np.max(axialSumSegments))[0][0]
-                
-                """ use this strip to create the 1-dimensional array of intensity sums in the radial direction
-                
-                    [ * * * * * * * * * * * * * * * * * * * * * *] 1D vector of sums
-                                                                    in the radial direction
-                                          ^                            length = cols
-                                          |                        Used to find peaks
-                   
-                   [[ * * * * * * * * * * * * * * * * * * * * * *], most 
-                    [ * * * * * * * * * * * * * * * * * * * * * *], intense
-                    [ * * * * * * * * * * * * * * * * * * * * * *]]  strip
+                        Example:   |  [[ # # # # # # # # # # # # # # # # # # # # # #],       |
+                                   0   [ # # # # # # # # # # # # # # # # # # # # # #], avgIonDiameter
+                                   |   [ # # # # # # # # # # # # # # # # # # # # # #],       |
+                                  |    [ * * * * * * * * * * * * * * * * * * * * * *], <-- strip of highest intensity,
+                                  1    [ * * * * * * * * * * * * * * * * * * * * * *], <-- will only be used for 
+                                  |    [ * * * * * * * * * * * * * * * * * * * * * *], <-- proceeding calculations
+                                   |   [ % % % % % % % % % % % % % % % % % % % % % %],
+                                   2   [ % % % % % % % % % % % % % % % % % % % % % %],
+                                   |   [ % % % % % % % % % % % % % % % % % % % % % %]]
+                                              
+                                                         Axial   
+                    """
                     
                     
-                
-                """
-
-
-                mostIntenseData = data[numberImagesInSet*imageSet + image][(mostIntenseRegionIndex*typicalIonDiameter):(mostIntenseRegionIndex*typicalIonDiameter + typicalIonDiameter), :]
-                mostIntenseDataSums = np.sum(mostIntenseData, 0) / typicalIonDiameter #1D vector
-                
-                """
-                          |      |      |      |      |
-                    _____/|\____/|\____/|\____/|\____/|\_____   background image sum
+                    axialSumSegments = []
+                    axialData = np.sum(data[kinSet][numberImagesInSet*imageSet + image], 1) # 1D vector: sum of intensities in the axial direction. length = rows
+    
                     
+                    """ choose each strip by only analyzing the 1D vector of sums
+                        
+                        [ # # # * * * % % %] -> [# * %]
+                                                 0 1 2
+                                  ^                ^
+                                  |                |
+                                Segment           most
+                                                intense
+                                                  sum
+                    """
+                    intensitySum = 0
+                    cnt = 0
+                    for i in np.arange(rows):
+                        intensitySum += axialData[i]
+                        cnt += 1
+                        if (cnt == typicalIonDiameter):
+                            axialSumSegments.append(intensitySum)
+                            cnt = 0
+                            intensitySum = 0 
+                            
+                    # find the index of the strip with the highest intensity
+                    mostIntenseRegionIndex = np.where(axialSumSegments == np.max(axialSumSegments))[0][0]
                     
-                    ___________________   ___________________   dark ion image sum (background subtracted out)
-                                       \|/
-                                        |
+                    """ use this strip to create the 1-dimensional array of intensity sums in the radial direction
+                    
+                        [ * * * * * * * * * * * * * * * * * * * * * *] 1D vector of sums
+                                                                        in the radial direction
+                                              ^                            length = cols
+                                              |                        Used to find peaks
+                       
+                       [[ * * * * * * * * * * * * * * * * * * * * * *], most 
+                        [ * * * * * * * * * * * * * * * * * * * * * *], intense
+                        [ * * * * * * * * * * * * * * * * * * * * * *]]  strip
+                        
+                        
+                    
+                    """
+    
+    
+                    mostIntenseData = data[kinSet][numberImagesInSet*imageSet + image][(mostIntenseRegionIndex*typicalIonDiameter):(mostIntenseRegionIndex*typicalIonDiameter + typicalIonDiameter), :]
+                    mostIntenseDataSums = np.sum(mostIntenseData, 0) / typicalIonDiameter #1D vector
+                    
+                    """
+                              |      |      |      |      |
+                        _____/|\____/|\____/|\____/|\____/|\_____   background image sum
+                        
+                        
+                        ___________________   ___________________   dark ion image sum (background subtracted out)
+                                           \|/
+                                            |
+                    
+                    """
+                    
+                    sumArray.append(mostIntenseDataSums)
+    
+                ########### find the number of ions, peak positions of initial image ########### 
+                initialDenoised = ndimage.gaussian_filter(sumArray[0], 2)    
+                initialMaxPeaks, initialMinPeaks = peakdetect.peakdetect(initialDenoised, range(cols), 1, 1)
+                initialPeakPositions = []
+                for peak in initialMaxPeaks: # peak = [position (pixel), intensity]
+                    if peak[1] > initialThreshold:
+                        initialPeakPositions.append(peak[0])
+    #            print 'initial peak positions: ', initialPeakPositions
+    #            print 'number of ions: ', len(initialPeakPositions)
                 
-                """
+                peakPositionCatalog[kinSet][imageSet].append(initialPeakPositions)
                 
-                sumArray.append(mostIntenseDataSums)
-
-            ########### find the number of ions, peak positions of initial image ########### 
-            initialDenoised = ndimage.gaussian_filter(sumArray[0], 2)    
-            initialMaxPeaks, initialMinPeaks = peakdetect.peakdetect(initialDenoised, range(cols), 1, 1)
-            initialPeakPositions = []
-            for peak in initialMaxPeaks: # peak = [position (pixel), intensity]
-                if peak[1] > initialThreshold:
-                    initialPeakPositions.append(peak[0])
-#            print 'initial peak positions: ', initialPeakPositions
-#            print 'number of ions: ', len(initialPeakPositions)
+                ########### find the number of dark ions, peak positions of analyzed images ###########
+                for image in np.arange(numberImagesToAnalyze):
+                    subtractedData = sumArray[(image+1)] - sumArray[0]
+                    subtractedDataDenoised = ndimage.gaussian_filter(subtractedData, 2)
+                    darkMaxPeaks, darkMinPeaks = peakdetect.peakdetect(subtractedDataDenoised, range(cols), 1, 1)
+                    darkPeakPositions = []
+                    for peak in darkMinPeaks:
+                        if peak[1] < darkThreshold:
+                            darkPeakPositions.append(peak[0])
+    
+    #                print 'initial dark peak positions: ', darkPeakPositions
+    #                print 'number of dark ions: ', len(darkPeakPositions)
+                    peakPositionCatalog[kinSet][imageSet].append(darkPeakPositions) # we're hoping there is only one peak here!
             
-            peakPositionCatalog[imageSet].append(initialPeakPositions)
-            
-            ########### find the number of dark ions, peak positions of analyzed images ###########
-            for image in np.arange(numberImagesToAnalyze):
-                subtractedData = sumArray[(image+1)] - sumArray[0]
-                subtractedDataDenoised = ndimage.gaussian_filter(subtractedData, 2)
-                darkMaxPeaks, darkMinPeaks = peakdetect.peakdetect(subtractedDataDenoised, range(cols), 1, 1)
-                darkPeakPositions = []
-                for peak in darkMinPeaks:
-                    if peak[1] < darkThreshold:
-                        darkPeakPositions.append(peak[0])
-
-#                print 'initial dark peak positions: ', darkPeakPositions
-#                print 'number of dark ions: ', len(darkPeakPositions)
-                peakPositionCatalog[imageSet].append(darkPeakPositions) # we're hoping there is only one peak here!
-        
-           
-#        print 'peak positionn catalog:'
-#        print peakPositionCatalog
+               
+        print 'peak positionn catalog:'
+        print peakPositionCatalog
         return peakPositionCatalog    
             
             
@@ -385,17 +400,17 @@ class AndorIonCount(LabradServer, AndorServer):
         #ionSwapCatalog = self.BuildIonSwapCatalog(ionPositionCatalog, iterations)
         #numIonSwaps = self.GetNumberSwaps(ionSwapCatalog)
     
-    @setting(43, "Get Ion Number Histogram", image = 'i', numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', returns = '*i')
-    def getIonNumberHistogram(self, c, image, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):        
+    @setting(43, "Get Ion Number Histogram", image = 'i', kinSet = 'i', numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', returns = '*i')
+    def getIonNumberHistogram(self, c, image, kinSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):        
         """For Ion Swap, image should = 1, 2 or 3 """
-        self.peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
-        ionNumberCatalog = self.GetIonNumberCatalog(image, self.peakPositionCatalog, iterations, numKin)
+        self.peakPositionCatalog = self.GetPeakPositionCatalog(kinSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+        ionNumberCatalog = self.GetIonNumberCatalog(image, self.peakPositionCatalog, iterations, kinSet, numKin)
         return ionNumberCatalog
         
-    @setting(44, "Get Ion Swap Histogram", iterations = 'i', numKin = 'i', peakVicinity = 'i', expectedNumberOfIons = 'i', returns = '*i')
-    def getIonSwapHistogram(self, c, iterations, numKin, peakVicinity, expectedNumberOfIons):
-        self.ionPositionCatalog = self.BuildIonPositionCatalog(self.peakPositionCatalog, iterations, numKin, peakVicinity)
-        ionSwapCatalog = self.BuildIonSwapCatalog(self.ionPositionCatalog, iterations, expectedNumberOfIons)
+    @setting(44, "Get Ion Swap Histogram", iterations = 'i', kinSet = 'i', numKin = 'i', peakVicinity = 'i', expectedNumberOfIons = 'i', returns = '*i')
+    def getIonSwapHistogram(self, c, iterations, kinSet, numKin, peakVicinity, expectedNumberOfIons):
+        self.ionPositionCatalog = self.BuildIonPositionCatalog(self.peakPositionCatalog, iterations, kinSet, numKin, peakVicinity)
+        ionSwapCatalog = self.BuildIonSwapCatalog(self.ionPositionCatalog, kinSet, iterations, expectedNumberOfIons)
         return np.array(ionSwapCatalog) 
         
 if __name__ == "__main__":

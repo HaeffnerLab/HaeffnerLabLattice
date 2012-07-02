@@ -6,19 +6,16 @@ from scipy.cluster.vq import whiten, kmeans, vq
 
 class histogramTimetags():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''
-    def __init__(self, darkIonCatalog, start, end, bins = 50, title = None, threshold = None, readout_time = None):
+    def __init__(self, start, end, bins = 50, title = None, threshold = None ):
         self.start = start
         self.end = end
         self.bins = bins
         self.threshold = threshold
         self.title = title
-        self.readout_time = readout_time
-        self.darkIonCatalog = darkIonCatalog
         self.counts = []
 
     def addTrace(self, timetags):
         counts = np.count_nonzero((self.start <= timetags) * (timetags <= self.end))
-        counts = counts / float(self.readout_time) #normalize
         self.counts.append(counts)
         
     def processTraces(self):
@@ -44,7 +41,7 @@ class histogramTimetags():
 
     def analyzeThreshold(self, threshold):
         counts = np.array(self.counts)
-        below = np.count_nonzero(counts <= threshold) / float(counts.size)
+        below = np.count_nonzero(counts < threshold) / float(counts.size)
         above = np.count_nonzero(counts > threshold) / float(counts.size)
         print '{0}% of samples are below {1} '.format(100 * below, threshold)
         print '{0}% of samples are above {1} '.format(100 * above, threshold)
@@ -55,10 +52,6 @@ class histogramTimetags():
         if self.title is not None:
             pyplot.suptitle(self.title)
         pyplot.hist(self.counts, self.bins, range  = (0, max(self.counts)))
-        figure2 = pyplot.figure(2)
-        print self.darkIonCatalog
-        pyplot.hist(self.darkIonCatalog)
-        pyplot.suptitle('the dark!')
         pyplot.show()
 
 class data_process():
@@ -88,13 +81,19 @@ class data_process():
         self.loadParameters()
         self.createProcesses()
         self.dv.cd('timetags')
-        traces = len(self.dv.dir()[1])
-        if not traces: raise Exception("No saved timetags")
-        for trace in range(1, traces+1):
-            print trace
-            self.dv.open(int(trace))
-            timetags = self.dv.get().asarray[:,0]
+#        try:
+        self.dv.open(int(1))
+        data = self.dv.get().asarray
+        iterations = self.params.get('iterations')
+        for iteration in range(iterations):
+            coordinates = np.where(data[:, 1] == iteration)
+            timetags = []
+            for coordinate in coordinates[0]:
+                timetags.append(data[coordinate, 0])
+            timetags = np.array(timetags)    
             self.addAll(timetags)
+#        except:
+#            print 'No saved timetags'
     
     def createProcesses(self):
         if 'histogram' in self.processNames:
@@ -103,11 +102,13 @@ class data_process():
             axial_heat = self.params['axial_heat']
             readout_delay = self.params['readout_delay']
             readout_time = self.params['readout_time']
+#            startReadout =  (axial_heat + initial_cooling + heat_delay + axial_heat + readout_delay ) 
+#            stopReadout = startReadout + readout_time
+            threshold = self.params.get('threshold') 
             startReadout = self.params.get('startReadout') 
             stopReadout = self.params.get('stopReadout')
-            threshold = self.params.get('threshold')
-            darkIonCatalog = self.params.get('darkIonCatalog')
-            self.process.append(histogramTimetags(darkIonCatalog, startReadout, stopReadout, title = self.dataset, threshold = threshold, readout_time = readout_time))
+            print 'Readouts: ', startReadout, stopReadout
+            self.process.append(histogramTimetags(startReadout, stopReadout, title = self.dataset, threshold = threshold))
         
     def loadParameters(self):
         self.dv.open(1)    
@@ -123,12 +124,12 @@ class data_process():
             pr.processTraces()
 
 if __name__ == '__main__':
-    dataset = '2012Jun21_1644_58'
+    dataset = '2012Apr16_2133_32'
     directory = ['','Experiments','LatentHeat_no729_autocrystal']
     import labrad
     cxn = labrad.connect()
     dp = data_process(cxn, dataset, directory, ['histogram'])
-    dp.addParameter('threshold', 100)
+    #dp.addParameter('threshold', 100)
     dp.loadDataVault()
     dp.processAll()
     print 'done'

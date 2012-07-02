@@ -52,7 +52,7 @@ class LatentHeat():
         self.meltedTimes = 0
         self.dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
         self.pmt.set_time_length(self.expP.pmtresolution)
-        self.programPulser()
+  
         self.setupLogic()
         ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
@@ -61,6 +61,7 @@ class LatentHeat():
         self.pulser.amplitude(self.seqP.xtal_ampl_397)
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
+        self.programPulser()
         countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
         self.crystal_threshold = 0.9 * countRate #kcounts per sec
         self.crystallization_attempts = 10
