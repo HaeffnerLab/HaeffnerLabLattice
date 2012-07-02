@@ -1,3 +1,5 @@
+import time
+
 class Crystallizer():
     
     thresholdPercentage = 0.9

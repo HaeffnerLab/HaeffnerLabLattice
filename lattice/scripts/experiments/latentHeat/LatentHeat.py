@@ -6,8 +6,8 @@ import numpy
 import time
 from scriptLibrary import dvParameters 
 from PulseSequences.latentHeat import LatentHeatBackground
-from dataProcessor import data_process
 from crystallizer import Crystallizer
+from fly_processing import Binner, Splicer
 
 class Bunch:
     def __init__(self, **kwds):
@@ -32,7 +32,7 @@ class LatentHeat():
         automatic crystallization routine to reduce necessary time to crystallize the ions
         frequency switching during the sequence with the RS list mode
     '''
-    experimentName = 'LatentHeat_no729_autocrystal'
+    experimentName = 'LatentHeat_Auto'
     
     def __init__(self, seqParams, exprtParams):
        #connect and define servers we'll be using
@@ -45,12 +45,14 @@ class LatentHeat():
         self.seqP = Bunch(**seqParams)
         self.expP = Bunch(**exprtParams)
         self.xtal = Crystallizer(self.pulser, self.pmt, self.rf)
+        self.Binner = None
         
     def initialize(self):
         #get initialize count for crystallization
         self.xtal.get_initial_rate()
         #directory name and initial variables
         self.dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
+        self.topdirectory = time.strftime("%Y%b%d",time.localtime())
         self.setupLogic()
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
@@ -59,6 +61,9 @@ class LatentHeat():
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
         self.programPulser()
+        #data processing setup
+        self.Binner = Binner(self.seqP.recordTime, self.expP.binTime)
+        self.Splicer = Splicer(self.seqP.startReadout, self.seqP.endReadout)
         
     def setupLogic(self):
         self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
@@ -73,6 +78,8 @@ class LatentHeat():
         seq.defineSequence()
         self.pulser.program_sequence()
         self.seqP['recordTime'] = seq.parameters.recordTime
+        self.seqP['startReadout'] = seq.parameters.startReadout
+        self.seqP['endReadout'] = seq.parameters.endReadout
     
     def run(self):
         sP = self.seqP
@@ -89,10 +96,9 @@ class LatentHeat():
     def sequence(self):
         sP = self.seqP
         xP = self.expP
-        #binning on the fly
-        binNumber = int(sP.recordTime / xP.binTime)
-        binArray = xP.binTime * numpy.arange(binNumber + 1)
-        binnedFlour = numpy.zeros(binNumber)
+        #saving timetags
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend], True)
+        self.dv.new('timetags',[('Time', 'sec')],[('PMT counts','Arb','Arb')] )
         #do iterations
         for iteration in range(xP.iterations):
             print 'recording trace {0} out of {1}'.format(iteration+1, xP.iterations)
@@ -101,26 +107,35 @@ class LatentHeat():
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
             timetags = self.pulser.get_timetags().asarray
-            #saving timetags
-            self.dv.cd(['','Experiments', self.experimentName, self.dirappend, 'timetags'],True )
-            self.dv.new('timetags iter{0}'.format(iteration),[('Time', 'sec')],[('PMT counts','Arb','Arb')] )
-            self.dv.add_parameter('iteration',iteration)
-            ones = numpy.ones_like(timetags)
-            self.dv.add(numpy.vstack((timetags,ones)).transpose())
+            iters = iteration * numpy.ones_like(timetags) 
+            self.dv.add(numpy.vstack((iters,timetags)).transpose())
             #add to binning of the entire sequence
-            newbinned = numpy.histogram(timetags, binArray )[0]
-            binnedFlour = binnedFlour + newbinned
+            self.Binner.add(timetags)
+            self.Splicer.add(timetags)
+            #auto crystallization
             if xP.auto_crystal:
                 success = self.xtal.auto_crystallize()
                 if not success: break
-        # getting result and adding to data vault
-        #normalize
-        binnedFlour = binnedFlour / float(xP.iterations)
-        binnedFlour = binnedFlour / xP.binTime
-        self.dv.cd(['','Experiments', self.experimentName, self.dirappend] )
-        self.dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
-        data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
+        #adding readout counts to data vault:
+        readout = self.Splicer.getList()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('readout',[('Iter', 'Number')], [('PMT counts','Counts/Sec','Counts/Sec')] )
+        self.dv.add(readout)
+        #adding binned fluorescence to data vault:
+        binX, binY = self.Binner.getBinned()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('binned',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
+        data = numpy.vstack((binX, binY)).transpose()
         self.dv.add(data)
+        self.dv.add_parameter('Window',['Binned Fluorescence'])
+        self.dv.add_parameter('plotLive',True)
+        #adding histogram of counts to data vault
+        binX, binY = self.Splicer.getHistogram()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('histogram',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
+        data = numpy.vstack((binX, binY)).transpose()
+        self.dv.add(data)
+        self.dv.add_parameter('Window',['Histogram'])
         self.dv.add_parameter('plotLive',True)
         # gathering parameters and adding them to data vault
         measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
@@ -132,44 +147,42 @@ class LatentHeat():
     def finalize(self):
         for name in ['axial', '110DP']:
             self.pulser.switch_manual(name)
+        below, above = self.Splicer.getPercentage(self.expP.threshold)
+        print '{0:.1f}% of samples are Melted, below threshold of {1} '.format(100 * below, self.expP.threshold)
+        print '{0:.1f}% of samples are Crystallized, above threshold of {1} '.format(100 * above, self.expP.threshold)
     
     def __del__(self):
         self.cxn.disconnect()
         
 if __name__ == '__main__':
     #experiment parameters
-    for i in range(1):
-        params = {
-              'initial_cooling': 25e-3,
-              'heat_delay':10e-3,###DO NOT CHANGE
-              'axial_heat':10.9*10**-3,
-              'readout_delay':100.0*10**-9,
-              'readout_time':10.0*10**-3,
-              'xtal_record':100e-3,
-              'cooling_ampl_866':-11.0,
-              'heating_ampl_866':-11.0,
-              'readout_ampl_866':-11.0,
-              'xtal_ampl_866':-11.0,
-              'cooling_freq_397':103.0,
-              'cooling_ampl_397':-13.5,
-              'readout_freq_397':115.0,
-              'readout_ampl_397':-13.5,
-              'xtal_freq_397':103.0,
-              'xtal_ampl_397':-11.0,
-              }
-        
-        exprtParams = {
-                       'iterations':25,
-                       'rf_power':-3.5, #### make optional
-                       'rf_settling_time':0.3,
-                       'auto_crystal':True,
-                       'pmtresolution':0.075,
-                       'detect_time':0.225,
-                       'binTime':250.0*10**-6
-                       }
-        exprt = LatentHeat(params,exprtParams)
-        exprt.run()
-        dp =  data_process(exprt.cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 35000)
-        dp.loadDataVault()
-        dp.processAll()
+    params = {
+        'initial_cooling': 25e-3,
+        'heat_delay':10e-3,###DO NOT CHANGE
+        'axial_heat':10.9*10**-3,
+        'readout_delay':100.0*10**-9,
+        'readout_time':10.0*10**-3,
+        'xtal_record':100e-3,
+        'cooling_ampl_866':-11.0,
+        'heating_ampl_866':-11.0,
+        'readout_ampl_866':-11.0,
+        'xtal_ampl_866':-11.0,
+        'cooling_freq_397':103.0,
+        'cooling_ampl_397':-13.5,
+        'readout_freq_397':115.0,
+        'readout_ampl_397':-13.5,
+        'xtal_freq_397':103.0,
+        'xtal_ampl_397':-11.0,
+    }
+    exprtParams = {
+       'iterations':25,
+       'rf_power':-3.5, #### make optional
+       'rf_settling_time':0.3,
+       'auto_crystal':True,
+       'pmtresolution':0.075,
+       'detect_time':0.225,
+       'binTime':250.0*10**-6,
+       'threshold':35000
+    }
+    exprt = LatentHeat(params,exprtParams)
+    exprt.run()

@@ -167,8 +167,8 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    #trapdriveWidget = DDS_CONTROL(reactor)
-    trapdriveWidget = RS_CONTROL_LOCAL(reactor)
+    trapdriveWidget = DDS_CONTROL(reactor)
+    #trapdriveWidget = RS_CONTROL_LOCAL(reactor)
     #trapdriveWidget = RS_CONTROL_LAB(reactor)
     trapdriveWidget.show()
     reactor.run()

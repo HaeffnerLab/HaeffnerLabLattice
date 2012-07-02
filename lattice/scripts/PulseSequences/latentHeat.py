@@ -34,7 +34,10 @@ class LatentHeatBackground(Sequence):
         endHeat = startHeat + p.axial_heat
         startReadout = endHeat + p.readout_delay
         start_xtal = startReadout + p.readout_time
-        
+        #useful to store
+        p.startReadout = startReadout
+        p.endReadout = startReadout + p.readout_time
+        #pulse sequence
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
         #measure the background first: turn on axial beam, switch off 866 and 110DP
         pulser.add_ttl_pulse('axial',0.0, p.backgroundMeasure)
@@ -93,6 +96,9 @@ class LatentHeatGlobalHeat(Sequence):
         endHeat = startHeat + p.axial_heat
         startReadout = endHeat + p.readout_delay
         start_xtal = startReadout + p.readout_time
+        #useful to store
+        p.startReadout = startReadout
+        p.endReadout = startReadout + p.readout_time
         
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
 #        #measure the background first: switch off 866 and 110DP
