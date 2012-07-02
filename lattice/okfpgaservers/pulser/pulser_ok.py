@@ -4,7 +4,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Pulser
-version = 0.3
+version = 0.4
 description =
 instancename = Pulser
 
@@ -17,7 +17,6 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-import ok
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
@@ -27,8 +26,8 @@ import time
 from hardwareConfiguration import hardwareConfiguration
 from sequence import Sequence
 from dds import DDS
+from api import api
 
-okDeviceID = 'Pulser'
 devicePollingPeriod = 10
 MIN_SEQUENCE = 0
 MAX_SEQUENCE = 85 #seconds
@@ -39,6 +38,7 @@ class Pulser(LabradServer, DDS):
     onSwitch = Signal(611051, 'signal: switch toggled', '(ss)')
     
     def initServer(self):
+        self.api  = api()
         self.channelDict = hardwareConfiguration.channelDict
         self.collectionTime = hardwareConfiguration.collectionTime
         self.collectionMode = hardwareConfiguration.collectionMode
@@ -48,47 +48,26 @@ class Pulser(LabradServer, DDS):
         self.ddsDict = hardwareConfiguration.ddsDict
         self.timeResolvedResolution = hardwareConfiguration.timeResolvedResolution
         self.inCommunication = DeferredLock()
-        self.connectOKBoard()
+        self.initializeBoard()
+        self.initializeSettings()
+        self.initializeDDS()
         self.listeners = set()
 
-    def connectOKBoard(self):
-        self.xem = None
-        fp = ok.FrontPanel()
-        module_count = fp.GetDeviceCount()
-        print "Found {} unused modules".format(module_count)
-        for i in range(module_count):
-            serial = fp.GetDeviceListSerial(i)
-            tmp = ok.FrontPanel()
-            tmp.OpenBySerial(serial)
-            id = tmp.GetDeviceID()
-            if id == okDeviceID:
-                self.xem = tmp
-                print 'Connected to {}'.format(id)
-                self.programOKBoard()
-                self.initializeSettings()
-                self.initializeDDS()
-                return
-        print 'Not found {}'.format(okDeviceID)
-        print 'Will try again in {} seconds'.format(devicePollingPeriod)
-        reactor.callLater(devicePollingPeriod, self.connectOKBoard)
-    
-    def programOKBoard(self):
-        print 'Programming FPGA'
-        prog = self.xem.ConfigureFPGA('photon.bit')
-        if prog: raise("Not able to program FPGA")
-        pll = ok.PLL22150()
-        self.xem.GetEepromPLL22150Configuration(pll)
-        pll.SetDiv1(pll.DivSrc_VCO,4)
-        self.xem.SetPLL22150Configuration(pll)
-    
+    def initializeBoard(self):
+        connected = self.api.connectOKBoard()
+        while not connected:
+            print 'not connected, waiting for 10 seconds to try again'
+            self.wait(10.0)
+            connected = self.api.connectOKBoard()
+            
     def initializeSettings(self):
         for channel in self.channelDict.itervalues():
             channelnumber = channel.channelnumber
             if channel.ismanual:
                 state = self.cnot(channel.manualinv, channel.manualstate)
-                self._setManual(channelnumber, state)
+                self.api.setManual(channelnumber, state)
             else:
-                self._setAuto(channelnumber, channel.autoinv)
+                self.api.setAuto(channelnumber, channel.autoinv)
 
     @setting(0, "New Sequence", returns = '')
     def newSequence(self, c):
@@ -102,14 +81,13 @@ class Pulser(LabradServer, DDS):
         """
         Programs Pulser with the current sequence.
         """
-        if self.xem is None: raise Exception('Board not connected')
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
         if sequence.userAddedDDS():
             self._addDDSInitial(sequence)
         dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
-        yield deferToThread(self._programBoard, ttl)
+        yield deferToThread(self.api.programBoard, ttl)
         if dds is not None: yield deferToThread(self._programDDSSequence, dds)
         self.inCommunication.release()
         self.isProgrammed = True
@@ -118,9 +96,9 @@ class Pulser(LabradServer, DDS):
     def startInfinite(self,c):
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._setNumberRepeatitions, 0)
-        yield deferToThread(self._resetSeqCounter)
-        yield deferToThread(self._startLooped)
+        yield deferToThread(self.api.setNumberRepeatitions, 0)
+        yield deferToThread(self.api.resetSeqCounter)
+        yield deferToThread(self.api.startLooped)
         self.sequenceType = 'Infinite'
         self.inCommunication.release()
     
@@ -128,15 +106,15 @@ class Pulser(LabradServer, DDS):
     def completeInfinite(self,c):
         if self.sequenceType != 'Infinite': raise Exception( "Not Running Infinite Sequence")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._startSingle)
+        yield deferToThread(self.api.startSingle)
         self.inCommunication.release()
     
     @setting(4, "Start Single", returns = '')
     def start(self, c):
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._resetSeqCounter)
-        yield deferToThread(self._startSingle)
+        yield deferToThread(self.api.resetSeqCounter)
+        yield deferToThread(self.api.startSingle)
         self.sequenceType = 'One'
         self.inCommunication.release()
     
@@ -179,15 +157,16 @@ class Pulser(LabradServer, DDS):
     def stopSequence(self, c):
         """Stops any currently running sequence"""
         yield self.inCommunication.acquire()
-        yield deferToThread(self._resetRam)
+        yield deferToThread(self.api.resetRam)
         if self.sequenceType =='Infinite':
-            yield deferToThread(self._stopLooped)
+            yield deferToThread(self.api.stopLooped)
         elif self.sequenceType =='One':
-            yield deferToThread(self._stopSingle)
+            yield deferToThread(self.api.stopSingle)
         elif self.sequenceType =='Number':
-            yield deferToThread(self._stopLooped)
+            yield deferToThread(self.api.stopLooped)
         self.inCommunication.release()
         self.sequenceType = None
+        self.ddsLock = False
     
     @setting(9, "Start Number", repeatitions = 'w')
     def startNumber(self, c, repeatitions):
@@ -198,9 +177,9 @@ class Pulser(LabradServer, DDS):
         repeatitions = int(repeatitions)
         if not 1 <= repeatitions <= (2**16 - 1): raise Exception ("Incorrect number of pulses")
         yield self.inCommunication.acquire()
-        yield deferToThread(self._setNumberRepeatitions, repeatitions)
-        yield deferToThread(self._resetSeqCounter)
-        yield deferToThread(self._startLooped)
+        yield deferToThread(self.api.setNumberRepeatitions, repeatitions)
+        yield deferToThread(self.api.resetSeqCounter)
+        yield deferToThread(self.api.startLooped)
         self.sequenceType = 'Number'
         self.inCommunication.release()
 
@@ -239,7 +218,7 @@ class Pulser(LabradServer, DDS):
         else:
             state = channel.manualstate
         yield self.inCommunication.acquire()
-        yield deferToThread(self._setManual, channelNumber, self.cnot(channel.manualinv, state))
+        yield deferToThread(self.api.setManual, channelNumber, self.cnot(channel.manualinv, state))
         self.inCommunication.release()
         if state:
             self.notifyOtherListeners(c,(channelName,'ManualOn'), self.onSwitch)
@@ -260,7 +239,7 @@ class Pulser(LabradServer, DDS):
         else:
             invert = channel.autoinv
         yield self.inCommunication.acquire()
-        yield deferToThread(self._setAuto, channelNumber, invert)
+        yield deferToThread(self.api.setAuto, channelNumber, invert)
         self.inCommunication.release()
         self.notifyOtherListeners(c,(channelName,'Auto'), self.onSwitch)
 
@@ -282,7 +261,7 @@ class Pulser(LabradServer, DDS):
         requestCalls = int(timeout / 0.050 ) #number of request calls
         for i in range(requestCalls):
             yield self.inCommunication.acquire()
-            done = yield deferToThread(self._isSeqDone)
+            done = yield deferToThread(self.api.isSeqDone)
             self.inCommunication.release()
             if done: returnValue(True)
             yield self.wait(0.050)
@@ -292,7 +271,7 @@ class Pulser(LabradServer, DDS):
     def repeatitionsCompleted(self, c):
         """Check how many repeatitions have been completed in for the infinite or number modes"""
         yield self.inCommunication.acquire()
-        completed = yield deferToThread(self._howManySequencesDone)
+        completed = yield deferToThread(self.api.howManySequencesDone)
         self.inCommunication.release()
         returnValue(completed)
 
@@ -311,11 +290,11 @@ class Pulser(LabradServer, DDS):
         yield self.inCommunication.acquire()
         if mode == 'Normal':
             #set the mode on the device and set update time for normal mode
-            yield deferToThread(self._setModeNormal)
-            yield deferToThread(self._setPMTCountRate, countRate)
+            yield deferToThread(self.api.setModeNormal)
+            yield deferToThread(self.api.setPMTCountRate, countRate)
         elif mode == 'Differential':
-            yield deferToThread(self._setModeDifferential)
-        yield deferToThread(self._resetFIFONormal)
+            yield deferToThread(self.api.setModeDifferential)
+        yield deferToThread(self.api.resetFIFONormal)
         self.inCommunication.release()
     
     @setting(22, 'Set Collection Time', time = 'v', mode = 's', returns = '')
@@ -329,8 +308,8 @@ class Pulser(LabradServer, DDS):
         if mode == 'Normal':
             self.collectionTime[mode] = time
             yield self.inCommunication.acquire()
-            yield deferToThread(self._resetFIFONormal)
-            yield deferToThread(self._setPMTCountRate, time)
+            yield deferToThread(self.api.resetFIFONormal)
+            yield deferToThread(self.api.setPMTCountRate, time)
             self.inCommunication.release()
         elif mode == 'Differential':
             self.collectionTime[mode] = time
@@ -345,7 +324,7 @@ class Pulser(LabradServer, DDS):
         Resets the FIFO on board, deleting all queued counts
         """
         yield self.inCommunication.acquire()
-        yield deferToThread(self._resetFIFONormal)
+        yield deferToThread(self.api.resetFIFONormal)
         self.inCommunication.release()
     
     @setting(25, 'Get PMT Counts', returns = '*(vsv)')
@@ -363,8 +342,8 @@ class Pulser(LabradServer, DDS):
         returnValue(countlist)
     
     def doGetAllCounts(self):
-        inFIFO = self._getNormalTotal()
-        reading = self._getNormalCounts(inFIFO)
+        inFIFO = self.api.getNormalTotal()
+        reading = self.api.getNormalCounts(inFIFO)
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf, split)
         countlist = map(self.convertKCperSec, countlist)
@@ -411,15 +390,15 @@ class Pulser(LabradServer, DDS):
     def resetTimetags(self, c):
         """Reset the time resolved FIFO to clear any residual timetags"""
         yield self.inCommunication.acquire()
-        yield deferToThread(self._resetFIFOResolved)
+        yield deferToThread(self.api.resetFIFOResolved)
         self.inCommunication.release()
     
     @setting(32, "Get Timetags", returns = '*v')
     def getTimetags(self, c):
         """Get the time resolved timetags"""
         yield self.inCommunication.acquire()
-        counted = yield deferToThread(self._getResolvedTotal)
-        raw = yield deferToThread(self._getResolvedCounts, counted)
+        counted = yield deferToThread(self.api.getResolvedTotal)
+        raw = yield deferToThread(self.api.getResolvedCounts, counted)
         self.inCommunication.release()
         arr = numpy.fromstring(raw, dtype = numpy.uint16)
         del(raw)
@@ -436,108 +415,6 @@ class Pulser(LabradServer, DDS):
         d = Deferred()
         reactor.callLater(seconds, d.callback, result)
         return d
-    
-    def _programBoard(self, sequence):
-        self.xem.WriteToBlockPipeIn(0x80, 2, sequence)
-  
-    def _startLooped(self):
-        self.xem.SetWireInValue(0x00,0x06,0x06)
-        self.xem.UpdateWireIns()
-    
-    def _stopLooped(self):
-        self.xem.SetWireInValue(0x00,0x02,0x06)
-        self.xem.UpdateWireIns()
-        
-    def _startSingle(self):
-        self.xem.SetWireInValue(0x00,0x04,0x06)
-        self.xem.UpdateWireIns()
-    
-    def _stopSingle(self):
-        self.xem.SetWireInValue(0x00,0x00,0x06)
-        self.xem.UpdateWireIns()
-    
-    def _setNumberRepeatitions(self, number):
-        self.xem.SetWireInValue(0x05, number)
-        self.xem.UpdateWireIns()
-    
-    def _resetRam(self):
-        self.xem.ActivateTriggerIn(0x40,1)
-        
-    def _resetSeqCounter(self):
-        self.xem.ActivateTriggerIn(0x40,0)
-    
-    def _resetFIFONormal(self):
-        self.xem.ActivateTriggerIn(0x40,2)
-    
-    def _resetFIFOResolved(self):
-        self.xem.ActivateTriggerIn(0x40,3)
-    
-    def _setModeNormal(self):
-        """user selects PMT counting rate"""
-        self.xem.SetWireInValue(0x00,0x00,0x01)
-        self.xem.UpdateWireIns()
-    
-    def _setModeDifferential(self):
-        """pulse sequence controls the PMT counting rate"""
-        self.xem.SetWireInValue(0x00,0x01,0x01)
-        self.xem.UpdateWireIns()
-    
-    def _isSeqDone(self):
-        self.xem.SetWireInValue(0x00,0x00,0xf0)
-        self.xem.UpdateWireIns()
-        self.xem.UpdateWireOuts()
-        done = self.xem.GetWireOutValue(0x21)
-        return done
-    
-    def _getResolvedTotal(self):
-        self.xem.UpdateWireOuts()
-        counted = self.xem.GetWireOutValue(0x22)
-        return counted
-    
-    def _getResolvedCounts(self, number):
-        buf = "\x00"*(number*2)
-        self.xem.ReadFromBlockPipeOut(0xa0,2,buf)
-        return buf
-    
-    def _getNormalTotal(self):
-        self.xem.SetWireInValue(0x00,0x40,0xf0)
-        self.xem.UpdateWireIns()
-        self.xem.UpdateWireOuts()
-        done = self.xem.GetWireOutValue(0x21)
-        return done
-    
-    def _getNormalCounts(self, number):
-        buf = "\x00"* ( number * 2 )
-        self.xem.ReadFromBlockPipeOut(0xa1,2,buf)
-        return buf
-    
-    def _howManySequencesDone(self):
-        self.xem.SetWireInValue(0x00,0x20,0xf0)
-        self.xem.UpdateWireIns()
-        self.xem.UpdateWireOuts()
-        completed = self.xem.GetWireOutValue(0x21)
-        return completed
-    
-    def _setPMTCountRate(self, time):
-        #takes time in seconds
-        self.xem.SetWireInValue(0x01,int(1000 * time))
-        self.xem.UpdateWireIns()
-        
-    def _setAuto(self, channel, inversion):
-        self.xem.SetWireInValue(0x02,0x00, 2**channel)
-        if not inversion:
-            self.xem.SetWireInValue(0x03,0x00, 2**channel)
-        else:
-            self.xem.SetWireInValue(0x03,2**channel, 2**channel)
-        self.xem.UpdateWireIns()
-    
-    def _setManual(self, channel, state):
-        self.xem.SetWireInValue(0x02,2**channel, 2**channel )
-        if state:
-            self.xem.SetWireInValue(0x03,2**channel, 2**channel)
-        else:
-            self.xem.SetWireInValue(0x03,0x00, 2**channel)
-        self.xem.UpdateWireIns()
     
     def cnot(self, control, input):
         if control:

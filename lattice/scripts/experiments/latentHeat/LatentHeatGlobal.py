@@ -57,13 +57,15 @@ class LatentHeat():
 #        self.setupLogic()
         ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
+
         self.pulser.select_dds_channel('110DP')
         time.sleep(1)
         self.pulser.frequency(110.0)
         time.sleep(1)
         self.pulser.amplitude(-11.0)
-
         self.programPulser()
+
+
 #        self.pulser.frequency(self.seqP.xtal_freq_397)
 #        self.pulser.amplitude(self.seqP.xtal_ampl_397)
 #        self.pulser.select_dds_channel('866DP')
