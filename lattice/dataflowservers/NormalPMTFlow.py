@@ -95,7 +95,7 @@ class NormalPMTFlow( LabradServer):
         """
         Start recording Time Resolved Counts into Data Vault
         """
-        if mode not in self.collectTimes.keys(): raise('Incorrect Mode')
+        if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
         if not self.recording.running:
             self.currentMode = mode
             yield self.pulser.set_mode(mode)
@@ -174,12 +174,15 @@ class NormalPMTFlow( LabradServer):
         if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
         if not self.collectTimeRange[0] <= timelength <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
-        yield self.recording.stop()
+        initrunning = self.recording.running #if recording when the call is made, need to stop and restart
+        if initrunning:
+            yield self.recording.stop()
         yield self.pulser.set_collection_time(timelength, mode)
-        if mode == 'Differential':
-            yield self._stopPulserDiff()
-            yield self._programPulserDiff()
-        self.recording.start(timelength/2.0)
+        if initrunning:
+            if mode == 'Differential':
+                yield self._stopPulserDiff()
+                yield self._programPulserDiff()
+            self.recording.start(timelength/2.0)
         otherListeners = self.getOtherListeners(c)      
         self.onNewSetting(('timelength', str(timelength)), otherListeners)
 
@@ -192,10 +195,10 @@ class NormalPMTFlow( LabradServer):
         Note in differential mode, Diff counts get updates every time, but ON and OFF
         get updated every 2 times.
         """
-        if type not in ['ON', 'OFF','DIFF']: raise('Incorrect type')
-        if type in ['OFF','DIFF'] and self.currentMode == 'Normal':raise('in the wrong mode to process this request')
-        if not 0 < number < 1000: raise('Incorrect Number')
-        if not self.recording.running: raise('Not currently recording')
+        if type not in ['ON', 'OFF','DIFF']: raise Exception('Incorrect type')
+        if type in ['OFF','DIFF'] and self.currentMode == 'Normal':raise Exception('in the wrong mode to process this request')
+        if not 0 < number < 1000: raise Exception('Incorrect Number')
+        if not self.recording.running: raise Exception('Not currently recording')
         d = Deferred()
         self.requestList.append(self.readingRequest(d, type, number))
         data = yield d

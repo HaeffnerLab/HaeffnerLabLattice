@@ -13,7 +13,7 @@ class api():
     
     def connectOKBoard(self):
         fp = ok.FrontPanel()
-        module_count = fp.GetDeviceCount()
+        module_count = fp.GetDeseviceCount()
         print "Found {} unused modules".format(module_count)
         for i in range(module_count):
             serial = fp.GetDeviceListSerial(i)
