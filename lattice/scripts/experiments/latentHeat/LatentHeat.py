@@ -76,7 +76,7 @@ class LatentHeat():
     def programPulser(self):
         seq = LatentHeatBackground(self.pulser)
         self.pulser.new_sequence()
-        seq.setVariables(**params)
+        seq.setVariables(**self.seqP.toDict())
         seq.defineSequence()
         self.pulser.program_sequence()
         self.seqP['recordTime'] = seq.parameters.recordTime
