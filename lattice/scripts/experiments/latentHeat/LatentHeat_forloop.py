@@ -19,13 +19,14 @@ for delay in [100e-3,500e-3]:#, 1000e-3,2000e-3, 3000e-3, 4000e-3, 5000e-3, 7500
         'xtal_ampl_397':-11.0,
     }
     exprtParams = {
-       'iterations':10,
+       'iterations':25,
        'rf_power':-3.5, #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,
        'pmtresolution':0.075,
        'detect_time':0.225,
-       'binTime':250.0*10**-6
+       'binTime':250.0*10**-6,
+       'threshold':35000
     }
     exprt = LatentHeat(params,exprtParams)
     exprt.run()

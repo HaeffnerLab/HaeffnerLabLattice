@@ -55,6 +55,7 @@ class LatentHeat():
         self.topdirectory = time.strftime("%Y%b%d",time.localtime())
         self.setupLogic()
         #get the count rate for the crystal at the same parameters as crystallization
+
         self.pulser.select_dds_channel('110DP')
         self.pulser.frequency(self.seqP.xtal_freq_397)
         self.pulser.amplitude(self.seqP.xtal_ampl_397)
