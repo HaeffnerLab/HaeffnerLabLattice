@@ -184,6 +184,7 @@ class Andor:
         #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.currentImageArray = cimage[:]
             self.imageArray.append(cimage[:])
             print 'acquired kinetic!'
         else:
@@ -261,10 +262,9 @@ class Andor:
                         Ex: image-1-27
          """
         
-         imageArray = np.reshape(self.imageArray, (numKin, self.height, self.width))
-         for kinSetNumber in np.arange(kinSet):            
-             for image in np.arange(numKin):
-                 np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')
+         imageArray = np.reshape(self.currentImageArray, (numKin, self.height, self.width))
+         for image in np.arange(numKin):
+             np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')
         
             
     def OpenAsTxt(self, path):
