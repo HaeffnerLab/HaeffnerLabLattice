@@ -7,7 +7,8 @@ class DDS(LabradServer):
     """Contains the DDS functionality for the pulser server"""
     
     def initializeDDS(self):
-        self._initializeDDS()
+        self.ddsLock = False #boolean whether or not dds can be changed. will be used to block access while pulse sequence is programmed or running.
+        self.api.initializeDDS()
         for chan in self.ddsDict.iterkeys():
             freq,ampl = (self.ddsDict[chan].frequency, self.ddsDict[chan].amplitude)
             self._checkRange('amplitude', chan, ampl)
@@ -28,6 +29,9 @@ class DDS(LabradServer):
     def amplitude(self, c, amplitude = None):
         """Get or Set the amplitude of the named channel, or of the channel selected in the current context"""
         #get the hardware channel
+        if self.ddsLock: 
+            self.ddsLock = False
+            raise Exception("DDS access is locked. Running pulse sequence.")
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         if amplitude is not None:
@@ -45,6 +49,9 @@ class DDS(LabradServer):
     def frequency(self, c, frequency = None):
         """Get or Set the frequency of the named channel, or of the channel selected in the current context"""
         #get the hardware channel
+        if self.ddsLock: 
+            self.ddsLock = False
+            raise Exception("DDS access is locked. Running pulse sequence.")
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         if frequency is not None:
@@ -70,7 +77,6 @@ class DDS(LabradServer):
         if not sequence: raise Exception ("Please create new sequence first")
         for start,freq,ampl in values:
             sett = self._valToInt(channel, freq, ampl)
-            print 'adding to dds', start, freq, ampl, sett
             sequence.addDDS(hardwareAddr, start, sett)
     
     @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
@@ -108,26 +114,22 @@ class DDS(LabradServer):
     
     def _programDDSSequence(self, dds):
         '''takes the parsed dds sequence and programs the board with it'''
-        print 'programming dds now'
+        self.ddsLock = True
         for config in self.ddsDict.itervalues():
             chan = config.channelnumber
             buf = dds[chan]
-            print chan,[buf]
-            self._resetAllDDS()
-            self._setDDSchannel(chan)
-            self._programDDS(buf)
+            self.api.resetAllDDS()
+            self.api.setDDSchannel(chan)
+            self.api.programDDS(buf)
             
     def _setParameters(self, chan, freq, ampl):
-        self._resetAllDDS()
+        self.api.resetAllDDS()
         addr = self.ddsDict[chan].channelnumber
-        print 'setting chan', addr
-        self._setDDSchannel(addr)  
+        self.api.setDDSchannel(addr)  
         num = self._valToInt(chan, freq, ampl)
-        print num
         buf = self._intToBuf(num)
         buf = buf + '\x00\x00' #adding termination
-        print [buf]
-        self._programDDS(buf)
+        self.api.programDDS(buf)
     
     def _addDDSInitial(self, seq):
         for chan in self.ddsDict.iterkeys():
@@ -160,27 +162,5 @@ class DDS(LabradServer):
         #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
         a, b = num // 256**2, num % 256**2
         arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
-        #print arr
         ans = arr.tostring()
         return ans
-    
-    def _resetAllDDS(self):
-        '''Reset the ram position of all dds chips to 0'''
-        self.xem.ActivateTriggerIn(0x40,4)
-    
-    def _advanceAllDDS(self):
-        '''Advance the ram position of all dds chips'''
-        self.xem.ActivateTriggerIn(0x40,5)
-    
-    def _setDDSchannel(self, chan):
-        '''select the dds chip for communication'''
-        self.xem.SetWireInValue(0x04,chan)
-        self.xem.UpdateWireIns()
-    
-    def _programDDS(self, prog):
-        '''program the dds channel with a list of frequencies and amplitudes. The channel of the particular channel must be selected first'''
-        self.xem.WriteToBlockPipeIn(0x81, 2, prog)
-    
-    def _initializeDDS(self):
-        '''force reprogram of all dds chips during initialization'''
-        self.xem.ActivateTriggerIn(0x40,6)

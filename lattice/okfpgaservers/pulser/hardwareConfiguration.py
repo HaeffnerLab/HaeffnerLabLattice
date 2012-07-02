@@ -41,6 +41,8 @@ class hardwareConfiguration():
     sequenceType = None #none for not programmed, can be 'one' or 'infinite'
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
+    okDeviceID = 'Pulser'
+    okDeviceFile = 'photon.bit'
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
