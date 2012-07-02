@@ -71,7 +71,7 @@ class LatentHeat():
         self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
+        self.pulser.switch_manual('crystallization',  False)
     
     def programPulser(self):
         seq = LatentHeatBackground(self.pulser)
