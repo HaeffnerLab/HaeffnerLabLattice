@@ -23,7 +23,7 @@ class histogramTimetags():
             self.threshold = self.clusterkmeans()    
         if self.threshold is not None:
             self.analyzeThreshold(self.threshold)
-        self.plot()
+        #self.plot()
     
     def clusterkmeans(self):
         wh = whiten(self.counts) #normalizes the counts for easier clustering

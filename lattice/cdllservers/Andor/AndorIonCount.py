@@ -405,13 +405,19 @@ class AndorIonCount(LabradServer, AndorServer):
         """For Ion Swap, image should = 1, 2 or 3 """
         self.peakPositionCatalog = self.GetPeakPositionCatalog(kinSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
         ionNumberCatalog = self.GetIonNumberCatalog(image, self.peakPositionCatalog, iterations, kinSet, numKin)
-        return ionNumberCatalog
+        if (len(ionNumberCatalog) != 0):
+            return ionNumberCatalog
+        else:
+            raise Exception("There are no ions!")
         
     @setting(44, "Get Ion Swap Histogram", iterations = 'i', kinSet = 'i', numKin = 'i', peakVicinity = 'i', expectedNumberOfIons = 'i', returns = '*i')
     def getIonSwapHistogram(self, c, iterations, kinSet, numKin, peakVicinity, expectedNumberOfIons):
         self.ionPositionCatalog = self.BuildIonPositionCatalog(self.peakPositionCatalog, iterations, kinSet, numKin, peakVicinity)
         ionSwapCatalog = self.BuildIonSwapCatalog(self.ionPositionCatalog, kinSet, iterations, expectedNumberOfIons)
-        return np.array(ionSwapCatalog) 
+        if (len(ionSwapCatalog) != 0):
+            return np.array(ionSwapCatalog)
+        else:
+            raise Exception("There are no ions!")     
         
 if __name__ == "__main__":
     from labrad import util

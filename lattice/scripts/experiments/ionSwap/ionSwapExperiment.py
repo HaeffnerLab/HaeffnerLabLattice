@@ -38,9 +38,10 @@ class IonSwap():
     '''
     experimentName = 'IonSwap'
     
-    def __init__(self, seqParams, exprtParams, cxn):
+#    def __init__(self, seqParams, exprtParams, cxn):
+    def __init__(self, seqParams, exprtParams):
        #connect and define servers we'll be using
-        self.cxn = cxn
+        self.cxn = labrad.connect()
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = self.cxn.data_vault
         self.rf = self.cxn.trap_drive
@@ -238,7 +239,7 @@ if __name__ == '__main__':
     cameraServer.set_image_region(1, 1, hstart, hend, vstart, vend)
     
     
-    numberKineticSets = 1
+    numberKineticSets = 2
     for kinSet in range(numberKineticSets):
         params = {
               'exposure': exposure,                 
@@ -283,7 +284,7 @@ if __name__ == '__main__':
                        }
 
                 
-        exprt = IonSwap(params,exprtParams, cxn)
+        exprt = IonSwap(params,exprtParams)
         exprt.run()
         dp = data_process(cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
         dp.addParameter('threshold', 35000)
@@ -291,8 +292,8 @@ if __name__ == '__main__':
         dp.addParameter('stopReadout', exprt.seq.parameters.stopReadout)
         numKin = ((exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         cameraServer.get_acquired_data_kinetic(numKin)
-        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062912\1\image', kinSet, (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
+        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062812\kinSetTest\realTest\image', kinSet, (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         #darkIonCatalog = cameraServer.get_dark_ion_catalog(numKin, (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
         #dp.addParameter('darkIonCatalog', darkIonCatalog)
-        dp.loadDataVault()
-        dp.processAll()
+        #dp.loadDataVault()
+        #dp.processAll()
