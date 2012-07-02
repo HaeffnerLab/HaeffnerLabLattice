@@ -7,6 +7,7 @@ import time
 from scriptLibrary import dvParameters 
 from PulseSequences.latentHeat import LatentHeatGlobalHeat
 from dataProcessor import data_process
+from crystallizer import Crystallizer
 
 class Bunch:
     def __init__(self, **kwds):
@@ -18,9 +19,6 @@ class Bunch:
     def toDict(self):
         return self.__dict__
         
-class Crystalizer():
-    pass
-
 class LatentHeat():
     ''''
     This experiment involves studying the sharpness of crystal to cloud phase transition. 
@@ -46,14 +44,14 @@ class LatentHeat():
         self.pmt = self.cxn.normalpmtflow
         self.seqP = Bunch(**seqParams)
         self.expP = Bunch(**exprtParams)
+        self.xtal = Crystallizer(self.pulser, self.pmt, self.rf)
         
     def initialize(self):
+        #get initialize count for crystallization
+        self.xtal.get_initial_rate()
         #directory name and initial variables
-        self.meltedTimes = 0
         self.dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
-        self.pmt.set_time_length(self.expP.pmtresolution)
         self.setupLogic()
-        ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
         self.pulser.frequency(self.seqP.xtal_freq_397)
@@ -61,22 +59,17 @@ class LatentHeat():
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
         self.programPulser()
-        countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
-        self.crystal_threshold = 0.9 * countRate #kcounts per sec
-        self.crystallization_attempts = 10
-        print 'initial countrate', countRate
-        print 'Crystallization threshold: ', self.crystal_threshold
         
     def setupLogic(self):
         self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
+        self.pulser.switch_manual('crystallization',  False)
     
     def programPulser(self):
         seq = LatentHeatGlobalHeat(self.pulser)
         self.pulser.new_sequence()
-        seq.setVariables(**params)
+        seq.setVariables(**self.seqP.toDict())
         seq.defineSequence()
         self.pulser.program_sequence()
         self.seqP['recordTime'] = seq.parameters.recordTime
@@ -92,7 +85,7 @@ class LatentHeat():
         self.finalize()
         self.rf.amplitude(initpower)
         print 'DONE {}'.format(self.dirappend)
-        
+
     def sequence(self):
         sP = self.seqP
         xP = self.expP
@@ -118,7 +111,7 @@ class LatentHeat():
             newbinned = numpy.histogram(timetags, binArray )[0]
             binnedFlour = binnedFlour + newbinned
             if xP.auto_crystal:
-                success = self.auto_crystalize()
+                success = self.xtal.auto_crystallize()
                 if not success: break
         # getting result and adding to data vault
         #normalize
@@ -135,60 +128,10 @@ class LatentHeat():
         dvParameters.saveParameters(self.dv, measuredDict)
         dvParameters.saveParameters(self.dv, sP.toDict())
         dvParameters.saveParameters(self.dv, xP.toDict())
-#    
+    
     def finalize(self):
         for name in ['axial', '110DP']:
             self.pulser.switch_manual(name)
-        self.pulser.switch_manual('crystallization',  True)
-    
-    def is_crystalized(self):
-        detect_time = 0.225
-        countRate = self.pmt.get_next_counts('ON',int(detect_time / self.expP.pmtresolution), True)
-        print 'auto crystalization: count rate {0:.2f} and threshold is {1:.2f}'.format(countRate, self.crystal_threshold)
-        return (countRate > self.crystal_threshold) 
-    
-    def auto_crystalize(self):
-        #auto-crystallization settings###
-        far_red_time = 0.300 #seconds
-        optimal_cool_time = 0.150
-        shutter_delay = 0.025
-        rf_crystal_power = -7.0
-        rf_settling_time = 0.3
-        if self.is_crystalized():
-            print 'Crystallized at the end'
-            return True
-        else:
-            print 'Melted'
-            self.meltedTimes += 1
-            self.pulser.switch_manual('crystallization',  True)
-            initpower = self.rf.amplitude()
-            for attempt in range(self.crystallization_attempts):
-                self.rf.amplitude(rf_crystal_power)
-                time.sleep(rf_settling_time)
-                time.sleep(shutter_delay)
-                self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
-                time.sleep(far_red_time)
-                self.pulser.switch_manual('110DP',  True) 
-                time.sleep(optimal_cool_time)
-                self.rf.amplitude(self.expP.rf_power)
-                time.sleep(rf_settling_time)
-                if self.is_crystalized():
-                    print 'Crystalized on attempt number {}'.format(attempt + 1)                    
-                    self.pulser.switch_manual('crystallization',  False)
-                    time.sleep(shutter_delay)
-                    self.pulser.switch_auto('110DP',  False)
-                    return True
-            #if still not crystallized, let the user handle things
-            response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
-            if response == 'f':
-                return False
-            else:
-                self.rf.amplitude(initpower)
-                time.sleep(self.expP.rf_settling_time)
-                self.pulser.switch_manual('crystallization',  False)
-                time.sleep(shutter_delay)
-                self.pulser.switch_auto('110DP',  False)
-                return True
     
     def __del__(self):
         self.cxn.disconnect()
