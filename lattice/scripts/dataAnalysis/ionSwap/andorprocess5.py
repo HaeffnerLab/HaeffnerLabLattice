@@ -1,16 +1,63 @@
 import numpy as np
 import matplotlib
 matplotlib.use('Qt4Agg')
+from scipy import optimize
+from scipy.interpolate import interp1d
 from pylab import *
 from matplotlib import pyplot
 from scipy import ndimage
 import peakdetect
+from scipy.stats import chisquare
 
 
+positionDict = {
+                '2':                                  [-.62996, .62996],
+                '3':                                 [-1.0772, 0, 1.0772],
+                '4':                          [-1.4368, -.45438, .45438, 1.4368],
+                '5':                         [-1.7429, -0.8221, 0, 0.8221, 1.7429],
+                '6':                  [-2.0123, -1.4129, -.36992, .36992, 1.4129, 2.0123],
+                '7':                 [-2.2545, -1.1429, -.68694, 0, .68694, 1.1429, 2.2545],
+                '8':           [-2.4758, -1.6621, -.96701, -.31802, .31802, .96701, 1.6621, 2.4758],
+                '9':         [-2.6803, -1.8897, -1.2195, -.59958, 0, .59958, 1.2195, 1.8897, 2.6803],
+                '10': [-2.8708, -2.10003, -1.4504, -.85378, -.2821, .2821, .85378, 1.4504, 2.10003, 2.8708]
+               }
 
 
+class Parameter:
+    def __init__(self, value):
+            self.value = value
 
-def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
+    def set(self, value):
+            self.value = value
+
+    def __call__(self):
+            return self.value
+
+def fit(function, parameters, expectedNumberOfIons, y, x = None):
+    def f(params):
+        i = 0
+        for p in parameters:
+            p.set(params[i])
+            i += 1
+        return y - function(x, expectedNumberOfIons)
+
+    if x is None: x = np.arange(y.shape[0])
+    p = [param() for param in parameters]
+    optimize.leastsq(f, p)
+
+def fitFunction(x, expectedNumberOfIons):
+    global alpha
+    global beta
+    global offset
+    global height
+    global sigma     
+    fitFunc = 0
+    for i in positionDict[str(expectedNumberOfIons)]:
+        fitFunc += height()*exp(-(((x-i*alpha() - beta())/sigma())**2)/2)
+#    fitFunc = offset() + height()*exp(-(((x+1.7429*alpha())/sigma())**2)/2) + height()*exp(-(((x+0.8221*alpha())/sigma())**2)/2) + height()*exp(-(((x)/sigma())**2)/2) + height()*exp(-(((x-0.8221*alpha())/sigma())**2)/2) + height()*exp(-(((x-1.7429*alpha())/sigma())**2)/2)
+    return fitFunc + offset()
+
+def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, iterations, expectedNumberOfIons):
     """This method counts the number of dark ions (and their positions) in 
         an ion chain. It is required that the background image contain a 
         fully illuminated chain of ions.
@@ -34,32 +81,16 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, initi
                 
     """
     
-    numSet += 6
     
     numberImagesInSet = (numKin / iterations)
     numberImagesToAnalyze = (numKin / iterations) - 1
-    
-    
-    # 3D array of each image
-#    try:
-#        data = np.reshape(np.array(self.camera.imageArray), (numKin, rows, cols))
-#    except ValueError:
-#        raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
-#        data = self.imageArray
-    
-#        ###### TESTING TESTING TESTING 123 ################
-#    rawdata1 = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image19')
-    
-#        
-#    rawdata2 = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image20')
-#
-#    rawdata3 = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image21')
-#        
+          
 
 #        # ion swap
     arr = [[] for i in range(3)]
     for j in range(3):
-        arr[j] = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image-1-' + str(3*numSet + j + 1))
+#        arr[j] = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image-1-' + str(3*numSet + j + 1))
+        arr[j] = np.loadtxt(r'C:\Users\lattice\Desktop\LabRAD\lattice\scripts\dataAnalysis\ionSwap\image-1-' + str(3*numSet + j + 1))
 #        arr[3] = rawdata1
 #        arr[4] = rawdata1
 #        arr[5] = rawdata3
@@ -160,50 +191,60 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, initi
             
             sumArray.append(mostIntenseDataSums)
 
-        ########### find the number of ions, peak positions of initial image ########### 
-        initialDenoised = ndimage.gaussian_filter(sumArray[0], 2)
+        # start here
+        xmodel = np.arange(len(sumArray[0]), dtype=float)
 
-        initialMaxPeaks, initialMinPeaks = peakdetect.peakdetect(initialDenoised, range(cols), 1, 1)
-        initialPeakPositions = []
-        for peak in initialMaxPeaks: # peak = [position (pixel), intensity]
-            if peak[1] > initialThreshold:
-                initialPeakPositions.append(peak[0])
-#            print 'initial peak positions: ', initialPeakPositions
-#            print 'number of ions: ', len(initialPeakPositions)
+        global alpha
+        global beta
+        global offset
+        global height
+        global sigma        
+        alpha = Parameter(15)
+        beta = Parameter(33)
+        offset = Parameter(np.min(sumArray[0]))
+#        print 'offset guess: ', offset()
+        height = Parameter(np.max(sumArray[0]) - np.min(sumArray[0]))
+#        print 'height guess: ', height()       
+        sigma = Parameter(5)        
 
-        pyplot.figure()
-        xaxis = range(cols)
-        pyplot.plot(xaxis, initialDenoised, label=('initial' + ' ' + str(numSet + 1)))
+#        initialYmodel = fitFunction(xmodel, expectedNumberOfIons)
+#        pyplot.plot(xmodel, initialYmodel)
         
-        peakPositionCatalog[imageSet].append(initialPeakPositions)
-        
-        ########### find the number of dark ions, peak positions of analyzed images ###########
-        for image in np.arange(numberImagesToAnalyze):
-            subtractedData = sumArray[(image+1)] - sumArray[0]
-            subtractedDataDenoised = ndimage.gaussian_filter(subtractedData, 2)
-            darkMaxPeaks, darkMinPeaks = peakdetect.peakdetect(subtractedDataDenoised, range(cols), 1, 1)
-            darkPeakPositions = []
-            for peak in darkMinPeaks:
-                if peak[1] < darkThreshold:
-                    darkPeakPositions.append(peak[0])
+#        print xmodel
+#        testModel = 600 + 650*exp(-(((xmodel-14)/5)**2)/2) + 650*exp(-(((xmodel-50)/5)**2)/2)
+#        print testModel
+#        print 600 + 650*exp(-(((17-14)/5)**2)/2)
+#        pyplot.plot(xmodel, testModel)
 
-#                print 'initial dark peak positions: ', darkPeakPositions
-#                print 'number of dark ions: ', len(darkPeakPositions)
-            peakPositionCatalog[imageSet].append(darkPeakPositions) # we're hoping there is only one peak here!
-            pyplot.plot(xaxis, subtractedDataDenoised, label=('dark'+str(image) + ' ' + str(numSet + 1)))
-            
-        pyplot.legend(loc='best')
-
+        fit(fitFunction, [alpha, beta, offset, height, sigma], expectedNumberOfIons, sumArray[0])
         
+        print 'alpha: ', alpha()
+        print 'beta: ', beta()
+        print 'offset: ', offset()
+        print 'height: ', height()
+        print 'sigma: ', sigma()
+        
+        ymodel = fitFunction(xmodel, expectedNumberOfIons)
+        
+        pyplot.plot(xmodel,sumArray[0])
+        pyplot.plot(xmodel, ymodel)
+        
+        # check the goodness of fit of individual gaussians to each peak
+        for i in positionDict[str(expectedNumberOfIons)]:
+            ionPosition = beta() + i*alpha()
+            print ionPosition
+            xmodelIndividualGaussian = np.arange(int(ionPosition - 2*sigma()),int(ionPosition + 2*sigma()))
+            print xmodelIndividualGaussian 
+            individualGaussian = offset() + height()*exp(-(((xmodelIndividualGaussian-i*alpha() - beta())/sigma())**2)/2)           
+            print chisquare(sumArray[0][ionPosition - 2*sigma():ionPosition + 2*sigma()], individualGaussian)
+            pyplot.plot(xmodelIndividualGaussian, individualGaussian)
 
 ###############-------------------------------######################
 
 iterations = 1
 typicalIonDiameter = 5 # compare sections of this size in the image
-initialThreshold = 700
-darkThreshold = -350
-expectedNumberOfIons = 9
-peakVicinity = 3
+
+expectedNumberOfIons = 5
 hstart = 455
 hend = 530
 vstart = 217
@@ -214,26 +255,8 @@ rows = vend - vstart + 1
 cols = hend - hstart + 1
 
 for numSet in range(1):
-    GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
+    GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, iterations, expectedNumberOfIons)
 
            
-#        print 'peak positionn catalog:'
-#        print peakPositionCatalog
-#pyplot.figure()
-#xaxis = range(rows)
-#pyplot.plot(xaxis, initialData_denoised, label='initial')
-#pyplot.plot(xaxis, uncorrectedInitialDarkImageData_denoised, label='uncorrected-dark')
-#pyplot.plot(xaxis, uncorrectedFinalDarkImageData_denoised, label='uncorrected-rextal')
-#pyplot.plot(xaxis, initialDarkImageData_denoised, label='corrected-dark')
-#pyplot.plot(xaxis, finalDarkImageData_denoised, label='corrected-rextal')
-#pyplot.legend(loc='best')
-
-
-      
-            
-#pyplot.figure(3)
-#pyplot.plot(range(len(numberOfIons)), numberOfIons)
-#pyplot.xlabel('Image Number')
-#pyplot.ylabel('Number of Ions')
 
 show()
