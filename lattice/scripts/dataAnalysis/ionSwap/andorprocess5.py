@@ -8,7 +8,8 @@ from matplotlib import pyplot
 from scipy import ndimage
 import peakdetect
 from scipy.stats import chisquare
-
+import time
+from itertools import product
 
 positionDict = {
                 '2':                                  [-.62996, .62996],
@@ -215,9 +216,7 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
 #        print testModel
 #        print 600 + 650*exp(-(((17-14)/5)**2)/2)
 #        pyplot.plot(xmodel, testModel)
-
         fit(fitFunction, [alpha, beta, offset, height, sigma], expectedNumberOfIons, sumArray[0])
-        
         print 'alpha: ', alpha()
         print 'beta: ', beta()
         print 'offset: ', offset()
@@ -230,14 +229,46 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
         pyplot.plot(xmodel, ymodel)
         
         # check the goodness of fit of individual gaussians to each peak
-        for i in positionDict[str(expectedNumberOfIons)]:
-            ionPosition = beta() + i*alpha()
-            print ionPosition
-            xmodelIndividualGaussian = np.arange(int(ionPosition - 2*sigma()),int(ionPosition + 2*sigma()))
-            print xmodelIndividualGaussian 
-            individualGaussian = offset() + height()*exp(-(((xmodelIndividualGaussian-i*alpha() - beta())/sigma())**2)/2)           
-            print chisquare(sumArray[0][ionPosition - 2*sigma():ionPosition + 2*sigma()], individualGaussian)
-            pyplot.plot(xmodelIndividualGaussian, individualGaussian)
+#        for i in positionDict[str(expectedNumberOfIons)]:
+#            ionPosition = beta() + i*alpha()
+#            print ionPosition
+#            xmodelIndividualGaussian = np.arange(int(ionPosition - 2*sigma()),int(ionPosition + 2*sigma()))
+#            print xmodelIndividualGaussian 
+#            individualGaussian = offset() + height()*exp(-(((xmodelIndividualGaussian-i*alpha() - beta())/sigma())**2)/2)           
+#            t1 = time.clock()
+#            print chisquare(sumArray[0][ionPosition - 2*sigma():ionPosition + 2*sigma()], individualGaussian)
+#            t2 = time.clock()
+#            print 'time to chi: ', (t2-t1)
+#            pyplot.plot(xmodelIndividualGaussian, individualGaussian)
+        for q in range(2):
+            t1 = time.clock()
+            bestChiSquare = float(10000000)
+            positionValues = positionDict[str(expectedNumberOfIons)]
+            bestDarkModel = []
+            for i in product(range(2), repeat=expectedNumberOfIons):
+                # build the model function
+                darkModel = 0
+                for j in np.arange(expectedNumberOfIons):
+                    if i[j] == 1:
+                        print i, j
+                        print positionValues[j]
+                        darkModel += height()*exp(-(((xmodel-positionValues[j]*alpha() - beta())/sigma())**2)/2)
+                
+                darkModel += offset()
+                
+                try:
+                    tempChiSquare, pValue = chisquare(sumArray[q+1], darkModel)
+                    if (tempChiSquare < bestChiSquare):
+                        bestChiSquare = tempChiSquare
+                        bestDarkModel = darkModel
+                except AttributeError:
+                    print 'loca!'
+            t2 = time.clock()
+            print 'time: ', (t2-t1)
+            print 'best: ', bestChiSquare        
+            pyplot.figure()
+            pyplot.plot(xmodel, sumArray[q+1])
+            pyplot.plot(xmodel, bestDarkModel)
 
 ###############-------------------------------######################
 
