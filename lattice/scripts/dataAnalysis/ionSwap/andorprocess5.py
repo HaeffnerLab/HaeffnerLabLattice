@@ -91,7 +91,7 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
     arr = [[] for i in range(3)]
     for j in range(3):
 #        arr[j] = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image-1-' + str(3*numSet + j + 1))
-        arr[j] = np.loadtxt(r'C:\Users\lattice\Desktop\LabRAD\lattice\scripts\dataAnalysis\ionSwap\image-1-' + str(3*numSet + j + 1))
+        arr[j] = np.loadtxt('image-1-' + str(3*numSet + j + 1))
 #        arr[3] = rawdata1
 #        arr[4] = rawdata1
 #        arr[5] = rawdata3

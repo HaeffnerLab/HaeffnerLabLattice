@@ -61,6 +61,7 @@ class Andor:
         self.imageRegion        = [1, 1, 1, self.width, 1, self.height]
         #self.imageArray         = np.zeros((self.height * self.width))
         self.imageArray         = []
+        self.singleImageArray   = []
         
 
     def __del__(self):
@@ -173,7 +174,8 @@ class Andor:
         #self.dll.WaitForAcquisition()
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.imageArray = cimage[:]
+            imageArray = cimage[:]
+            self.singleImageArray.append(imageArray)
         else:
             raise Exception(ERROR_CODE[error])        
     
@@ -792,7 +794,7 @@ class AndorServer(LabradServer):
     def getAcquiredData(self, c):
         """Get all Data"""
         yield deferToThread(self.camera.GetAcquiredData)
-        returnValue(self.camera.imageArray)
+        returnValue(self.camera.singleImageArray)
 
     @setting(28, "Save As Text", path = 's', returns = '')
     def saveAsText(self, c, path):
