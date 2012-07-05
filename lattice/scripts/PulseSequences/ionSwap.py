@@ -53,7 +53,7 @@ class IonSwapBackground(Sequence):
         heatDuration = endHeat - startHeat
         
         p.startReadout = endHeat + p.readout_delay
-        p.stopReadout = p.startReadout + p.readout_time
+        p.endReadout = p.startReadout + p.readout_time
               
         start_rextal = endHeat + p.readout_delay + p.readout_time
 

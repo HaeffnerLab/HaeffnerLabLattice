@@ -82,6 +82,7 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
                 
     """
     
+    numSet = 10
     
     numberImagesInSet = (numKin / iterations)
     numberImagesToAnalyze = (numKin / iterations) - 1
@@ -90,8 +91,8 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
 #        # ion swap
     arr = [[] for i in range(3)]
     for j in range(3):
-#        arr[j] = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\7\image-1-' + str(3*numSet + j + 1))
-        arr[j] = np.loadtxt('image-1-' + str(3*numSet + j + 1))
+        arr[j] = np.loadtxt(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image-1-' + str(3*numSet + j + 1))
+#        arr[j] = np.loadtxt('image-1-' + str(3*numSet + j + 1))
 #        arr[3] = rawdata1
 #        arr[4] = rawdata1
 #        arr[5] = rawdata3
@@ -251,13 +252,13 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
                 for j in np.arange(expectedNumberOfIons):
                     if i[j] == 1:
                         print i, j
-                        print positionValues[j]
                         darkModel += height()*exp(-(((xmodel-positionValues[j]*alpha() - beta())/sigma())**2)/2)
                 
                 darkModel += offset()
                 
                 try:
                     tempChiSquare, pValue = chisquare(sumArray[q+1], darkModel)
+                    print tempChiSquare
                     if (tempChiSquare < bestChiSquare):
                         bestChiSquare = tempChiSquare
                         bestDarkModel = darkModel
