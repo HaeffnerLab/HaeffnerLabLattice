@@ -7,7 +7,7 @@ class LatentHeatBackground(Sequence):
                          'initial_cooling':(float, 10e-9, 5.0, 100e-3),
                          'heat_delay':(float, 10e-9, 30.0, 100e-3),
                          'axial_heat':(float, 10e-9, 5.0, 100e-3),
-                         'readout_delay':(float, 10e-9, 5.0, 100e-3),
+                         'readout_delay':(float, 10e-9, 30.0, 100e-3),
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
                          'xtal_record':(float, 10e-9, 5.0, 100e-3),
                          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
@@ -68,7 +68,7 @@ class LatentHeatGlobalHeat(Sequence):
                          'initial_cooling':(float, 10e-9, 5.0, 100e-3),
                          'heat_delay':(float, 10e-9, 30.0, 100e-3),
                          'axial_heat':(float, 10e-9, 5.0, 100e-3),
-                         'readout_delay':(float, 10e-9, 5.0, 100e-3),
+                         'readout_delay':(float, 10e-9, 30.0, 100e-3),
                          'readout_time':(float, 10e-9, 5.0, 100e-3),
                          'xtal_record':(float, 10e-9, 5.0, 100e-3),
                          'readout_ampl_866':(float, -63.0, -3.0, -63.0),
@@ -107,13 +107,13 @@ class LatentHeatGlobalHeat(Sequence):
         pulser.add_ttl_pulse('866DP', p.backgroundMeasure + p.initial_cooling, p.heat_delay )
         pulser.add_ttl_pulse('866DP', endHeat, p.readout_delay )
         #adding dds settings for the 866DP
-        pulser.add_dds_pulses('866DP', [(1e-3, 80.0 , p.cooling_ampl_866)]) #start by cooling
+        pulser.add_dds_pulses('866DP', [(40e-9, 80.0 , p.cooling_ampl_866)]) #start by cooling
         pulser.add_dds_pulses('866DP', [(startHeat, 80.0 , p.heating_ampl_866)])
         pulser.add_dds_pulses('866DP', [(endHeat, 80.0 , p.readout_ampl_866)]) #
         pulser.add_dds_pulses('866DP', [(start_xtal, 80.0 , p.xtal_ampl_866)])
         #adding dds settings for the 110DP
         #start by cooling
-        pulser.add_dds_pulses('110DP', [(1e-3, p.cooling_freq_397 , p.cooling_ampl_397)])
+        pulser.add_dds_pulses('110DP', [(40e-9, p.cooling_freq_397 , p.cooling_ampl_397)])
         #switch off after we cooled 
         pulser.add_dds_pulses('110DP', [(p.backgroundMeasure + p.initial_cooling, p.cooling_freq_397 , -63.0)]) #start by cooling
         #heat

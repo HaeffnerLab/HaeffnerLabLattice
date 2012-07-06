@@ -116,22 +116,20 @@ class DCBoxServer( SerialDeviceServer ):
             }
         """
         d = {}
-        devTup = ( 'endcap', 'dcoffsetonrf', 'shutter','397intensity' )
+        devTup = ( 'endcap', 'dcoffsetonrf', 'shutter')
         for dev in devTup:
             d[dev] = {'devChannels':{}}
         endcap = ( ( 1, 1 ), ( 2, 0 ) )
-        dcoffsetonrf = ( ( 1, 4 ), ( 2, 2 ), ( 'common', 3 ) )
+        dcoffsetonrf = ( ( 1, 8 ), ( 2, 2 ), ( 'common', 3 ) )
         shutter = ( ( 1, 5 ), ( 2, 6 ), ( 3, 7 ) )
-        intensity397 = (('397intensity',8),)
-        chanTup = ( endcap, dcoffsetonrf, shutter ,intensity397 )
+        chanTup = ( endcap, dcoffsetonrf, shutter )
         for dev, value in zip( devTup, chanTup ):
             for chanPair in value:
                 d[dev]['devChannels'][chanPair[0]] = {'value':None, 'channel':chanPair[1]}
         ecRange = ( 0.0, 40.0 )
         dcoffsetonrfRange = ( -18.0, 18.0 )
         shutterRange = ( 0.0, 5.0 )
-        intensity397Range = (0.0,2500.0)
-        rangeTup = ( ecRange, dcoffsetonrfRange, shutterRange, intensity397Range )
+        rangeTup = ( ecRange, dcoffsetonrfRange, shutterRange)
         for dev, value in zip( devTup, rangeTup ): d[dev]['range'] = value
         self.dcDict = d
         
@@ -327,25 +325,7 @@ class DCBoxServer( SerialDeviceServer ):
         value = bool(self.dcDict[dev]['devChannels'][devChannel]['value'])
         if value is not None: return value
         else: raise DCBoxError( 4 )
-        
-    @setting( 6, voltage = 'v: voltage to apply mV',
-             returns = '' )
-    def setIntensity397( self, c, voltage):
-        """
-        Sets level for intensity stabilization
-        """
-        dev = devChannel = '397intensity'
-        self.validateDevChannel( dev, devChannel )
-        self.validateInput( dev, voltage )
-        channel = self.dcDict[dev]['devChannels'][devChannel]['channel']
-        self.tryToSend( channel, voltage )
     
-    @setting(7,returns ='v: voltage in mV')
-    def getIntensity397(self,c):
-       dev = devChannel = '397intensity'
-       self.validateDevChannel( dev, devChannel )
-       return self.dcDict[dev]['devChannels'][devChannel]['value']
-
     #converts sequential representation to string understood by microcontroller                                                                                                        
     #i.e ch 1 set 2500mv -> '1,str' where str =  is  character representation of 0xffff given by binascii.unhexlify(ffff)
     @staticmethod

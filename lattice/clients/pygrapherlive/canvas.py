@@ -119,7 +119,7 @@ from itertools import cycle
 
 
 TIMERREFRESH = .01 #s
-MAXDATASETSIZE = 20000
+MAXDATASETSIZE = 100000
 SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0

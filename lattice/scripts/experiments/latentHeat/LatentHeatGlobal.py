@@ -108,6 +108,8 @@ class LatentHeat():
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
             timetags = self.pulser.get_timetags().asarray
+            print timetags.size####
+            print timetags
             iters = iteration * numpy.ones_like(timetags) 
             self.dv.add(numpy.vstack((iters,timetags)).transpose())
             #add to binning of the entire sequence
@@ -158,34 +160,34 @@ class LatentHeat():
 if __name__ == '__main__':
     #experiment parameters
     params = {
-        'initial_cooling': 25e-3,
+        'initial_cooling': 25e-3,###DO NOT CHANGE
         'heat_delay':10e-3,###DO NOT CHANGE
-        'axial_heat':10.9*10**-3,
-        'readout_delay':100.0*10**-9,
-        'readout_time':10.0*10**-3,
+        'axial_heat':140*10**-3,
+        'readout_delay':1000.0*10**-3,
+        'readout_time':10.0*10**-3,###DO NOT CHANGE
         'xtal_record':100e-3,
-        'cooling_ampl_866':-11.0,
-        'heating_ampl_866':-11.0,
-        'readout_ampl_866':-11.0,
-        'xtal_ampl_866':-11.0,
-        'cooling_freq_397':110.0,
-        'cooling_ampl_397':-41.0,
-        'readout_freq_397':110.0,
-        'readout_ampl_397':-21.0,
-        'xtal_freq_397':110.0,
+        'cooling_ampl_866':-3.0,
+        'heating_ampl_866':-3.0,
+        'readout_ampl_866':-3.0,
+        'xtal_ampl_866':-3.0,
+        'cooling_freq_397':103.0,
+        'cooling_ampl_397':-13.5,
+        'readout_freq_397':115.0,
+        'readout_ampl_397':-13.5,
+        'xtal_freq_397':103.0,
         'xtal_ampl_397':-11.0,
-        'heating_freq_397':110.0,
-        'heating_ampl_397':-31.0,
+        'heating_freq_397':130.0,
+        'heating_ampl_397':-15.2,
     }
     exprtParams = {
-       'iterations':10,
+       'iterations':2,
        'rf_power':-3.5, #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,
        'pmtresolution':0.075,
        'detect_time':0.225,
        'binTime':250.0*10**-6,
-       'threshold':35000
+       'threshold':40000
     }
     exprt = LatentHeat(params,exprtParams)
     exprt.run()
