@@ -58,7 +58,7 @@ class GrapherWindow(QtGui.QWidget):
         # checkbox to toggle AutoFit
         self.cb3 = QtGui.QCheckBox('AutoFit', self)
         #self.cb3.move(290, 39)
-        self.cb3.toggle()
+#        self.cb3.toggle()
         self.cb3.clicked.connect(self.autofitSignal) 
         # button to fit data on screen
         fitButton = QtGui.QPushButton("Fit", self)

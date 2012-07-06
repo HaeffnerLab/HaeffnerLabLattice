@@ -6,11 +6,10 @@ sys.path.append('/home/lattice/Desktop/LabRAD/lattice/PulseSequences')
 import labrad
 import numpy
 import time
-####from scriptLibrary.parameter import Parameters
 from scriptLibrary import dvParameters 
 from PulseSequences.ionSwap import IonSwapBackground
-from dataProcessor_ionSwap import data_process
-
+from crystallizer import Crystallizer
+from fly_processing import Binner, Splicer
 
 class Bunch:
     def __init__(self, **kwds):
@@ -21,9 +20,8 @@ class Bunch:
     
     def toDict(self):
         return self.__dict__
-    
-class IonSwap():
 
+class IonSwap():
     ''''
     This experiment examines the probability of ions swapping places during heating. 
     After all cooling lights are switched off, the crystal is heated with far blue light for a variable time. Readout is meant to be done with a near resonant light.
@@ -38,7 +36,6 @@ class IonSwap():
     '''
     experimentName = 'IonSwap'
     
-#    def __init__(self, seqParams, exprtParams, cxn):
     def __init__(self, seqParams, exprtParams):
        #connect and define servers we'll be using
         self.cxn = labrad.connect()
@@ -49,14 +46,16 @@ class IonSwap():
         self.pmt = self.cxn.normalpmtflow
         self.seqP = Bunch(**seqParams)
         self.expP = Bunch(**exprtParams)
+        self.xtal = Crystallizer(self.pulser, self.pmt, self.rf)
+        self.Binner = None
         
     def initialize(self):
+        #get initialize count for crystallization
+        self.xtal.get_initial_rate()
         #directory name and initial variables
-        self.meltedTimes = 0
         self.dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())
-        self.pmt.set_time_length(self.expP.pmtresolution)
+        self.topdirectory = time.strftime("%Y%b%d",time.localtime())
         self.setupLogic()
-        ###this goes to xtalizer
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
         self.pulser.frequency(self.seqP.xtal_freq_397)
@@ -64,32 +63,33 @@ class IonSwap():
         self.pulser.select_dds_channel('866DP')
         self.pulser.amplitude(self.seqP.xtal_ampl_866)
         self.programPulser()
-        countRate = self.pmt.get_next_counts('ON',int(self.expP.detect_time / self.expP.pmtresolution), True)
-        self.crystal_threshold = 0.9 * countRate #kcounts per sec
-        self.crystallization_attempts = 10
-        print 'initial countrate', countRate
-        print 'Crystallization threshold: ', self.crystal_threshold
-    
+        #data processing setup
+        self.Binner = Binner(self.seqP.recordTime, self.expP.binTime)
+        self.Splicer = Splicer(self.seqP.startReadout, self.seqP.endReadout)
+        
     def setupCamera(self):
         # tell the camera to start waiting for data
         
         # height, width, iterations, numAnalyzedImages
         self.cxn.andor_ion_count.collect_data((self.expP.vend - self.expP.vstart + 1), (self.expP.hend - self.expP.hstart + 1), self.expP.iterations, self.expP.numAnalyzedImages)
-        
+
+    
     def setupLogic(self):
         self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False) #high TTL corresponds to light OFF
+        self.pulser.switch_manual('crystallization',  False)
     
     def programPulser(self):
-        self.seq = IonSwapBackground(self.pulser)
+        seq = IonSwapBackground(self.pulser)
         self.pulser.new_sequence()
-        self.seq.setVariables(**params)
-        self.seq.defineSequence()
+        seq.setVariables(**self.seqP.toDict())
+        seq.defineSequence()
         self.pulser.program_sequence()
-        self.seqP['recordTime'] = self.seq.parameters.recordTime
-        
+        self.seqP['recordTime'] = seq.parameters.recordTime
+        self.seqP['startReadout'] = seq.parameters.startReadout
+        self.seqP['endReadout'] = seq.parameters.endReadout
+    
     def run(self):
         sP = self.seqP
         xP = self.expP
@@ -102,15 +102,13 @@ class IonSwap():
         self.finalize()
         self.rf.amplitude(initpower)
         print 'DONE {}'.format(self.dirappend)
-        print 'had to recrystallize {0} times'.format(self.meltedTimes)
 
     def sequence(self):
         sP = self.seqP
         xP = self.expP
-        #binning on the fly
-        binNumber = int(sP.recordTime / xP.binTime)
-        binArray = xP.binTime * numpy.arange(binNumber + 1)
-        binnedFlour = numpy.zeros(binNumber)
+        #saving timetags
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend], True)
+        self.dv.new('timetags',[('Time', 'sec')],[('PMT counts','Arb','Arb')] )
         #do iterations
         for iteration in range(xP.iterations):
             print 'recording trace {0} out of {1}'.format(iteration+1, xP.iterations)
@@ -119,26 +117,35 @@ class IonSwap():
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
             timetags = self.pulser.get_timetags().asarray
-            #saving timetags
-            self.dv.cd(['','Experiments', self.experimentName, self.dirappend, 'timetags'],True )
-            self.dv.new('timetags iter{0}'.format(iteration),[('Time', 'sec')],[('PMT counts','Arb','Arb')] )
-            self.dv.add_parameter('iteration',iteration)
-            ones = numpy.ones_like(timetags)
-            self.dv.add(numpy.vstack((timetags,ones)).transpose())
+            iters = iteration * numpy.ones_like(timetags) 
+            self.dv.add(numpy.vstack((iters,timetags)).transpose())
             #add to binning of the entire sequence
-            newbinned = numpy.histogram(timetags, binArray )[0]
-            binnedFlour = binnedFlour + newbinned
+            self.Binner.add(timetags)
+            self.Splicer.add(timetags)
+            #auto crystallization
             if xP.auto_crystal:
-                success = self.auto_crystalize()
+                success = self.xtal.auto_crystallize()
                 if not success: break
-        # getting result and adding to data vault
-        #normalize
-        binnedFlour = binnedFlour / float(xP.iterations)
-        binnedFlour = binnedFlour / xP.binTime
-        self.dv.cd(['','Experiments', self.experimentName, self.dirappend] )
-        self.dv.new('binnedFlourescence',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
-        data = numpy.vstack((binArray[0:-1], binnedFlour)).transpose()
+        #adding readout counts to data vault:
+        readout = self.Splicer.getList()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('readout',[('Iter', 'Number')], [('PMT counts','Counts/Sec','Counts/Sec')] )
+        self.dv.add(readout)
+        #adding binned fluorescence to data vault:
+        binX, binY = self.Binner.getBinned()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('binned',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
+        data = numpy.vstack((binX, binY)).transpose()
         self.dv.add(data)
+        self.dv.add_parameter('Window',['Binned Fluorescence'])
+        self.dv.add_parameter('plotLive',True)
+        #adding histogram of counts to data vault
+        binX, binY = self.Splicer.getHistogram()
+        self.dv.cd(['','Experiments', self.experimentName, self.topdirectory, self.dirappend])
+        self.dv.new('histogram',[('Time', 'sec')], [('PMT counts','Arb','Arb')] )
+        data = numpy.vstack((binX, binY)).transpose()
+        self.dv.add(data)
+        self.dv.add_parameter('Window',['Histogram'])
         self.dv.add_parameter('plotLive',True)
         # gathering parameters and adding them to data vault
         measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
@@ -146,71 +153,17 @@ class IonSwap():
         dvParameters.saveParameters(self.dv, measuredDict)
         dvParameters.saveParameters(self.dv, sP.toDict())
         dvParameters.saveParameters(self.dv, xP.toDict())
-
+    
     def finalize(self):
-#        try:
-#            print 'from exp, numKin: ', (self.expP.numAnalyzedImages + 1)*self.expP.iterations
-#            self.cxn.andor_ion_count.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062712\1\image', (self.expP.numAnalyzedImages + 1)*self.expP.iterations)
-#        except ValueError:
-#            print 'failed to save! shape wrong'
         for name in ['axial', '110DP']:
             self.pulser.switch_manual(name)
-        self.pulser.switch_manual('crystallization',  True)
-    
-    def is_crystalized(self):
-        detect_time = 0.225
-        countRate = self.pmt.get_next_counts('ON',int(detect_time / self.expP.pmtresolution), True)
-        print 'auto crystalization: count rate {0} and threshold is {1}'.format(countRate, self.crystal_threshold)
-        return (countRate > self.crystal_threshold) 
-    
-    def auto_crystalize(self):
-        #auto-crystallization settings###
-        far_red_time = 0.300 #seconds
-        optimal_cool_time = 0.150
-        shutter_delay = 0.025
-        rf_crystal_power = -7.0
-        rf_settling_time = 0.3
-        if self.is_crystalized():
-            print 'Crystallized at the end'
-            return True
-        else:
-            print 'Melted'
-            self.meltedTimes += 1
-            self.pulser.switch_manual('crystallization',  True)
-            initpower = self.rf.amplitude()
-            for attempt in range(self.crystallization_attempts):
-                self.rf.amplitude(rf_crystal_power)
-                time.sleep(rf_settling_time)
-                time.sleep(shutter_delay)
-                self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
-                time.sleep(far_red_time)
-                self.pulser.switch_manual('110DP',  True) 
-                time.sleep(optimal_cool_time)
-                self.rf.amplitude(self.expP.rf_power)
-                time.sleep(rf_settling_time)
-                if self.is_crystalized():
-                    print 'Crystalized on attempt number {}'.format(attempt + 1)                    
-                    self.pulser.switch_manual('crystallization',  False)
-                    time.sleep(shutter_delay)
-                    self.pulser.switch_auto('110DP',  False)
-                    return True
-            #if still not crystallized, let the user handle things
-            response = raw_input('Please Crystalize! Type "f" is not successful and sequence should be terminated')
-            if response == 'f':
-                return False
-            else:
-                self.rf.amplitude(initpower)
-                time.sleep(self.expP.rf_settling_time)
-                self.pulser.switch_manual('crystallization',  False)
-                time.sleep(shutter_delay)
-                self.pulser.switch_auto('110DP',  False)
-                return True
+        below, above = self.Splicer.getPercentage(self.expP.threshold)
+        print '{0:.1f}% of samples are Melted, below threshold of {1} '.format(100 * below, self.expP.threshold)
+        print '{0:.1f}% of samples are Crystallized, above threshold of {1} '.format(100 * above, self.expP.threshold)
     
     def __del__(self):
         self.cxn.disconnect()
-
-#------------------------------------------------------------- working line!
-
+       
 if __name__ == '__main__':
     #experiment parameters
     exposure = 100*10**-3
@@ -279,21 +232,12 @@ if __name__ == '__main__':
                        'vend': vend,
                        'numAnalyzedImages': 2, # immediately before and after axial heating
                        'typicalIonDiameter': 5,
-                       'ionThreshold': 500,
-                       'darkIonThreshold': -200
+                       'threshold': 35000
                        }
 
                 
         exprt = IonSwap(params,exprtParams)
         exprt.run()
-        dp = data_process(cxn, exprt.dirappend, ['','Experiments', exprt.experimentName], ['histogram'])
-        dp.addParameter('threshold', 35000)
-        dp.addParameter('startReadout', exprt.seq.parameters.startReadout)
-        dp.addParameter('stopReadout', exprt.seq.parameters.stopReadout)
         numKin = ((exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         cameraServer.get_acquired_data_kinetic(numKin)
         cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062812\kinSetTest\realTest\image', kinSet, (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
-        #darkIonCatalog = cameraServer.get_dark_ion_catalog(numKin, (exprtParams['vend'] - exprtParams['vstart'] + 1), (exprtParams['hend'] - exprtParams['hstart'] + 1),exprtParams['typicalIonDiameter'], exprtParams['ionThreshold'], exprtParams['darkIonThreshold'], exprtParams['iterations'])
-        #dp.addParameter('darkIonCatalog', darkIonCatalog)
-        #dp.loadDataVault()
-        #dp.processAll()

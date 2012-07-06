@@ -134,13 +134,16 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # new dataset signal
     def updateDataset(self,x,y):
         dataset = int(y[0][0:5]) # retrieve dataset number
+        datasetName = str(y[0][8:len(y[0])])
+        print datasetName
         directory = y[1] # retrieve directory
         itemLabel = y[0]
         self.addDatasetItem(itemLabel, directory)
         print directory
         print dataset
+        print x, y
         manuallyLoaded = False # ensure that this dataset was not loaded manually
-        self.newDataset(dataset, directory, manuallyLoaded)
+        self.newDataset(dataset, directory, manuallyLoaded, datasetName)
  
     def addDatasetItem(self, itemLabel, directory):
         self.introWindow.datavaultwidget.addDatasetItem(itemLabel, directory)
@@ -151,9 +154,9 @@ class CONNECTIONS(QtGui.QGraphicsObject):
  
     # Creates a new Dataset object and checks if it has the 'plotLive' parameter
     @inlineCallbacks
-    def newDataset(self, dataset, directory, manuallyLoaded):
+    def newDataset(self, dataset, directory, manuallyLoaded, datasetName):
         context = yield self.cxn.context() # create a new context
-        datasetObject = Dataset(self.cxn, context, dataset, directory, self.reactor)
+        datasetObject = Dataset(self.cxn, context, dataset, directory, datasetName, self.reactor)
         self.datasetDict[dataset, directory] = datasetObject
         yield datasetObject.openDataset(context)
         yield datasetObject.setupParameterListener(context)

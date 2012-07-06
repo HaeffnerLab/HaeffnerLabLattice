@@ -154,6 +154,8 @@ class Qt4MplCanvas(FigureCanvas):
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
+        colormap = pyplot.cm.gist_ncar
+        self.ax.set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, 15)])
         #self.ax.set_color_cycle(['b', 'g', 'r', 'm', 'k'])
         lines = ["-"]#,"-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
         self.linecycler = cycle(lines)
