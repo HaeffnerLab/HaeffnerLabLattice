@@ -16,12 +16,13 @@ import time
 class Dataset(QtCore.QObject):
     
     """Class to handle incoming data and prepare them for plotting """
-    def __init__(self, cxn, context, dataset, directory, reactor):
+    def __init__(self, cxn, context, dataset, directory, datasetName, reactor):
         super(Dataset, self).__init__()
         self.accessingData = DeferredLock()
         self.cxn = cxn
         self.context = context # context of the first dataset in the window
         self.dataset = dataset
+        self.datasetName = datasetName
         self.directory = directory
         self.reactor = reactor
         self.data = None
@@ -125,8 +126,9 @@ class Dataset(QtCore.QObject):
         labels = []
         variables = yield self.cxn.data_vault.variables(context = self.context)
         for i in range(len(variables[1])):
-            labels.append(variables[1][i][1])
+            labels.append(variables[1][i][1] + ' - ' + self.datasetName)
         returnValue(labels)
+
             
     def wait(self, seconds, result=None):
         d = Deferred()
