@@ -1,7 +1,7 @@
-import matplotlib
-matplotlib.use('Qt4Agg')
-from pylab import *
-from matplotlib import pyplot
+#import matplotlib
+#matplotlib.use('Qt4Agg')
+#from pylab import *
+#from matplotlib import pyplot
 
 
 from ctypes import *
@@ -108,9 +108,9 @@ class AndorIonCount(LabradServer, AndorServer):
                             finalPosition = darkIonPositionCatalog[kinSet][imageSet][2]                  
                             ionSwapCatalog.append(abs(finalPosition - initialPosition))
                 
-                print 'number ions in first image: ', darkIonPositionCatalog[kinSet][imageSet][0]
-                print 'number dark ions in second image: ', len(darkIonPositionCatalog[kinSet][imageSet][1])
-                print 'number dark ions in third image: ', len(darkIonPositionCatalog[kinSet][imageSet][2])
+#                print 'number ions in first image: ', darkIonPositionCatalog[kinSet][imageSet][0]
+#                print 'number dark ions in second image: ', len(darkIonPositionCatalog[kinSet][imageSet][1])
+#                print 'number dark ions in third image: ', len(darkIonPositionCatalog[kinSet][imageSet][2])
 
 #        print 'ion swap catalog:'
 #        print ionSwapCatalog
@@ -230,11 +230,11 @@ class AndorIonCount(LabradServer, AndorServer):
         sigma = initialParameters[2]            
     
         alpha, axialOffset, offset, height, sigma = self._fit(self._fitFunction, [height, alpha, axialOffset, sigma, offset], expectedNumberOfIons, axialSums)
-        print 'alpha: ', alpha
-        print 'axialOffset: ', axialOffset
-        print 'offset: ', offset
-        print 'height: ', height
-        print 'sigma: ', sigma
+#        print 'alpha: ', alpha
+#        print 'axialOffset: ', axialOffset
+#        print 'offset: ', offset
+#        print 'height: ', height
+#        print 'sigma: ', sigma
         
         return [alpha, axialOffset, offset, height, sigma]
        
@@ -263,18 +263,21 @@ class AndorIonCount(LabradServer, AndorServer):
         """        
         
         try:
-            data = np.reshape(np.array(self.camera.imageArray), (kinSet, numKin, rows, cols))
+            data = np.reshape(np.array(self.camera.imageArray, dtype=np.float), (kinSet, numKin, rows, cols))
         except ValueError:
             raise Exception("Trying to analyze more images than there is in the data? Image region correct?")
-
+        
         numberImagesInSet = (numKin / iterations) # better equal 2 for ionSwap
 
         darkIonPositionCatalog = [[[] for i in range(iterations)] for j in range(kinSet)]
 
         xmodel = np.arange(cols, dtype=float)
-        
+
+        t1 = time.clock()
+       
         for kineticSet in np.arange(kinSet):
             for imageSet in np.arange(iterations):
+                print kineticSet + 1, imageSet + 1
                 parametersArray = self._fitInitialImage(data[kineticSet][0], kinSet, rows, cols, typicalIonDiameter, expectedNumberOfIons, initialParameters)
                 for image in np.arange(numberImagesInSet):
                     axialSums = self._getOneDDdata(data[kineticSet][numberImagesInSet*imageSet + image], rows, cols, typicalIonDiameter) 
@@ -282,10 +285,9 @@ class AndorIonCount(LabradServer, AndorServer):
 
                         
                     
-                    t1 = time.clock()
                     bestFitIonArrangement = [] # 1 = bright, 0 = dark, Ex: (1, 1, 0, 1, 1)
                     bestChiSquare = float(10000000) # get rid of this in the future and make the if statement a try/except
-                    bestDarkModel = []
+#                    bestDarkModel = []
                     positionValues = self.positionDict[str(expectedNumberOfIons)]
                     for ionArrangement in product(range(2), repeat=expectedNumberOfIons):
                         # build the model function, expected to have at least one component = 0 (have an ion dark in the model function)
@@ -303,31 +305,32 @@ class AndorIonCount(LabradServer, AndorServer):
                             tempChiSquare, pValue = chisquare(axialSums, darkModel)
                             if (tempChiSquare < bestChiSquare):
                                 bestChiSquare = tempChiSquare
-                                bestDarkModel = darkModel
+#                                bestDarkModel = darkModel
                                 bestFitIonArrangement = ionArrangement
                         except AttributeError:
                             print 'loca!'
                    
-                    t2 = time.clock()
-                    print 'time: ', (t2-t1)
-                    print 'best: ', bestChiSquare, bestFitIonArrangement
+
+#                    print 'best: ', bestChiSquare, bestFitIonArrangement
                     darkIonPositions = np.where(np.array(bestFitIonArrangement) == 0)[0] # awesome
-                    print darkIonPositions
+#                    print darkIonPositions
                     if (image == 0):
                         darkIonPositionCatalog[kineticSet][imageSet].append(expectedNumberOfIons - len(darkIonPositions))
                     else:
                         darkIonPositionCatalog[kineticSet][imageSet].append(darkIonPositions)
-                    if ((imageSet == 0 and image == 0) or (imageSet == 1 and image == 0) or (imageSet == 1 and image == 0) or (imageSet == 11 and image == 0) or (imageSet == 14 and image == 1)):
-                        pyplot.plot(np.arange(len(axialSums)), axialSums)
-                        pyplot.plot(xmodel, bestDarkModel)
-                        print darkIonPositionCatalog
-                        show() 
+#                    if ((imageSet == 0 and image == 0) or (imageSet == 1 and image == 0) or (imageSet == 1 and image == 0) or (imageSet == 11 and image == 0) or (imageSet == 14 and image == 1)):
+#                        pyplot.plot(np.arange(len(axialSums)), axialSums)
+#                        pyplot.plot(xmodel, bestDarkModel)
+#                        print darkIonPositionCatalog
+#                        show() 
         
+        t2 = time.clock()
+        print 'time: ', (t2-t1)        
         return darkIonPositionCatalog        
 
     
     
-    @setting(40, "Collect Data", height = 'i', width = 'i', iterations = 'i', numAnalyzedImages = 'i', returns = '')
+    @setting(61, "Collect Data", height = 'i', width = 'i', iterations = 'i', numAnalyzedImages = 'i', returns = '')
     def collectData(self, c, height, width, iterations, numAnalyzedImages):
         """Given the iterations, will return the average number of ions"""
         self.camera.GetStatus()
@@ -344,40 +347,22 @@ class AndorIonCount(LabradServer, AndorServer):
                                     
         else:
             raise Exception(status)
-        
-    @setting(41, "Get Dark Ion Catalog", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', returns = '*i')
-    def getDarkIonCatalog(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations):
-        peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
-        darkIonCatalog = self.BuildDarkIonCatalog(peakPositionCatalog, iterations, numKin)
-        #avgNumberDarkIons = self.GetAverageDarkIons(darkIonCatalog, numKin, iterations)
-        return darkIonCatalog
-    
-    @setting(42, "Get Ion Position Catalog", numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', initialThreshold = 'i', darkThreshold = 'i', iterations = 'i', peakVicinity = 'i', returns = '')
-    def getIonPositionCatalog(self, c, numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations, peakVicinity):
-        peakPositionCatalog = self.GetPeakPositionCatalog(numKin, rows, cols, typicalIonDiameter, initialThreshold, darkThreshold, iterations)
-        ionPositionCatalog = self.BuildIonPositionCatalog(peakPositionCatalog, iterations, numKin, peakVicinity)
-        print ionPositionCatalog
-        #ionSwapCatalog = self.BuildIonSwapCatalog(ionPositionCatalog, iterations)
-        #numIonSwaps = self.GetNumberSwaps(ionSwapCatalog)
-    
-    @setting(45, "Get Ion Number Histogram", image = 'i', kinSet = 'i', numKin = 'i', iterations = 'i', returns = '*i')
+           
+    @setting(62, "Get Ion Number Histogram", image = 'i', kinSet = 'i', numKin = 'i', iterations = 'i', returns = '*i')
     def getIonNumberHistogram(self, c, image, kinSet, numKin, iterations):        
         """For Ion Swap, image should = 1, 2 or 3 """
-        ionNumberCatalog = self._getIonNumberCatalog(image, self.darkIonPositionCatalog, iterations, kinSet, numKin)
-        if (len(ionNumberCatalog) != 0):
-            return ionNumberCatalog
-        else:
-            raise Exception("There are no ions!")
+        self.ionNumberCatalog = self._getIonNumberCatalog(image, self.darkIonPositionCatalog, iterations, kinSet, numKin)
+        return self.ionNumberCatalog
                 
-    @setting(46, "Get Ion Swap Histogram", iterations = 'i', kinSet = 'i', numKin = 'i', expectedNumberOfIons = 'i', returns = '*i')
+    @setting(63, "Get Ion Swap Histogram", iterations = 'i', kinSet = 'i', numKin = 'i', expectedNumberOfIons = 'i', returns = '*i')
     def getIonSwapHistogram(self, c, iterations, kinSet, numKin, expectedNumberOfIons):
         ionSwapCatalog = self._buildIonSwapCatalog(self.darkIonPositionCatalog, kinSet, iterations, expectedNumberOfIons)
         if (len(ionSwapCatalog) != 0):
             return np.array(ionSwapCatalog)
         else:
-            raise Exception("There are no ions!")    
+            return [-1]*len(self.ionNumberCatalog) #this means no ions at all
 
-    @setting(47, "Build Dark Ion Position Catalog", kinSet = 'i', numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', expectedNumberOfIons = 'i', iterations = 'i', initialParameters = '*i', returns = '')
+    @setting(64, "Build Dark Ion Position Catalog", kinSet = 'i', numKin = 'i', rows = 'i', cols = 'i', typicalIonDiameter = 'i', expectedNumberOfIons = 'i', iterations = 'i', initialParameters = '*i', returns = '')
     def buildDarkIonPositionCatalog(self, c, kinSet, numKin, rows, cols, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters):
         self.darkIonPositionCatalog = self._BuildDarkIonPositionCatalog(kinSet, numKin, rows, cols, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters)
 #        print self.darkIonPositionCatalog             

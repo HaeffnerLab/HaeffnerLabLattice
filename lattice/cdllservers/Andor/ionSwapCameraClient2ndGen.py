@@ -28,36 +28,32 @@ class Canvas(FigureCanvas):
         self.fig = Figure()
         FigureCanvas.__init__(self, self.fig)
 
-        self.ax1 = self.fig.add_subplot(141)
-        self.ax2 = self.fig.add_subplot(142)
-        self.ax3 = self.fig.add_subplot(143)
-        self.ax4 = self.fig.add_subplot(144)
+        self.ax1 = self.fig.add_subplot(131)
+        self.ax2 = self.fig.add_subplot(132)
+        self.ax3 = self.fig.add_subplot(133)
         
-        self.setHist(self.ax1, ionCatalogArray[0], label = 'initial')
-        self.setHist(self.ax2, ionCatalogArray[1], label = 'shine729')
-        self.setHist(self.ax3, ionCatalogArray[2], label = 'final')
+        self.setHist(self.ax2, ionCatalogArray[0], label = 'initial')
+        self.setHist(self.ax3, ionCatalogArray[1], label = 'final')
         
-        self.ax1.set_xlabel('Number Of Bright Ions')
+        self.ax1.set_xlabel('Number Of Dark Ions')
+        self.ax1.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[0]) == 1)[0])/float(len(ionCatalogArray[0])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax1.transAxes)
+        self.ax1.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[0])) + ' ions dark', transform = self.ax1.transAxes)
+        self.ax1.set_ylim(0, 1)
         self.ax2.set_xlabel('Number Of Dark Ions')
         self.ax2.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[1]) == 1)[0])/float(len(ionCatalogArray[1])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax2.transAxes)
         self.ax2.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[1])) + ' ions dark', transform = self.ax2.transAxes)
         self.ax2.set_ylim(0, 1)
-        self.ax3.set_xlabel('Number Of Dark Ions')
-        self.ax3.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[2]) == 1)[0])/float(len(ionCatalogArray[2])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax3.transAxes)
-        self.ax3.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[2])) + ' ions dark', transform = self.ax3.transAxes)
-        self.ax3.set_ylim(0, 1)
 
-        self.ax4.hist(ionSwapCatalog, bins=range(self.parent.parent.expectedNumberOfIonsSpinBox.value() + 1), align='left', normed = True, label = 'Ion Swaps' )
-        self.ax4.legend(loc='best')
-        self.ax4.set_xlabel('Distance of Ion Movement')
-        self.ax4.text(.25, .8, 'Number Ion Swaps: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])), transform = self.ax4.transAxes)
-        self.ax4.text(0.025, .75, '1 ion dark in both shine729 and final: ' + str(len(ionSwapCatalog)/float(len(ionCatalogArray[0]))*100) + ' %', transform = self.ax4.transAxes)
-        self.ax4.text(0.10, .70, 'Probability of Ion Swap: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])/float(len(ionSwapCatalog))), transform = self.ax4.transAxes)
+        self.ax3.hist(ionSwapCatalog, bins=range(self.parent.parent.expectedNumberOfIonsSpinBox.value() + 1), align='left', normed = True, label = 'Ion Swaps' )
+        self.ax3.legend(loc='best')
+        self.ax3.set_xlabel('Distance of Ion Movement')
+        self.ax3.text(.25, .8, 'Number Ion Swaps: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])), transform = self.ax3.transAxes)
+        self.ax3.text(0.025, .75, '1 ion dark in both shine729 and final: ' + str(len(ionSwapCatalog)/float(len(ionCatalogArray[0]))*100) + ' %', transform = self.ax3.transAxes)
+        self.ax3.text(0.10, .70, 'Probability of Ion Swap: ' + str(len(np.where(np.array(ionSwapCatalog) == 1)[0])/float(len(ionSwapCatalog))), transform = self.ax3.transAxes)
 
     def setHist(self, ax, data, label):
         ax.hist(data, bins=range(10), align='left', normed=True, label = label)
         ax.legend(loc='best')
-        self.ax4.set_ylim(0, 1)
         
         
 class HistWindow(QtGui.QWidget):        
@@ -117,14 +113,6 @@ class AppWindow(QtGui.QWidget):
         openKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         openKineticButton.clicked.connect(self.openKinetic)
 
-        openKineticDataVaultButton = QtGui.QPushButton("Open Kinetic Data Vault", self)
-        openKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        openKineticDataVaultButton.clicked.connect(self.openKineticDataVault)
-        
-        saveKineticDataVaultButton = QtGui.QPushButton("Temp Save DV", self)
-        saveKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        saveKineticDataVaultButton.clicked.connect(self.saveKineticDataVault)        
-        
         abortAcquisitionButton = QtGui.QPushButton("Abort Acquisition", self)
         abortAcquisitionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         abortAcquisitionButton.clicked.connect(self.abortAcquisition)
@@ -138,15 +126,8 @@ class AppWindow(QtGui.QWidget):
         pathLabel = QtGui.QLabel()
         pathLabel.setText('Path: ')
         
-        pathDataVaultLabel = QtGui.QLabel()
-        pathDataVaultLabel.setText('Path: ')        
-        
         self.pathEdit = QtGui.QLineEdit()
-        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image') 
-        
-        self.pathDataVaultEdit = QtGui.QLineEdit()
-        self.pathDataVaultEdit.setText(str(['', 'Camera Snapshots', 'test2']))        
-       
+        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image')        
                         
         exposureLabel = QtGui.QLabel()
         exposureLabel.setText('Exposure (ms): ')
@@ -192,7 +173,7 @@ class AppWindow(QtGui.QWidget):
         self.iterationsSpinBox.setMinimum(0)
         self.iterationsSpinBox.setMaximum(1000)
         self.iterationsSpinBox.setSingleStep(1)  
-        self.iterationsSpinBox.setValue(1)     
+        self.iterationsSpinBox.setValue(50)     
         self.iterationsSpinBox.setKeyboardTracking(False)
 
         self.kineticSetsSpinBox = QtGui.QSpinBox()
@@ -308,18 +289,10 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel3.addWidget(pathLabel)
         self.bottomPanel3.addWidget(self.pathEdit)
         
-        self.bottomPanel4 = QtGui.QHBoxLayout()
-
-        self.bottomPanel4.addWidget(saveKineticDataVaultButton)
-        self.bottomPanel4.addWidget(openKineticDataVaultButton)
-        self.bottomPanel4.addWidget(pathDataVaultLabel)
-        self.bottomPanel4.addWidget(self.pathDataVaultEdit)        
-        
 
         layout.addLayout(self.bottomPanel1)
         layout.addLayout(self.bottomPanel2)
         layout.addLayout(self.bottomPanel3)
-        layout.addLayout(self.bottomPanel4)
         
         self.setWindowTitle('Dark Ion Analysis')  
         self.setLayout(layout)
@@ -349,7 +322,7 @@ class AppWindow(QtGui.QWidget):
     def getIonNumberHistogram(self, evt):
         ionNumberCatalogArray = []
         yield self.parent.buildDarkIonPositionCatalog(self.kineticSetsSpinBox.value(), self.imageAnalyzedSpinBox.value(), self.typIonDiameterSpinBox.value(), self.expectedNumberOfIonsSpinBox.value(), self.iterationsSpinBox.value(), [self.alphaSpinBox.value(), self.axialOffsetSpinBox.value(), self.sigmaSpinBox.value()])
-        for i in range(3): 
+        for i in range(2): 
             ionNumberCatalog = yield self.parent.getIonNumberHistogram(i + 1, self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.kineticSetsSpinBox.value())
             ionNumberCatalogArray.append(ionNumberCatalog)
         ionSwapCatalog = yield self.parent.getIonSwapHistogram(self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.expectedNumberOfIonsSpinBox.value(), self.kineticSetsSpinBox.value())
@@ -360,12 +333,6 @@ class AppWindow(QtGui.QWidget):
     def openKinetic(self, evt):
         self.parent.openKinetic(str(self.pathEdit.text()), self.kineticSetsSpinBox.value(), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
         
-    def openKineticDataVault(self, evt):
-        self.parent.openKineticDataVault(str(self.pathDataVaultEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
-
-    def saveKineticDataVault(self, evt):
-        self.parent.saveKineticDataVault(str(self.pathDataVaultEdit.text()), 'image', ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
-
     def abortAcquisition(self, evt):
         self.parent.abortAcquisition()
     
@@ -436,37 +403,27 @@ class IonCount():
     def printTemperature(self):
         temp = yield self.server.get_current_temperature()
         print temp
-              
+           
     @inlineCallbacks
     def openKinetic(self, path, kinSet, numKin):
         yield self.server.open_as_text_kinetic(path, kinSet, numKin)
         print 'opened!'
-
-    @inlineCallbacks
-    def openKineticDataVault(self, path, numKin):
-        yield self.server.open_from_data_vault_kinetic(path, numKin)
-        print 'opened!'        
-
-    @inlineCallbacks
-    def saveKineticDataVault(self, path, name, numKin):
-        yield self.server.save_to_data_vault_kinetic(path, name, numKin)
-        print 'saved!'        
     
     @inlineCallbacks
     def buildDarkIonPositionCatalog(self, kinSet, numAnalyzedImages, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters):
-        numKin =  (numAnalyzedImages + 1)*iterations
+        numKin =  numAnalyzedImages*iterations
         yield self.server.build_dark_ion_position_catalog(kinSet, numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters)
         
     @inlineCallbacks
     def getIonNumberHistogram(self, imageNumber, numAnalyzedImages, iterations, kinSet):
-        numKin =  (numAnalyzedImages + 1)*iterations
+        numKin =  numAnalyzedImages*iterations
         ionNumberCatalog = yield self.server.get_ion_number_histogram(imageNumber, kinSet, numKin, iterations)
         print ionNumberCatalog
         returnValue(ionNumberCatalog)
     
     @inlineCallbacks
     def getIonSwapHistogram(self, numAnalyzedImages, iterations, expectedNumberOfIons, kinSet):
-        numKin =  (numAnalyzedImages + 1)*iterations
+        numKin =  numAnalyzedImages*iterations
         ionSwapCatalog = yield self.server.get_ion_swap_histogram(iterations, kinSet, numKin, expectedNumberOfIons)
         print ionSwapCatalog
         returnValue(ionSwapCatalog)

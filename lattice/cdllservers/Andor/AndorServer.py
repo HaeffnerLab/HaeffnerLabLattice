@@ -62,6 +62,7 @@ class Andor:
         #self.imageArray         = np.zeros((self.height * self.width))
         self.imageArray         = []
         self.singleImageArray   = []
+        self.currentImageArray  = []
         
 
     def __del__(self):
@@ -175,7 +176,9 @@ class Andor:
         error = self.dll.GetAcquiredData(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
             imageArray = cimage[:]
+            self.currentSingleImageArray = imageArray
             self.singleImageArray.append(imageArray)
+            del imageArray
         else:
             raise Exception(ERROR_CODE[error])        
     
@@ -266,11 +269,10 @@ class Andor:
         
          imageArray = np.reshape(self.currentImageArray, (numKin, self.height, self.width))
          for image in np.arange(numKin):
-             np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')
-        
+             np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')           
             
     def OpenAsTxt(self, path):
-        self.imageArray = np.loadtxt(path)
+        self.singleImageArray = np.ravel(np.loadtxt(path)) 
         
     def OpenAsTxtKinetic(self, path, kinSet, numKin):
         """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image1, image2, image3..etc. 
@@ -294,6 +296,97 @@ class Andor:
 #            imageArray = np.array(imageArray)
             self.imageArray.append(np.ravel(np.array(imageArray))) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
         del imageArray            
+        
+    @inlineCallbacks
+    def SaveToDataVault(self, directory, name):
+        dv = self.parent.client.data_vault
+        t1 = time.clock() 
+        width = np.arange(self.width + 1) + 1
+        height = np.arange(self.height + 1) + 1
+
+        lenWidth = len(width)
+        lenHeight = len(height)
+
+        Width = np.ravel([width]*lenHeight)
+        Height = []
+        for i in height:
+            Height.append([i]*lenWidth)
+        Height = np.ravel(np.array(Height))
+        
+        yield dv.cd(directory)
+#        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
+#        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
+        yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])         
+        toDataVault = np.array(np.vstack((Height, Width, self.currentSingleImageArray)).transpose(), dtype=float)
+        yield dv.add(toDataVault)
+        t2 = time.clock()
+        print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
+        print 'saved!'        
+
+    @inlineCallbacks
+    def SaveToDataVaultKinetic(self, directory, name, numKin):
+        dv = self.parent.client.data_vault
+        imageArray = np.reshape(self.imageArray, (numKin, 1, (self.height * self.width))) # needs to be currentImageArray!!!
+        for image in np.arange(numKin):
+            t1 = time.clock() 
+            print 'width: ', (self.width)
+            print 'height: ', (self.height)
+            width = np.arange(self.width) + 1
+            height = np.arange(self.height) + 1
+    
+            lenWidth = len(width)
+            lenHeight = len(height)
+    
+            Width = np.ravel([width]*lenHeight)
+            Height = []
+            for i in height:
+                Height.append([i]*lenWidth)
+            Height = np.ravel(np.array(Height))
+            
+            yield dv.cd(directory)
+    #        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
+    #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
+            yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])      
+            print 'Height: ', len(Height)
+            print 'Width: ', len(Width)
+            print 'shape: ', imageArray[image].shape   
+            toDataVault = np.array(np.vstack((Height, Width, imageArray[image])).transpose(), dtype=float)
+            print toDataVault
+            yield dv.add(toDataVault)
+            t2 = time.clock()
+            print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
+            print 'saved!' 
+    
+    @inlineCallbacks
+    def OpenFromDataVault(self, directory, dataset):
+        dv = self.parent.client.data_vault
+        yield dv.cd(directory)
+        yield dv.open(dataset)
+        Data = yield dv.get()
+        data = Data.asarray
+        zData = np.array([None]*len(data))
+        for i in np.arange(len(data)):
+            zData[i] = data[i][2]
+            
+        self.singleImageArray = zData       
+        
+    
+    @inlineCallbacks
+    def OpenFromDataVaultKinetic(self, directory, numKin):
+        dv = self.parent.client.data_vault
+        yield dv.cd(directory)
+        for i in np.arange(numKin):
+            yield dv.open(int(i+1))
+            Data = yield dv.get()
+            data = Data.asarray
+            print data
+            print 'lendata: ', len(data)
+            zData = np.array([None]*len(data))
+            for j in np.arange(len(data)):
+                zData[j] = data[j][2]
+                
+            self.imageArray.append(zData)
+            print 'done!'            
     
     def getCoolerState(self):
         cCoolerState = c_int()
@@ -841,6 +934,31 @@ class AndorServer(LabradServer):
     @setting(36, "Start Acquisition Kinetic External", returns = '')
     def startAcquisitionKineticExternal(self, c):
         yield deferToThread(self.camera.StartAcquisitionKineticExternal)
+
+    @setting(37, "Save To Data Vault", directory = 's', name = 's', returns = '')
+    def saveToDataVault(self, c, directory, name):
+        """Save Current Single Image To Data Vault"""
+        directory = tuple(eval(directory))
+        yield deferToThread(self.camera.SaveToDataVault, directory, name) 
+
+    @setting(38, "Save To Data Vault Kinetic", directory = 's', name = 's', numKin = 'i', returns = '')
+    def saveToDataVaultKinetic(self, c, directory, name, numKin):
+        """Saves a Series of Images As Text Files"""
+        directory = tuple(eval(directory))
+        yield deferToThread(self.camera.SaveToDataVaultKinetic, directory, name, numKin) 
+
+    @setting(39, "Open From Data Vault", directory = 's', dataset = 'i', returns = '')
+    def openFromDataVault(self, c, directory, dataset):
+        """Opens a Single Image From Data Vault"""
+        directory = tuple(eval(directory))
+        yield deferToThread(self.camera.OpenFromDataVault, directory, datset) 
+
+    @setting(40, "Open From Data Vault Kinetic", directory = 's', numKin = 'i', returns = '')
+    def openFromDataVaultKinetic(self, c, directory, numKin):
+        """Opens a Series of Images From Data Vault"""
+        directory = tuple(eval(directory))
+        print 'dir: ', directory
+        yield deferToThread(self.camera.OpenFromDataVaultKinetic, directory, numKin)              
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):

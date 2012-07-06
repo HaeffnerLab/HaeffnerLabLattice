@@ -494,7 +494,7 @@ class AndorClient():
 #            newdata = data.asarray
 #            print 'Acquired'
 
-        
+        t1 = time.clock() 
         width = np.arange(self.width + 1) + 1
         height = np.arange(self.height + 1) + 1
 
@@ -511,8 +511,8 @@ class AndorClient():
 #                Height[(i - 1), j] = i
 #        Height = np.ravel(Height)
         Height = []
-        for i in width:
-            Height.append([i]*lenHeight)
+        for i in height:
+            Height.append([i]*lenWidth)
         Height = np.ravel(np.array(Height))
         
         yield self.cxn.data_vault.cd('Camera Snapshots')
@@ -522,7 +522,10 @@ class AndorClient():
 #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
         yield self.cxn.data_vault.new(dateTime, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])         
         toDataVault = np.array(np.vstack((Height, Width, self.newdata)).transpose(), dtype=float)
+        print toDataVault
         yield self.cxn.data_vault.add(toDataVault)
+        t2 = time.clock()
+        print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
         print 'saved!'
 #            newarray = np.reshape(newdata, (height, width))
 #            ax.matshow(newarray)

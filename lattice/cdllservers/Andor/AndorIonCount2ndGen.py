@@ -22,16 +22,6 @@ from AndorServer import Andor, AndorServer
 """
 
 
-class Parameter:
-    def __init__(self, value):
-            self.value = value
-
-    def set(self, value):
-            self.value = value
-
-    def __call__(self):
-            return self.value
-
 class AndorIonCount(LabradServer, AndorServer):
     """ Contains methods that count ions in pictures taken by the Andor Luca"""
     
@@ -67,7 +57,7 @@ class AndorIonCount(LabradServer, AndorServer):
     
        
     def _getIonNumberCatalog(self, image, darkIonPositionCatalog, iterations, kinSet, numKin):
-        """image = 1, 2, or 3 
+        """image = 1 or 2
         
            Note: the array is in order of kinetic set and iteration
         """
