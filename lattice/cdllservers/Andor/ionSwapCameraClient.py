@@ -404,14 +404,14 @@ class AppWindow(QtGui.QWidget):
     def collectData(self, evt):
         self.parent.collectData(self.iterationsSpinBox.value(), self.imageAnalyzedSpinBox.value())
     
-    def changeExposure(self, value):
-        self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s     
-        
-    def countDarkIons(self, evt):
-        histWindow = HistWindow(self, self.parent.darkIonCatalog)
-        self.histList.append(histWindow)
-        histWindow.show()
-        print np.mean(self.parent.darkIonCatalog)
+#    def changeExposure(self, value):
+#        self.parent.changeExposure(float(self.exposureSpinBox.value())/1000) #convert ms to s     
+#        
+#    def countDarkIons(self, evt):
+#        histWindow = HistWindow(self, self.parent.darkIonCatalog)
+#        self.histList.append(histWindow)
+#        histWindow.show()
+#        print np.mean(self.parent.darkIonCatalog)
         
     @inlineCallbacks
     def getIonNumberHistogram(self, evt):
