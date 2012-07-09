@@ -41,7 +41,7 @@ class hardwareConfiguration():
     sequenceType = None #none for not programmed, can be 'one' or 'infinite'
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
-    okDeviceID = 'Pulser'
+    okDeviceID = 'Pulser'#'Opal Kelly XEM6010'
     okDeviceFile = 'photon.bit'
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
@@ -57,7 +57,8 @@ class hardwareConfiguration():
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
-                   'ResetDDS':channelConfiguration(19, False, False, False, False)
+                   'ResetDDS':channelConfiguration(19, False, False, False, False),
+                   'ReadoutCount':channelConfiguration(20, False, False, False, False),
                    }
     
     ddsDict = {

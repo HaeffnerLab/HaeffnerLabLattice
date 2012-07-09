@@ -69,6 +69,9 @@ class api():
     
     def resetFIFOResolved(self):
         self.xem.ActivateTriggerIn(0x40,3)
+        
+    def resetFIFOReadout(self):
+        self.xem.ActivateTriggerIn(0x40,4)
     
     def setModeNormal(self):
         """user selects PMT counting rate"""
@@ -107,6 +110,18 @@ class api():
     def getNormalCounts(self, number):
         buf = "\x00"* ( number * 2 )
         self.xem.ReadFromBlockPipeOut(0xa1,2,buf)
+        return buf
+    
+    def getReadoutTotal(self):
+        self.xem.SetWireInValue(0x00,0x80,0xf0)
+        self.xem.UpdateWireIns()
+        self.xem.UpdateWireOuts()
+        done = self.xem.GetWireOutValue(0x21)
+        return done
+        
+    def getReadoutCounts(self, number):
+        buf = "\x00"* ( number * 2 )
+        self.xem.ReadFromBlockPipeOut(0xa2,2,buf)
         return buf
     
     def howManySequencesDone(self):

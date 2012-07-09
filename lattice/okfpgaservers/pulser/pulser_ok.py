@@ -341,6 +341,19 @@ class Pulser(LabradServer, DDS):
         self.inCommunication.release()
         returnValue(countlist)
     
+    @setting(26, 'Get Readout Counts', returns = '*v')
+    def getReadoutCounts(self, c):
+        yield self.inCommunication.acquire()
+        countlist = yield deferToThread(self.doGetReadoutCounts)
+        self.inCommunication.release()
+        returnValue(countlist)
+        
+    @setting(27, 'Reset Readout Counts')
+    def resetReadoutCounts(self, c):
+        yield self.inCommunication.acquire()
+        yield deferToThread(self.api.resetFIFOReadout)
+        self.inCommunication.release()
+    
     def doGetAllCounts(self):
         inFIFO = self.api.getNormalTotal()
         reading = self.api.getNormalCounts(inFIFO)
@@ -349,6 +362,17 @@ class Pulser(LabradServer, DDS):
         countlist = map(self.convertKCperSec, countlist)
         countlist = self.appendTimes(countlist, time.time())
         return countlist
+    
+    def doGetReadoutCounts(self):
+        inFIFO = self.api.getReadoutTotal()
+        print 'in fifo', inFIFO
+        reading = self.api.getReadoutCounts(inFIFO)
+        #print 'length reading', len(reading)
+        print [reading]
+        split = self.split_len(reading, 4)
+        countlist = map(self.infoFromBuf_readout, split)
+        return countlist
+        
     
     @staticmethod
     def infoFromBuf(buf):
@@ -361,6 +385,12 @@ class Pulser(LabradServer, DDS):
         else:
             status = 'ON'
         return [count, status]
+    
+    #should make nicer by combining with above.
+    @staticmethod
+    def infoFromBuf_readout(buf):
+        count = 65536*(256*ord(buf[1])+ord(buf[0]))+(256*ord(buf[3])+ord(buf[2]))
+        return count
     
     def convertKCperSec(self, input):
         [rawCount,type] = input
@@ -382,7 +412,7 @@ class Pulser(LabradServer, DDS):
         '''useful for splitting a string in length-long pieces'''
         return [seq[i:i+length] for i in range(0, len(seq), length)]
     
-    @setting(26, 'Get Collection Mode', returns = 's')
+    @setting(28, 'Get Collection Mode', returns = 's')
     def getMode(self, c):
         return self.collectionMode
     
