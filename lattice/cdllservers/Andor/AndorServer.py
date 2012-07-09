@@ -126,6 +126,10 @@ class Andor:
     def SetImage(self, hbin, vbin, hstart, hend, vstart, vend):
         error = self.dll.SetImage(hbin, vbin, hstart, hend, vstart, vend)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.hstart = hstart
+            self.hend = hend
+            self.vstart = vstart
+            self.vend = vend
             self.imageRegion = [hbin, vbin, hstart, hend, vstart, vend]
         else:
             raise Exception(ERROR_CODE[error])
@@ -316,7 +320,10 @@ class Andor:
         yield dv.cd(directory)
 #        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
 #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
-        yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])         
+
+        yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])    
+
+         
         toDataVault = np.array(np.vstack((Height, Width, self.currentSingleImageArray)).transpose(), dtype=float)
         yield dv.add(toDataVault)
         t2 = time.clock()
@@ -326,7 +333,7 @@ class Andor:
     @inlineCallbacks
     def SaveToDataVaultKinetic(self, directory, name, numKin):
         dv = self.parent.client.data_vault
-        imageArray = np.reshape(self.imageArray, (numKin, 1, (self.height * self.width))) # needs to be currentImageArray!!!
+        imageArray = np.reshape(self.currentImageArray, (numKin, 1, (self.height * self.width))) # needs to be currentImageArray!!!
         for image in np.arange(numKin):
             t1 = time.clock() 
             print 'width: ', (self.width)
@@ -343,13 +350,17 @@ class Andor:
                 Height.append([i]*lenWidth)
             Height = np.ravel(np.array(Height))
             
-            yield dv.cd(directory)
+            yield dv.cd(directory, True)
     #        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
     #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
             yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])      
             print 'Height: ', len(Height)
             print 'Width: ', len(Width)
             print 'shape: ', imageArray[image].shape   
+            yield dv.add_parameter('hstart', self.hstart)
+            yield dv.add_parameter('hend', self.hend)         
+            yield dv.add_parameter('vstart', self.vstart)
+            yield dv.add_parameter('vend', self.vend)
             toDataVault = np.array(np.vstack((Height, Width, imageArray[image])).transpose(), dtype=float)
             print toDataVault
             yield dv.add(toDataVault)
@@ -462,6 +473,9 @@ class Andor:
             self.seriesProgress = series.value
         else:
             raise Exception(ERROR_CODE[error])
+    
+    def ClearImageArray(self):
+        self.imageArray = []
     
 #    def GetAcquisitionTimings(self):
 #        exposure   = c_float()
@@ -945,7 +959,7 @@ class AndorServer(LabradServer):
     def saveToDataVaultKinetic(self, c, directory, name, numKin):
         """Saves a Series of Images As Text Files"""
         directory = tuple(eval(directory))
-        yield deferToThread(self.camera.SaveToDataVaultKinetic, directory, name, numKin) 
+        yield self.camera.SaveToDataVaultKinetic(directory, name, numKin) 
 
     @setting(39, "Open From Data Vault", directory = 's', dataset = 'i', returns = '')
     def openFromDataVault(self, c, directory, dataset):
@@ -958,7 +972,11 @@ class AndorServer(LabradServer):
         """Opens a Series of Images From Data Vault"""
         directory = tuple(eval(directory))
         print 'dir: ', directory
-        yield deferToThread(self.camera.OpenFromDataVaultKinetic, directory, numKin)              
+        yield self.camera.OpenFromDataVaultKinetic(directory, numKin) 
+    
+    @setting(41, "Clear Image Array", returns = '')
+    def clearImageArray(self, c):
+        yield deferToThread(self.camera.ClearImageArray)             
 
     @setting(98, "Abort Acquisition", returns = 's')
     def abortAcquisition(self, c):

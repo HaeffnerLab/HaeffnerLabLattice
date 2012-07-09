@@ -146,7 +146,7 @@ class IonSwap():
         data = numpy.vstack((binX, binY)).transpose()
         self.dv.add(data)
         self.dv.add_parameter('Window',['Histogram'])
-        self.dv.add_parameter('plotLive',True)
+#        self.dv.add_parameter('plotLive',True)
         # gathering parameters and adding them to data vault
         measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab, measureList)
@@ -191,6 +191,7 @@ if __name__ == '__main__':
     cameraServer.cooler_on()
     cameraServer.set_image_region(1, 1, hstart, hend, vstart, vend)
     
+    cameraServer.clear_image_array()
     
     numberKineticSets = 2
     for kinSet in range(numberKineticSets):
@@ -240,4 +241,4 @@ if __name__ == '__main__':
         exprt.run()
         numKin = ((exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
         cameraServer.get_acquired_data_kinetic(numKin)
-        cameraServer.save_as_text_kinetic(r'C:\Users\lattice\Documents\Andor\jun12\062812\kinSetTest\realTest\image', kinSet, (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])
+        cameraServer.save_to_data_vault_kinetic(str(['','Experiments', exprt.experimentName, exprt.topdirectory, exprt.dirappend, 'Scans']), ('Kinetic Set - ' + str(kinSet)), (exprtParams['numAnalyzedImages'] + 1)*exprtParams['iterations'])

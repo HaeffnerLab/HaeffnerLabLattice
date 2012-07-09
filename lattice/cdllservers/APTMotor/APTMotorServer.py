@@ -22,7 +22,7 @@ timeout = 5
 
 class APTMotor():
     def __init__(self):
-        self.aptdll = windll.LoadLibrary("C:\\APTDLLClient\\APT.dll")
+        self.aptdll = windll.LoadLibrary("APT.dll")
         #self.aptdll.EnableEventDlg(False)
         self.aptdll.APTInit()
         print 'APT initialized'

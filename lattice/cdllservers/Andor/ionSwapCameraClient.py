@@ -1,5 +1,6 @@
 import sys
 from PyQt4 import QtGui, QtCore
+from datavault import DataVaultWidget
 from matplotlib.figure import Figure
 from matplotlib import cm
 import matplotlib.pyplot as plt
@@ -20,8 +21,32 @@ import numpy as np
 
 EMGAIN = 255
 EXPOSURE = .1 #sec
+
+class CameraCanvas(FigureCanvas):
+    """Matplotlib Figure widget to display CPU utilization"""
+    def __init__(self, parent):
+        self.parent = parent
+        self.fig = Figure()
+        FigureCanvas.__init__(self, self.fig)
+      
+        
+    def newAxes(self, data, hstart, hend, vstart, vend):
+        self.fig.clf()
+        self.ax = self.fig.add_subplot(111)
+        print hstart, hend, vstart, vend
+        self.im = self.ax.imshow(data, extent=[hstart, hend, vstart, vend], origin='lower', interpolation='nearest')#, cmap=cm.hot)#gist_heat)
+
+
+    def updateData(self, data, width, height):
+        try:
+            self.data = np.reshape(data, (height, width))
+        except ValueError:
+            pass # happens if update data is called before the new width and height are calculated upon changing the image size
+
+        self.im.set_data(self.data)
+        self.im.axes.figure.canvas.draw()
        
-class Canvas(FigureCanvas):
+class HistCanvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""
     def __init__(self, parent, ionCatalogArray, ionSwapCatalog):
         self.parent = parent
@@ -38,6 +63,7 @@ class Canvas(FigureCanvas):
         self.setHist(self.ax3, ionCatalogArray[2], label = 'final')
         
         self.ax1.set_xlabel('Number Of Bright Ions')
+        self.ax1.set_ylim(0, 1)
         self.ax2.set_xlabel('Number Of Dark Ions')
         self.ax2.text(.35, .75, str((len(np.where(np.array(ionCatalogArray[1]) == 1)[0])/float(len(ionCatalogArray[1])))*100) + ' percent w/ one ion dark', fontsize=12, transform = self.ax2.transAxes)
         self.ax2.text(.35, .8, 'Mean: ' + str(np.mean(ionCatalogArray[1])) + ' ions dark', transform = self.ax2.transAxes)
@@ -70,7 +96,7 @@ class HistWindow(QtGui.QWidget):
         layout = QtGui.QVBoxLayout()
         
         #try:
-        canvas = Canvas(self, ionCatalogArray, ionSwapCatalog)
+        canvas = HistCanvas(self, ionCatalogArray, ionSwapCatalog)
         #except AttributeError:
             #raise Exception("Has a Dark Ion Catalog Been Retrieved?")
         canvas.show()
@@ -104,7 +130,7 @@ class AppWindow(QtGui.QWidget):
         self.histList = []
         
        
-        layout = QtGui.QVBoxLayout()
+        self.layout = QtGui.QVBoxLayout()
        
         
         temperatureButton = QtGui.QPushButton("Temp", self)
@@ -113,17 +139,17 @@ class AppWindow(QtGui.QWidget):
         
                      
         
-        openKineticButton = QtGui.QPushButton("Open Kinetic", self)
-        openKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        openKineticButton.clicked.connect(self.openKinetic)
+#        openKineticButton = QtGui.QPushButton("Open Kinetic", self)
+#        openKineticButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        openKineticButton.clicked.connect(self.openKinetic)
 
-        openKineticDataVaultButton = QtGui.QPushButton("Open Kinetic Data Vault", self)
-        openKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        openKineticDataVaultButton.clicked.connect(self.openKineticDataVault)
-        
-        saveKineticDataVaultButton = QtGui.QPushButton("Temp Save DV", self)
-        saveKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        saveKineticDataVaultButton.clicked.connect(self.saveKineticDataVault)        
+#        openKineticDataVaultButton = QtGui.QPushButton("Open Kinetic Data Vault", self)
+#        openKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        openKineticDataVaultButton.clicked.connect(self.openKineticDataVault)
+#        
+#        saveKineticDataVaultButton = QtGui.QPushButton("Temp Save DV", self)
+#        saveKineticDataVaultButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        saveKineticDataVaultButton.clicked.connect(self.saveKineticDataVault)        
         
         abortAcquisitionButton = QtGui.QPushButton("Abort Acquisition", self)
         abortAcquisitionButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
@@ -134,22 +160,28 @@ class AppWindow(QtGui.QWidget):
         getIonNumberHistogramButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         getIonNumberHistogramButton.clicked.connect(self.getIonNumberHistogram)
         
+        loadDatasetsButton = QtGui.QPushButton("Load Datasets", self)
+        loadDatasetsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        loadDatasetsButton.clicked.connect(self.loadDatasets)      
         
-        pathLabel = QtGui.QLabel()
-        pathLabel.setText('Path: ')
+        
+#        pathLabel = QtGui.QLabel()
+#        pathLabel.setText('Path: ')
         
         pathDataVaultLabel = QtGui.QLabel()
         pathDataVaultLabel.setText('Path: ')        
         
-        self.pathEdit = QtGui.QLineEdit()
-        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image') 
+#        self.pathEdit = QtGui.QLineEdit()
+#        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image') 
         
         self.pathDataVaultEdit = QtGui.QLineEdit()
-        self.pathDataVaultEdit.setText(str(['', 'Camera Snapshots', 'test2']))        
-       
+        self.pathDataVaultEdit.setText(str(['','Experiments', 'IonSwap', '2012Jul09']))        
+
+        self.loadDatasetsEdit = QtGui.QLineEdit()
+        self.loadDatasetsEdit.setText(str([100031, 100035, 100039]))              
                         
-        exposureLabel = QtGui.QLabel()
-        exposureLabel.setText('Exposure (ms): ')
+#        exposureLabel = QtGui.QLabel()
+#        exposureLabel.setText('Exposure (ms): ')
 
         iterationsLabel = QtGui.QLabel()
         iterationsLabel.setText('Iterations: ')
@@ -176,30 +208,33 @@ class AppWindow(QtGui.QWidget):
         axialOffsetLabel.setText('Axial Offset: ')
 
         sigmaLabel = QtGui.QLabel()
-        sigmaLabel.setText('Sigma: ')                        
+        sigmaLabel.setText('Sigma: ')
+        
+        loadDatasetsLabel = QtGui.QLabel()
+        loadDatasetsLabel.setText('Datasets: ')                       
         
              
         
-        self.exposureSpinBox = QtGui.QSpinBox()
-        self.exposureSpinBox.setMinimum(100)
-        self.exposureSpinBox.setMaximum(1000)
-        self.exposureSpinBox.setSingleStep(1)  
-        self.exposureSpinBox.setValue(EXPOSURE*1000)     
-        self.exposureSpinBox.setKeyboardTracking(False)
-        self.connect(self.exposureSpinBox, QtCore.SIGNAL('valueChanged(int)'), self.changeExposure)
+#        self.exposureSpinBox = QtGui.QSpinBox()
+#        self.exposureSpinBox.setMinimum(100)
+#        self.exposureSpinBox.setMaximum(1000)
+#        self.exposureSpinBox.setSingleStep(1)  
+#        self.exposureSpinBox.setValue(EXPOSURE*1000)     
+#        self.exposureSpinBox.setKeyboardTracking(False)
+#        self.connect(self.exposureSpinBox, QtCore.SIGNAL('valueChanged(int)'), self.changeExposure)
 
         self.iterationsSpinBox = QtGui.QSpinBox()
         self.iterationsSpinBox.setMinimum(0)
         self.iterationsSpinBox.setMaximum(1000)
         self.iterationsSpinBox.setSingleStep(1)  
-        self.iterationsSpinBox.setValue(1)     
+        self.iterationsSpinBox.setValue(2)     
         self.iterationsSpinBox.setKeyboardTracking(False)
 
         self.kineticSetsSpinBox = QtGui.QSpinBox()
         self.kineticSetsSpinBox.setMinimum(0)
         self.kineticSetsSpinBox.setMaximum(100)
         self.kineticSetsSpinBox.setSingleStep(1)  
-        self.kineticSetsSpinBox.setValue(1)     
+        self.kineticSetsSpinBox.setValue(3)     
         self.kineticSetsSpinBox.setKeyboardTracking(False)
 
 
@@ -251,8 +286,8 @@ class AppWindow(QtGui.QWidget):
         typIonDiameterLabel = QtGui.QLabel()
         typIonDiameterLabel.setText('Typical Ion Diameter: ')
         
-        peakVicinityLabel = QtGui.QLabel()
-        peakVicinityLabel.setText('Peak Vicinity: ')
+#        peakVicinityLabel = QtGui.QLabel()
+#        peakVicinityLabel.setText('Peak Vicinity: ')
         
         
         self.imageAnalyzedSpinBox = QtGui.QSpinBox()
@@ -268,8 +303,8 @@ class AppWindow(QtGui.QWidget):
         self.typIonDiameterSpinBox.setSingleStep(1)  
         self.typIonDiameterSpinBox.setValue(5)     
         self.typIonDiameterSpinBox.setKeyboardTracking(False) 
-
-         
+          
+          
          # Layout
         self.bottomPanel1 = QtGui.QHBoxLayout()
         
@@ -293,6 +328,7 @@ class AppWindow(QtGui.QWidget):
 
 #        self.bottomPanel2.addStretch(0)
 
+        self.bottomPanel2.addWidget(abortAcquisitionButton)
         self.bottomPanel2.addWidget(imageAnalyzedLabel)
         self.bottomPanel2.addWidget(self.imageAnalyzedSpinBox)
         self.bottomPanel2.addWidget(expectedNumberOfIonsLabel)
@@ -301,28 +337,60 @@ class AppWindow(QtGui.QWidget):
         self.bottomPanel2.addWidget(self.typIonDiameterSpinBox)
 
         
+#        self.bottomPanel3 = QtGui.QHBoxLayout()
+#
+#
+#        self.bottomPanel3.addWidget(openKineticButton)
+#        self.bottomPanel3.addWidget(pathLabel)
+#        self.bottomPanel3.addWidget(self.pathEdit)
+        
+#        self.bottomPanel4 = QtGui.QHBoxLayout()
+
+#        self.bottomPanel4.addWidget(saveKineticDataVaultButton)
+#        self.bottomPanel4.addWidget(openKineticDataVaultButton)
+#        self.bottomPanel4.addWidget(pathDataVaultLabel)
+#        self.bottomPanel4.addWidget(self.pathDataVaultEdit)        
+        
         self.bottomPanel3 = QtGui.QHBoxLayout()
 
-        self.bottomPanel3.addWidget(abortAcquisitionButton)
-        self.bottomPanel3.addWidget(openKineticButton)
-        self.bottomPanel3.addWidget(pathLabel)
-        self.bottomPanel3.addWidget(self.pathEdit)
+        self.bottomPanel3.addWidget(loadDatasetsButton)
+        self.bottomPanel3.addWidget(loadDatasetsLabel)
+        self.bottomPanel3.addWidget(self.loadDatasetsEdit)
+        self.bottomPanel3.addWidget(pathDataVaultLabel)
+        self.bottomPanel3.addWidget(self.pathDataVaultEdit)    
         
-        self.bottomPanel4 = QtGui.QHBoxLayout()
+        
+        self.layout.addLayout(self.bottomPanel1)
+        self.layout.addLayout(self.bottomPanel2)
+        self.layout.addLayout(self.bottomPanel3)
 
-        self.bottomPanel4.addWidget(saveKineticDataVaultButton)
-        self.bottomPanel4.addWidget(openKineticDataVaultButton)
-        self.bottomPanel4.addWidget(pathDataVaultLabel)
-        self.bottomPanel4.addWidget(self.pathDataVaultEdit)        
-        
-
-        layout.addLayout(self.bottomPanel1)
-        layout.addLayout(self.bottomPanel2)
-        layout.addLayout(self.bottomPanel3)
-        layout.addLayout(self.bottomPanel4)
-        
         self.setWindowTitle('Dark Ion Analysis')  
-        self.setLayout(layout)
+        self.setLayout(self.layout)
+        
+        self.setupViewingTools()       
+
+
+    @inlineCallbacks
+    def setupViewingTools(self):    
+        context = yield self.parent.cxn.context()
+        self.datavaultwidget = DataVaultWidget(self, context)
+        self.datavaultwidget.populateList()     
+        self.bottomPanel4 = QtGui.QHBoxLayout()
+        self.bottomPanel4.addWidget(self.datavaultwidget)
+        self.layout.addLayout(self.bottomPanel4)
+              
+        cameraCanvasLayout = QtGui.QVBoxLayout()
+        
+        self.bottomPanel4.addLayout(cameraCanvasLayout)
+        
+        self.cameraCanvas = CameraCanvas(self)
+        self.cameraCanvas.show()
+        ntb = NavigationToolbar(self.cameraCanvas, self)
+
+        cameraCanvasLayout.addWidget(self.cameraCanvas)
+        cameraCanvasLayout.addWidget(ntb)
+        
+
 
     def printTemperature(self, evt):
         self.parent.printTemperature()
@@ -363,6 +431,9 @@ class AppWindow(QtGui.QWidget):
     def openKineticDataVault(self, evt):
         self.parent.openKineticDataVault(str(self.pathDataVaultEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
 
+    def loadDatasets(self, evt):
+        self.parent.loadDatasets(str(self.pathDataVaultEdit.text()), str(self.loadDatasetsEdit.text()), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
+    
     def saveKineticDataVault(self, evt):
         self.parent.saveKineticDataVault(str(self.pathDataVaultEdit.text()), 'image', ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
 
@@ -437,20 +508,30 @@ class IonCount():
         temp = yield self.server.get_current_temperature()
         print temp
               
-    @inlineCallbacks
-    def openKinetic(self, path, kinSet, numKin):
-        yield self.server.open_as_text_kinetic(path, kinSet, numKin)
-        print 'opened!'
+#    @inlineCallbacks
+#    def openKinetic(self, path, kinSet, numKin):
+#        yield self.server.open_as_text_kinetic(path, kinSet, numKin)
+#        print 'opened!'
+
+#    @inlineCallbacks
+#    def openKineticDataVault(self, path, numKin):
+#        yield self.server.open_from_data_vault_kinetic(path, numKin)
+#        print 'opened!'        
 
     @inlineCallbacks
-    def openKineticDataVault(self, path, numKin):
-        yield self.server.open_from_data_vault_kinetic(path, numKin)
-        print 'opened!'        
+    def loadDatasets(self, path, datasets, numKin):
+        yield self.server.clear_image_array()
+        datasets = [str(tuple(eval(path))[-1]) + '_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in tuple(eval(datasets))]
+        print datasets
+        for dataset in datasets:
+            datasetPath = str(path[0:-1] + ', ' + '\'' + dataset + '\', \'Scans\']'  )
+            print datasetPath
+            yield self.server.open_from_data_vault_kinetic(datasetPath, numKin)
 
-    @inlineCallbacks
-    def saveKineticDataVault(self, path, name, numKin):
-        yield self.server.save_to_data_vault_kinetic(path, name, numKin)
-        print 'saved!'        
+#    @inlineCallbacks
+#    def saveKineticDataVault(self, path, name, numKin):
+#        yield self.server.save_to_data_vault_kinetic(path, name, numKin)
+#        print 'saved!'        
     
     @inlineCallbacks
     def buildDarkIonPositionCatalog(self, kinSet, numAnalyzedImages, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters):

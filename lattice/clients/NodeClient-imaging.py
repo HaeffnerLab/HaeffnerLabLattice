@@ -2,10 +2,8 @@ import labrad
 import numpy as np
 import time
 
-nodeDict = {'node_lattice_pc':
-					['Data Vault', 'Serial Server', 'DC Box', 'Compensation Box','Pulser',
-					'Agilent Server', 'GPIB Bus','GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','NormalPMTFlow',
-					'Compensation LineScan','ADCserver',  'Trap Drive', 'HighVoltA', 'APT Motor Server'],
+nodeDict = {'node_lattice_imaging':
+					['GPIB Bus', 'APT Motor Server'],
 		}
 #'HP Server'
 #'Double Pass'
