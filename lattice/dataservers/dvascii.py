@@ -912,7 +912,7 @@ class DataVault( LabradServer ):
         #print dirs, datasets
         return dirs, datasets
 
-    @setting( 7, path = ['{get current directory}',
+    @setting( 7, path = ['s{get current directory}',
                       's{change into this directory}',
                       '*s{change into each directory in sequence}',
                       'w{go up by this many directories}'],

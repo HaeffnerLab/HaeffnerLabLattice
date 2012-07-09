@@ -152,7 +152,7 @@ class RS_CONTROL(QtGui.QWidget):
 
 class RS_CONTROL_LOCAL(RS_CONTROL):
     def __init__(self, reactor):
-        ip = 'localhost'
+        ip = '192.168.169.254'
         devices = [('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549','AxialRF'),('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543','Axial Beam')]
         super(RS_CONTROL_LOCAL, self).__init__(reactor, ip, devices)
          

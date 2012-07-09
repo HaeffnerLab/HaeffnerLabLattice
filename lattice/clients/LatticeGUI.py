@@ -33,7 +33,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
             window = yield Connections.introWindow
             vboxlayout.addWidget(window)
             widget.setLayout(vboxlayout)
-        #yield deferToThread(time.sleep, 3)
         yield Connections.communicate.connectionReady.connect(widgetReady)
         returnValue(widget)
 
@@ -84,7 +83,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(switchWidget(reactor),0,0)
         gridLayout.addWidget(pmtWidget(reactor),0,1)
-        #gridLayout.addWidget(doublePassWidget(reactor),2,0,1,2)
         gridLayout.addWidget(DDS_CONTROL(reactor),1,0)
         gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
         gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
