@@ -20,6 +20,7 @@ from labrad.types import Error
 from twisted.internet import reactor
 import binascii
 from labrad.server import Signal
+from labrad import types as T
 
 PREC_BITS = 16.
 DAC_MAX = 2500.
@@ -34,8 +35,8 @@ class CompensationBox( SerialDeviceServer ):
     name = 'Compensation Box'
     regKey = 'COMPBOX'
     port = None
-    serNode = 'lattice-pc'
-    timeout = TIMEOUT
+    serNode = 'lattice-imaging'
+    timeout = T.Value(TIMEOUT,'s')
     onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(wv)')
 
     @inlineCallbacks

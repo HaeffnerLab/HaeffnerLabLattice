@@ -25,7 +25,7 @@ class HPServer( SerialDeviceServer ):
     name = '%LABRADNODE% HP Server'
     regKey = 'HPsiggen'
     port = None
-    serNode = 'lattice-pc'
+    serNode = 'lattice-imaging'
     timeout = 1.0
     gpibaddr = 0
     

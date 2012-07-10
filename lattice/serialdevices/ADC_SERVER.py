@@ -33,7 +33,7 @@ class ADCServer( SerialDeviceServer ):
     name = 'ADCserver'
     regKey = 'ADC'
     port = None
-    serNode = 'lattice-pc'
+    serNode = 'lattice-imaging'
     timeout = 1.0
 
     @inlineCallbacks

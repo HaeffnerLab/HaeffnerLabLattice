@@ -27,6 +27,7 @@ from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, Ser
 from labrad.types import Error
 from twisted.internet import reactor
 import binascii
+from labrad import types as T
 
 SERVERNAME = 'DC Box'
 PREC_BITS = 16.
@@ -60,8 +61,8 @@ class DCBoxServer( SerialDeviceServer ):
     name = SERVERNAME
     regKey = 'DCBOX'
     port = None
-    serNode = 'lattice-pc'
-    timeout = TIMEOUT
+    serNode = 'lattice-imaging'
+    timeout = T.Value(TIMEOUT, 's')
 
     @inlineCallbacks
     def initServer( self ):
