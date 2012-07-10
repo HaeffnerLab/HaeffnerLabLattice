@@ -75,12 +75,11 @@ class DataVaultWidget(QtGui.QListWidget):
                 datasetName = str(itemText)[8:len(itemText)]
                 if (button == 1):
                     #try:
-                    #self.retriveScan(dataset)
-                    print 'captured!'
+                    self.newHistogram(dataset)
+                    #print 'captured!'
                     #except:
                     #    print 'how about clicking on something useful?'
 
-    @inlineCallbacks
     def newHistogram(self, dataset):
         print 'dataset: ', dataset
         print 'directory: ', self.currentDirectory

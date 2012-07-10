@@ -11,6 +11,7 @@ class DataVaultWidget(QtGui.QListWidget):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
         self.context = context
+        self.setMaximumWidth(250)
 
     @inlineCallbacks
     def populateList(self):
