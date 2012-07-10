@@ -12,6 +12,8 @@ class DDS_CHAN(QCustomFreqPower):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
+        from labrad import types as T
+        self.T = T
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.pulser
         yield self.server.select_dds_channel(self.chan)
@@ -35,16 +37,19 @@ class DDS_CHAN(QCustomFreqPower):
         
     @inlineCallbacks
     def powerChanged(self, pwr):
-        yield self.server.amplitude(pwr)
+        val = self.T.Value(pwr, 'dBm')
+        yield self.server.amplitude(val)
         
     @inlineCallbacks
     def freqChanged(self, freq):
-        yield self.server.frequency(freq)
+        val = self.T.Value(freq, 'MHz')
+        yield self.server.frequency(val)
 
     def closeEvent(self, x):
         self.reactor.stop()
 
 class RS_CHAN(QCustomFreqPower):
+            
     def __init__(self, reactor, device, ip = 'localhost', name = None, parent=None):
         if name is None: name = device
         super(RS_CHAN, self).__init__('RS: {}'.format(name), True, parent)
@@ -55,6 +60,8 @@ class RS_CHAN(QCustomFreqPower):
         
     @inlineCallbacks
     def connect(self):
+        from labrad import types as T
+        self.T = T
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync(self.ip)
         self.server = yield self.cxn.rohdeschwarz_server
@@ -87,11 +94,13 @@ class RS_CHAN(QCustomFreqPower):
         
     @inlineCallbacks
     def powerChanged(self, pwr):
-        yield self.server.amplitude(pwr)
+        val = self.T.Value(pwr, 'dBm')
+        yield self.server.amplitude(val)
         
     @inlineCallbacks
     def freqChanged(self, freq):
-        yield self.server.frequency(freq)
+        val = self.T.Value(freq, 'MHz')
+        yield self.server.frequency(val)
         
     @inlineCallbacks
     def switchChanged(self, pressed):
@@ -152,8 +161,8 @@ class RS_CONTROL(QtGui.QWidget):
 
 class RS_CONTROL_LOCAL(RS_CONTROL):
     def __init__(self, reactor):
-        ip = '192.168.169.254'
-        devices = [('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549','AxialRF'),('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104543','Axial Beam')]
+        ip = '192.168.169.197'
+        devices = [('lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::102549','AxialRF'),('lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::104543','Axial Beam')]
         super(RS_CONTROL_LOCAL, self).__init__(reactor, ip, devices)
          
 class RS_CONTROL_LAB(RS_CONTROL):
