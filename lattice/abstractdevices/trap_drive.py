@@ -33,7 +33,7 @@ class TrapDrive( LabradServer ):
         self.freqRange = (14.5,15.5) #MHz
         self.listeners = set()
         self.serverName = 'RohdeSchwarz Server'
-        self.device = 'lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::104541'
+        self.device = 'lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::104541'
         try:
             self.server = yield self.connectToServer()
         except KeyError:
