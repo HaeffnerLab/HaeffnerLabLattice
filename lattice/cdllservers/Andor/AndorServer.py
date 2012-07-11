@@ -952,25 +952,25 @@ class AndorServer(LabradServer):
     @setting(37, "Save To Data Vault", directory = 's', name = 's', returns = '')
     def saveToDataVault(self, c, directory, name):
         """Save Current Single Image To Data Vault"""
-        directory = tuple(eval(directory))
+        directory = list(eval(directory))
         yield deferToThread(self.camera.SaveToDataVault, directory, name) 
 
     @setting(38, "Save To Data Vault Kinetic", directory = 's', name = 's', numKin = 'i', returns = '')
     def saveToDataVaultKinetic(self, c, directory, name, numKin):
         """Saves a Series of Images As Text Files"""
-        directory = tuple(eval(directory))
+        directory = list(eval(directory))
         yield self.camera.SaveToDataVaultKinetic(directory, name, numKin) 
 
     @setting(39, "Open From Data Vault", directory = 's', dataset = 'i', returns = '')
     def openFromDataVault(self, c, directory, dataset):
         """Opens a Single Image From Data Vault"""
-        directory = tuple(eval(directory))
+        directory = list(eval(directory))
         yield deferToThread(self.camera.OpenFromDataVault, directory, datset) 
 
     @setting(40, "Open From Data Vault Kinetic", directory = 's', numKin = 'i', returns = '')
     def openFromDataVaultKinetic(self, c, directory, numKin):
         """Opens a Series of Images From Data Vault"""
-        directory = tuple(eval(directory))
+        directory = list(eval(directory))
         print 'dir: ', directory
         yield self.camera.OpenFromDataVaultKinetic(directory, numKin) 
     

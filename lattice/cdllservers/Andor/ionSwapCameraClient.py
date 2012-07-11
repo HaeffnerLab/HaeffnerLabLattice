@@ -22,6 +22,23 @@ import numpy as np
 EMGAIN = 255
 EXPOSURE = .1 #sec
 
+class AnalysisCanvas(FigureCanvas):
+    """Matplotlib Figure widget to display CPU utilization"""
+    def __init__(self, parent):
+        self.parent = parent
+        self.fig = Figure()
+        FigureCanvas.__init__(self, self.fig)
+      
+        
+        self.ax = self.fig.add_subplot(111)
+        
+    def drawPlot(self, x, y1, y2):
+        self.ax.cla()
+        self.ax.plot(x, y1)
+        self.ax.plot(x, y2)
+        self.draw()
+        #plot stuff!
+
 class CameraCanvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""
     def __init__(self, parent):
@@ -175,10 +192,10 @@ class AppWindow(QtGui.QWidget):
 #        self.pathEdit.setText(r'C:\Users\lattice\Documents\Andor\jun12\062812\1\image') 
         
         self.pathDataVaultEdit = QtGui.QLineEdit()
-        self.pathDataVaultEdit.setText(str(['','Experiments', 'IonSwap', '2012Jul09']))        
+        self.pathDataVaultEdit.setText(str(['','Experiments', 'IonSwap', '2012Jul10']))        
 
         self.loadDatasetsEdit = QtGui.QLineEdit()
-        self.loadDatasetsEdit.setText(str([100031, 100035, 100039]))              
+        self.loadDatasetsEdit.setText(str([175618, 175622]))              
                         
 #        exposureLabel = QtGui.QLabel()
 #        exposureLabel.setText('Exposure (ms): ')
@@ -234,7 +251,7 @@ class AppWindow(QtGui.QWidget):
         self.kineticSetsSpinBox.setMinimum(0)
         self.kineticSetsSpinBox.setMaximum(100)
         self.kineticSetsSpinBox.setSingleStep(1)  
-        self.kineticSetsSpinBox.setValue(3)     
+        self.kineticSetsSpinBox.setValue(2)     
         self.kineticSetsSpinBox.setKeyboardTracking(False)
 
 
@@ -385,10 +402,21 @@ class AppWindow(QtGui.QWidget):
         
         self.cameraCanvas = CameraCanvas(self)
         self.cameraCanvas.show()
-        ntb = NavigationToolbar(self.cameraCanvas, self)
+        ntbCamera = NavigationToolbar(self.cameraCanvas, self)
 
         cameraCanvasLayout.addWidget(self.cameraCanvas)
-        cameraCanvasLayout.addWidget(ntb)
+        cameraCanvasLayout.addWidget(ntbCamera)
+        
+        analysisCanvasLayout = QtGui.QVBoxLayout()
+        
+        self.bottomPanel4.addLayout(analysisCanvasLayout)
+        
+        self.analysisCanvas = AnalysisCanvas(self)
+        self.analysisCanvas.show()
+        ntbAnalysis = NavigationToolbar(self.analysisCanvas, self)
+
+        analysisCanvasLayout.addWidget(self.analysisCanvas)
+        analysisCanvasLayout.addWidget(ntbAnalysis)
         
 
 
@@ -424,6 +452,7 @@ class AppWindow(QtGui.QWidget):
         histWindow = HistWindow(self, ionNumberCatalogArray, ionSwapCatalog)
         self.histList.append(histWindow)
         histWindow.show()
+        yield self.parent.appendParametersToDatasets(self.imageAnalyzedSpinBox.value(), self.iterationsSpinBox.value(), self.kineticSetsSpinBox.value())
     
     def openKinetic(self, evt):
         self.parent.openKinetic(str(self.pathEdit.text()), self.kineticSetsSpinBox.value(), ((self.imageAnalyzedSpinBox.value() + 1)*self.iterationsSpinBox.value()))
@@ -521,11 +550,13 @@ class IonCount():
     @inlineCallbacks
     def loadDatasets(self, path, datasets, numKin):
         yield self.server.clear_image_array()
-        datasets = [str(tuple(eval(path))[-1]) + '_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in tuple(eval(datasets))]
+        datasets = [str(list(eval(path))[-1]) + '_{0:=04}_{1:=02}'.format(x/100, x % 100) for x in list(eval(datasets))]
         print datasets
+        yield self.server.clear_directory_list()
         for dataset in datasets:
             datasetPath = str(path[0:-1] + ', ' + '\'' + dataset + '\', \'Scans\']'  )
             print datasetPath
+            yield self.server.append_to_directory_list(datasetPath)
             yield self.server.open_from_data_vault_kinetic(datasetPath, numKin)
 
 #    @inlineCallbacks
@@ -537,6 +568,11 @@ class IonCount():
     def buildDarkIonPositionCatalog(self, kinSet, numAnalyzedImages, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters):
         numKin =  (numAnalyzedImages + 1)*iterations
         yield self.server.build_dark_ion_position_catalog(kinSet, numKin, (self.height + 1), (self.width + 1), typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters)
+        
+    @inlineCallbacks
+    def appendParametersToDatasets(self, numAnalyzedImages, iterations, kinSet):
+        numKin =  (numAnalyzedImages + 1)*iterations
+        yield self.server.append_parameters_to_datasets(kinSet, numKin, iterations)
         
     @inlineCallbacks
     def getIonNumberHistogram(self, imageNumber, numAnalyzedImages, iterations, kinSet):
