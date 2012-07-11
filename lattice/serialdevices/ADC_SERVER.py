@@ -20,6 +20,7 @@ timeout = 20
 from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from labrad.types import Error
 from twisted.internet.defer import returnValue
+from labrad import types as T
 
 PREC_BITS = 10.
 DAC_MAX = 1023.#mV
@@ -34,7 +35,7 @@ class ADCServer( SerialDeviceServer ):
     regKey = 'ADC'
     port = None
     serNode = 'lattice-imaging'
-    timeout = 1.0
+    timeout = T.Value(1.0, 's')
 
     @inlineCallbacks
     def initServer( self ):
