@@ -1,7 +1,8 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+sys.path.append('/home/lattice/LabRAD/lattice/scripts')
+sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
 import labrad
+from labrad import types as T
 import numpy
 import time
 from scriptLibrary import dvParameters 
@@ -35,7 +36,7 @@ class LatentHeat():
     experimentName = 'LatentHeat_Auto'
     
     def __init__(self, seqParams, exprtParams):
-       #connect and define servers we'll be using
+        #connect and define servers we'll be using
         self.cxn = labrad.connect()
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = self.cxn.data_vault
@@ -56,10 +57,10 @@ class LatentHeat():
         self.setupLogic()
         #get the count rate for the crystal at the same parameters as crystallization
         self.pulser.select_dds_channel('110DP')
-        self.pulser.frequency(self.seqP.xtal_freq_397)
-        self.pulser.amplitude(self.seqP.xtal_ampl_397)
+        self.pulser.frequency(T.Value(self.seqP.xtal_freq_397, 'MHz'))
+        self.pulser.amplitude(T.Value(self.seqP.xtal_ampl_397, 'dBm'))
         self.pulser.select_dds_channel('866DP')
-        self.pulser.amplitude(self.seqP.xtal_ampl_866)
+        self.pulser.amplitude(T.Value(self.seqP.xtal_ampl_866,'dBm'))
         self.programPulser()
         #data processing setup
         self.Binner = Binner(self.seqP.recordTime, self.expP.binTime)
@@ -176,7 +177,7 @@ if __name__ == '__main__':
     }
     exprtParams = {
        'iterations':25,
-       'rf_power':-3.5, #### make optional
+       'rf_power': T.Value(-3.5,'dBm'), #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,
        'pmtresolution':0.075,

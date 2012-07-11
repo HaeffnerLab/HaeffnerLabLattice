@@ -1,9 +1,8 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+sys.path.append('/home/lattice/LabRAD/lattice/scripts')
 import labrad
 import numpy as np
-from PulseSequences.TimeRes_FFT import TimeResolved
+from PulseSequences.TimeResolvedRecord import TimeResolved
 from processFFT import processFFT
 
 class measureFFT():

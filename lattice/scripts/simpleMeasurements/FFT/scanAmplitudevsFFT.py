@@ -1,12 +1,12 @@
 from FFT import measureFFT
 import numpy as np
 import labrad
-import time
+from labrad import types as T
 
 cxn = labrad.connect()
 dv = cxn.data_vault
 rs = cxn.rohdeschwarz_server
-rs.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549')
+rs.select_device('lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::102549')
 
 amplMin = 0.0
 amplMax = 1.0
@@ -27,7 +27,7 @@ amplitudes = np.arange(amplMin, amplMax + amplStep, amplStep)
 
 initampl = rs.amplitude()
 for ampl in amplitudes:
-    rs.amplitude(ampl)
+    rs.amplitude(T.Value(ampl, 'dBm'))
     micromotion = fft.getPeakArea(ptsAround = 3)
     dv.add(ampl, micromotion)
 rs.amplitude(initampl)

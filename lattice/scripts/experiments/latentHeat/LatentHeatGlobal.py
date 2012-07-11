@@ -1,9 +1,10 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+sys.path.append('/home/lattice/LabRAD/lattice/scripts')
+sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
 import labrad
 import numpy
 import time
+from labrad import types as T
 from scriptLibrary import dvParameters 
 from PulseSequences.latentHeat import LatentHeatGlobalHeat
 from crystallizer import Crystallizer
@@ -55,12 +56,12 @@ class LatentHeat():
         self.topdirectory = time.strftime("%Y%b%d",time.localtime())
         self.setupLogic()
         #get the count rate for the crystal at the same parameters as crystallization
-
         self.pulser.select_dds_channel('110DP')
-        self.pulser.frequency(self.seqP.xtal_freq_397)
-        self.pulser.amplitude(self.seqP.xtal_ampl_397)
+        self.pulser.frequency(T.Value(self.seqP.xtal_freq_397, 'MHz'))
+        self.pulser.amplitude(T.Value(self.seqP.xtal_ampl_397, 'dBm'))
         self.pulser.select_dds_channel('866DP')
-        self.pulser.amplitude(self.seqP.xtal_ampl_866)
+        self.pulser.amplitude(T.Value(self.seqP.xtal_ampl_866,'dBm'))
+        
         self.programPulser()
         #data processing setup
         self.Binner = Binner(self.seqP.recordTime, self.expP.binTime)
@@ -108,8 +109,6 @@ class LatentHeat():
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
             timetags = self.pulser.get_timetags().asarray
-            print timetags.size####
-            print timetags
             iters = iteration * numpy.ones_like(timetags) 
             self.dv.add(numpy.vstack((iters,timetags)).transpose())
             #add to binning of the entire sequence
@@ -180,8 +179,8 @@ if __name__ == '__main__':
         'heating_ampl_397':-15.2,
     }
     exprtParams = {
-       'iterations':2,
-       'rf_power':-3.5, #### make optional
+       'iterations':10,
+       'rf_power': T.Value(-3.5,'dBm'), #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,
        'pmtresolution':0.075,

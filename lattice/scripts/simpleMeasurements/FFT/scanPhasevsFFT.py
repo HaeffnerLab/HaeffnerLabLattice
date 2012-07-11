@@ -1,12 +1,11 @@
 from FFT import measureFFT
 import numpy as np
 import labrad
-import time
 
 cxn = labrad.connect()
 dv = cxn.data_vault
 rs = cxn.rohdeschwarz_server
-rs.select_device('lattice-pc GPIB Bus - USB0::0x0AAD::0x0054::102549')
+rs.select_device('lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::102549')
 
 phaseMin = 44.0
 phaseMax = 45.0
