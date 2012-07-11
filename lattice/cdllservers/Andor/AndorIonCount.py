@@ -353,9 +353,9 @@ class AndorIonCount(LabradServer, AndorServer):
                     yield dv.open(int(numberImagesInSet*imageSet + image + 1))
                     # check if the parameters exist first!!! don't append more for the hell of it
                     try:
-                        yield dv.add_parameter(['Parameters', self.kinSetParametersArray[kineticSet]])
-                        yield dv.add_parameter(['Arrangement', self.bestModelFits[kineticSet][numberImagesInSet*imageSet + image]])
-                        yield dv.add_parameter(['Time', self.analysisTimes[kineticSet][numberImagesInSet*imageSet + image]])
+                        yield dv.add_parameter_over_write(['Parameters', self.kinSetParametersArray[kineticSet]])
+                        yield dv.add_parameter_over_write(['Arrangement', self.bestModelFits[kineticSet][numberImagesInSet*imageSet + image]])
+                        yield dv.add_parameter_over_write(['Time', self.analysisTimes[kineticSet][numberImagesInSet*imageSet + image]])
                     except:
                         print 'passed!'        
     

@@ -206,11 +206,11 @@ class DataVaultWidget(QtGui.QListWidget):
             for i in parameters:
                 parametersArray.append(i.value)
             
-#            print parametersArray
+    #            print parametersArray
             arrangement = yield dv.get_parameter('Arrangement')
-#            print arrangement
+    #            print arrangement
             analysisTime = yield dv.get_parameter('Time')
-#            print analysisTime
+    #            print analysisTime
             
             positionValues = self.positionDict[str(len(arrangement))]
             
@@ -229,11 +229,12 @@ class DataVaultWidget(QtGui.QListWidget):
             if(type(darkModel) != type(np.array([]))):
                 darkModel = [parametersArray[4]]*cols 
             
-            self.parent.analysisCanvas.drawPlot(dataset, xmodel, mostIntenseDataSums, darkModel, parametersArray, arrangement, analysisTime)
+            self.parent.analysisCanvas.drawPlot(dataset, self.currentDirectory[-2], xmodel, mostIntenseDataSums, darkModel, parametersArray, arrangement, analysisTime)
+            self.parent.setParametersText(parametersArray)
         
         except:
             xmodel = np.arange(cols)
-            self.parent.analysisCanvas.drawPlot(dataset, xmodel, mostIntenseDataSums)
+            self.parent.analysisCanvas.drawPlot(dataset, self.currentDirectory[-2], xmodel, mostIntenseDataSums)
 
          
                     

@@ -206,7 +206,8 @@ class Andor:
         cimage = cimageArray()
         error = self.dll.GetMostRecentImage(pointer(cimage),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.imageArray = cimage[:]
+            #self.imageArray = cimage[:]
+            return cimage[:]
         else:
             raise Exception(ERROR_CODE[error])
 
@@ -889,8 +890,10 @@ class AndorServer(LabradServer):
     @setting(25, "Get Most Recent Image", returns = '*i')
     def getMostRecentImage(self, c):
         """Gets Most Recent Image"""
-        yield deferToThread(self.camera.GetMostRecentImage)
-        returnValue(self.camera.imageArray)
+        #yield deferToThread(self.camera.GetMostRecentImage)
+        imageArray = yield deferToThread(self.camera.GetMostRecentImage)
+        #returnValue(self.camera.imageArray)
+        returnValue(imageArray)
         
     @setting(26, "Wait For Acquisition", returns = 's')
     def waitForAcquisition(self, c):

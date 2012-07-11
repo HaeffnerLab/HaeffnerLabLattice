@@ -31,15 +31,15 @@ class AnalysisCanvas(FigureCanvas):
         
         self.ax = self.fig.add_subplot(111)
         
-    def drawPlot(self, dataset, x, y1, y2 = None, parametersArray = None, arrangement = None, analysisTime = None):
+    def drawPlot(self, dataset, directory, x, y1, y2 = None, parametersArray = None, arrangement = None, analysisTime = None):
         self.ax.cla()
         self.ax.plot(x, y1, label = 'Axial Sums')
         if (y2 != None):
             self.ax.plot(x, y2, label = 'Model')
-        if ((parametersArray != None) and (arrangement != None) and (analysisTime != None)):
-            self.ax.set_title('Dataset: ' + str(dataset) + ' - ' + str(arrangement) + ' - ' + str(analysisTime[0:8]))
+        if ((arrangement != None) and (analysisTime != None)):
+            self.ax.set_title('Dataset: ' + str(dataset) + ' - ' + str(directory) + ' - ' + str(arrangement) + ' - ' + str(analysisTime[0:8]))
         else:
-            self.ax.set_title('Dataset: ' + str(dataset))
+            self.ax.set_title('Dataset: ' + str(dataset) + ' - ' + str(directory))
         self.ax.legend(loc='best')
         self.draw()
         #plot stuff!
@@ -421,10 +421,13 @@ class AppWindow(QtGui.QWidget):
         ntbAnalysis = NavigationToolbar(self.analysisCanvas, self)
 
         analysisCanvasLayout.addWidget(self.analysisCanvas)
+        self.parametersEdit = QtGui.QLineEdit(readOnly=True)
+        analysisCanvasLayout.addWidget(self.parametersEdit)
         analysisCanvasLayout.addWidget(ntbAnalysis)
         
-
-
+    def setParametersText(self, parametersArray):
+        self.parametersEdit.setText('Height: ' + str(parametersArray[0]) + ' ' + 'Alpha: ' + str(parametersArray[1]) + ' ' + 'AxialOffset: ' + str(parametersArray[2]) + ' ' + 'Sigma: ' + str(parametersArray[3]) + ' ' + 'Offset: ' + str(parametersArray[4]))       
+        
     def printTemperature(self, evt):
         self.parent.printTemperature()
     
