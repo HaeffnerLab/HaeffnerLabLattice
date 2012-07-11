@@ -19,6 +19,7 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from labrad.server import LabradServer, setting, Signal
 from AndorServer import Andor, AndorServer
+from datetime import datetime
 
 
 
@@ -49,6 +50,9 @@ class AndorIonCount(LabradServer, AndorServer):
                             '9':         [-2.6803, -1.8897, -1.2195, -.59958, 0, .59958, 1.2195, 1.8897, 2.6803],
                             '10': [-2.8708, -2.10003, -1.4504, -.85378, -.2821, .2821, .85378, 1.4504, 2.10003, 2.8708]
                             }        
+        
+        self.directoryList = []
+
         
 
     def initContext(self, c):
@@ -274,15 +278,18 @@ class AndorIonCount(LabradServer, AndorServer):
         xmodel = np.arange(cols, dtype=float)
 
         t1 = time.clock()
+        
+        self.kinSetParametersArray = [[] for i in range(kinSet)] # in order of image Sets in order of kinSet EXPLAIN ME BETTER LATER
+        self.bestModelFits = [[] for i in range(kinSet)] #in order of images analyzed in order of kinSet EXPLAIN ME BETTER LATER
+        self.analysisTimes = [[] for i in range(kinSet)] #in order of images analyzed in order of kinSet EXPLAIN ME BETTER LATER
        
         for kineticSet in np.arange(kinSet):
             for imageSet in np.arange(iterations):
                 print kineticSet + 1, imageSet + 1
                 parametersArray = self._fitInitialImage(data[kineticSet][0], kinSet, rows, cols, typicalIonDiameter, expectedNumberOfIons, initialParameters)
+                self.kinSetParametersArray[kineticSet] = tuple(parametersArray)
                 for image in np.arange(numberImagesInSet):
                     axialSums = self._getOneDDdata(data[kineticSet][numberImagesInSet*imageSet + image], rows, cols, typicalIonDiameter) 
-                    
-
                         
                     
                     bestFitIonArrangement = [] # 1 = bright, 0 = dark, Ex: (1, 1, 0, 1, 1)
@@ -309,7 +316,9 @@ class AndorIonCount(LabradServer, AndorServer):
                                 bestFitIonArrangement = ionArrangement
                         except AttributeError:
                             print 'loca!'
-                   
+                        
+                        self.bestModelFits[kineticSet].append(bestFitIonArrangement)
+                        self.analysisTimes[kineticSet].append(str(datetime.time(datetime.now())))
 
 #                    print 'best: ', bestChiSquare, bestFitIonArrangement
                     darkIonPositions = np.where(np.array(bestFitIonArrangement) == 0)[0] # awesome
@@ -325,9 +334,30 @@ class AndorIonCount(LabradServer, AndorServer):
 #                        show() 
         
         t2 = time.clock()
-        print 'time: ', (t2-t1)        
+        print 'time: ', (t2-t1)      
         return darkIonPositionCatalog        
 
+    @inlineCallbacks
+    def _appendParametersToDatsets(self, kinSet, numKin, iterations):
+        
+        
+        numberImagesInSet = (numKin / iterations)
+        
+        dv = self.client.data_vault
+        dir = yield dv.dir()
+        print dir
+        for kineticSet in np.arange(kinSet):
+            yield dv.cd(self.directoryList[kineticSet])
+            for imageSet in np.arange(iterations):
+                for image in np.arange(numberImagesInSet):
+                    yield dv.open(int(numberImagesInSet*imageSet + image + 1))
+                    # check if the parameters exist first!!! don't append more for the hell of it
+                    try:
+                        yield dv.add_parameter(['Parameters', self.kinSetParametersArray[kineticSet]])
+                        yield dv.add_parameter(['Arrangement', self.bestModelFits[kineticSet][numberImagesInSet*imageSet + image]])
+                        yield dv.add_parameter(['Time', self.analysisTimes[kineticSet][numberImagesInSet*imageSet + image]])
+                    except:
+                        print 'passed!'        
     
     
     @setting(61, "Collect Data", height = 'i', width = 'i', iterations = 'i', numAnalyzedImages = 'i', returns = '')
@@ -366,6 +396,24 @@ class AndorIonCount(LabradServer, AndorServer):
     def buildDarkIonPositionCatalog(self, c, kinSet, numKin, rows, cols, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters):
         self.darkIonPositionCatalog = self._BuildDarkIonPositionCatalog(kinSet, numKin, rows, cols, typicalIonDiameter, expectedNumberOfIons, iterations, initialParameters)
 #        print self.darkIonPositionCatalog             
+
+    @setting(65, "Get Directory List", returns = 's')
+    def getDirectoryList(self, c):
+        return self.directoryList
+    
+    @setting(66, "Append To Directory List", directory = 's', returns = '')
+    def appendToDirectoryList(self, c, directory):
+        self.directoryList.append(list(eval(directory)))
+        print 'Directory List: ', self.directoryList
+    
+    @setting(67, "Clear Directory List", returns = '')
+    def clearDirectoryList(self, c):
+        self.directoryList = []
+        
+    @setting(68, "Append Parameters To Datasets", kinSet = 'i', numKin = 'i', iterations = 'i',  returns = '')
+    def appendParametersToDatasets(self, c, kinSet, numKin, iterations):
+        yield self._appendParametersToDatsets(kinSet, numKin, iterations)
+    
         
 if __name__ == "__main__":
     from labrad import util
