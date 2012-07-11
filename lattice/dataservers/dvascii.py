@@ -627,6 +627,25 @@ class Dataset:
         self.parent.onNewParameter( None, self.param_listeners )
         self.param_listeners = set()
         return name
+    
+    ##### MK
+    def addParameterOverWrite( self, name, data, saveNow = True ):
+        done = False
+        for p in self.parameters:
+            if p['label'] == name:
+                p['data'] = data
+                done = True
+        if (done == False):
+            d = dict( label = name, data = data )
+            self.parameters.append( d )
+        if saveNow:
+            self.save()
+    ##### MK
+    
+        # notify all listening contexts
+        self.parent.onNewParameter( None, self.param_listeners )
+        self.param_listeners = set()
+        return name    
 
     def getParameter( self, name, case_sensitive = True ):
         for p in self.parameters:
@@ -1155,6 +1174,12 @@ class DataVault( LabradServer ):
             subdirs = -1
         yield self.read_pars_int( c, ctx, dataset, curdirs, subdirs )
         dataset.save() # make sure the new parameters get saved
+
+    @setting( 126, 'add parameter over write', name = 's', returns = '' )
+    def add_parameter_over_write( self, c, name, data ):
+        """Add a new parameter to the current dataset."""
+        dataset = self.getDataset( c )
+        dataset.addParameterOverWrite( name, data )
 
 
     @setting( 200, 'add comment', comment = ['s'], user = ['s'], returns = [''] )

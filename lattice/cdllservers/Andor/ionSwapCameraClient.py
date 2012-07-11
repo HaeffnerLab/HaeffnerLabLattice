@@ -5,22 +5,21 @@ from matplotlib.figure import Figure
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import time
-
-
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
-
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from datetime import datetime
-
 import matplotlib.pyplot as plt
-
-
 import numpy as np
 
-EMGAIN = 255
-EXPOSURE = .1 #sec
+HSTART = 455
+HEND   = 530
+VSTART = 217
+VEND   = 242
+
+#EMGAIN = 255
+#EXPOSURE = .1 #sec
 
 class AnalysisCanvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""
@@ -32,10 +31,16 @@ class AnalysisCanvas(FigureCanvas):
         
         self.ax = self.fig.add_subplot(111)
         
-    def drawPlot(self, x, y1, y2):
+    def drawPlot(self, dataset, x, y1, y2 = None, parametersArray = None, arrangement = None, analysisTime = None):
         self.ax.cla()
-        self.ax.plot(x, y1)
-        self.ax.plot(x, y2)
+        self.ax.plot(x, y1, label = 'Axial Sums')
+        if (y2 != None):
+            self.ax.plot(x, y2, label = 'Model')
+        if ((parametersArray != None) and (arrangement != None) and (analysisTime != None)):
+            self.ax.set_title('Dataset: ' + str(dataset) + ' - ' + str(arrangement) + ' - ' + str(analysisTime[0:8]))
+        else:
+            self.ax.set_title('Dataset: ' + str(dataset))
+        self.ax.legend(loc='best')
         self.draw()
         #plot stuff!
 
@@ -501,24 +506,24 @@ class IonCount():
         temp = yield self.server.get_current_temperature()
         print temp
         
-        try:
-            yield self.server.set_trigger_mode(1)
-        except:
-            print 'client not closed properly'
-            self.abortAcquisition()
-            yield self.server.set_trigger_mode(1)
-        yield self.server.set_read_mode(4)
-        yield self.server.set_emccd_gain(EMGAIN)
-        yield self.server.set_exposure_time(EXPOSURE)   
+#        try:
+#            yield self.server.set_trigger_mode(1)
+#        except:
+#            print 'client not closed properly'
+#            self.abortAcquisition()
+#            yield self.server.set_trigger_mode(1)
+#        yield self.server.set_read_mode(4)
+#        yield self.server.set_emccd_gain(EMGAIN)
+#        yield self.server.set_exposure_time(EXPOSURE)   
         yield self.server.cooler_on()
         
         
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?
         
-        self.hstart = 455
-        self.hend = 530
-        self.vstart = 217
-        self.vend = 242
+        self.hstart = HSTART
+        self.hend =  HEND
+        self.vstart = VSTART
+        self.vend = VEND
         
         self.width = self.hend - self.hstart
         self.height = self.vend - self.vstart
@@ -526,8 +531,8 @@ class IonCount():
         print 'width: ', self.width
         print 'height: ', self.height
         
-        error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
-        print 'image: ', error
+#        error = yield self.server.set_image_region(1,1,self.hstart,self.hend,self.vstart,self.vend)
+#        print 'image: ', error
         
         self.openVideoWindow()
 

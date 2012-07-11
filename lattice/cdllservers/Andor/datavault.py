@@ -22,7 +22,8 @@ class DataVaultWidget(QtGui.QListWidget):
                             '8':           [-2.4758, -1.6621, -.96701, -.31802, .31802, .96701, 1.6621, 2.4758],
                             '9':         [-2.6803, -1.8897, -1.2195, -.59958, 0, .59958, 1.2195, 1.8897, 2.6803],
                             '10': [-2.8708, -2.10003, -1.4504, -.85378, -.2821, .2821, .85378, 1.4504, 2.10003, 2.8708]
-                            }        
+                            }
+        self.changeDirectory(['', 'Experiments', 'IonSwap'])        
         
 
     @inlineCallbacks
@@ -94,11 +95,11 @@ class DataVaultWidget(QtGui.QListWidget):
 
     @inlineCallbacks
     def retriveScan(self, dataset):
-        print 'dataset: ', dataset
-        print 'directory: ', self.currentDirectory
+#        print 'dataset: ', dataset
+#        print 'directory: ', self.currentDirectory
         dv = self.parent.parent.cxn.data_vault
         dir = yield dv.cd(self.currentDirectory)
-        print dir
+#        print dir
         yield dv.open(dataset)
         Data = yield dv.get()
         data = Data.asarray
@@ -112,7 +113,7 @@ class DataVaultWidget(QtGui.QListWidget):
             vstart = yield dv.get_parameter('vstart')
             vend = yield dv.get_parameter('vend')
             
-            print 'Dimensions: ', hstart, hend, vstart, vend
+#            print 'Dimensions: ', hstart, hend, vstart, vend
         except:
             raise Exception('Does this scan have dimension parameters?')
             
@@ -198,35 +199,41 @@ class DataVaultWidget(QtGui.QListWidget):
         
         #---------
         
-        parameters = yield dv.get_parameter('Parameters')
-        parametersArray = []
-        for i in parameters:
-            parametersArray.append(i.value)
+        try:
+            
+            parameters = yield dv.get_parameter('Parameters')
+            parametersArray = []
+            for i in parameters:
+                parametersArray.append(i.value)
+            
+#            print parametersArray
+            arrangement = yield dv.get_parameter('Arrangement')
+#            print arrangement
+            analysisTime = yield dv.get_parameter('Time')
+#            print analysisTime
+            
+            positionValues = self.positionDict[str(len(arrangement))]
+            
+            xmodel = np.arange(cols)
+            
+            darkModel = 0
+            for ion in np.arange(len(arrangement)):
+                if arrangement[ion] == 1:
+    #                                print ionArrangement, ion
+    #                                print positionValues[ion]
+                    darkModel += parametersArray[0]*np.exp(-(((xmodel-positionValues[ion]*parametersArray[1] - parametersArray[2])/parametersArray[3])**2)/2)
+            
+            darkModel += parametersArray[4]
+            
+            
+            if(type(darkModel) != type(np.array([]))):
+                darkModel = [parametersArray[4]]*cols 
+            
+            self.parent.analysisCanvas.drawPlot(dataset, xmodel, mostIntenseDataSums, darkModel, parametersArray, arrangement, analysisTime)
         
-        print parametersArray
-        arrangement = yield dv.get_parameter('Arrangement')
-        print arrangement
-        analysisTime = yield dv.get_parameter('Time')
-        print analysisTime
-        
-        positionValues = self.positionDict[str(len(arrangement))]
-        
-        xmodel = np.arange(cols)
-        
-        darkModel = 0
-        for ion in np.arange(len(arrangement)):
-            if arrangement[ion] == 1:
-#                                print ionArrangement, ion
-#                                print positionValues[ion]
-                darkModel += parametersArray[0]*np.exp(-(((xmodel-positionValues[ion]*parametersArray[1] - parametersArray[2])/parametersArray[3])**2)/2)
-        
-        darkModel += parametersArray[4]
-        
-        
-        if(type(darkModel) != type(np.array([]))):
-            darkModel = [parametersArray[4]]*cols 
-        
-        self.parent.analysisCanvas.drawPlot(xmodel, mostIntenseDataSums, darkModel)       
+        except:
+            xmodel = np.arange(cols)
+            self.parent.analysisCanvas.drawPlot(dataset, xmodel, mostIntenseDataSums)
 
          
                     

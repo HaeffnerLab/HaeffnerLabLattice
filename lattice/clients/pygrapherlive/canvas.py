@@ -266,7 +266,7 @@ class Qt4MplCanvas(FigureCanvas):
             # This will occur if data is coming at the rate of 1 data point per signal, at most.
             # This might be incorrect (what's written above)
             self.setPointsTwoArrays(dataset, directory, numberOfDependentVariables,data, data.shape[0], dataIndex, dataIndexOffset)
-            print dataIndex, ' ',dataIndexOffset, ' ', numberOfDataPoints
+#            print dataIndex, ' ',dataIndexOffset, ' ', numberOfDataPoints
 
     # Create the initial plot lines
     def initializePlots(self, dataset, directory, numberOfDependentVariables):
