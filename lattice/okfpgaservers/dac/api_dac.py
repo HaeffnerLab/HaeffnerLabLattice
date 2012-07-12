@@ -35,9 +35,10 @@ class api_dac():
         
     def setVoltage(self, channel, value):
     	## 32621 is mid-way ##
+        print channel, value
     	self.xem.SetWireInValue(channel,value)
-		self.xem.UpdateWireIns()
+        self.xem.UpdateWireIns()
   
     def getVoltage(self, channel):
 		self.xem.UpdateWireOuts()
-		return self.xem.GetWireOutValue(16+channel)
+		return self.xem.GetWireOutValue(32+channel)
