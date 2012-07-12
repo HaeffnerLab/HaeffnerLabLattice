@@ -1,12 +1,17 @@
 from ctypes import *
 import time
-from PIL import Image
 import sys
 import numpy as np
 import time
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
+from AndorVideo import AndorVideo
+from PyQt4 import QtGui
+a = QtGui.QApplication( [] )
+import qt4reactor
+qt4reactor.install()   
 from labrad.server import LabradServer, setting, Signal
+
 
 """Andor class which is meant to provide the Python version of the same
    functions that are defined in the Andor's SDK. Since Python does not
@@ -64,6 +69,7 @@ class Andor:
         self.singleImageArray   = []
         self.currentImageArray  = []
         
+        andorVideo = AndorVideo(self)
 
     def __del__(self):
         error = self.dll.ShutDown()
@@ -968,7 +974,7 @@ class AndorServer(LabradServer):
     def openFromDataVault(self, c, directory, dataset):
         """Opens a Single Image From Data Vault"""
         directory = list(eval(directory))
-        yield deferToThread(self.camera.OpenFromDataVault, directory, datset) 
+        yield deferToThread(self.camera.OpenFromDataVault, directory, dataset) 
 
     @setting(40, "Open From Data Vault Kinetic", directory = 's', numKin = 'i', returns = '')
     def openFromDataVaultKinetic(self, c, directory, numKin):
