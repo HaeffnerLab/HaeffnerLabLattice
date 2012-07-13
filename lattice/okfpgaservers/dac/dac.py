@@ -1,9 +1,24 @@
 #Created on Feb 22, 2012
-#@author: Hong, Haeffner Lab
+#@author: Hong, Mike Haeffner Lab
+'''
+### BEGIN NODE INFO
+[info]
+name = DAC
+version = 1.0
+description =
+instancename = DAC
 
+[startup]
+cmdline = %PYTHON% %FILE%
+timeout = 20
+
+[shutdown]
+message = 987654321
+timeout = 20
+### END NODE INFO
+'''
 from labrad.server import LabradServer, setting, Signal
-from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
+from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
 from twisted.internet.threads import deferToThread
 from api_dac import api_dac
 
@@ -27,13 +42,14 @@ class DAC(LabradServer):
     name = 'DAC'
     onNewVoltage = Signal(123556, 'signal: new voltage', '(vv)')
     
-    #@inlineCallbacks
+    @inlineCallbacks
     def initServer(self):
         self.api_dac  = api_dac()
         self.inCommunication = DeferredLock()
-        connected = self.api_dac.connectOKBoard()
-        if not connected: raise Exception ("Could not connect to DAC")
-        #self.d = yield self.initializeDAC()
+#        connected = self.api_dac.connectOKBoard()
+#        if not connected:
+#            raise Exception ("Could not connect to DAC")
+        self.d = yield self.initializeDAC()
         self.listeners = set()     
     
     @inlineCallbacks
@@ -52,9 +68,9 @@ class DAC(LabradServer):
     
     @inlineCallbacks
     def getRegValue(self, name):
-        yield self.client.registry.cd(['Servers', 'DAC'], True)
+        yield self.client.registry.cd(['','Servers', 'DAC'], True)
         try:
-            voltage = self.client.registry.get(name)
+            voltage = yield self.client.registry.get(name)
         except Exception:
             print '{} not found in registry'.format(name)
             voltage = 0
@@ -104,12 +120,15 @@ class DAC(LabradServer):
     def expireContext(self, c):
         self.listeners.remove(c.ID)
     
-#    @inlineCallbacks
-#    def stopServer(self):
-#        '''save the latest voltage information into registry'''
-#        for name,channel in self.d.iteritems():
-#            yield self.client.registry.cd(['Servers', 'DAC'], True)
-#            yield self.client.registry.set(name, channel.value)
+    @inlineCallbacks
+    def stopServer(self):
+        '''save the latest voltage information into registry'''
+        try:
+            yield self.client.registry.cd(['','Servers', 'DAC'], True)
+            for name,channel in self.d.iteritems():
+                yield self.client.registry.set(name, channel.value)
+        except AttributeError:
+            pass
 
 if __name__ == "__main__":
     from labrad import util
