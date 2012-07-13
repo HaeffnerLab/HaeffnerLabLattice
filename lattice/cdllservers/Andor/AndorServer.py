@@ -7,9 +7,9 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
 from AndorVideo import AndorVideo
 from PyQt4 import QtGui
-a = QtGui.QApplication( [] )
-import qt4reactor
-qt4reactor.install()   
+#a = QtGui.QApplication( [] )
+#import qt4reactor
+#qt4reactor.install()   
 from labrad.server import LabradServer, setting, Signal
 
 
