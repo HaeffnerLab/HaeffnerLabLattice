@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 nodeDict = {'node_lattice_control':
-					['Data Vault', 'DC Box', 'Compensation Box','Pulser',
+					['Data Vault', 'DAC', 'Compensation Box','Pulser',
 					'Agilent Server', 'GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','NormalPMTFlow',
 					'Compensation LineScan','ADCserver',  'Trap Drive', 'HighVoltA'],
 		}

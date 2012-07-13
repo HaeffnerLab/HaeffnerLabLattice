@@ -16,11 +16,13 @@ class DCONRF_CONTROL(QtGui.QWidget):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
-        from labrad.types import Error
+        from labrad import types as T
+        self.T = T
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.dc_box
-    	#connect functions
-        value = yield self.server.getdcoffsetrf()
+        self.server = yield self.cxn.dac
+        #connect functions
+        value = yield self.server.get_voltage("dconrf1")
+        value = value['V']
         self.doubleSpinBox.setValue(value)
         self.justUpdated = False
         self.doubleSpinBox.valueChanged.connect(self.onNewValue)
@@ -36,7 +38,8 @@ class DCONRF_CONTROL(QtGui.QWidget):
     def sendToServer(self):
         if(self.justUpdated):
             value = self.doubleSpinBox.value()
-            yield self.server.setdcoffsetrf(value)
+            yield self.server.set_voltage("dconrf1", self.T.Value(value, "V"))
+            yield self.server.set_voltage("dconrf2", self.T.Value(-value, "V"))
             self.justUpdated = False
     
     def closeEvent(self, x):

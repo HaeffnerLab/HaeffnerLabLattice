@@ -20,7 +20,7 @@ timeout = 20
 from labrad.server import LabradServer, setting, Signal
 from labrad import types as T
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
-from twisted.internet.threads import deferToThreadf
+from twisted.internet.threads import deferToThread
 from api_dac import api_dac
 
 class dac_channel(object):
@@ -65,7 +65,7 @@ class DAC(LabradServer):
                              ('endcap2', 3, -9.9561),
                              ]:
             chan = dac_channel(name, channel_number, min_voltage)
-            chan.value = yield self.getRegValue(name)
+            chan.voltage = yield self.getRegValue(name)
             d[name] = chan
         returnValue( d )
     
@@ -98,7 +98,7 @@ class DAC(LabradServer):
  
     def voltage_to_val(self, voltage, minim, total, prec = 16):
         '''converts voltage of a channel to FPGA-understood sequential value'''
-        value = int((voltage - minim) / total * (2 ** prec - 1) )
+        value = int((voltage - minim) / total * (2 ** prec  - 1) )
         if not  0 <= value <= 2**16 - 1: raise Exception ("Voltage Out of Range")
         return value
            
@@ -140,7 +140,7 @@ class DAC(LabradServer):
         try:
             yield self.client.registry.cd(['','Servers', 'DAC'], True)
             for name,channel in self.d.iteritems():
-                yield self.client.registry.set(name, channel.value)
+                yield self.client.registry.set(name, channel.voltage)
         except AttributeError:
             #if dictionary doesn't exist yet (i.e bad identification error), do nothing
             pass

@@ -2,8 +2,8 @@ from PyQt4 import QtGui, QtCore
 from qtui.QCustomLevelTilt import QCustomLevelTilt
 from twisted.internet.defer import inlineCallbacks
 
-MinLevel = -9.0
-MaxLevel = 9.0
+MinLevel = 0
+MaxLevel = 40
 UpdateTime = 100 #in ms, how often data is checked for communication with the server
 
 class ENDCAP_CONTROL(QCustomLevelTilt):
@@ -15,13 +15,12 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
-        from labrad import types as T
-        self.T = T
+        from labrad.types import Error
         self.cxn = yield connectAsync()
-        self.server = yield self.cxn.dac
+        self.server = yield self.cxn.dc_box
         #set initial values
-        one = yield self.server.get_voltage("endcap1")
-        two = yield self.server.get_voltage("endcap2")
+        one = yield self.server.getendcap(1)
+        two = yield self.server.getendcap(2)
         self.valueLeft.setValue(one)
         self.valueRight.setValue(two)
         #connect functions
@@ -34,15 +33,15 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
         
     def inputHasUpdated(self):
         self.inputUpdated = True
-                
+	            
     @inlineCallbacks
     def sendToServer(self):
-        if(self.inputUpdated):
-            one = self.valueLeft.value()
-            two =  self.valueRight.value()
-            yield self.server.set_voltage("endcap1",self.T.Value(one, "V"))
-            yield self.server.set_voltage("endcap2",self.T.Value(two, "V"))
-            self.inputUpdated = False;
+    	if(self.inputUpdated):
+              one = self.valueLeft.value()
+              two =  self.valueRight.value()
+    	      yield self.server.setendcap(1,one)
+              yield self.server.setendcap(2,two)
+    	      self.inputUpdated = False;
     
     def closeEvent(self, x):
         self.reactor.stop()
@@ -55,3 +54,4 @@ if __name__=="__main__":
     ENDCAP_CONTROL = ENDCAP_CONTROL(reactor)
     ENDCAP_CONTROL.show()
     reactor.run()
+ 
