@@ -17,10 +17,10 @@ from scipy.stats import chisquare
 from itertools import product
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
-#from PyQt4 import QtGui
-#a = QtGui.QApplication( [] )
-#import qt4reactor
-#qt4reactor.install()  
+from PyQt4 import QtGui
+a = QtGui.QApplication( [] )
+import qt4reactor
+qt4reactor.install()  
 from labrad.server import LabradServer, setting, Signal
 from AndorServer import Andor, AndorServer
 from datetime import datetime
@@ -211,7 +211,8 @@ class AndorIonCount(LabradServer, AndorServer):
 
 
         mostIntenseData = data[(mostIntenseRegionIndex*typicalIonDiameter):(mostIntenseRegionIndex*typicalIonDiameter + typicalIonDiameter), :]
-        mostIntenseDataSums = np.sum(mostIntenseData, 0) / typicalIonDiameter #1D vector
+        mostIntenseDataSums = np.sum(mostIntenseData, 0)# / typicalIonDiameter #1D vector
+        mostIntenseDataSums = (mostIntenseDataSums - np.min(mostIntenseDataSums))/(np.max(mostIntenseDataSums) - np.min(mostIntenseDataSums))
         
         return mostIntenseDataSums
         

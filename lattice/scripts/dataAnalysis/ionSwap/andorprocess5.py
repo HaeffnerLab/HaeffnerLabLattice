@@ -178,7 +178,8 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
 
 
             mostIntenseData = data[numberImagesInSet*imageSet + image][(mostIntenseRegionIndex*typicalIonDiameter):(mostIntenseRegionIndex*typicalIonDiameter + typicalIonDiameter), :]
-            mostIntenseDataSums = np.sum(mostIntenseData, 0) / typicalIonDiameter #1D vector
+            mostIntenseDataSums = np.sum(mostIntenseData, 0)# / typicalIonDiameter #1D vector
+            mostIntenseDataSums = (mostIntenseDataSums - np.min(mostIntenseDataSums))/(np.max(mostIntenseDataSums) - np.min(mostIntenseDataSums))
             
             """
                       |      |      |      |      |
