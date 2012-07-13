@@ -71,7 +71,7 @@ class HistWindow(QtGui.QWidget):
         self.thresholdSpinBox.setMinimum(-100)
         self.thresholdSpinBox.setMaximum(100000)
         self.thresholdSpinBox.setSingleStep(1)  
-        self.thresholdSpinBox.setValue(35000)     
+        self.thresholdSpinBox.setValue(40000)     
         self.thresholdSpinBox.setKeyboardTracking(False)
         self.connect(self.thresholdSpinBox, QtCore.SIGNAL('valueChanged(int)'), self.thresholdChange)  
         
