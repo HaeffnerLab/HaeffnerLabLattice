@@ -18,18 +18,20 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting, Signal
+from labrad import types as T
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
-from twisted.internet.threads import deferToThread
+from twisted.internet.threads import deferToThreadf
 from api_dac import api_dac
 
 class dac_channel(object):
-    def __init__(self, name, channel_number, min_voltage, vpp = 20.0, value = None):
+    def __init__(self, name, channel_number, min_voltage, vpp = 20.0, voltage = None):
         '''min voltage is used to calibrate the offset of the channel'''
         self.name = name
-        self.channel = channel_number
+        self.channel_number = channel_number
         self.min_voltage = min_voltage
         self.max_voltage = min_voltage + vpp
-        self.value = value
+        self.vpp = vpp
+        self.voltage = voltage
     
     def is_in_range(self, voltage):
         return (self.min_voltage  <= voltage <= self.max_voltage)
@@ -40,28 +42,29 @@ class dac_channel(object):
 class DAC(LabradServer):
     
     name = 'DAC'
-    onNewVoltage = Signal(123556, 'signal: new voltage', '(vv)')
+    onNewVoltage = Signal(123556, 'signal: new voltage', '(sv)')
     
     @inlineCallbacks
     def initServer(self):
         self.api_dac  = api_dac()
         self.inCommunication = DeferredLock()
-#        connected = self.api_dac.connectOKBoard()
-#        if not connected:
-#            raise Exception ("Could not connect to DAC")
+        connected = self.api_dac.connectOKBoard()
+        if not connected:
+            raise Exception ("Could not connect to DAC")
         self.d = yield self.initializeDAC()
         self.listeners = set()     
     
     @inlineCallbacks
     def initializeDAC(self):
+        '''creates dictionary for information storage'''
         d = {}
-        for name,channel,min_voltage in [
+        for name,channel_number,min_voltage in [
                              ('dconrf1', 0, -9.9558),
                              ('dconrf2', 1, -9.9557),
                              ('endcap1', 2, -9.9552),
                              ('endcap2', 3, -9.9561),
                              ]:
-            chan = dac_channel(name, channel, min_voltage)
+            chan = dac_channel(name, channel_number, min_voltage)
             chan.value = yield self.getRegValue(name)
             d[name] = chan
         returnValue( d )
@@ -76,34 +79,45 @@ class DAC(LabradServer):
             voltage = 0
         returnValue(voltage)
             
-    @setting(0, "Set Voltage",channel = 'i', voltage = 'v', returns = '')
+    @setting(0, "Set Voltage",channel = 's', voltage = 'v[V]', returns = '')
     def setVoltage(self, c, channel, voltage):
-        #### calibration for each channel ####
-        if (channel == 0):
-            value = int((voltage + 9.9558)*2**16/20.0)
-        elif (channel == 1):
-            value = int((voltage + 9.9557)*2**16/20.0)
-        elif (channel == 2):
-            value = int((voltage + 9.9552)*2**16/20.0)
-        elif (channel == 3):
-            value = int((voltage + 9.9561)*2**16/20.0)
-        #### set the limit #####    
-        if (value>65535):
-            value = 65535
-            print 'Voltage too high'
-        elif (value < 0):
-            value = 0
-            print 'Voltage too low'
-        
+        try:
+            chan = self.d[channel]
+            minim,total = chan.min_voltage, chan.vpp
+        except KeyError:
+            raise Exception ("Channel {} not found".format(channel))
+        voltage = voltage['V']
+        value = self.voltage_to_val(voltage, minim, total)
         yield self.inCommunication.acquire()
-        yield deferToThread(self.api_dac.setVoltage, channel, value)
-        self.inCommunication.release()
-        self.notifyOtherListeners(c, (channel, value), self.onNewVoltage)
-        
-    @setting(1, "Get Voltage", channel = 'i', returns = 'v')
+        try:
+            yield deferToThread(self.api_dac.setVoltage, chan.channel_number, value)
+        finally:
+            self.inCommunication.release()
+        chan.voltage = voltage
+        self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
+ 
+    def voltage_to_val(self, voltage, minim, total, prec = 16):
+        '''converts voltage of a channel to FPGA-understood sequential value'''
+        value = int((voltage - minim) / total * (2 ** prec - 1) )
+        if not  0 <= value <= 2**16 - 1: raise Exception ("Voltage Out of Range")
+        return value
+           
+    @setting(1, "Get Voltage", channel = 's', returns = 'v[V]')
     def getVoltage(self, c, channel):
-        readout = yield deferToThread(self.api_dac.getVoltage, channel)
-        returnValue(readout)
+        try:
+            voltage = self.d[channel].voltage
+        except KeyError:
+            raise Exception ("Channel {} not found".format(channel))
+        return T.Value(voltage, 'V')
+    
+    @setting(2, "Get Range", channel = 's', returns = '(v[V]v[V])')
+    def getRange(self, c, channel):
+        try:
+            chan = self.d[channel]
+            minim,maxim = chan.min_voltage,chan.max_voltage
+        except KeyError:
+            raise Exception ("Channel {} not found".format(channel))
+        return (T.Value(minim,'V'), T.Value(maxim), 'V')
     
     def notifyOtherListeners(self, context, message, f):
         """
@@ -128,6 +142,7 @@ class DAC(LabradServer):
             for name,channel in self.d.iteritems():
                 yield self.client.registry.set(name, channel.value)
         except AttributeError:
+            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
             pass
 
 if __name__ == "__main__":
