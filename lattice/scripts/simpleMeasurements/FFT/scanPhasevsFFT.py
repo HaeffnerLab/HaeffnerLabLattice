@@ -7,9 +7,9 @@ dv = cxn.data_vault
 rs = cxn.rohdeschwarz_server
 rs.select_device('lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::102549')
 
-phaseMin = 44.0
-phaseMax = 45.0
-phaseStep = 1.0
+phaseMin =219.0
+phaseMax = 220.0
+phaseStep = 0.5
 recordTime = 0.5 #seconds
 average = 4
 freqSpan = 300.0 #Hz 

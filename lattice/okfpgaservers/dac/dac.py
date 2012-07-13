@@ -7,22 +7,58 @@ from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, D
 from twisted.internet.threads import deferToThread
 from api_dac import api_dac
 
+class dac_channel(object):
+    def __init__(self, name, channel_number, min_voltage, vpp = 20.0, value = None):
+        '''min voltage is used to calibrate the offset of the channel'''
+        self.name = name
+        self.channel = channel_number
+        self.min_voltage = min_voltage
+        self.max_voltage = min_voltage + vpp
+        self.value = value
+    
+    def is_in_range(self, voltage):
+        return (self.min_voltage  <= voltage <= self.max_voltage)
+    
+    def get_range(self):
+        return (self.min_voltage, self.max_voltage)
+    
 class DAC(LabradServer):
+    
     name = 'DAC'
     onNewVoltage = Signal(123556, 'signal: new voltage', '(vv)')
     
+    #@inlineCallbacks
     def initServer(self):
-    	self.api_dac  = api_dac()
+        self.api_dac  = api_dac()
         self.inCommunication = DeferredLock()
-        self.initializeBoard()
-        self.listeners = set()
-
-    def initializeBoard(self):
         connected = self.api_dac.connectOKBoard()
-        while not connected:
-            print 'not connected, waiting for 10 seconds to try again'
-            self.wait(10.0)
-            connected = self.api_dac.connectOKBoard()       
+        if not connected: raise Exception ("Could not connect to DAC")
+        #self.d = yield self.initializeDAC()
+        self.listeners = set()     
+    
+    @inlineCallbacks
+    def initializeDAC(self):
+        d = {}
+        for name,channel,min_voltage in [
+                             ('dconrf1', 0, -9.9558),
+                             ('dconrf2', 1, -9.9557),
+                             ('endcap1', 2, -9.9552),
+                             ('endcap2', 3, -9.9561),
+                             ]:
+            chan = dac_channel(name, channel, min_voltage)
+            chan.value = yield self.getRegValue(name)
+            d[name] = chan
+        returnValue( d )
+    
+    @inlineCallbacks
+    def getRegValue(self, name):
+        yield self.client.registry.cd(['Servers', 'DAC'], True)
+        try:
+            voltage = self.client.registry.get(name)
+        except Exception:
+            print '{} not found in registry'.format(name)
+            voltage = 0
+        returnValue(voltage)
             
     @setting(0, "Set Voltage",channel = 'i', voltage = 'v', returns = '')
     def setVoltage(self, c, channel, voltage):
@@ -52,12 +88,6 @@ class DAC(LabradServer):
     def getVoltage(self, c, channel):
         readout = yield deferToThread(self.api_dac.getVoltage, channel)
         returnValue(readout)
- 
-    def wait(self, seconds, result=None):
-        """Returns a deferred that will be fired later"""
-        d = Deferred()
-        reactor.callLater(seconds, d.callback, result)
-        return d
     
     def notifyOtherListeners(self, context, message, f):
         """
@@ -73,6 +103,13 @@ class DAC(LabradServer):
     
     def expireContext(self, c):
         self.listeners.remove(c.ID)
+    
+#    @inlineCallbacks
+#    def stopServer(self):
+#        '''save the latest voltage information into registry'''
+#        for name,channel in self.d.iteritems():
+#            yield self.client.registry.cd(['Servers', 'DAC'], True)
+#            yield self.client.registry.set(name, channel.value)
 
 if __name__ == "__main__":
     from labrad import util

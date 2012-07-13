@@ -34,11 +34,11 @@ class api_dac():
         self.xem.SetPLL22150Configuration(pll)
         
     def setVoltage(self, channel, value):
-    	## 32621 is mid-way ##
+        ## 32621 is mid-way ##
         print channel, value
-    	self.xem.SetWireInValue(channel,value)
+        self.xem.SetWireInValue(channel,value)
         self.xem.UpdateWireIns()
   
     def getVoltage(self, channel):
-		self.xem.UpdateWireOuts()
-		return self.xem.GetWireOutValue(32+channel)
+        self.xem.UpdateWireOuts()
+        return self.xem.GetWireOutValue(32+channel)

@@ -1,5 +1,5 @@
 import time
-
+from labrad import types as T
 class Crystallizer():
     
     thresholdPercentage = 0.9
@@ -41,7 +41,7 @@ class Crystallizer():
             initpower = self.rf.amplitude()
             for attempt in range(self.crystallization_attempts):
                 print 'Crystallizer: attempt number {}'.format(attempt + 1)
-                self.rf.amplitude(self.rf_crystal_power)
+                self.rf.amplitude(T.Value(self.rf_crystal_power,'dBm'))
                 time.sleep(self.rf_settling_time)
                 time.sleep(self.shutter_delay)
                 self.pulser.switch_manual('110DP',  False) #turn off DP to get all light into far red 0th order
@@ -61,7 +61,7 @@ class Crystallizer():
             if response == 'f':
                 return False
             else:
-                self.rf.amplitude(initpower)
+                self.rf.amplitude(T.Value(initpower,'dBm'))
                 time.sleep(self.rf_settling_time)
                 self.pulser.switch_manual('crystallization',  False)
                 time.sleep(self.shutter_delay)

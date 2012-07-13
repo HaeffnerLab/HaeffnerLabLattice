@@ -14,6 +14,8 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
+        from labrad import types as T
+        self.T = T
         self.cxn = yield connectAsync()
         self.server = self.cxn.trap_drive
         self.setupWidget()
@@ -69,10 +71,12 @@ class TRAPDRIVE_CONTROL(QCustomFreqPower):
         
     @inlineCallbacks
     def powerChanged(self, pwr):
+        pwr = self.T.Value(pwr, 'dBm')
         yield self.server.amplitude(pwr)
         
     @inlineCallbacks
     def freqChanged(self, freq):
+        freq = self.T.Value(freq, 'MHz')
         yield self.server.frequency(freq)
         
     @inlineCallbacks

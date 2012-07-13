@@ -1,4 +1,4 @@
-import sys; sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
+import sys; sys.path.append('/home/lattice/LabRAD/lattice/scripts')
 import labrad
 from scriptLibrary.cavityScan import scanCavity  
 
