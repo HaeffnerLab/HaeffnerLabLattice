@@ -68,8 +68,10 @@ class Andor:
         self.imageArray         = []
         self.singleImageArray   = []
         self.currentImageArray  = []
+        self.openVideoWindow()
         
-        andorVideo = AndorVideo(self)
+    def openVideoWindow(self):
+        self.andorVideo = AndorVideo(self)
 
     def __del__(self):
         error = self.dll.ShutDown()
@@ -136,6 +138,7 @@ class Andor:
             self.hend = hend
             self.vstart = vstart
             self.vend = vend
+            self.setDimensions((hend - hstart + 1), (vend - vstart + 1))
             self.imageRegion = [hbin, vbin, hstart, hend, vstart, vend]
         else:
             raise Exception(ERROR_CODE[error])
@@ -306,7 +309,7 @@ class Andor:
                 imageArray[imageNumber] = np.loadtxt(path+'-'+str(kinSetNumber + 1)+'-'+str(imageNumber+1))
 #            imageArray = np.array(imageArray)
             self.imageArray.append(np.ravel(np.array(imageArray))) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
-        del imageArray            
+        del imageArray
         
     @inlineCallbacks
     def SaveToDataVault(self, directory, name):
@@ -340,6 +343,10 @@ class Andor:
     @inlineCallbacks
     def SaveToDataVaultKinetic(self, directory, name, numKin):
         dv = self.parent.client.data_vault
+        print len(self.currentImageArray)
+        print self.height
+        print self.width
+        print numKin
         imageArray = np.reshape(self.currentImageArray, (numKin, 1, (self.height * self.width))) # needs to be currentImageArray!!!
         for image in np.arange(numKin):
             t1 = time.clock() 

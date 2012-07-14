@@ -237,7 +237,7 @@ class AndorVideo():
         self.originalHStart = 1
         self.originalHEnd = 658#self.detectorDimensions[0]
         self.originalVStart = 1
-        self.originalVEnd = 496#self.detectorDimensions[1]      
+        self.originalVEnd = 496#self.detectorDimensions[1]     
         
         self.hstart = self.originalHStart
         self.hend = self.originalHEnd

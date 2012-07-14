@@ -284,15 +284,15 @@ class AndorIonCount(LabradServer, AndorServer):
 
         t1 = time.clock()
         
-        self.kinSetParametersArray = [[] for i in range(kinSet)] # in order of image Sets in order of kinSet EXPLAIN ME BETTER LATER
+        self.kinSetParametersArray = [[] for i in range(kinSet*iterations)] # in order of image Sets in order of kinSet EXPLAIN ME BETTER LATER
         self.bestModelFits = [[] for i in range(kinSet)] #in order of images analyzed in order of kinSet EXPLAIN ME BETTER LATER
         self.analysisTimes = [[] for i in range(kinSet)] #in order of images analyzed in order of kinSet EXPLAIN ME BETTER LATER
        
         for kineticSet in np.arange(kinSet):
             for imageSet in np.arange(iterations):
                 print kineticSet + 1, imageSet + 1
-                parametersArray = self._fitInitialImage(data[kineticSet][0], kinSet, rows, cols, typicalIonDiameter, expectedNumberOfIons, initialParameters)
-                self.kinSetParametersArray[kineticSet] = tuple(parametersArray)
+                parametersArray = self._fitInitialImage(data[kineticSet][numberImagesInSet*imageSet], kinSet, rows, cols, typicalIonDiameter, expectedNumberOfIons, initialParameters)
+                self.kinSetParametersArray[iterations*kineticSet + imageSet] = tuple(parametersArray)
                 for image in np.arange(numberImagesInSet):
                     axialSums = self._getOneDDdata(data[kineticSet][numberImagesInSet*imageSet + image], rows, cols, typicalIonDiameter) 
                         
@@ -322,8 +322,8 @@ class AndorIonCount(LabradServer, AndorServer):
                         except AttributeError:
                             print 'loca!'
                         
-                        self.bestModelFits[kineticSet].append(bestFitIonArrangement)
-                        self.analysisTimes[kineticSet].append(str(datetime.time(datetime.now())))
+                    self.bestModelFits[kineticSet].append(bestFitIonArrangement)
+                    self.analysisTimes[kineticSet].append(str(datetime.time(datetime.now())))
 
 #                    print 'best: ', bestChiSquare, bestFitIonArrangement
                     darkIonPositions = np.where(np.array(bestFitIonArrangement) == 0)[0] # awesome
@@ -343,7 +343,7 @@ class AndorIonCount(LabradServer, AndorServer):
         return darkIonPositionCatalog        
 
     @inlineCallbacks
-    def _appendParametersToDatsets(self, kinSet, numKin, iterations):
+    def _appendParametersToDatasets(self, kinSet, numKin, iterations):
         
         
         numberImagesInSet = (numKin / iterations)
@@ -358,7 +358,7 @@ class AndorIonCount(LabradServer, AndorServer):
                     yield dv.open(int(numberImagesInSet*imageSet + image + 1))
                     # check if the parameters exist first!!! don't append more for the hell of it
                     try:
-                        yield dv.add_parameter_over_write(['Parameters', self.kinSetParametersArray[kineticSet]])
+                        yield dv.add_parameter_over_write(['Parameters', self.kinSetParametersArray[iterations*kineticSet + imageSet]])
                         yield dv.add_parameter_over_write(['Arrangement', self.bestModelFits[kineticSet][numberImagesInSet*imageSet + image]])
                         yield dv.add_parameter_over_write(['Time', self.analysisTimes[kineticSet][numberImagesInSet*imageSet + image]])
                     except:
@@ -417,7 +417,7 @@ class AndorIonCount(LabradServer, AndorServer):
         
     @setting(68, "Append Parameters To Datasets", kinSet = 'i', numKin = 'i', iterations = 'i',  returns = '')
     def appendParametersToDatasets(self, c, kinSet, numKin, iterations):
-        yield self._appendParametersToDatsets(kinSet, numKin, iterations)
+        yield self._appendParametersToDatasets(kinSet, numKin, iterations)
     
         
 if __name__ == "__main__":
