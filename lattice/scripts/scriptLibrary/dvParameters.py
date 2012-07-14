@@ -8,24 +8,22 @@ def measureParameters(cxn, cxnlab, list):
     dict = {}
     for item in list:
         if item == 'trapdrive':
-            ####fix trapdrive measure
-            pass
-#            server = cxn.lattice_pc_hp_server
-#            dict['rffreq'] = cxn.trap_drive.frequency()
-#            dict['rfpower'] = cxn.trap_drive.amplitude()
+            server = cxn.trap_drive
+            dict['rffreq'] = server.frequency()
+            dict['rfpower'] = server.amplitude()
         elif item == 'endcaps':
-            server = cxn.dc_box
-            [endcap1,endcap2] = [server.getendcap(ch) for ch in [1,2]]
-            dict['endcap1'] = endcap1
-            dict['endcap2'] = endcap2
+            server = cxn.dac
+            dict['endcap1'] = server.get_voltage('endcap1')
+            dict['endcap2'] = server.get_voltage('endcap2')
         elif item == 'compensation':
             server = cxn.compensation_box
             [comp1, comp2] = [server.getcomp(1), server.getcomp(2)]
             dict['comp1'] = comp1
             dict['comp2'] = comp2
         elif item == 'dcoffsetonrf':
-            server = cxn.dc_box
-            dict['dcoffsetonrf'] = server.getdcoffsetrf()
+            server = cxn.dac
+            dict['dconrf1'] = server.get_voltage('dconrf1')
+            dict['dconrf2'] = server.get_voltage('dconrf2')
         elif item == 'cavity397':
             server = cxnlab.laserdac
             dict['cavity397'] = server.getvoltage('397')
@@ -38,20 +36,6 @@ def measureParameters(cxn, cxnlab, list):
         elif item == 'multiplexer866':
             server = cxnlab.multiplexer_server
             dict['frequency866'] = server.get_frequency('866')
-        elif item == 'axialDP':
-            pass
-#            server = cxn.double_pass
-#            server.select('axial')
-#            dict['frequency_axialDP'] = server.frequency()
-#            dict['power_axialDP'] = server.amplitude()
-#            dict['output_axialDP'] = server.output()
-        elif item == 'radialDP':
-            pass
-#            server = cxn.double_pass
-#            server.select('radial')
-#            dict['frequency_radialDP'] = server.frequency()
-#            dict['power_radialDP'] = server.amplitude()
-#            dict['output_radialDP'] = server.output()
         elif item == 'pulser':
             dict['timetag_resolution'] = cxn.pulser.get_timetag_resolution()
     return dict

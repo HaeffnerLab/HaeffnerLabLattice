@@ -67,6 +67,8 @@ class DAC(LabradServer):
             chan = dac_channel(name, channel_number, min_voltage)
             chan.voltage = yield self.getRegValue(name)
             d[name] = chan
+            value = self.voltage_to_val(chan.voltage, chan.min_voltage, chan.vpp)
+            yield self.do_set_voltage(channel_number, value)
         returnValue( d )
     
     @inlineCallbacks
@@ -83,19 +85,24 @@ class DAC(LabradServer):
     def setVoltage(self, c, channel, voltage):
         try:
             chan = self.d[channel]
-            minim,total = chan.min_voltage, chan.vpp
+            minim,total,channel_number = chan.min_voltage, chan.vpp, chan.channel_number
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
         voltage = voltage['V']
         value = self.voltage_to_val(voltage, minim, total)
-        yield self.inCommunication.acquire()
-        try:
-            yield deferToThread(self.api_dac.setVoltage, chan.channel_number, value)
-        finally:
-            self.inCommunication.release()
+        yield self.do_set_voltage(channel_number, value)
         chan.voltage = voltage
         self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
- 
+    
+    @inlineCallbacks
+    def do_set_voltage(self, channel_number, value):
+        yield self.inCommunication.acquire()
+        try:
+            yield deferToThread(self.api_dac.setVoltage, channel_number, value)
+        finally:
+            self.inCommunication.release()
+        
+    
     def voltage_to_val(self, voltage, minim, total, prec = 16):
         '''converts voltage of a channel to FPGA-understood sequential value'''
         value = int((voltage - minim) / total * (2 ** prec  - 1) )

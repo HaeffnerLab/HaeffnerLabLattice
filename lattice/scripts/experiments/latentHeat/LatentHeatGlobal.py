@@ -36,7 +36,7 @@ class LatentHeat():
     experimentName = 'LatentHeat_Global_Auto'
     
     def __init__(self, seqParams, exprtParams):
-       #connect and define servers we'll be using
+        #connect and define servers we'll be using
         self.cxn = labrad.connect()
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = self.cxn.data_vault
@@ -140,7 +140,7 @@ class LatentHeat():
         self.dv.add_parameter('Window',['Histogram'])
         self.dv.add_parameter('plotLive',True)
         # gathering parameters and adding them to data vault
-        measureList = ['trapdrive','compensation','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser'] #'endcaps'dcoffsetonrf',
+        measureList = ['trapdrive','compensation','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser', 'endcaps', 'dcoffsetonrf']
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab, measureList)
         dvParameters.saveParameters(self.dv, measuredDict)
         dvParameters.saveParameters(self.dv, sP.toDict())
