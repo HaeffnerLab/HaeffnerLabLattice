@@ -1,4 +1,4 @@
-from sequence import Sequence
+#        self.connectSignals(switchable)from sequence import Sequence
 
 class PulsedScan(Sequence):
     #dictionary of variable: (type, min, max, default)
