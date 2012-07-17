@@ -34,8 +34,13 @@ class PulsedScan(Sequence):
         readout = [ (offset + i  * cT + p.cooling_time + p.switch_time, freq, p.readout_ampl) for i,freq in enumerate(freqs) ]
         readoutOff = [ (offset + i  * cT + p.cooling_time + p.switch_time + p.readout_time, freq, -63.0) for i,freq in enumerate(freqs) ]
         
-        pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
+        for readoutStartTime in readout:
+#            print 'readout : ', readoutStartTime[0]
+            pulser.add_ttl_pulse('TimeResolvedCount', readoutStartTime[0], p.readout_time)
+        
+        #pulser.add_ttl_pulse('TimeResolvedCount', 0.0, p.recordTime) #record the whole time
         for pulses in [cooling, coolingOff, readout, readoutOff ]:
+
             pulser.add_dds_pulses('110DP', pulses)
         
 if __name__ == '__main__':

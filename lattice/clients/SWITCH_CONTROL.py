@@ -7,7 +7,7 @@ class switchWidget(QtGui.QFrame):
     def __init__(self, reactor, parent=None):
         super(switchWidget, self).__init__(parent)
         #which channels to show and in what order, if None, then shows all
-        self.channels = ['axial','866DP','110DP','crystallization','bluePI','729DP']
+        self.channels = ['axial','866DP','110DP','crystallization','bluePI','729DP','pump']
         self.reactor = reactor
         self.connect()
         

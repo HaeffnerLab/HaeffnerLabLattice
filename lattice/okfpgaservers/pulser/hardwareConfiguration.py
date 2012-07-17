@@ -53,6 +53,7 @@ class hardwareConfiguration():
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
                     '729DP':channelConfiguration(6, False, True, True, True),
+                    'pump':channelConfiguration(7, False, True, True, False), ### channel 1 on the optical to electric translator
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
@@ -66,4 +67,5 @@ class hardwareConfiguration():
                '110DP':ddsConfiguration(1, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-3.0), 110.0, -33.0),
                'axial':ddsConfiguration(2, (170.0,270.0), (190.0,250.0), (-63.0,-3.0), (-63.0,-3.0), 220.0, -33.0),
                '854DP':ddsConfiguration(3, (30.0,130.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -33.0),
+               'pump':ddsConfiguration(4, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-10.0), 110.0, -33.0)
                }
