@@ -57,7 +57,7 @@ if __name__ == '__main__':
             'readout_ampl':-11.0,
             'switch_time':100.0*10**-6,
             'freq_min':90.0,
-            'freq_max':130.0,
+            'freq_max':110.0,
             'freq_step':1.0
             }
     seq.setVariables(**params)

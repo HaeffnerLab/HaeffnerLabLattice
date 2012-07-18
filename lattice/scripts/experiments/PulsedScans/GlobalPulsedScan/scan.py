@@ -140,7 +140,9 @@ class scan():
          """
         
         # Find Splice Points
+        
         subtract = numpy.zeros_like(timetags)
+        print timetags
         subtract[0:-1] = timetags[1:len(timetags)]
         difference = timetags - subtract
         signs = numpy.sign(difference)
@@ -149,7 +151,9 @@ class scan():
         splicePoints = numpy.append(splicePoints, tempSplicePoints)
         splicePoints = numpy.append(splicePoints, len(timetags))
         splicePoints = numpy.ravel(splicePoints)
-
+        
+        print splicePoints
+        
         for i in range(self.expP.iterations):
             # focus on timetags for a particular iteration
             iterationTimetags = timetags[(splicePoints[i]+1):splicePoints[i + 1]]
@@ -199,7 +203,7 @@ if __name__ == '__main__':
   
     params = {
             'cooling_time':1.0*10**-3,
-            'cooling_freq':110.0,
+            'cooling_freq':100.0,
             'cooling_ampl':-11.0,
             'readout_time':100.0*10**-6,
             'readout_ampl':-11.0,
@@ -209,7 +213,7 @@ if __name__ == '__main__':
             'freq_step':1.0
             }
     exprtParams = {
-        'iterations':50,
+        'iterations':100
         }
     exprt = scan(params,exprtParams)
     exprt.run()

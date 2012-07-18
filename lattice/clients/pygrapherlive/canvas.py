@@ -191,7 +191,7 @@ class Qt4MplCanvas(FigureCanvas):
 
             self.initializePlots(dataset, directory, numberOfDependentVariables)
 
-            self.fitData()
+            #self.fitData()
             # find initial graph limits
             #self.initialxmin, self.initialxmax = self.getDataXLimits()
             #self.ax.set_xlim(self.initialxmin,self.initialxmax)
@@ -205,6 +205,7 @@ class Qt4MplCanvas(FigureCanvas):
 
             self.cidpress = self.mpl_connect('draw_event', self.on_draw)
             self.drawGraph()
+            self.fitData()
         else:
             # New Data      
             
@@ -334,7 +335,7 @@ class Qt4MplCanvas(FigureCanvas):
                 for i in self.plotDict[dataset, directory]:
                     handles.append(i)
                     labels.append(str(dataset) + ' - ' + i.get_label())
-        self.ax.legend(handles, labels)
+        self.ax.legend(handles, labels, loc='best')
     
     # Check which datasets are meant to be plotted and draw them.
     def drawGraph(self):
