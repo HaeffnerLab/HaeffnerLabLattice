@@ -93,6 +93,7 @@ class Andor:
 
     def ShutDown(self):
         error = self.dll.ShutDown()
+        print 'SHUTDOWN succeeded'
         return ERROR_CODE[error]
             
     def GetCameraSerialNumber(self):
@@ -1006,7 +1007,8 @@ class AndorServer(LabradServer):
     
     def stopServer(self):  
         """Shuts down camera before closing"""
-        error = yield deferToThread(self.camera.ShutDown)
+        error = self.camera.ShutDown()
+        print error
 
 
 ERROR_CODE = {

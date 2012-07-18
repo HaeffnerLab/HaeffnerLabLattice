@@ -212,8 +212,9 @@ class AndorIonCount(LabradServer, AndorServer):
 
         mostIntenseData = data[(mostIntenseRegionIndex*typicalIonDiameter):(mostIntenseRegionIndex*typicalIonDiameter + typicalIonDiameter), :]
         mostIntenseDataSums = np.sum(mostIntenseData, 0)# / typicalIonDiameter #1D vector
-        mostIntenseDataSums = (mostIntenseDataSums - np.min(mostIntenseDataSums))/(np.max(mostIntenseDataSums) - np.min(mostIntenseDataSums))
-        
+#        mostIntenseDataSums = (mostIntenseDataSums - np.min(mostIntenseDataSums))/(np.max(mostIntenseDataSums) - np.min(mostIntenseDataSums))
+        mostIntenseDataSums = mostIntenseDataSums / np.sum(mostIntenseDataSums) # normalized to 1 (divided by the area under the curve)
+                
         return mostIntenseDataSums
         
     

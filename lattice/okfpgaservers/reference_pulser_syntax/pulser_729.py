@@ -35,7 +35,8 @@ arr = array.array('B', [b % 256 ,b // 256, a % 256, a // 256])
 data2 = arr.tostring()
 data = data1 + data2
 
-####phase: \x\xMSB amplitude: \x\x freq: \xLSB\xlSB\xmSB\xMSB
+####phase: \xLSB\xMSB amplitude: \x\xMSB freq: \xLSB\xlSB\xmSB\xMSB
+
 xem.WriteToBlockPipeIn(0x81, 2, data)
 
 xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00")
