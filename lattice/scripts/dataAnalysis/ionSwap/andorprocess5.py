@@ -82,7 +82,7 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
                 
     """
     
-    numSet = 0
+    numSet = 11
     
     numberImagesInSet = (numKin / iterations)
     numberImagesToAnalyze = (numKin / iterations) - 1
@@ -246,36 +246,48 @@ def GetPeakPositionCatalog(numSet, numKin, rows, cols, typicalIonDiameter, itera
             t1 = time.clock()
             bestChiSquare = float(10000000)
             bestChiSquareArray = []
+            chiSquareArray = []
             positionValues = positionDict[str(expectedNumberOfIons)]
             bestDarkModel = []
+            secondBestDarkModel = []
             for i in product(range(2), repeat=expectedNumberOfIons):
                 # build the model function
                 darkModel = 0
                 for j in np.arange(expectedNumberOfIons):
                     if i[j] == 1:
-                        print i, j
+                        #print i, j
                         darkModel += height()*exp(-(((xmodel-positionValues[j]*alpha() - beta())/sigma())**2)/2)
                 
                 darkModel += offset()
                 
                 try:
                     tempChiSquare, pValue = chisquare(sumArray[q+1], darkModel)
-                    print tempChiSquare, pValue
+                    #print tempChiSquare, pValue
+                    chiSquareArray.append([tempChiSquare, i])
                     if (tempChiSquare < bestChiSquare):
                         bestChiSquare = tempChiSquare
                         bestChiSquareArray.append(bestChiSquare)
+                        #print bestChiSquare, i
+                        secondBestDarkModel = bestDarkModel
                         bestDarkModel = darkModel
                 except AttributeError:
                     print 'loca!'
             t2 = time.clock()
+            chiSquareArray.sort()
+            print chiSquareArray
             print 'time: ', (t2-t1)
             print 'best: ', bestChiSquare   
-            print (bestChiSquareArray[-2] / bestChiSquareArray[-1])
-            print (bestChiSquareArray[-3] / bestChiSquareArray[-1])    
-            print (bestChiSquareArray[-3] / bestChiSquareArray[-2])
+#            print (bestChiSquareArray[-2] / bestChiSquareArray[-1])
+#            print (bestChiSquareArray[-3] / bestChiSquareArray[-1])    
+#            print (bestChiSquareArray[-3] / bestChiSquareArray[-2])
             pyplot.figure()
             pyplot.plot(xmodel, sumArray[q+1])
-            pyplot.plot(xmodel, bestDarkModel)
+            pyplot.plot(xmodel, bestDarkModel, label = 'best')
+            pyplot.plot(xmodel, secondBestDarkModel, label = 'runner-up')
+            pyplot.legend(loc='best')
+            #pyplot.figure()
+            #pyplot.hist(chiSquareArray[:][0], bins=50)
+            
 
 ###############-------------------------------######################
 

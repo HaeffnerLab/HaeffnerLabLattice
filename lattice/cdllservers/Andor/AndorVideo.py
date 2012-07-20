@@ -28,20 +28,25 @@ class Canvas(FigureCanvas):
         self.cnt = 0
         
         
-    def newAxes(self, hstart, hend, vstart, vend):
+    def newAxes(self, data, hstart, hend, vstart, vend):
         self.fig.clf()
         self.ax = self.fig.add_subplot(111)
         print hstart, hend, vstart, vend
-        self.im = self.ax.imshow(self.data, extent=[hstart, hend, vstart, vend], origin='lower', interpolation='nearest')#, cmap=cm.hot)#gist_heat)
+        data = np.reshape(data, ((vend-vstart+1), (hend-hstart+1)))
+        self.im = self.ax.imshow(data, extent=[hstart, hend, vstart, vend], origin='lower', interpolation='nearest')#, cmap=cm.hot)#gist_heat)
         print 'happened once!'
         self.setupSelector()
 
     def updateData(self, data, width, height):
+#        print 'i got called!'
         try:
-            self.data = np.reshape(data, (height, width))
+#            self.data = np.reshape(data, (height, width))
+            data = np.reshape(data, (height, width))
         except ValueError:
-            pass # happens if update data is called before the new width and height are calculated upon changing the image size
-        self.im.set_data(self.data)
+#            print 'i dont get it' # happens if update data is called before the new width and height are calculated upon changing the image size
+            pass
+#        self.im.set_data(self.data)
+        self.im.set_data(data)
         self.im.axes.figure.canvas.draw()
   
     def onselect(self, eclick, erelease):
@@ -80,7 +85,11 @@ class Canvas(FigureCanvas):
     
     def setupSelector(self):
         self.rectSelect = RectangleSelector(self.ax, self.onselect, drawtype='box', rectprops = dict(facecolor='red', edgecolor = 'white',
-                 alpha=0.5, fill=False))           
+                 alpha=0.5, fill=False))     
+        
+    def clearData(self):
+        #del self.data
+        pass      
         
 class AppWindow(QtGui.QWidget):
     """Creates the window for the new plot"""
@@ -173,6 +182,7 @@ class AppWindow(QtGui.QWidget):
     def abortVideo(self, evt):
         self.parent.live = False
         self.parent.parent.AbortAcquisition()
+        self.cmon.clearData()
         print 'Aborted!'
 
     def printTemperature(self, evt):
@@ -262,8 +272,8 @@ class AndorVideo():
     @inlineCallbacks
     def liveVideo(self):
                
-        width = self.width
-        height = self.height
+#        width = self.width
+#        height = self.height
         
         print "Ready for Acquisition..."
         
@@ -272,7 +282,8 @@ class AndorVideo():
             self.parent.SetAcquisitionMode(5)
             self.parent.StartAcquisition()
             try:
-                self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
+                newdata = self.parent.GetMostRecentImage()
+                self.win.cmon.newAxes(newdata, self.hstart, self.hend, self.vstart, self.vend)
             except AttributeError:
                 print 'yup outside the while'                    
             cnt = 0
@@ -281,8 +292,11 @@ class AndorVideo():
                 yield deferToThread(time.sleep, self.exposureTime)
                 newdata = self.parent.GetMostRecentImage()
                 try:
-                    self.win.cmon.updateData(newdata, (width + 1), (height + 1))
+#                    print 'call me maybe'
+                    self.win.cmon.updateData(newdata, (self.width + 1), (self.height + 1))
+#                    print width, height
+#                    print self.width, self.height
                 except AttributeError:
                     print 'yup in the while'
-                    self.win.cmon.newAxes(self.hstart, self.hend, self.vstart, self.vend)
+                    self.win.cmon.newAxes(newdata, self.hstart, self.hend, self.vstart, self.vend)
             self.parent.AbortAcquisition()      
