@@ -158,6 +158,7 @@ class Qt4MplCanvas(FigureCanvas):
 #        self.ax.set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, 15)])
         colors = ['b', 'g', 'r', 'm', 'k']
         colors.extend([colormap(i) for i in np.linspace(.2, 0.9, 7)])
+        colors.pop(8)
         self.ax.set_color_cycle(colors)
         lines = ["-"]#,"-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
         self.linecycler = cycle(lines)
