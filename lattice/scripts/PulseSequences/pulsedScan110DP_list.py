@@ -1,5 +1,4 @@
 from sequence import Sequence
-import numpy as np
 
 class PulsedScan(Sequence):
     #dictionary of variable: (type, min, max, default)
@@ -8,11 +7,9 @@ class PulsedScan(Sequence):
                     'cooling_freq':(float, 90.0, 130.0,   110.0),
                     'cooling_ampl':(float, -63.0, -3.0,   -11.0),
                     'readout_time':(float, 10e-9, 5.0, 100.0*10**-6),
-                    'readout_ampl':(float, -63.0, -3.0,   -11.0),
+                    'readout_ampl_list':((list,float), -63.0, -3.0,   -11.0),
+                    'readout_freq_list':((list,float), 90.0, 130.0, 110.0),
                     'switch_time':(float, 10e-9, 5.0,  100.0*10**-6),
-                    'freq_min':(float, 90.0, 130.0, 110.0),
-                    'freq_max':(float, 90.0, 130.0, 110.0),
-                    'freq_step':(float, 0.1, 40.0, 1.0)
                     }
     
     def defineSequence(self):
@@ -20,18 +17,18 @@ class PulsedScan(Sequence):
         pulser = self.pulser
         offset = 40e-9
         
-        freqs = np.arange(p.freq_min, p.freq_max + p.freq_step, p.freq_step)
-        freqs = np.clip(freqs, p.freq_min, p.freq_max)
-        p.freqs = freqs
+        freqs = p.readout_freq_list
+        ampls = p.readout_ampl_list
+        
         p.cycleTime = p.cooling_time + p.readout_time + 2*p.switch_time
         cT = p.cycleTime
-        p.recordTime = p.cycleTime * freqs.size
+        p.recordTime = p.cycleTime * len(freqs)
         p.startReadout =  p.cooling_time + p.switch_time
         p.stopReadout = p.startReadout + p.readout_time
         
         cooling = [ (offset + i  * cT, p.cooling_freq, p.cooling_ampl) for i,freq in enumerate(freqs) ]
         coolingOff = [ (offset + i  * cT + p.cooling_time, p.cooling_freq, -63.0) for i,freq in enumerate(freqs) ]
-        readout = [ (offset + i  * cT + p.cooling_time + p.switch_time, freq, p.readout_ampl) for i,freq in enumerate(freqs) ]
+        readout = [ (offset + i  * cT + p.cooling_time + p.switch_time, freq, ampls[i]) for i,freq in enumerate(freqs) ]
         readoutOff = [ (offset + i  * cT + p.cooling_time + p.switch_time + p.readout_time, freq, -63.0) for i,freq in enumerate(freqs) ]
         
         #record timetags only during readouts
@@ -52,11 +49,9 @@ if __name__ == '__main__':
             'cooling_freq':110.0,
             'cooling_ampl':-11.0,
             'readout_time':100.0*10**-6,
-            'readout_ampl':-11.0,
             'switch_time':100.0*10**-6,
-            'freq_min':90.0,
-            'freq_max':110.0,
-            'freq_step':1.0
+            'readout_ampl_list':[-11.0, -12.0],
+            'readout_freq_list':[110.0, 115.0],
             }
     seq.setVariables(**params)
     seq.defineSequence()
@@ -66,3 +61,4 @@ if __name__ == '__main__':
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
+    print timetags.size
