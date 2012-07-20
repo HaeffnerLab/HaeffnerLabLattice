@@ -1,6 +1,7 @@
 import sys; 
 sys.path.append('/home/lattice/LabRAD/lattice/scripts')
 sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
+sys.path.append('C:\Users\lattice\Desktop\LabRAD\lattice\scripts')
 import labrad
 import numpy
 import time
@@ -128,7 +129,7 @@ if __name__ == '__main__':
             'freq_step':1.0
             }
     exprtParams = {
-        'iterations':100
+        'iterations':50
         }
     exprt = scan(params,exprtParams)
     exprt.run()

@@ -1,12 +1,14 @@
 import sys; 
 sys.path.append('/home/lattice/LabRAD/lattice/scripts')
 sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
+sys.path.append('C:\Users\lattice\Desktop\LabRAD\lattice\scripts')
 import labrad
 import numpy
 import time
 from scriptLibrary import dvParameters 
 from PulseSequences.pulsedScan110DP_list import PulsedScan as sequence
 from fly_processing import Interpolator
+from analyzeScan import AnalyzeScan
 
 class Bunch:
     def __init__(self, **kwds):
@@ -80,7 +82,8 @@ class scan():
         #saving timetags
         ones = numpy.ones_like(timetags)
         self.dv.add(numpy.vstack((ones,timetags)).transpose())
-        self.analyzeScan(timetags)
+        analyzeScan = AnalyzeScan(self, timetags)
+        #self.analyzeScan(timetags)
     
     def analyzeScan(self, timetags):
         
@@ -149,7 +152,7 @@ if __name__ == '__main__':
             }
     
     exprtParams = {
-        'iterations':100
+        'iterations':50
         }
     exprt = scan(params,exprtParams)
     exprt.run()
