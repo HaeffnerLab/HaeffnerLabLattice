@@ -75,7 +75,7 @@ class scan():
         xP = self.expP
         self.pulser.reset_timetags()
         self.pulser.start_number(xP.iterations)
-        self.pulser.wait_sequence_done(self.expP.iterations/16)
+        self.pulser.wait_sequence_done(1000.0) #seconds
         self.pulser.stop_sequence()
         timetags = self.pulser.get_timetags().asarray
         print 'got {} timetags'.format(timetags.size)
@@ -85,26 +85,26 @@ class scan():
         analyzeScan = AnalyzeScan(self, timetags)
         #self.analyzeScan(timetags)
     
-    def analyzeScan(self, timetags):
-        
-        freqs = self.seq.parameters.readout_freq_list
-        start = self.seq.parameters.startReadout
-        stop = self.seq.parameters.stopReadout
-        cycleTime =  self.seq.parameters.cycleTime
-      
-        countsFreqArray = numpy.zeros(len(freqs)) # an array of total counts for each frequency      
-        
-        for j in range(len(freqs)):
-            startTime = (cycleTime*j + start)
-            stopTime = (cycleTime*j + stop)
-            counts = len(numpy.where((timetags >= startTime) & (timetags <= stopTime))[0])
-            countsFreqArray[j] = counts
-        
-        # Add to the data vault
-        self.dv.new('Counts',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
-        self.dv.add(numpy.vstack((freqs,countsFreqArray)).transpose())
-        self.dv.add_parameter('Window',['110DP Calibrated Scan'])
-        self.dv.add_parameter('plotLive',True)
+#    def analyzeScan(self, timetags):
+#        
+#        freqs = self.seq.parameters.readout_freq_list
+#        start = self.seq.parameters.startReadout
+#        stop = self.seq.parameters.stopReadout
+#        cycleTime =  self.seq.parameters.cycleTime
+#      
+#        countsFreqArray = numpy.zeros(len(freqs)) # an array of total counts for each frequency      
+#        
+#        for j in range(len(freqs)):
+#            startTime = (cycleTime*j + start)
+#            stopTime = (cycleTime*j + stop)
+#            counts = len(numpy.where((timetags >= startTime) & (timetags <= stopTime))[0])
+#            countsFreqArray[j] = counts
+#        
+#        # Add to the data vault
+#        self.dv.new('Counts',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
+#        self.dv.add(numpy.vstack((freqs,countsFreqArray)).transpose())
+#        self.dv.add_parameter('Window',['110DP Calibrated Scan'])
+#        self.dv.add_parameter('plotLive',True)
         
     def finalize(self):
         for name in ['axial', '110DP']:
@@ -135,24 +135,27 @@ if __name__ == '__main__':
     freq_max = 130.0
     freq_step = 1.0
     
+    
     freqs = numpy.arange(freq_min, freq_max + freq_step, freq_step)
     freqs = numpy.clip(freqs, freq_min, freq_max)
     ampls = interp.interpolated(freqs)
     freqs = freqs.tolist()
     ampls = ampls.tolist()
     
+    #print zip(freqs,ampls)
+
     params = {
-            'cooling_time':1.0*10**-3,
-            'cooling_freq':110.0,
+            'cooling_time':5.0*10**-3,
+            'cooling_freq':90.0,
             'cooling_ampl':-11.0,
-            'readout_time':100.0*10**-6,
+            'readout_time':200.0*10**-6,
             'switch_time':100.0*10**-6,
             'readout_ampl_list':ampls,
             'readout_freq_list':freqs,
             }
     
     exprtParams = {
-        'iterations':50
+        'iterations':100
         }
     exprt = scan(params,exprtParams)
     exprt.run()

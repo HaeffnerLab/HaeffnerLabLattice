@@ -33,10 +33,14 @@ class PulsedScan(Sequence):
         
         #record timetags only during readouts
         for readoutStartTime in readout:
+            #print readoutStartTime[0]
+            #print p.readout_time
             pulser.add_ttl_pulse('TimeResolvedCount', readoutStartTime[0], p.readout_time)
         
         for pulses in [cooling, coolingOff, readout, readoutOff ]:
             pulser.add_dds_pulses('110DP', pulses)
+        
+        #print readout
         
 if __name__ == '__main__':
     import labrad

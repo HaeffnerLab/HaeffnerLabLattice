@@ -20,16 +20,17 @@ class AnalyzeScan():
         for j in range(len(freqs)):
             startTime = (cycleTime*j + start)
             stopTime = (cycleTime*j + stop)
-            counts = len(numpy.where((timetags >= startTime) & (timetags <= stopTime))[0])
+            counts = numpy.count_nonzero( numpy.logical_and(timetags >= startTime, timetags <= stopTime) )
             countsFreqArray[j] = counts
         
+        countsFreqArray = countsFreqArray / (stop - start) / float(self.parent.expP.iterations)
         # Add to the data vault
         self.parent.dv.new('Counts',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
         self.parent.dv.add(numpy.vstack((freqs,countsFreqArray)).transpose())
         self.parent.dv.add_parameter('Window',['110DP Frequency Scan'])
         self.parent.dv.add_parameter('plotLive',True)         
         
-        self.fitModel(freqs, countsFreqArray)
+        #self.fitModel(freqs, countsFreqArray)
           
     def fit(self, function, parameters, y, x = None):  
         solutions = [None]*len(parameters)
