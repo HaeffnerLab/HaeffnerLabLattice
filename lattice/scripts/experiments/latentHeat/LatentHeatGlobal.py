@@ -1,12 +1,10 @@
 import sys; 
-sys.path.append('/home/lattice/LabRAD/lattice/scripts')
-sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
 import labrad
 import numpy
 import time
 from labrad import types as T
-from scriptLibrary import dvParameters 
-from PulseSequences.latentHeat import LatentHeatGlobalHeat
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.latentHeat import LatentHeatGlobalHeat
 from crystallizer import Crystallizer
 from fly_processing import Binner, Splicer
 

@@ -1,13 +1,9 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
-sys.path.append('/home/lattice/Desktop/LabRAD/lattice/scripts')
-sys.path.append('/home/lattice/Desktop/LabRAD/lattice/PulseSequences')
 import labrad
 import numpy
 import time
-from scriptLibrary import dvParameters 
-from PulseSequences.ionSwap import IonSwapBackground
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.ionSwap import IonSwapBackground
 from crystallizer import Crystallizer
 from fly_processing import Binner, Splicer
 

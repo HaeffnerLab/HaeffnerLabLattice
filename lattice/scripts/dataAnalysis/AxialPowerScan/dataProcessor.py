@@ -1,11 +1,10 @@
 import sys
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 import numpy as np
 import labrad
 import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
-from scriptLibrary import dvParameters
+from scripts.scriptLibrary import dvParameters
 from scipy.interpolate import interp1d 
 from scipy import optimize
 

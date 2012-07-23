@@ -1,11 +1,9 @@
 import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy
 import time
-from scriptLibrary import dvParameters 
-from PulseSequences.collectionEfficiency import collectionEfficiency
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.collectionEfficiency import collectionEfficiency
 import dataProcessor
 
 repeatitions = 100;

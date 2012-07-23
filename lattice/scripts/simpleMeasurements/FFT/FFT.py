@@ -1,8 +1,7 @@
-import sys; 
-sys.path.append('/home/lattice/LabRAD/lattice/scripts')
+from scripts.PulseSequences.TimeResolvedRecord import TimeResolved  
+
 import labrad
 import numpy as np
-from PulseSequences.TimeResolvedRecord import TimeResolved
 from processFFT import processFFT
 
 class measureFFT():

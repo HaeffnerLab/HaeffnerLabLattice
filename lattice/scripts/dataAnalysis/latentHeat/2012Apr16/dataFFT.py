@@ -13,10 +13,7 @@ dv = cxn.data_vault
 import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts\\simpleMeasurements\\FFT')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
-import FFT
-from FFT import measureFFT
+from scripts.simpleMeasurements.FFT.FFT import measureFFT
 
 totalTraces = 1
 datasets = ['2012Apr16_2000_11']

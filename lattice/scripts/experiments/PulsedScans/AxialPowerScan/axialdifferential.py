@@ -1,10 +1,8 @@
 import sys 
 import numpy as np
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
-from scriptLibrary import dvParameters 
-from PulseSequences.pulsedScan import PulsedScan
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.pulsedScan import PulsedScan
 import time
 import dataProcessor
 

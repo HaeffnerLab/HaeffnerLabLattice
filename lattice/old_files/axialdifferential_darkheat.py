@@ -2,6 +2,7 @@ import sys
 import numpy as np
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
 sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
+
 import labrad
 from scriptLibrary import dvParameters 
 from PulseSequences.darkHeat import darkHeat

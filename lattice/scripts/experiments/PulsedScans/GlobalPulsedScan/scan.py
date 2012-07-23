@@ -1,12 +1,8 @@
-import sys; 
-sys.path.append('/home/lattice/LabRAD/lattice/scripts')
-sys.path.append('/home/lattice/LabRAD/lattice/PulseSequences')
-sys.path.append('C:\Users\lattice\Desktop\LabRAD\lattice\scripts')
 import labrad
 import numpy
 import time
-from scriptLibrary import dvParameters 
-from PulseSequences.pulsedScan110DP import PulsedScan as sequence
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.pulsedScan110DP import PulsedScan as sequence
 
 class Bunch:
     def __init__(self, **kwds):

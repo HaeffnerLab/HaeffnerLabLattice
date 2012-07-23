@@ -1,11 +1,8 @@
-import sys; 
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\scripts')
-sys.path.append('C:\\Users\\lattice\\Desktop\\LabRAD\\lattice\\PulseSequences')
 import labrad
 import numpy
 import time
-from scriptLibrary import dvParameters 
-from PulseSequences.scan729 import scan729 as sequence
+from scripts.scriptLibrary import dvParameters 
+from scripts.PulseSequences.scan729 import scan729 as sequence
 from dataProcessor import freqscan
 
 class Bunch:
@@ -29,7 +26,7 @@ class scan729():
     experimentName = 'scan729'
     
     def __init__(self, seqParams, exprtParams, analysisParams):
-       #connect and define servers we'll be using
+        #connect and define servers we'll be using
         self.cxn = labrad.connect()
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.synth = self.cxnlab.rohdeschwarz_server
