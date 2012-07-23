@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.ncd
+OUTFILE=C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.bit
+FAMILY=Spartan6
+PART=xc6slx45-2fgg484
+WORKINGDIR=C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon
+LICENSE=WebPack
+USER_INFO=206763184_0_0_154
