@@ -1,0 +1,1 @@
+vhdtdtfi -prj photon -o C:/Users/lattice/Hong_DB/Dropbox/WORK/VHDL/XEM6010/Photon_sd_ram_2012_06_20/Photon_sd_ram_2012_05_10/photon/readout_count_fifo.vhi -module readout_count_fifo -template C:/Xilinx/14.1/ISE_DS/ISE//data/vhdlinst.tft -deleteonerror -lib work ipcore_dir/readout_count_fifo.vhd 
