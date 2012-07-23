@@ -1,4 +1,3 @@
-import sys 
 import numpy as np
 import labrad
 from scripts.scriptLibrary import dvParameters 

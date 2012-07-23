@@ -196,7 +196,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             self.dwDict[datasetObject] = overlayWindows
             for overlayWindow in overlayWindows:
                 overlayWindow.qmc.initializeDataset(dataset, directory, datasetLabels)
-                overlayWindow.createDatasetCheckbox(dataset, directory)
+#                overlayWindow.createDatasetCheckbox(dataset, directory)
                 overlayWindowNames.append(overlayWindow.windowName)
         elif (len(windowNames) == 0):
             windowName = 'Window ' + str(self.windowCounter)
@@ -206,7 +206,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             yield deferToThread(time.sleep, .01)
             self.dwDict[datasetObject] = [win]
             win.qmc.initializeDataset(dataset, directory, datasetLabels)
-            win.createDatasetCheckbox(dataset, directory)
+#            win.createDatasetCheckbox(dataset, directory)
                     
         # process windowNames that came from parameters (the following won't happen without window parameters specified)
         for windowName in windowNames:
@@ -219,7 +219,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 except KeyError:
                     self.dwDict[datasetObject] = [self.winDict[windowName]]    
                 self.winDict[windowName].qmc.initializeDataset(dataset, directory, datasetLabels)
-                self.winDict[windowName].createDatasetCheckbox(dataset, directory)
+#                self.winDict[windowName].createDatasetCheckbox(dataset, directory)
             else:
                 context = yield self.cxn.context() # create a new context
                 win = self.newGraph(context, windowName)
@@ -229,7 +229,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 except KeyError:
                     self.dwDict[datasetObject] = [win]    
                 win.qmc.initializeDataset(dataset, directory, datasetLabels)
-                win.createDatasetCheckbox(dataset, directory)
+#                win.createDatasetCheckbox(dataset, directory)
 
     # create a new graph window
 #    def newGraph(self, context, windowName):

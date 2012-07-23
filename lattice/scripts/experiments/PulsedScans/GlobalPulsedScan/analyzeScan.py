@@ -1,4 +1,5 @@
 import numpy
+import time
 from scipy import optimize
 
 class AnalyzeScan():
@@ -30,7 +31,7 @@ class AnalyzeScan():
         self.parent.dv.add_parameter('Window',['110DP Frequency Scan'])
         self.parent.dv.add_parameter('plotLive',True)         
         
-        #self.fitModel(freqs, countsFreqArray)
+        self.fitModel(freqs, countsFreqArray)
           
     def fit(self, function, parameters, y, x = None):  
         solutions = [None]*len(parameters)
@@ -40,7 +41,7 @@ class AnalyzeScan():
                 solutions[i] = p
                 i += 1
             return (y - function(x, params))
-        if x is None: x = np.arange(y.shape[0])
+        if x is None: x = numpy.arange(y.shape[0])
         optimize.leastsq(f, parameters)
         return solutions
     
@@ -64,6 +65,6 @@ class AnalyzeScan():
         
         self.parent.dv.new('Model',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
         self.parent.dv.add(numpy.vstack((xmodel,model)).transpose())
-        #self.parent.dv.add_parameter('Window',['110DP Frequency Scan'])
+        self.parent.dv.add_parameter('Window',['110DP Frequency Scan'])
         self.parent.dv.add_parameter('plotLive',True)
         

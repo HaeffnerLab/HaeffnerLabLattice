@@ -1,5 +1,4 @@
-import sys
-mport numpy as np
+import numpy as np
 import labrad
 import matplotlib
 matplotlib.use('Qt4Agg')
