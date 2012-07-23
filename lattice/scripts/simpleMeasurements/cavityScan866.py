@@ -1,6 +1,5 @@
-import sys; sys.path.append('/home/lattice/LabRAD/lattice/scripts')
 import labrad
-from scriptLibrary.cavityScan import scanCavity  
+from scripts.scriptLibrary.cavityScan import scanCavity  
 
 cxn = labrad.connect()
 cxnlab =  labrad.connect('192.168.169.49')
