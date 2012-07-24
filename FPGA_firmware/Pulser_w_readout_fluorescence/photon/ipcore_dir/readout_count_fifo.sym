@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <symbol version="7" name="readout_count_fifo">
     <symboltype>BLOCK</symboltype>
-    <timestamp>2012-7-24T22:23:49</timestamp>
+    <timestamp>2012-7-24T22:45:59</timestamp>
     <pin polarity="Input" x="0" y="112" name="rst" />
     <pin polarity="Input" x="0" y="208" name="wr_clk" />
     <pin polarity="Input" x="0" y="240" name="din[31:0]" />
