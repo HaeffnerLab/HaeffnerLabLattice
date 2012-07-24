@@ -1,9 +1,9 @@
 --------------------------------------------------------------------------------
-Release 14.1 Trace  (nt)
+Release 14.1 Trace  (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-C:\Xilinx\14.1\ISE_DS\ISE\bin\nt\unwrapped\trce.exe -intstyle ise -v 3 -s 2 -n
-3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf
+C:\Xilinx\14.1\ISE_DS\ISE\bin\nt64\unwrapped\trce.exe -intstyle ise -v 3 -s 2
+-n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf
 xem6010.ucf
 
 Design file:              photon.ncd
@@ -5671,14 +5671,14 @@ Design statistics:
 ------------------------------------Footnotes-----------------------------------
 1)  The minimum period statistic assumes all single cycle delays.
 
-Analysis completed Mon Jul 09 11:07:49 2012 
+Analysis completed Mon Jul 23 17:35:35 2012 
 --------------------------------------------------------------------------------
 
 Trace Settings:
 -------------------------
 Trace Settings 
 
-Peak Memory Usage: 222 MB
+Peak Memory Usage: 328 MB
 
 
 

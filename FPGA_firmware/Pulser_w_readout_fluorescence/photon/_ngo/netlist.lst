@@ -1,14 +1,14 @@
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.ngc 1341857124
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/dds_fifo.ngc 1340246047
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okWireIn.ngc 1340241059
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okTriggerIn.ngc 1340241062
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okWireOut.ngc 1340241062
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okBTPipeIn.ngc 1340241060
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okBTPipeOut.ngc 1340241060
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/pulse_fifo.ngc 1340246434
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/fifo_photon.ngc 1340246228
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/normal_pmt_fifo.ngc 1340246331
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/pulser_ram.ngc 1340246492
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/okCoreHarness.ngc 1340241063
-C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon/TFIFO64x8a_64x8b.ngc 1340241061
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.ngc 1343089907
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/dds_fifo.ngc 1343081550
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okWireIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okTriggerIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okWireOut.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okBTPipeIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okBTPipeOut.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/pulse_fifo.ngc 1343081553
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/fifo_photon.ngc 1343081550
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/normal_pmt_fifo.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/pulser_ram.ngc 1343081553
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/okCoreHarness.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon/TFIFO64x8a_64x8b.ngc 1343081550
 OK

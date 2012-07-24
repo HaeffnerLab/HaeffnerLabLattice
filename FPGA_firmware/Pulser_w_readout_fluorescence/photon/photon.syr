@@ -1,16 +1,16 @@
-Release 14.1 - xst P.15xf (nt)
+Release 14.1 - xst P.15xf (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 --> Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.20 secs
  
 --> Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.20 secs
  
 --> Reading design: photon.prj
 
@@ -108,31 +108,31 @@ Cores Search Directories           : {"ipcore_dir"  }
 =========================================================================
 *                          HDL Parsing                                  *
 =========================================================================
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\pulse_fifo.vhd" into library work
-Parsing entity <pulse_fifo>.
-Parsing architecture <pulse_fifo_a> of entity <pulse_fifo>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\okLibrary.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\okLibrary.vhd" into library work
 Parsing entity <okHost>.
 Parsing architecture <archHost> of entity <okhost>.
 Parsing entity <okWireOR>.
 Parsing architecture <archWireOR> of entity <okwireor>.
 Parsing package <FRONTPANEL>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\normal_pmt_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\normal_pmt_fifo.vhd" into library work
 Parsing entity <normal_pmt_fifo>.
 Parsing architecture <normal_pmt_fifo_a> of entity <normal_pmt_fifo>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\ipcore_dir\pulser_ram.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\ipcore_dir\pulse_fifo.vhd" into library work
+Parsing entity <pulse_fifo>.
+Parsing architecture <pulse_fifo_a> of entity <pulse_fifo>.
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\ipcore_dir\pulser_ram.vhd" into library work
 Parsing entity <pulser_ram>.
 Parsing architecture <pulser_ram_a> of entity <pulser_ram>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\ipcore_dir\fifo_photon.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\ipcore_dir\fifo_photon.vhd" into library work
 Parsing entity <fifo_photon>.
 Parsing architecture <fifo_photon_a> of entity <fifo_photon>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\ipcore_dir\clk_pll_100_in_200_out.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\ipcore_dir\clk_pll_100_in_200_out.vhd" into library work
 Parsing entity <clk_pll_100_in_200_out>.
 Parsing architecture <xilinx> of entity <clk_pll_100_in_200_out>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\dds_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\dds_fifo.vhd" into library work
 Parsing entity <dds_fifo>.
 Parsing architecture <dds_fifo_a> of entity <dds_fifo>.
-Parsing VHDL file "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" into library work
 Parsing entity <photon>.
 Parsing architecture <arch> of entity <photon>.
 
@@ -151,39 +151,39 @@ Elaborating entity <pulse_fifo> (architecture <pulse_fifo_a>) from library <work
 Elaborating entity <pulser_ram> (architecture <pulser_ram_a>) from library <work>.
 
 Elaborating entity <fifo_photon> (architecture <fifo_photon_a>) from library <work>.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" Line 780: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
-INFO:HDLCompiler:679 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" Line 820. Case statement is complete. others clause is never selected
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" Line 780: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
+INFO:HDLCompiler:679 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" Line 820. Case statement is complete. others clause is never selected
 
 Elaborating entity <normal_pmt_fifo> (architecture <normal_pmt_fifo_a>) from library <work>.
-WARNING:HDLCompiler:92 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" Line 868: pmt_readout_count should be on the sensitivity list of the process
+WARNING:HDLCompiler:92 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" Line 868: pmt_readout_count should be on the sensitivity list of the process
 
 Elaborating entity <okHost> (architecture <archHost>) from library <work>.
 
 Elaborating entity <okWireOR> (architecture <archWireOR>) with generics from library <work>.
-WARNING:HDLCompiler:634 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" Line 275: Net <pulser_flag_register[15]> does not have a driver.
+WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" Line 275: Net <pulser_flag_register[15]> does not have a driver.
 
 =========================================================================
 *                           HDL Synthesis                               *
 =========================================================================
 
 Synthesizing Unit <photon>.
-    Related source file is "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd".
 WARNING:Xst:647 - Input <logic_in> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 321: Output port <wr_data_count> of the instance <fifo4> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 321: Output port <full> of the instance <fifo4> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 366: Output port <CLK_OUT3> of the instance <pll> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 380: Output port <rd_data_count> of the instance <fifo2> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 380: Output port <full> of the instance <fifo2> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 721: Output port <full> of the instance <fifo1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 721: Output port <empty> of the instance <fifo1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 834: Output port <full> of the instance <fifo5> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 920: Output port <full> of the instance <fifo3> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 920: Output port <empty> of the instance <fifo3> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 946: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 948: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 951: Output port <ep_blockstrobe> of the instance <epA0> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 954: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\photon.vhd" line 957: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 321: Output port <wr_data_count> of the instance <fifo4> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 321: Output port <full> of the instance <fifo4> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 366: Output port <CLK_OUT3> of the instance <pll> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 380: Output port <rd_data_count> of the instance <fifo2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 380: Output port <full> of the instance <fifo2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 721: Output port <full> of the instance <fifo1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 721: Output port <empty> of the instance <fifo1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 834: Output port <full> of the instance <fifo5> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 920: Output port <full> of the instance <fifo3> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 920: Output port <empty> of the instance <fifo3> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 946: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 948: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 951: Output port <ep_blockstrobe> of the instance <epA0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 954: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd" line 957: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
 WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
     Register <fifo_photon_wr_clk> equivalent to <pmt_synced> has been removed
     Found 1-bit register for signal <led<3>>.
@@ -322,13 +322,13 @@ WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned
 Unit <photon> synthesized.
 
 Synthesizing Unit <clk_pll_100_in_200_out>.
-    Related source file is "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\ipcore_dir\clk_pll_100_in_200_out.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\ipcore_dir\clk_pll_100_in_200_out.vhd".
     Summary:
 	no macro.
 Unit <clk_pll_100_in_200_out> synthesized.
 
 Synthesizing Unit <okHost>.
-    Related source file is "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\okLibrary.vhd".
     Found 16-bit register for signal <hi_dataout_reg>.
     Found 16-bit register for signal <hi_datain>.
     Found 1-bit register for signal <hi_drive>.
@@ -354,7 +354,7 @@ Synthesizing Unit <okHost>.
 Unit <okHost> synthesized.
 
 Synthesizing Unit <okWireOR>.
-    Related source file is "C:\Users\lattice\Hong_DB\Dropbox\WORK\VHDL\XEM6010\Photon_sd_ram_2012_06_20\Photon_sd_ram_2012_05_10\photon\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\okLibrary.vhd".
         N = 7
     Summary:
 	no macro.
@@ -1781,12 +1781,12 @@ wr_clk_var_0039|    3.452|         |         |         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 25.00 secs
-Total CPU time to Xst completion: 24.33 secs
+Total REAL time to Xst completion: 38.00 secs
+Total CPU time to Xst completion: 38.42 secs
  
 --> 
 
-Total memory usage is 217896 kilobytes
+Total memory usage is 313340 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :   79 (   0 filtered)

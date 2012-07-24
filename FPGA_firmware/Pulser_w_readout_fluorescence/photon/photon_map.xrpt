@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<document OS="nt" product="ISE" version="14.1">
+<document OS="nt64" product="ISE" version="14.1">
 
   <!--The data in this file is primarily intended for consumption by Xilinx tools.
     The structure and the elements are likely to change over the next few releases.
     This means code written to parse this file will need to be revisited each subsequent release.-->
 
-  <application stringID="Map" timeStamp="Mon Jul 09 11:06:48 2012">
+  <application stringID="Map" timeStamp="Mon Jul 23 17:34:21 2012">
     <section stringID="User_Env">
       <table stringID="User_EnvVar">
         <column stringID="variable"/>
         <column stringID="value"/>
         <row stringID="row" value="0">
           <item stringID="variable" value="Path"/>
-          <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\ISE\\lib\nt;C:\Xilinx\14.1\ISE_DS\ISE\\bin\nt;C:\Xilinx\14.1\ISE_DS\ISE\bin\nt;C:\Xilinx\14.1\ISE_DS\ISE\lib\nt;C:\Xilinx\14.1\ISE_DS\PlanAhead\bin;C:\Xilinx\14.1\ISE_DS\EDK\bin\nt;C:\Xilinx\14.1\ISE_DS\EDK\lib\nt;C:\Xilinx\14.1\ISE_DS\EDK\gnu\microblaze\nt\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnu\powerpc-eabi\nt\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnu\arm\nt\bin;C:\Xilinx\14.1\ISE_DS\common\bin\nt;C:\Xilinx\14.1\ISE_DS\common\lib\nt;C:\Python27\Lib\site-packages\PyQt4;C:\Python26\Lib\site-packages\PyQt4\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Common Files\Roxio Shared\DLLShared\;C:\Program Files\Common Files\Roxio Shared\10.0\DLLShared\;C:\Program Files\Windows Live\Shared;C:\Program Files\Altium Designer Summer 09\System;C:\Program Files\IVI Foundation\VISA\WinNT\Bin\;C:\Program Files\IVI Foundation\VISA\WinNT\Bin;C:\Python27\Scripts;C:\Python27\;C:\Users\lattice\Desktop\LabRAD\lattice\scripts"/>
+          <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\ISE\\lib\nt64;C:\Xilinx\14.1\ISE_DS\ISE\\bin\nt64;C:\Xilinx\14.1\ISE_DS\ISE\bin\nt64;C:\Xilinx\14.1\ISE_DS\ISE\lib\nt64;C:\Xilinx\Vivado\2012.1\bin;C:\Xilinx\14.1\ISE_DS\PlanAhead\bin;C:\Xilinx\14.1\ISE_DS\EDK\bin\nt64;C:\Xilinx\14.1\ISE_DS\EDK\lib\nt64;C:\Xilinx\14.1\ISE_DS\EDK\gnu\microblaze\nt64\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnu\powerpc-eabi\nt64\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.1\ISE_DS\EDK\gnu\arm\nt64\bin;C:\Xilinx\14.1\ISE_DS\common\bin\nt64;C:\Xilinx\14.1\ISE_DS\common\lib\nt64;C:\Python27\Lib\site-packages\PyQt4;C:\Python32\Lib\site-packages\PyQt4;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Altium Designer Summer 09\System;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files (x86)\MATLAB\R2010a Student\bin;C:\Program Files\IVI Foundation\VISA\Win64\Bin\;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin\;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin"/>
         </row>
         <row stringID="row" value="1">
           <item stringID="variable" value="PATHEXT"/>
@@ -23,29 +23,37 @@
           <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\ISE\"/>
         </row>
         <row stringID="row" value="3">
+          <item stringID="variable" value="XILINXD_LICENSE_FILE"/>
+          <item stringID="value" value="C:\.Xilinx\Xilinx.lic"/>
+        </row>
+        <row stringID="row" value="4">
           <item stringID="variable" value="XILINX_DSP"/>
           <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\ISE"/>
         </row>
-        <row stringID="row" value="4">
+        <row stringID="row" value="5">
           <item stringID="variable" value="XILINX_EDK"/>
           <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\EDK"/>
         </row>
-        <row stringID="row" value="5">
+        <row stringID="row" value="6">
           <item stringID="variable" value="XILINX_PLANAHEAD"/>
           <item stringID="value" value="C:\Xilinx\14.1\ISE_DS\PlanAhead"/>
         </row>
+        <row stringID="row" value="7">
+          <item stringID="variable" value="XILINX_VIVADO"/>
+          <item stringID="value" value="C:\Xilinx\Vivado\2012.1"/>
+        </row>
       </table>
       <item stringID="User_EnvOs" value="OS Information">
-        <item stringID="User_EnvOsname" value="Microsoft Windows 7 , 32-bit"/>
+        <item stringID="User_EnvOsname" value="Microsoft Windows 7 , 64-bit"/>
         <item stringID="User_EnvOsrelease" value="Service Pack 1  (build 7601)"/>
       </item>
-      <item stringID="User_EnvHost" value="lattice-PC"/>
+      <item stringID="User_EnvHost" value="lattice-imaging"/>
       <table stringID="User_EnvCpu">
         <column stringID="arch"/>
         <column stringID="speed"/>
         <row stringID="row" value="0">
-          <item stringID="arch" value="Intel(R) Core(TM) i3 CPU         540  @ 3.07GHz"/>
-          <item stringID="speed" value="3059 MHz"/>
+          <item stringID="arch" value="Intel(R) Core(TM)2 Quad  CPU   Q8200  @ 2.33GHz"/>
+          <item stringID="speed" value="2327 MHz"/>
         </row>
       </table>
     </section>
@@ -117,9 +125,9 @@
         <item dataType="int" stringID="MAP_NUM_ERRORS" value="0"/>
         <item dataType="int" stringID="MAP_FILTERED_WARNINGS" value="0"/>
         <item dataType="int" stringID="MAP_NUM_WARNINGS" value="34"/>
-        <item UNITS="KB" dataType="int" stringID="MAP_PEAK_MEMORY" value="385520"/>
-        <item stringID="MAP_TOTAL_REAL_TIME" value="1 mins 12 secs "/>
-        <item stringID="MAP_TOTAL_CPU_TIME" value="1 mins 11 secs "/>
+        <item UNITS="KB" dataType="int" stringID="MAP_PEAK_MEMORY" value="533688"/>
+        <item stringID="MAP_TOTAL_REAL_TIME" value="1 mins 37 secs "/>
+        <item stringID="MAP_TOTAL_CPU_TIME" value="1 mins 35 secs "/>
       </section>
       <section stringID="MAP_SLICE_REPORTING">
         <item AVAILABLE="54576" dataType="int" label="Number of Slice Registers" stringID="MAP_SLICE_REGISTERS" value="2316">
