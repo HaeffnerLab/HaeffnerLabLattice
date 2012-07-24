@@ -3,6 +3,7 @@ _xmsgs\pn_parser.xmsgs
 readout_count_fifo.asy
 readout_count_fifo.gise
 readout_count_fifo.ngc
+readout_count_fifo.sym
 readout_count_fifo.vhd
 readout_count_fifo.vho
 readout_count_fifo.xco
