@@ -152,7 +152,7 @@ if __name__ == '__main__':
             }
     
     exprtParams = {
-        'iterations':100
+        'iterations':2
         }
     exprt = scan(params,exprtParams)
     exprt.run()

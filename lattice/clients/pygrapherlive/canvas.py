@@ -174,17 +174,20 @@ class Qt4MplCanvas(FigureCanvas):
     # Initialize a place in the dictionary for the dataset
     def initializeDataset(self, dataset, directory, labels):
         self.dataDict[dataset, directory] = None
-        self.datasetLabelsDict[dataset, directory] = labels     
+        self.datasetLabelsDict[dataset, directory] = labels 
     
     # retrieve and store the new data from Connections
     def setPlotData(self, dataset, directory, data):
         # First Time
         numberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable           
         numberOfDataPoints = data.shape[0]
-
+        print 'print datadict'
+        print self.dataDict[dataset, directory]
         if (self.dataDict[dataset, directory] == None):        
             self.dataDict[dataset, directory] = [[np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]#, [np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]           
+            print 'why didnt i happen?'
             self.plotDict[dataset, directory] = [[]]*numberOfDependentVariables
+            self.parent.createDatasetCheckbox(dataset, directory)    
             # plot parameters
             self.plotParametersDict[dataset, directory] = [MAXDATASETSIZE, 0, False, False, False]          
             # update the data points
@@ -331,6 +334,8 @@ class Qt4MplCanvas(FigureCanvas):
 #        handles, labels = self.ax.get_legend_handles_labels()
         handles = []
         labels = []
+        print 'printing!'
+        print self.plotDict
         for dataset,directory in self.parent.datasetCheckboxes.keys():
             if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in self.plotDict[dataset, directory]:
@@ -341,7 +346,8 @@ class Qt4MplCanvas(FigureCanvas):
     # Check which datasets are meant to be plotted and draw them.
     def drawGraph(self):
 #        tstartupdate = time.clock()
-        for dataset, directory in self.dataDict:
+#        for dataset, directory in self.dataDict:
+        for dataset,directory in self.parent.datasetCheckboxes.keys():
             # if dataset is intended to be drawn (a checkbox governs this)
             if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 self.drawPlot(dataset, directory)
