@@ -879,6 +879,7 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 				WHEN 1 => 
 					count:=count+1;
 				WHEN 2 => 
+				---high--
 					wr_clk_var := '1';
 					count:=count+1;
 				WHEN 3 => 
@@ -889,7 +890,8 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 				WHEN 5 => 
 					count:=count+1;
 				WHEN 6 => 
-					wr_clk_var := '0';
+				---high--
+					wr_clk_var := '1';
 					count:=count+1;
 				WHEN 7 => 
 					count:=count+1;
@@ -899,6 +901,7 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 				WHEN 9 => 
 					count:=count+1;
 				WHEN 10 => 
+				---high--
 					wr_clk_var := '1';
 					count:=count+1;
 				WHEN 11 => 
@@ -909,7 +912,8 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 				WHEN 13 => 
 					count:=count+1;
 				WHEN 14 => 
-					wr_clk_var := '0';
+				---high--
+					wr_clk_var := '1';
 					count:=count+1;
 				WHEN 15 => 
 					count:=count+1;
