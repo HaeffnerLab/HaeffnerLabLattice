@@ -1,7 +1,7 @@
 Release 14.1 Drc P.15xf (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-Tue Jul 24 15:50:35 2012
+Tue Jul 24 16:07:32 2012
 
 drc -z photon.ncd photon.pcf
 
@@ -130,10 +130,10 @@ WARNING:PhysDesignRules:372 - Gated clock. Clock net
    combinatorial pin. This is not good design practice. Use the CE pin to
    control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 DRC detected 0 errors and 33 warnings.  Please see the previously displayed
 individual error or warning messages for more details.
