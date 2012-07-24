@@ -831,7 +831,7 @@ readout_count_fifo_reset <= ep40wire(4);
 readout_count_pipe_out_valid <= '1';
 
 ------------------ readout_count FIFO
-fifo5: normal_pmt_fifo port map (rst => readout_count_fifo_reset,
+fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 									wr_clk => readout_count_wr_clk,
 									rd_clk =>ti_clk,
 									din => readout_count_fifo_data,

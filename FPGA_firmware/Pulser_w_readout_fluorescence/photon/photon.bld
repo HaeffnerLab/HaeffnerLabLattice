@@ -32,6 +32,7 @@ ton/pulse_fifo.ngc"...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
 ton/fifo_photon.ngc"...
+Loading design module "ipcore_dir/readout_count_fifo.ngc"...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
 ton/normal_pmt_fifo.ngc"...
@@ -94,10 +95,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 190236 kilobytes
+Total memory usage is 190428 kilobytes
 
 Writing NGD file "photon.ngd" ...
 Total REAL time to NGDBUILD completion:  11 sec
-Total CPU time to NGDBUILD completion:   10 sec
+Total CPU time to NGDBUILD completion:   11 sec
 
 Writing NGDBUILD log file "photon.bld"...
