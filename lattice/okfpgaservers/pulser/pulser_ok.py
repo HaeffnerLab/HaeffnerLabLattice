@@ -19,7 +19,7 @@ timeout = 20
 '''
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock, Deferred
+from twisted.internet.defer import returnValue, DeferredLock, Deferred
 from twisted.internet.threads import deferToThread
 import numpy
 import time
@@ -254,7 +254,7 @@ class Pulser(LabradServer, DDS):
         return answer
     
     @setting(15, 'Wait Sequence Done', timeout = 'v', returns = 'b')
-    def waitSequenceDone(self, c, timeout = 10):
+    def waitSequenceDone(self, c, timeout = MAX_SEQUENCE):
         """
         Returns true if the sequence has completed within a timeout period
         """
@@ -297,22 +297,26 @@ class Pulser(LabradServer, DDS):
         yield deferToThread(self.api.resetFIFONormal)
         self.inCommunication.release()
     
-    @setting(22, 'Set Collection Time', time = 'v', mode = 's', returns = '')
-    def setCollectTime(self, c, time, mode):
+    @setting(22, 'Set Collection Time', new_time = 'v', mode = 's', returns = '')
+    def setCollectTime(self, c, new_time, mode):
         """
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
         """
-        time = float(time)
-        if not collectionTimeRange[0]<=time<=collectionTimeRange[1]: raise Exception('incorrect collection time')
+        new_time = float(new_time)
+        if not collectionTimeRange[0]<=new_time<=collectionTimeRange[1]: raise Exception('incorrect collection time')
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
         if mode == 'Normal':
-            self.collectionTime[mode] = time
+            prev_time = self.collectionTime[mode]
+            self.collectionTime[mode] = new_time
             yield self.inCommunication.acquire()
-            yield deferToThread(self.api.resetFIFONormal)
-            yield deferToThread(self.api.setPMTCountRate, time)
+            yield deferToThread(self.api.setPMTCountRate, new_time)
+            yield self.wait(1.5 * numpy.max([prev_time , new_time]))
+            #clear existing counts
+            c =  yield deferToThread(self.api.getNormalTotal);
+            yield deferToThread(self.api.getNormalCounts,c)
             self.inCommunication.release()
         elif mode == 'Differential':
-            self.collectionTime[mode] = time
+            self.collectionTime[mode] = new_time
     
     @setting(23, 'Get Collection Time', returns = '(vv)')
     def getCollectTime(self, c):
@@ -365,14 +369,10 @@ class Pulser(LabradServer, DDS):
     
     def doGetReadoutCounts(self):
         inFIFO = self.api.getReadoutTotal()
-        print 'in fifo', inFIFO
         reading = self.api.getReadoutCounts(inFIFO)
-        #print 'length reading', len(reading)
-        print [reading]
         split = self.split_len(reading, 4)
         countlist = map(self.infoFromBuf_readout, split)
         return countlist
-        
     
     @staticmethod
     def infoFromBuf(buf):
@@ -446,9 +446,9 @@ class Pulser(LabradServer, DDS):
         reactor.callLater(seconds, d.callback, result)
         return d
     
-    def cnot(self, control, input):
+    def cnot(self, control, inp):
         if control:
-            input = not input
+            inp = not inp
         return input
     
     def notifyOtherListeners(self, context, message, f):
