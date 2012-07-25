@@ -767,63 +767,129 @@ begin
 	--------- trigger to reset FIFO -----
 	
 	normal_pmt_fifo_reset<=ep40wire(2);
-	
-	--------- LED -------
-	
-	--led(5 DOWNTO 1) <= NOT normal_pmt_rd_data_count(6 DOWNTO 2);
-	--led(0) <= not normal_pmt_count_trigger;
-	--led(7) <= not normal_pmt_full;
-	--led(6) <= not master_logic(0);
-	
 	normal_pmt_block_aval <= '0' WHEN normal_pmt_rd_data_count = "00000000000" ELSE '1';
+	
+	
+	-- FIFO for normal PMT: write in is 32 bit, read out 16 bit --
+	fifo3: normal_pmt_fifo port map (rst => normal_pmt_fifo_reset,
+													wr_clk => clk_100,
+													rd_clk =>ti_clk,
+													din => normal_pmt_fifo_data,
+													wr_en => normal_pmt_wr_en,
+													rd_en =>normal_pmt_pipe_out_read, 
+													dout => normal_pmt_pipe_out_data,
+													full =>normal_pmt_full,
+													empty =>normal_pmt_empty,
+													rd_data_count=>normal_pmt_rd_data_count
+													);
 	
 	------ generate timing sequece -------
 	------ write to fifo at the beginning of the count trigger ----
 	------ the dead time that we can't count is very low and can be ignored ------
-	
 	process (clk_100, normal_pmt_count_trigger)   ----count_trigger_active_high----
-		variable count: integer range 0 to 10:=0;
-		variable wr_clk_var: STD_LOGIC:='0';
+		variable count: integer range 0 to 9:=9;
 		variable wr_en_var: STD_LOGIC:='0';
 		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000";
 		variable pmt_count_reset_var: STD_LOGIC:='0';
 	begin
 		if (normal_pmt_count_trigger = '0') then
 			count:=0;
-		elsif (rising_edge(clk_100) and normal_pmt_count_trigger = '1') then
+		elsif (rising_edge(clk_100)) then
 			case count IS
-				WHEN 0 => wr_clk_var := '0';
-							 wr_en_var := '0';
-							 fifo_data_var (30 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(pmt_count,31);
-							 fifo_data_var (31) := '0' WHEN ep00wire(0) = '0' ELSE 
+				WHEN 0 =>
+					--define data--
+					wr_en_var := '0';
+					fifo_data_var (30 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(pmt_count,31);
+					fifo_data_var (31) := '0' WHEN ep00wire(0) = '0' ELSE 
 														  '0'	WHEN (master_logic(0) = '1' AND ep00wire(0) = '1') ELSE 
 														  '1';
-							 pmt_count_reset_var:='0';
-							 count:=count+1;
-				WHEN 1 => count:=count+1;
-				WHEN 2 => wr_en_var:='1';
-							 count:=count+1;
-				WHEN 3 => count:=count+1;
-				WHEN 4 => wr_clk_var:='1';
-							 count:=count+1;
-				WHEN 5 => count:=count+1;
-				WHEN 6 => wr_clk_var:='0';
-							 wr_en_var:='0';
-							 count:=count+1;
-				WHEN 7 => count:=count+1;
-				WHEN 8 => pmt_count_reset_var:='1';
-							 count:=count+1;
-				WHEN 9 => count:=count+1;
-				WHEN 10 => pmt_count_reset_var:='0';
-				WHEN OTHERS => NULL;
+					pmt_count_reset_var:='0';
+					count:=count+1;
+				WHEN 1 =>
+					--enable write
+					wr_en_var:='1';
+					count:=count+1;
+				WHEN 2 =>
+					--disable write
+					wr_en_var:='0';
+					count:=count+1;
+				WHEN 3 => 
+					count:=count+1;
+				WHEN 4 =>
+					count:=count+1;
+				WHEN 5 => 
+					count:=count+1;
+				WHEN 6 =>
+					count:=count+1;
+				WHEN 7 => 
+					count:=count+1;
+				WHEN 8 => 
+					--disable reset of pmt counting
+					pmt_count_reset_var:='1';
+					count := count+1;
+				WHEN 9 => 
+					wr_en_var:='0';
 			end case;	 
-			normal_pmt_wr_clk<=wr_clk_var;
 			normal_pmt_wr_en<=wr_en_var;
 			normal_pmt_fifo_data<=fifo_data_var;
 			pmt_count_reset<=pmt_count_reset_var;
 		end if;
 	end process;
+	
+--	process (clk_100, normal_pmt_count_trigger)   ----count_trigger_active_high----
+--		variable count: integer range 0 to 10:=0;
+--		variable wr_clk_var: STD_LOGIC:='0';
+--		variable wr_en_var: STD_LOGIC:='0';
+--		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000";
+--		variable pmt_count_reset_var: STD_LOGIC:='0';
+--	begin
+--		if (normal_pmt_count_trigger = '0') then
+--			count:=0;
+--		elsif (rising_edge(clk_100) and normal_pmt_count_trigger = '1') then
+--			case count IS
+--				WHEN 0 => wr_clk_var := '0';
+--							 wr_en_var := '0';
+--							 fifo_data_var (30 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(pmt_count,31);
+--							 fifo_data_var (31) := '0' WHEN ep00wire(0) = '0' ELSE 
+--														  '0'	WHEN (master_logic(0) = '1' AND ep00wire(0) = '1') ELSE 
+--														  '1';
+--							 pmt_count_reset_var:='0';
+--							 count:=count+1;
+--				WHEN 1 => count:=count+1;
+--				WHEN 2 => wr_en_var:='1';
+--							 count:=count+1;
+--				WHEN 3 => count:=count+1;
+--				WHEN 4 => wr_clk_var:='1';
+--							 count:=count+1;
+--				WHEN 5 => count:=count+1;
+--				WHEN 6 => wr_clk_var:='0';
+--							 wr_en_var:='0';
+--							 count:=count+1;
+--				WHEN 7 => count:=count+1;
+--				WHEN 8 => pmt_count_reset_var:='1';
+--							 count:=count+1;
+--				WHEN 9 => count:=count+1;
+--				WHEN 10 => pmt_count_reset_var:='0';
+--				WHEN OTHERS => NULL;
+--			end case;	 
+--			normal_pmt_wr_clk<=wr_clk_var;
+--			normal_pmt_wr_en<=wr_en_var;
+--			normal_pmt_fifo_data<=fifo_data_var;
+--			pmt_count_reset<=pmt_count_reset_var;
+--		end if;
+--	end process;
 
+	-- count pmt by incresaing the value of pmt_count every time pmt_synced edge is detected
+	process (pmt_count_reset, pmt_synced)
+	begin
+		if (pmt_count_reset = '1') then
+			pmt_count<=0;
+		elsif (rising_edge(pmt_synced)) then
+			pmt_count<=pmt_count+1;
+		end if;
+	end process;
+
+-- READOUT COUNTING:
 readout_should_count <= master_logic(20);
 readout_count_fifo_reset <= ep40wire(4); 
 readout_count_pipe_out_valid <= '1';
@@ -883,36 +949,9 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 			readout_count_fifo_data<=fifo_data_var;
 		end if;
 	end process;
-
-	-- count pmt by incresaing the value of pmt_count every time pmt_synced edge is detected
-	process (pmt_count_reset, pmt_synced)
-	begin
-		if (pmt_count_reset = '1') then
-			pmt_count<=0;
-		elsif (rising_edge(pmt_synced)) then
-			pmt_count<=pmt_count+1;
-		end if;
-	end process;
-	
-	
-	-- FIFO for normal PMT ---------------
-	-- write in 32 bit, read out 16 bit --
-	
-	fifo3: normal_pmt_fifo port map (rst => normal_pmt_fifo_reset,
-													wr_clk => normal_pmt_wr_clk,
-													rd_clk =>ti_clk,
-													din => normal_pmt_fifo_data,
-													wr_en => normal_pmt_wr_en,
-													rd_en =>normal_pmt_pipe_out_read, 
-													dout => normal_pmt_pipe_out_data,
-													full =>normal_pmt_full,
-													empty =>normal_pmt_empty,
-													rd_data_count=>normal_pmt_rd_data_count
-													);
-												
+-- END READOUT COUNTING.
 
 -- Instantiate the okHost and connect endpoints.
- 
 okHI : okHost port map (hi_in=>hi_in, hi_out=>hi_out, hi_inout=>hi_inout, hi_aa=>hi_aa, ti_clk=>ti_clk, ok1=>ok1, ok2=>ok2);
 okWO : okWireOR    generic map (N=>7) port map (ok2=>ok2, ok2s=>ok2s);
 wi00 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"00", ep_dataout=>ep00wire);
