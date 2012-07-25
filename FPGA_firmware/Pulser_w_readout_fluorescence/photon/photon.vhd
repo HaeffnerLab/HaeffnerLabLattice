@@ -787,7 +787,7 @@ begin
 	------ write to fifo at the beginning of the count trigger ----
 	------ the dead time that we can't count is very low and can be ignored ------
 	process (clk_100, normal_pmt_count_trigger)   ----count_trigger_active_high----
-		variable count: integer range 0 to 9:=9;
+		variable count: integer range 0 to 11:=11;
 		variable wr_en_var: STD_LOGIC:='0';
 		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000";
 		variable pmt_count_reset_var: STD_LOGIC:='0';
@@ -824,11 +824,17 @@ begin
 				WHEN 7 => 
 					count:=count+1;
 				WHEN 8 => 
-					--disable reset of pmt counting
+					--enable reset of pmt counting
 					pmt_count_reset_var:='1';
 					count := count+1;
 				WHEN 9 => 
-					wr_en_var:='0';
+					count := count+1;
+				WHEN 10 =>
+					-- disable reset of pmt counting
+					pmt_count_reset_var:='0';
+					count := count+1;
+				WHEN 11 =>
+					NULL;
 			end case;	 
 			normal_pmt_wr_en<=wr_en_var;
 			normal_pmt_fifo_data<=fifo_data_var;
