@@ -95,10 +95,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 191004 kilobytes
+Total memory usage is 191580 kilobytes
 
 Writing NGD file "photon.ngd" ...
-Total REAL time to NGDBUILD completion:  10 sec
+Total REAL time to NGDBUILD completion:  11 sec
 Total CPU time to NGDBUILD completion:   10 sec
 
 Writing NGDBUILD log file "photon.bld"...
