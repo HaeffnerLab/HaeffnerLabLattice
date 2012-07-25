@@ -44,25 +44,25 @@
 <msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">834</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo5</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">958</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">983</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">958</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">983</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">984</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">1009</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">986</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">1011</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">989</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA0</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">1014</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA0</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">992</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">1017</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">995</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">1020</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="warning" file="Xst" num="653" delta="old" >Signal &lt;<arg fmt="%s" index="1">pulser_flag_register&lt;15:1&gt;</arg>&gt; is used but never assigned. This sourceless signal will be automatically connected to value <arg fmt="%s" index="2">GND</arg>.
@@ -272,169 +272,151 @@
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">ram_data_out_1_63</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">photon</arg>&gt;.
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_31&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_0&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_26&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_27&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_28&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_0&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_29&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_1&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_2&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_3&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_4&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_0&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_5&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_1&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_6&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_2&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_7&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_3&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_8&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_4&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_9&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_5&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_10&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_6&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_11&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_7&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_12&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_8&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_13&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_9&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_14&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_20</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_20&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_15&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_21&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_16</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_16&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_22&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_17</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_17&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_23&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_18</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_18&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_clk_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_wr_clk&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_24&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_19</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_19&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_30&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_25</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_25&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_clk_var_0041</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_wr_clk&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_31&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_26&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_27&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_28&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_en_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_wr_en&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000230_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_29&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_1&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_en_var_0042</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_wr_en&gt; </arg>
 </msg>
 
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_2&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_0&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_1&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_3&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_2&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_4&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_3&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_5&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_10&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_4&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_6&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_11&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_5&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_7&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_12&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_6&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_8&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_13&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_7&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_9&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_14&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_8&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_20</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_20&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_15&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_9&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_21&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_16</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_16&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_22&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_17</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_17&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_23&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_18</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_18&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_clk_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_wr_clk&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_24&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_19</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_19&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_30&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_25</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_25&gt; </arg>
+</msg>
+
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_10&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_31&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_26&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_11&gt; </arg>
 </msg>
 
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_27&gt; </arg>
+</msg>
+
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_12&gt; </arg>
 </msg>
 
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_28&gt; </arg>
+</msg>
+
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_13&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_en_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_wr_en&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000239_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_29&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_14&gt; </arg>
@@ -446,37 +428,55 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_15&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_21&gt; </arg>
-</msg>
-
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_16</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_16&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_22&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_21&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_clk_var_0041</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_wr_clk&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_17</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_17&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">pmt_count_reset_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;pmt_count_reset&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_23&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_22&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_18</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_18&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_24&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_23&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_19</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_19&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_30&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_24&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_25</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_25&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_30&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_26&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_31&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_27&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_28&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">pmt_count_reset_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;pmt_count_reset&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">photon</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_29&gt; </arg>
 </msg>
 
 <msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">time_stamp_30</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">photon</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -512,7 +512,7 @@ Xilinx highly recommends one of the following:
 <msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">ram_process_count_3</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">photon</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1426" delta="new" >The value init of the FF/Latch <arg fmt="%s" index="1">count_2_LD</arg> hinder the constant cleaning in the block <arg fmt="%s" index="2">photon</arg>.
+<msg type="warning" file="Xst" num="1426" delta="new" >The value init of the FF/Latch <arg fmt="%s" index="1">count_0_LD</arg> hinder the constant cleaning in the block <arg fmt="%s" index="2">photon</arg>.
 You should achieve better results by setting this init to <arg fmt="%i" index="3">0</arg>.
 </msg>
 

@@ -858,7 +858,7 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 	---- stop trigger makes a record of the counts and then initiates writing of that record to fifo
 	
 	process(clk_100, readout_should_count)
-		variable count: integer range 0 to 20:=20;
+		variable count: integer range 0 to 29:=29;
 		variable wr_clk_var: STD_LOGIC:='0';
 		variable wr_en_var: STD_LOGIC:='0';
 		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000"; 
@@ -920,16 +920,41 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 				WHEN 16 => 
 					count:=count+1;
 				WHEN 17 => 
+				--stop write enable--
 					wr_clk_var:='0';
 					wr_en_var:='0';
 					count:=count+1;
 				WHEN 18 =>
+					count:=count+1;
+				WHEN 19 => 
 				---high--
 					wr_clk_var := '1';
 					count:=count+1;
-				WHEN 19 => 
-					count:=count+1;
 				WHEN 20 => 
+					count:=count+1;
+				WHEN 21 => 
+					wr_clk_var := '0';
+					count:=count+1;
+				WHEN 22 =>
+					count:=count+1;
+				WHEN 23 =>
+				---high--
+					wr_clk_var := '1';
+					count:=count+1;
+				WHEN 24 => 
+					count:=count+1;
+				WHEN 25 => 
+					wr_clk_var := '0';
+					count:=count+1;
+				WHEN 26 =>
+					count:=count+1;
+				WHEN 27 =>
+				---high--
+					wr_clk_var := '1';
+					count:=count+1;
+				WHEN 28 => 
+					count:=count+1;
+				WHEN 29 => 
 					wr_clk_var := '0';
 			end case;	 
 			readout_count_wr_clk<=wr_clk_var;

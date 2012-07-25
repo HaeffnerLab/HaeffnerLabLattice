@@ -10,21 +10,21 @@ Target Device  : xc6slx45
 Target Package : fgg484
 Target Speed   : -2
 Mapper Version : spartan6 -- $Revision: 1.55 $
-Mapped Date    : Tue Jul 24 17:36:52 2012
+Mapped Date    : Tue Jul 24 17:47:20 2012
 
 Design Summary
 --------------
 Number of errors:      0
 Number of warnings:   34
 Slice Logic Utilization:
-  Number of Slice Registers:                 2,316 out of  54,576    4%
-    Number used as Flip Flops:               2,284
+  Number of Slice Registers:                 2,318 out of  54,576    4%
+    Number used as Flip Flops:               2,286
     Number used as Latches:                     32
     Number used as Latch-thrus:                  0
     Number used as AND/OR logics:                0
-  Number of Slice LUTs:                      2,050 out of  27,288    7%
-    Number used as logic:                    1,858 out of  27,288    6%
-      Number using O6 output only:           1,129
+  Number of Slice LUTs:                      2,087 out of  27,288    7%
+    Number used as logic:                    1,860 out of  27,288    6%
+      Number using O6 output only:           1,131
       Number using O5 output only:             198
       Number using O5 and O6:                  531
       Number used as ROM:                        0
@@ -41,21 +41,21 @@ Slice Logic Utilization:
         Number using O6 output only:             1
         Number using O5 output only:             0
         Number using O5 and O6:                  0
-    Number used exclusively as route-thrus:    147
-      Number with same-slice register load:    138
+    Number used exclusively as route-thrus:    182
+      Number with same-slice register load:    173
       Number with same-slice carry load:         9
       Number with other load:                    0
 
 Slice Logic Distribution:
-  Number of occupied Slices:                 1,026 out of   6,822   15%
+  Number of occupied Slices:                 1,022 out of   6,822   14%
   Nummber of MUXCYs used:                      536 out of  13,644    3%
-  Number of LUT Flip Flop pairs used:        2,836
-    Number with an unused Flip Flop:           812 out of   2,836   28%
-    Number with an unused LUT:                 786 out of   2,836   27%
-    Number of fully used LUT-FF pairs:       1,238 out of   2,836   43%
+  Number of LUT Flip Flop pairs used:        2,800
+    Number with an unused Flip Flop:           810 out of   2,800   28%
+    Number with an unused LUT:                 713 out of   2,800   25%
+    Number of fully used LUT-FF pairs:       1,277 out of   2,800   45%
     Number of unique control sets:             229
     Number of slice register sites lost
-      to control set restrictions:           1,175 out of  54,576    2%
+      to control set restrictions:           1,173 out of  54,576    2%
 
   A LUT Flip Flop pair for this architecture represents one LUT paired with
   one Flip Flop within a slice.  A control set is a unique combination of
@@ -104,11 +104,11 @@ Specific Feature Utilization:
   Number of STARTUPs:                            0 out of       1    0%
   Number of SUSPEND_SYNCs:                       0 out of       1    0%
 
-Average Fanout of Non-Clock Nets:                3.75
+Average Fanout of Non-Clock Nets:                3.74
 
-Peak Memory Usage:  522 MB
-Total REAL time to MAP completion:  1 mins 35 secs 
-Total CPU time to MAP completion:   1 mins 34 secs 
+Peak Memory Usage:  524 MB
+Total REAL time to MAP completion:  1 mins 39 secs 
+Total CPU time to MAP completion:   1 mins 38 secs 
 
 Table of Contents
 -----------------
@@ -272,10 +272,10 @@ WARNING:PhysDesignRules:372 - Gated clock. Clock net
    combinatorial pin. This is not good design practice. Use the CE pin to
    control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 
 Section 3 - Informational
