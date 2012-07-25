@@ -830,8 +830,8 @@ readout_count_pipe_out_valid <= '1';
 
 ------------------ readout_count FIFO
 fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
-									wr_clk => readout_count_wr_clk,
-									rd_clk =>ti_clk,
+									wr_clk => clk_100,
+									rd_clk => ti_clk,
 									din => readout_count_fifo_data,
 									wr_en => readout_count_wr_en,
 									rd_en =>readout_count_pipe_out_read, 
@@ -842,20 +842,17 @@ fifo5: readout_count_fifo port map (rst => readout_count_fifo_reset,
 								);
 
 
-	-------- count readout counts by incresaing the value of pmt_readout_count every time pmt_synced edge is detected ---------
+	-- count readout counts by incresaing the value of pmt_readout_count every time pmt_synced edge is detected
 	process (readout_should_count, pmt_synced)
 	begin
 		if (readout_should_count = '0') then
 			pmt_readout_count<=0;
-		elsif (rising_edge(pmt_synced) and readout_should_count = '1') then 
+		elsif (rising_edge(pmt_synced)) then 
 			pmt_readout_count <= pmt_readout_count + 1;
 		end if;
 	end process;
 	
-	---- process for counting during readout: 
-	---- stop trigger makes a record of the counts and then initiates writing of that record to fifo
-readout_count_wr_clk <= clk_100;
-
+	-- when readout_should_count is low, the counting is done and the result is written to the FIFO
 	process(clk_100, readout_should_count)
 		variable count: integer range 0 to 2:=2;
 		variable wr_en_var: STD_LOGIC:='0';
@@ -887,116 +884,7 @@ readout_count_wr_clk <= clk_100;
 		end if;
 	end process;
 
---	process(clk_100, readout_should_count)
---		variable count: integer range 0 to 29:=29;
---		variable wr_clk_var: STD_LOGIC:='0';
---		variable wr_en_var: STD_LOGIC:='0';
---		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000"; 
---		variable pmt_readout_count_var: INTEGER RANGE 0 TO 2147483647:=0; 
---	begin
---		if (readout_should_count = '1') then
---			pmt_readout_count_var := pmt_readout_count;
---			count := 0;
---			led(3) <= '1';
---		elsif (rising_edge(clk_100)) then
---			case count IS
---				WHEN 0 => 
---					wr_clk_var := '0';
---					wr_en_var := '0';
---					fifo_data_var (31 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(pmt_readout_count_var,32);
---					pmt_readout_count_var := 0; --avoids a latch by not defining pmt_readout_count_var--
---					count:=count+1;
---				WHEN 1 => 
---					count:=count+1;
---				WHEN 2 => 
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 3 => 
---					count:=count+1;
---				WHEN 4 => 
---					wr_clk_var := '0';
---					count:=count+1;
---				WHEN 5 => 
---					count:=count+1;
---				WHEN 6 => 
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 7 => 
---					count:=count+1;
---				WHEN 8 => 
---					wr_clk_var := '0';
---					count:=count+1;
---				WHEN 9 => 
---					count:=count+1;
---				WHEN 10 => 
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 11 => 
---					count:=count+1;
---				WHEN 12 => 
---					wr_clk_var := '0';
---					count:=count+1;
---				WHEN 13 => 
---					wr_en_var:='1';
---					count:=count+1;
---				WHEN 14 =>
---					count:=count+1;
---				WHEN 15 =>
---					wr_clk_var:='1';
---					count:=count+1;
---				WHEN 16 => 
---					count:=count+1;
---				WHEN 17 => 
---				--stop write enable--
---					wr_clk_var:='0';
---					wr_en_var:='0';
---					count:=count+1;
---				WHEN 18 =>
---					count:=count+1;
---				WHEN 19 => 
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 20 => 
---					count:=count+1;
---				WHEN 21 => 
---					wr_clk_var := '0';
---					count:=count+1;
---				WHEN 22 =>
---					count:=count+1;
---				WHEN 23 =>
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 24 => 
---					count:=count+1;
---				WHEN 25 => 
---					wr_clk_var := '0';
---					count:=count+1;
---				WHEN 26 =>
---					count:=count+1;
---				WHEN 27 =>
---				---high--
---					wr_clk_var := '1';
---					count:=count+1;
---				WHEN 28 => 
---					count:=count+1;
---				WHEN 29 => 
---					wr_clk_var := '0';
---			end case;	 
---			readout_count_wr_clk<=wr_clk_var;
---			readout_count_wr_en<=wr_en_var;
---			readout_count_fifo_data<=fifo_data_var;
---		end if;
---	end process;
-
-	
-	-------- count pmt by incresaing the value of pmt_count every time pmt_synced edge is detected ---------
-	
-	
+	-- count pmt by incresaing the value of pmt_count every time pmt_synced edge is detected
 	process (pmt_count_reset, pmt_synced)
 	begin
 		if (pmt_count_reset = '1') then
