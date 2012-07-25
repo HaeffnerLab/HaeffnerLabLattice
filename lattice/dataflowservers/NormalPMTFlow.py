@@ -62,9 +62,9 @@ class NormalPMTFlow( LabradServer):
        
     @inlineCallbacks
     def makeNewDataSet(self):
-        dir = self.saveFolder
+        folder = self.saveFolder
         name = self.dataSetName
-        yield self.dv.cd(dir, True)
+        yield self.dv.cd(folder, True)
         self.dataSet = yield self.dv.new(name, [('t', 'num')], [('KiloCounts/sec','866 ON','num'),('KiloCounts/sec','866 OFF','num'),('KiloCounts/sec','Differential Signal','num')])
         self.startTime = time.time()
         yield self.addParameters()

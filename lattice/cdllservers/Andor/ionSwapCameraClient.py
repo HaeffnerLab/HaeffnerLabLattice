@@ -504,10 +504,9 @@ class IonCount():
         except Exception ,e:
             print 'server not connected: {}'.format(e)
    
-    @inlineCallbacks
     def setupCamera(self):
-        temp = yield self.server.get_current_temperature()
-        print temp
+#        temp = yield self.server.get_current_temperature()
+#        print temp
         
 #        try:
 #            yield self.server.set_trigger_mode(1)
@@ -518,7 +517,7 @@ class IonCount():
 #        yield self.server.set_read_mode(4)
 #        yield self.server.set_emccd_gain(EMGAIN)
 #        yield self.server.set_exposure_time(EXPOSURE)   
-        yield self.server.cooler_on()
+#        yield self.server.cooler_on()
         
         
         #self.detectorDimensions = yield self.server.get_detector_dimensions() #this gives a type error?

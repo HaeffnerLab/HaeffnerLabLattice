@@ -6,7 +6,6 @@
 
 from ctypes import *
 import time
-from PIL import Image
 import sys
 import numpy as np
 import time
