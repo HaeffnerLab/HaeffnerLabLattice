@@ -765,7 +765,6 @@ begin
 	END PROCESS;
 	
 	--------- trigger to reset FIFO -----
-	
 	normal_pmt_fifo_reset<=ep40wire(2);
 	normal_pmt_block_aval <= '0' WHEN normal_pmt_rd_data_count = "00000000000" ELSE '1';
 	
@@ -787,7 +786,7 @@ begin
 	------ write to fifo at the beginning of the count trigger ----
 	------ the dead time that we can't count is very low and can be ignored ------
 	process (clk_100, normal_pmt_count_trigger)   ----count_trigger_active_high----
-		variable count: integer range 0 to 11:=11;
+		variable count: integer range 0 to 6:=6;
 		variable wr_en_var: STD_LOGIC:='0';
 		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000";
 		variable pmt_count_reset_var: STD_LOGIC:='0';
@@ -814,26 +813,16 @@ begin
 					wr_en_var:='0';
 					count:=count+1;
 				WHEN 3 => 
-					count:=count+1;
-				WHEN 4 =>
-					count:=count+1;
-				WHEN 5 => 
-					count:=count+1;
-				WHEN 6 =>
-					count:=count+1;
-				WHEN 7 => 
-					count:=count+1;
-				WHEN 8 => 
 					--enable reset of pmt counting
 					pmt_count_reset_var:='1';
 					count := count+1;
-				WHEN 9 => 
+				WHEN 4 => 
 					count := count+1;
-				WHEN 10 =>
+				WHEN 5 =>
 					-- disable reset of pmt counting
 					pmt_count_reset_var:='0';
 					count := count+1;
-				WHEN 11 =>
+				WHEN 6 =>
 					NULL;
 			end case;	 
 			normal_pmt_wr_en<=wr_en_var;
@@ -841,49 +830,6 @@ begin
 			pmt_count_reset<=pmt_count_reset_var;
 		end if;
 	end process;
-	
---	process (clk_100, normal_pmt_count_trigger)   ----count_trigger_active_high----
---		variable count: integer range 0 to 10:=0;
---		variable wr_clk_var: STD_LOGIC:='0';
---		variable wr_en_var: STD_LOGIC:='0';
---		variable fifo_data_var:STD_LOGIC_VECTOR(31 DOWNTO 0):="00000000000000000000000000000000";
---		variable pmt_count_reset_var: STD_LOGIC:='0';
---	begin
---		if (normal_pmt_count_trigger = '0') then
---			count:=0;
---		elsif (rising_edge(clk_100) and normal_pmt_count_trigger = '1') then
---			case count IS
---				WHEN 0 => wr_clk_var := '0';
---							 wr_en_var := '0';
---							 fifo_data_var (30 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(pmt_count,31);
---							 fifo_data_var (31) := '0' WHEN ep00wire(0) = '0' ELSE 
---														  '0'	WHEN (master_logic(0) = '1' AND ep00wire(0) = '1') ELSE 
---														  '1';
---							 pmt_count_reset_var:='0';
---							 count:=count+1;
---				WHEN 1 => count:=count+1;
---				WHEN 2 => wr_en_var:='1';
---							 count:=count+1;
---				WHEN 3 => count:=count+1;
---				WHEN 4 => wr_clk_var:='1';
---							 count:=count+1;
---				WHEN 5 => count:=count+1;
---				WHEN 6 => wr_clk_var:='0';
---							 wr_en_var:='0';
---							 count:=count+1;
---				WHEN 7 => count:=count+1;
---				WHEN 8 => pmt_count_reset_var:='1';
---							 count:=count+1;
---				WHEN 9 => count:=count+1;
---				WHEN 10 => pmt_count_reset_var:='0';
---				WHEN OTHERS => NULL;
---			end case;	 
---			normal_pmt_wr_clk<=wr_clk_var;
---			normal_pmt_wr_en<=wr_en_var;
---			normal_pmt_fifo_data<=fifo_data_var;
---			pmt_count_reset<=pmt_count_reset_var;
---		end if;
---	end process;
 
 	-- count pmt by incresaing the value of pmt_count every time pmt_synced edge is detected
 	process (pmt_count_reset, pmt_synced)
