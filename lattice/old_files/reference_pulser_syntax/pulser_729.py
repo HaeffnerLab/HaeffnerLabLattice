@@ -21,13 +21,13 @@ xem.ConfigureFPGA("/Users/thanedp/LabRAD/lattice/okfpgaservers/pulser/photon.bit
 #### Each unit in freq is to increase by about 3 kHz #####
 
 
-xem.ActivateTriggerIn(0x40,6) #reprogram DDS, implement separately
+#xem.ActivateTriggerIn(0x40,6) #reprogram DDS, implement separately
 
 
 
-xem.ActivateTriggerIn(0x40,4) #reset RAM to position 0 
+#xem.ActivateTriggerIn(0x40,4) #reset RAM to position 0 
 
-xem.SetWireInValue(0x04,0x00) #set channel
+#xem.SetWireInValue(0x04,0x00) #set channel
 xem.UpdateWireIns()
 
 data1 = "\x00\x00\xff\xff"
@@ -51,6 +51,8 @@ data = data1 + data2
 
 ### data = "\x00\x00\x00\x80\x00\x00x\00x\80"
 
-xem.WriteToBlockPipeIn(0x81, 2, data)
 
-xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00") #terminate
+
+#xem.WriteToBlockPipeIn(0x81, 2, data)
+#
+#xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00") #terminate

@@ -3,13 +3,7 @@ from twisted.internet.defer import returnValue, inlineCallbacks
 from twisted.internet.threads import deferToThread
 import array
 
-######## The DDS for 729 nm laser is similar to other DDS except that the frequency tuning word is 32 bit wide to have full resolution of frequency tuning.
-######## Each setting is 64 bits of data instead of 32 bit. The format is 
-######## "phase: \xLSB\xMSB amplitude: \x\xMSB freq: \xLSB\xlSB\xmSB\xMSB"
-######## Phase is 16 bits. Amplitude is 14 bits. Frequency is 32 bits.
-######## The DDS for 729 will be in the laser room connected to a separated Pulser in the laser room.
-
-class DDS_729(LabradServer):
+class DDS(LabradServer):
     """Contains the DDS functionality for the pulser server"""
     
     def initializeDDS(self):
@@ -146,7 +140,7 @@ class DDS_729(LabradServer):
             num = self._valToInt(chan, freq, ampl)
             seq.addDDS(addr, 0, num)
         
-    def _valToInt(self, chan, freq, ampl):
+    def _valToInt(self, chan, freq, ampl, phase = 0):
         '''
         takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
         freq is in MHz
@@ -154,9 +148,9 @@ class DDS_729(LabradServer):
         '''
         config = self.ddsDict[chan]
         ans = 0
-        for val,r,m in [(freq,config.boardfreqrange, 256**2), (ampl,config.boardamplrange, 1)]:
+        for val,r,m, precision in [(freq,config.boardfreqrange, 1, 32), (ampl,config.boardamplrange, 2 ** 32,  16), (phase,config.boardphaserangge, 2 ** 48,  16)]:
             minim, maxim = r
-            resolution = (maxim - minim) / float(16**4 - 1)
+            resolution = (maxim - minim) / float(2**precision - 1)
             seq = int((val - minim)/resolution) #sequential representation
             ans += m*seq
         return ans
@@ -165,8 +159,45 @@ class DDS_729(LabradServer):
         '''
         takes the integer representing the setting and returns the buffer string for dds programming
         '''
-        #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
-        a, b = num // 256**2, num % 256**2
-        arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
-        ans = arr.tostring()
+        freq_num = num // 2**32
+        a, b = freq_num // 256**2, freq_num % 256**2
+        freq_arr = array.array('B', [b % 256 ,b // 256, a % 256, a // 256])
+        
+        phase_ampl_num = num // 2**32
+        a, b = phase_ampl_num // 256**2, phase_ampl_num % 256**2
+        phase_ampl_arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
+        
+        ans = phase_ampl_arr.tostring() + freq_arr.to_string()
         return ans
+    
+#xem.ActivateTriggerIn(0x40,6) #reprogram DDS, implement separately
+#xem.ActivateTriggerIn(0x40,4) #reset RAM to position 0 
+#xem.SetWireInValue(0x04,0x00) #set channel
+#xem.UpdateWireIns()
+#
+#data1 = "\x00\x00\xff\xff"
+#freq = 220.0  ### in MHz
+#
+##absolute #0 < freq < 400
+##190 < freq < 250
+##switching - both
+#
+##ampl: -63 < x < -3
+#
+##phase: 16 bit repr of 0-360
+#
+#
+#a, b = freq_round // 256**2, freq_round % 256**2
+#arr = array.array('B', [b % 256 ,b // 256, a % 256, a // 256])
+#data2 = arr.tostring()
+#data = data1 + data2
+
+####phase: \xLSB\xMSB amplitude: \xLSB\xMSB freq: \xLSB\xlSB\xmSB\xMSB
+
+### data = "\x00\x00\x00\x80\x00\x00x\00x\80"
+
+
+
+#xem.WriteToBlockPipeIn(0x81, 2, data)
+#
+#xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00") #terminate
