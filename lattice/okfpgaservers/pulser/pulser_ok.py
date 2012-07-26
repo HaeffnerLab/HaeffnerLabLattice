@@ -19,7 +19,7 @@ timeout = 20
 '''
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
-from twisted.internet.defer import returnValue, DeferredLock, Deferred
+from twisted.internet.defer import returnValue, DeferredLock, Deferred, inlineCallbacks
 from twisted.internet.threads import deferToThread
 import numpy
 import time
@@ -37,6 +37,7 @@ class Pulser(LabradServer, DDS):
     name = 'Pulser'
     onSwitch = Signal(611051, 'signal: switch toggled', '(ss)')
     
+    @inlineCallbacks
     def initServer(self):
         self.api  = api()
         self.channelDict = hardwareConfiguration.channelDict
@@ -47,10 +48,13 @@ class Pulser(LabradServer, DDS):
         self.timeResolution = hardwareConfiguration.timeResolution
         self.ddsDict = hardwareConfiguration.ddsDict
         self.timeResolvedResolution = hardwareConfiguration.timeResolvedResolution
+        self.remoteChannels = hardwareConfiguration.remoteChannels
         self.inCommunication = DeferredLock()
         self.initializeBoard()
+        yield self.initializeRemote()
         self.initializeSettings()
         self.initializeDDS()
+ 
         self.listeners = set()
 
     def initializeBoard(self):
@@ -68,6 +72,14 @@ class Pulser(LabradServer, DDS):
                 self.api.setManual(channelnumber, state)
             else:
                 self.api.setAuto(channelnumber, channel.autoinv)
+    
+    @inlineCallbacks
+    def initializeRemote(self):
+        self.remoteConnections = {}
+        if len(self.remoteChannels):
+            from labrad.wrappers import connectAsync
+            for name,rc in self.remoteChannels.iteritems():
+                self.remoteConnections[name] = yield connectAsync(rc.ip)
 
     @setting(0, "New Sequence", returns = '')
     def newSequence(self, c):

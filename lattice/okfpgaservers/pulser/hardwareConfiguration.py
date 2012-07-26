@@ -30,6 +30,13 @@ class ddsConfiguration():
         self.allowedamplrange = allowedamplrange
         self.frequency = frequency
         self.amplitude = amplitude
+
+class remoteChannel(object):
+    def __init__(self, ip, server, reset, program):
+        self.ip = ip
+        self.server = server
+        self.reset = reset
+        self.program = program
         
 class hardwareConfiguration():
     channelTotal = 32
@@ -72,3 +79,7 @@ class hardwareConfiguration():
                '854DP':ddsConfiguration(3, (30.0,130.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -33.0),
                'pump':ddsConfiguration(4, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-10.0), 110.0, -33.0)
                }
+    
+    remoteChannels = {
+                      'pulser_729':remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
+                      }

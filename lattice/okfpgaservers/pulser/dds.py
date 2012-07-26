@@ -4,10 +4,11 @@ from twisted.internet.threads import deferToThread
 import array
 
 class DDS(LabradServer):
+    
     """Contains the DDS functionality for the pulser server"""
     
     def initializeDDS(self):
-        self.ddsLock = False #boolean whether or not dds can be changed. will be used to block access while pulse sequence is programmed or running.
+        self.ddsLock = False
         self.api.initializeDDS()
         for chan in self.ddsDict.iterkeys():
             freq,ampl = (self.ddsDict[chan].frequency, self.ddsDict[chan].amplitude)
