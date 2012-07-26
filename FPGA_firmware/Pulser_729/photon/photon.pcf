@@ -1,0 +1,797 @@
+//! **************************************************************************
+// Written by: Map P.15xf on Wed Jul 25 20:42:20 2012
+//! **************************************************************************
+
+SCHEMATIC START;
+CONFIG VCCAUX = "3.3";
+COMP "dds_logic_step_to_next_value" LOCATE = SITE "D7" LEVEL 1;
+COMP "dds_logic_data_out<10>" LOCATE = SITE "A5" LEVEL 1;
+COMP "dds_logic_data_out<11>" LOCATE = SITE "M18" LEVEL 1;
+COMP "dds_logic_data_out<12>" LOCATE = SITE "D14" LEVEL 1;
+COMP "dds_logic_data_out<13>" LOCATE = SITE "P18" LEVEL 1;
+COMP "dds_logic_data_out<14>" LOCATE = SITE "C14" LEVEL 1;
+COMP "dds_logic_data_out<15>" LOCATE = SITE "R19" LEVEL 1;
+COMP "dds_logic_reset_dds_chip" LOCATE = SITE "D10" LEVEL 1;
+COMP "dds_logic_address<0>" LOCATE = SITE "D15" LEVEL 1;
+COMP "dds_logic_address<1>" LOCATE = SITE "C6" LEVEL 1;
+COMP "dds_logic_address<2>" LOCATE = SITE "C16" LEVEL 1;
+COMP "i2c_sda" LOCATE = SITE "AB9" LEVEL 1;
+COMP "i2c_scl" LOCATE = SITE "Y9" LEVEL 1;
+COMP "bnc_in<0>" LOCATE = SITE "L20" LEVEL 1;
+COMP "bnc_in<1>" LOCATE = SITE "M20" LEVEL 1;
+COMP "bnc_in<2>" LOCATE = SITE "L22" LEVEL 1;
+COMP "bnc_in<3>" LOCATE = SITE "L19" LEVEL 1;
+COMP "bnc_in<4>" LOCATE = SITE "V22" LEVEL 1;
+COMP "bnc_in<5>" LOCATE = SITE "J16" LEVEL 1;
+COMP "bnc_in<6>" LOCATE = SITE "L15" LEVEL 1;
+COMP "bnc_in<7>" LOCATE = SITE "M16" LEVEL 1;
+COMP "clk1" LOCATE = SITE "AB13" LEVEL 1;
+COMP "hi_inout<0>" LOCATE = SITE "AB12" LEVEL 1;
+COMP "hi_inout<1>" LOCATE = SITE "AA12" LEVEL 1;
+COMP "hi_inout<2>" LOCATE = SITE "Y13" LEVEL 1;
+COMP "hi_inout<3>" LOCATE = SITE "AB18" LEVEL 1;
+COMP "hi_inout<4>" LOCATE = SITE "AA18" LEVEL 1;
+COMP "hi_inout<5>" LOCATE = SITE "V15" LEVEL 1;
+COMP "hi_inout<6>" LOCATE = SITE "AB2" LEVEL 1;
+COMP "hi_inout<7>" LOCATE = SITE "AA2" LEVEL 1;
+COMP "hi_inout<8>" LOCATE = SITE "Y7" LEVEL 1;
+COMP "hi_inout<9>" LOCATE = SITE "Y4" LEVEL 1;
+COMP "hi_out<0>" LOCATE = SITE "Y19" LEVEL 1;
+COMP "hi_out<1>" LOCATE = SITE "AA8" LEVEL 1;
+COMP "hi_aa" LOCATE = SITE "W11" LEVEL 1;
+COMP "hi_muxsel" LOCATE = SITE "AA22" LEVEL 1;
+COMP "hi_inout<10>" LOCATE = SITE "W4" LEVEL 1;
+COMP "hi_inout<11>" LOCATE = SITE "AB6" LEVEL 1;
+COMP "hi_inout<12>" LOCATE = SITE "AA6" LEVEL 1;
+COMP "hi_inout<13>" LOCATE = SITE "U13" LEVEL 1;
+COMP "hi_inout<14>" LOCATE = SITE "U14" LEVEL 1;
+COMP "hi_inout<15>" LOCATE = SITE "AA20" LEVEL 1;
+COMP "dds_logic_ram_reset" LOCATE = SITE "C8" LEVEL 1;
+COMP "dds_logic_fifo_empty" LOCATE = SITE "K18" LEVEL 1;
+COMP "dds_logic_fifo_rd_en" LOCATE = SITE "D9" LEVEL 1;
+COMP "dds_logic_data_out<0>" LOCATE = SITE "W20" LEVEL 1;
+COMP "dds_logic_data_out<1>" LOCATE = SITE "T19" LEVEL 1;
+COMP "dds_logic_data_out<2>" LOCATE = SITE "W22" LEVEL 1;
+COMP "dds_logic_data_out<3>" LOCATE = SITE "T20" LEVEL 1;
+COMP "dds_logic_data_out<4>" LOCATE = SITE "U19" LEVEL 1;
+COMP "dds_logic_data_out<5>" LOCATE = SITE "P17" LEVEL 1;
+COMP "dds_logic_data_out<6>" LOCATE = SITE "V20" LEVEL 1;
+COMP "dds_logic_data_out<7>" LOCATE = SITE "N16" LEVEL 1;
+COMP "dds_logic_data_out<8>" LOCATE = SITE "C5" LEVEL 1;
+COMP "dds_logic_data_out<9>" LOCATE = SITE "M17" LEVEL 1;
+COMP "hi_in<0>" LOCATE = SITE "Y12" LEVEL 1;
+COMP "hi_in<1>" LOCATE = SITE "AB20" LEVEL 1;
+COMP "hi_in<2>" LOCATE = SITE "AB7" LEVEL 1;
+COMP "hi_in<3>" LOCATE = SITE "AB8" LEVEL 1;
+COMP "hi_in<4>" LOCATE = SITE "AA4" LEVEL 1;
+COMP "hi_in<5>" LOCATE = SITE "AB4" LEVEL 1;
+COMP "hi_in<6>" LOCATE = SITE "Y3" LEVEL 1;
+COMP "hi_in<7>" LOCATE = SITE "AB3" LEVEL 1;
+COMP "led<0>" LOCATE = SITE "Y17" LEVEL 1;
+COMP "led<1>" LOCATE = SITE "AB17" LEVEL 1;
+COMP "led<2>" LOCATE = SITE "AA14" LEVEL 1;
+COMP "led<3>" LOCATE = SITE "AB14" LEVEL 1;
+COMP "led<4>" LOCATE = SITE "AA16" LEVEL 1;
+COMP "led<5>" LOCATE = SITE "AB16" LEVEL 1;
+COMP "led<6>" LOCATE = SITE "AA10" LEVEL 1;
+COMP "led<7>" LOCATE = SITE "AB10" LEVEL 1;
+COMP "dds_logic_fifo_rd_clk" LOCATE = SITE "C10" LEVEL 1;
+PIN dds_logic_fifo_rd_clk_pin<0> = BEL "dds_logic_fifo_rd_clk" PINNAME PAD;
+PIN "dds_logic_fifo_rd_clk_pin<0>" CLOCK_DEDICATED_ROUTE = FALSE;
+PIN SP6_BUFIO_INSERT_ML_BUFIO2_0_pins<0> = BEL "SP6_BUFIO_INSERT_ML_BUFIO2_0"
+        PINNAME DIVCLK;
+PIN okHI/hi_dcm_pins<2> = BEL "okHI/hi_dcm" PINNAME CLKIN;
+TIMEGRP okHostClk = BEL "okHI/flop4" BEL "okHI/flop3" BEL "okHI/flop2" BEL
+        "okHI/flop1" PIN "SP6_BUFIO_INSERT_ML_BUFIO2_0_pins<0>" PIN
+        "okHI/hi_dcm_pins<2>";
+PIN
+        fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram_pins<28>
+        = BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram"
+        PINNAME CLKA;
+PIN
+        fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram_pins<28>
+        = BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram"
+        PINNAME CLKA;
+PIN okHI/core0/core0/a0/pm0/ram_1k_generate.s6.kcpsm6_rom_pins<28> = BEL
+        "okHI/core0/core0/a0/pm0/ram_1k_generate.s6.kcpsm6_rom" PINNAME CLKA;
+PIN SP6_INS_BUFIO2FB_DCM_ML_BUFIO2FB_1_pins<1> = BEL
+        "SP6_INS_BUFIO2FB_DCM_ML_BUFIO2FB_1" PINNAME O;
+PIN okHI/hi_dcm_pins<1> = BEL "okHI/hi_dcm" PINNAME CLKFB;
+TIMEGRP okHI_dcm_clk0 = BEL "okHI/hi_datain_15" BEL "okHI/hi_datain_14" BEL
+        "okHI/hi_datain_13" BEL "okHI/hi_datain_12" BEL "okHI/hi_datain_11"
+        BEL "okHI/hi_datain_10" BEL "okHI/hi_datain_9" BEL "okHI/hi_datain_8"
+        BEL "okHI/hi_datain_7" BEL "okHI/hi_datain_6" BEL "okHI/hi_datain_5"
+        BEL "okHI/hi_datain_4" BEL "okHI/hi_datain_3" BEL "okHI/hi_datain_2"
+        BEL "okHI/hi_datain_1" BEL "okHI/hi_datain_0" BEL
+        "okHI/hi_dataout_reg_15" BEL "okHI/hi_dataout_reg_14" BEL
+        "okHI/hi_dataout_reg_13" BEL "okHI/hi_dataout_reg_12" BEL
+        "okHI/hi_dataout_reg_11" BEL "okHI/hi_dataout_reg_10" BEL
+        "okHI/hi_dataout_reg_9" BEL "okHI/hi_dataout_reg_8" BEL
+        "okHI/hi_dataout_reg_7" BEL "okHI/hi_dataout_reg_6" BEL
+        "okHI/hi_dataout_reg_4" BEL "okHI/hi_dataout_reg_3" BEL
+        "okHI/hi_dataout_reg_2" BEL "okHI/hi_dataout_reg_1" BEL
+        "okHI/hi_dataout_reg_0" BEL "okHI/hi_drive" BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwas.wsts/ram_full_fb_i"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/RST_FULL_GEN"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/wr_rst_asreg_d2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/grstd1.grst_full.rst_d3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/wr_rst_asreg_d1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/grstd1.grst_full.rst_d2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/ngwrdrst.grst.wr_rst_reg_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/ngwrdrst.grst.wr_rst_reg_0"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/grstd1.grst_full.rst_d1"
+        PIN
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram_pins<28>"
+        PIN
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram/SDP.SIMPLE_PRIM18.ram_pins<28>"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d2_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/rd_pntr_bin_0"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/wr_pntr_gc_0"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[2].wr_stg_inst/Q_0"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_10"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_9"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_8"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_7"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_6"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_5"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_4"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_3"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_2"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_1"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gcx.clkx/gsync_stage[1].wr_stg_inst/Q_0"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/wr_rst_asreg"
+        BEL
+        "fifo1/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/wpntr/gic0.gc0.count_d1_0"
+        BEL "ep40/eptrig_6" BEL "ep40/eptrig_7" BEL "ep40/trigff0_6" BEL
+        "ep40/trigff0_7" BEL "ep40/trigff1_6" BEL "ep40/trigff1_7" BEL
+        "ep40/ep_trigger_6" BEL "ep40/ep_trigger_7" BEL "ep81/ep_dataout_0"
+        BEL "ep81/ep_dataout_1" BEL "ep81/ep_dataout_2" BEL
+        "ep81/ep_dataout_3" BEL "ep81/ep_dataout_4" BEL "ep81/ep_dataout_5"
+        BEL "ep81/ep_dataout_6" BEL "ep81/ep_dataout_7" BEL
+        "ep81/ep_dataout_8" BEL "ep81/ep_dataout_9" BEL "ep81/ep_dataout_10"
+        BEL "ep81/ep_dataout_11" BEL "ep81/ep_dataout_12" BEL
+        "ep81/ep_dataout_13" BEL "ep81/ep_dataout_14" BEL "ep81/ep_dataout_15"
+        BEL "ep81/ep_write" BEL "okHI/core0/core0/state_FSM_FFd1" BEL
+        "okHI/core0/core0/state_FSM_FFd8" BEL
+        "okHI/core0/core0/state_FSM_FFd13" BEL
+        "okHI/core0/core0/state_FSM_FFd3" BEL
+        "okHI/core0/core0/state_FSM_FFd6" BEL
+        "okHI/core0/core0/state_FSM_FFd4" BEL
+        "okHI/core0/core0/state_FSM_FFd9" BEL
+        "okHI/core0/core0/state_FSM_FFd7" BEL
+        "okHI/core0/core0/state_FSM_FFd10" BEL
+        "okHI/core0/core0/state_FSM_FFd15" BEL
+        "okHI/core0/core0/state_FSM_FFd16" BEL
+        "okHI/core0/core0/state_FSM_FFd14" BEL
+        "okHI/core0/core0/state_FSM_FFd17" BEL "okHI/core0/core0/ti_reset" BEL
+        "okHI/core0/core0/ti_dataout_15" BEL "okHI/core0/core0/ti_dataout_14"
+        BEL "okHI/core0/core0/ti_dataout_13" BEL
+        "okHI/core0/core0/ti_dataout_12" BEL "okHI/core0/core0/ti_dataout_11"
+        BEL "okHI/core0/core0/ti_dataout_10" BEL
+        "okHI/core0/core0/ti_dataout_9" BEL "okHI/core0/core0/ti_dataout_8"
+        BEL "okHI/core0/core0/ti_dataout_7" BEL
+        "okHI/core0/core0/ti_dataout_6" BEL "okHI/core0/core0/ti_dataout_5"
+        BEL "okHI/core0/core0/ti_dataout_4" BEL
+        "okHI/core0/core0/ti_dataout_3" BEL "okHI/core0/core0/ti_dataout_2"
+        BEL "okHI/core0/core0/ti_dataout_1" BEL
+        "okHI/core0/core0/ti_dataout_0" BEL "okHI/core0/core0/block_size_10"
+        BEL "okHI/core0/core0/block_size_9" BEL
+        "okHI/core0/core0/block_size_8" BEL "okHI/core0/core0/block_size_7"
+        BEL "okHI/core0/core0/block_size_6" BEL
+        "okHI/core0/core0/block_size_5" BEL "okHI/core0/core0/block_size_4"
+        BEL "okHI/core0/core0/block_size_3" BEL
+        "okHI/core0/core0/block_size_2" BEL "okHI/core0/core0/block_size_1"
+        BEL "okHI/core0/core0/block_size_0" BEL "okHI/core0/core0/ti_addr_7"
+        BEL "okHI/core0/core0/ti_addr_6" BEL "okHI/core0/core0/ti_addr_5" BEL
+        "okHI/core0/core0/ti_addr_4" BEL "okHI/core0/core0/ti_addr_3" BEL
+        "okHI/core0/core0/ti_addr_2" BEL "okHI/core0/core0/ti_addr_1" BEL
+        "okHI/core0/core0/ti_addr_0" BEL "okHI/core0/core0/block_count_10" BEL
+        "okHI/core0/core0/block_count_9" BEL "okHI/core0/core0/block_count_8"
+        BEL "okHI/core0/core0/block_count_7" BEL
+        "okHI/core0/core0/block_count_6" BEL "okHI/core0/core0/block_count_5"
+        BEL "okHI/core0/core0/block_count_4" BEL
+        "okHI/core0/core0/block_count_3" BEL "okHI/core0/core0/block_count_2"
+        BEL "okHI/core0/core0/block_count_1" BEL
+        "okHI/core0/core0/block_count_0" BEL "okHI/core0/core0/ti_write" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/grss.rsts/ram_empty_i"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/grss.rsts/ram_empty_fb_i"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/gwss.wsts/ram_full_i"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/gwss.wsts/ram_full_fb_i"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/RST_FULL_GEN" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/rd_rst_asreg_d2" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/wr_rst_asreg_d2" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/grstd1.grst_full.rst_d3"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/rd_rst_asreg_d1" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/wr_rst_asreg_d1" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/grstd1.grst_full.rst_d2"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/ngwrdrst.grst.rd_rst_reg_2"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/ngwrdrst.grst.rd_rst_reg_0"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/rd_rst_asreg" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/wr_rst_asreg" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/ngwrdrst.grst.wr_rst_reg_1"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/rstblk/grstd1.grst_full.rst_d1"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_7" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_6" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_5" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_4" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_3" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_2" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_1" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/dout_i_0" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_5"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_4"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_3"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_2"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_1"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_d1_0"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_5"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_4"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_3"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_2"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_1"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.rd/rpntr/gc0.count_0"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_5"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_4"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_3"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_2"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_1"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_d1_0"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_5"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_4"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_3"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_2"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_1"
+        BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/gl0.wr/wpntr/gcc0.gc0.count_0"
+        BEL "okHI/core0/core0/a0/des_round_3" BEL
+        "okHI/core0/core0/a0/des_round_2" BEL
+        "okHI/core0/core0/a0/des_round_1" BEL
+        "okHI/core0/core0/a0/des_round_0" BEL "okHI/core0/core0/a0/timeout_28"
+        BEL "okHI/core0/core0/a0/timeout_27" BEL
+        "okHI/core0/core0/a0/timeout_26" BEL "okHI/core0/core0/a0/timeout_25"
+        BEL "okHI/core0/core0/a0/timeout_24" BEL
+        "okHI/core0/core0/a0/timeout_23" BEL "okHI/core0/core0/a0/timeout_22"
+        BEL "okHI/core0/core0/a0/timeout_21" BEL
+        "okHI/core0/core0/a0/timeout_20" BEL "okHI/core0/core0/a0/timeout_19"
+        BEL "okHI/core0/core0/a0/timeout_18" BEL
+        "okHI/core0/core0/a0/timeout_17" BEL "okHI/core0/core0/a0/timeout_16"
+        BEL "okHI/core0/core0/a0/timeout_15" BEL
+        "okHI/core0/core0/a0/timeout_14" BEL "okHI/core0/core0/a0/timeout_13"
+        BEL "okHI/core0/core0/a0/timeout_12" BEL
+        "okHI/core0/core0/a0/timeout_11" BEL "okHI/core0/core0/a0/timeout_10"
+        BEL "okHI/core0/core0/a0/timeout_9" BEL
+        "okHI/core0/core0/a0/timeout_8" BEL "okHI/core0/core0/a0/timeout_7"
+        BEL "okHI/core0/core0/a0/timeout_6" BEL
+        "okHI/core0/core0/a0/timeout_5" BEL "okHI/core0/core0/a0/timeout_4"
+        BEL "okHI/core0/core0/a0/timeout_3" BEL
+        "okHI/core0/core0/a0/timeout_2" BEL "okHI/core0/core0/a0/timeout_1"
+        BEL "okHI/core0/core0/a0/timeout_0" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_19" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_18" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_17" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_16" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_15" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_14" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_13" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_12" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_11" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_10" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_9" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_8" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_7" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_6" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_5" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_4" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_3" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_2" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_1" BEL
+        "okHI/core0/core0/a0/atmel_status_fuses_0" BEL
+        "okHI/core0/core0/a0/tok_tx_7" BEL "okHI/core0/core0/a0/tok_tx_6" BEL
+        "okHI/core0/core0/a0/tok_tx_5" BEL "okHI/core0/core0/a0/tok_tx_4" BEL
+        "okHI/core0/core0/a0/tok_tx_3" BEL "okHI/core0/core0/a0/tok_tx_2" BEL
+        "okHI/core0/core0/a0/tok_tx_1" BEL "okHI/core0/core0/a0/tok_tx_0" BEL
+        "okHI/core0/core0/a0/tok_mem_rd_en" BEL
+        "okHI/core0/core0/a0/tok_mem_reset" BEL
+        "okHI/core0/core0/a0/tok_wk_start" BEL
+        "okHI/core0/core0/a0/tok_tx_start" BEL
+        "okHI/core0/core0/a0/pico_in_port_7" BEL
+        "okHI/core0/core0/a0/pico_in_port_6" BEL
+        "okHI/core0/core0/a0/pico_in_port_5" BEL
+        "okHI/core0/core0/a0/pico_in_port_4" BEL
+        "okHI/core0/core0/a0/pico_in_port_3" BEL
+        "okHI/core0/core0/a0/pico_in_port_2" BEL
+        "okHI/core0/core0/a0/pico_in_port_1" BEL
+        "okHI/core0/core0/a0/pico_in_port_0" BEL "okHI/core0/core0/a0/edna_0"
+        BEL "okHI/core0/core0/a0/edna_2" BEL "okHI/core0/core0/a0/edna_3" BEL
+        "okHI/core0/core0/a0/edna_1" BEL "okHI/core0/core0/a0/edna_5" BEL
+        "okHI/core0/core0/a0/edna_6" BEL "okHI/core0/core0/a0/edna_4" BEL
+        "okHI/core0/core0/a0/edna_8" BEL "okHI/core0/core0/a0/edna_9" BEL
+        "okHI/core0/core0/a0/edna_7" BEL "okHI/core0/core0/a0/edna_11" BEL
+        "okHI/core0/core0/a0/edna_12" BEL "okHI/core0/core0/a0/edna_10" BEL
+        "okHI/core0/core0/a0/edna_14" BEL "okHI/core0/core0/a0/edna_15" BEL
+        "okHI/core0/core0/a0/edna_13" BEL "okHI/core0/core0/a0/edna_17" BEL
+        "okHI/core0/core0/a0/edna_18" BEL "okHI/core0/core0/a0/edna_16" BEL
+        "okHI/core0/core0/a0/edna_19" BEL "okHI/core0/core0/a0/des0/R_1" BEL
+        "okHI/core0/core0/a0/des0/R_2" BEL "okHI/core0/core0/a0/des0/R_3" BEL
+        "okHI/core0/core0/a0/des0/R_4" BEL "okHI/core0/core0/a0/des0/R_5" BEL
+        "okHI/core0/core0/a0/des0/R_6" BEL "okHI/core0/core0/a0/des0/R_7" BEL
+        "okHI/core0/core0/a0/des0/R_8" BEL "okHI/core0/core0/a0/des0/R_9" BEL
+        "okHI/core0/core0/a0/des0/R_10" BEL "okHI/core0/core0/a0/des0/R_11"
+        BEL "okHI/core0/core0/a0/des0/R_12" BEL
+        "okHI/core0/core0/a0/des0/R_13" BEL "okHI/core0/core0/a0/des0/R_14"
+        BEL "okHI/core0/core0/a0/des0/R_15" BEL
+        "okHI/core0/core0/a0/des0/R_16" BEL "okHI/core0/core0/a0/des0/R_17"
+        BEL "okHI/core0/core0/a0/des0/R_18" BEL
+        "okHI/core0/core0/a0/des0/R_19" BEL "okHI/core0/core0/a0/des0/R_20"
+        BEL "okHI/core0/core0/a0/des0/R_21" BEL
+        "okHI/core0/core0/a0/des0/R_22" BEL "okHI/core0/core0/a0/des0/R_23"
+        BEL "okHI/core0/core0/a0/des0/R_24" BEL
+        "okHI/core0/core0/a0/des0/R_25" BEL "okHI/core0/core0/a0/des0/R_26"
+        BEL "okHI/core0/core0/a0/des0/R_27" BEL
+        "okHI/core0/core0/a0/des0/R_28" BEL "okHI/core0/core0/a0/des0/R_29"
+        BEL "okHI/core0/core0/a0/des0/R_30" BEL
+        "okHI/core0/core0/a0/des0/R_31" BEL "okHI/core0/core0/a0/des0/R_32"
+        BEL "okHI/core0/core0/a0/des0/L_1" BEL "okHI/core0/core0/a0/des0/L_2"
+        BEL "okHI/core0/core0/a0/des0/L_3" BEL "okHI/core0/core0/a0/des0/L_4"
+        BEL "okHI/core0/core0/a0/des0/L_5" BEL "okHI/core0/core0/a0/des0/L_6"
+        BEL "okHI/core0/core0/a0/des0/L_7" BEL "okHI/core0/core0/a0/des0/L_8"
+        BEL "okHI/core0/core0/a0/des0/L_9" BEL "okHI/core0/core0/a0/des0/L_10"
+        BEL "okHI/core0/core0/a0/des0/L_11" BEL
+        "okHI/core0/core0/a0/des0/L_12" BEL "okHI/core0/core0/a0/des0/L_13"
+        BEL "okHI/core0/core0/a0/des0/L_14" BEL
+        "okHI/core0/core0/a0/des0/L_15" BEL "okHI/core0/core0/a0/des0/L_16"
+        BEL "okHI/core0/core0/a0/des0/L_17" BEL
+        "okHI/core0/core0/a0/des0/L_18" BEL "okHI/core0/core0/a0/des0/L_19"
+        BEL "okHI/core0/core0/a0/des0/L_20" BEL
+        "okHI/core0/core0/a0/des0/L_21" BEL "okHI/core0/core0/a0/des0/L_22"
+        BEL "okHI/core0/core0/a0/des0/L_23" BEL
+        "okHI/core0/core0/a0/des0/L_24" BEL "okHI/core0/core0/a0/des0/L_25"
+        BEL "okHI/core0/core0/a0/des0/L_26" BEL
+        "okHI/core0/core0/a0/des0/L_27" BEL "okHI/core0/core0/a0/des0/L_28"
+        BEL "okHI/core0/core0/a0/des0/L_29" BEL
+        "okHI/core0/core0/a0/des0/L_30" BEL "okHI/core0/core0/a0/des0/L_31"
+        BEL "okHI/core0/core0/a0/des0/L_32" BEL
+        "okHI/core0/core0/a0/d0/cycle_0" BEL "okHI/core0/core0/a0/d0/div_4"
+        BEL "okHI/core0/core0/a0/d0/div_3" BEL "okHI/core0/core0/a0/d0/div_2"
+        BEL "okHI/core0/core0/a0/d0/div_1" BEL "okHI/core0/core0/a0/d0/div_0"
+        BEL "okHI/core0/core0/a0/d0/cycle_5" BEL
+        "okHI/core0/core0/a0/d0/cycle_4" BEL "okHI/core0/core0/a0/d0/cycle_3"
+        BEL "okHI/core0/core0/a0/d0/cycle_2" BEL
+        "okHI/core0/core0/a0/d0/cycle_1" BEL "okHI/core0/core0/a0/d0/dna_56"
+        BEL "okHI/core0/core0/a0/d0/dna_55" BEL
+        "okHI/core0/core0/a0/d0/dna_54" BEL "okHI/core0/core0/a0/d0/dna_53"
+        BEL "okHI/core0/core0/a0/d0/dna_52" BEL
+        "okHI/core0/core0/a0/d0/dna_51" BEL "okHI/core0/core0/a0/d0/dna_50"
+        BEL "okHI/core0/core0/a0/d0/dna_49" BEL
+        "okHI/core0/core0/a0/d0/dna_48" BEL "okHI/core0/core0/a0/d0/dna_47"
+        BEL "okHI/core0/core0/a0/d0/dna_46" BEL
+        "okHI/core0/core0/a0/d0/dna_45" BEL "okHI/core0/core0/a0/d0/dna_44"
+        BEL "okHI/core0/core0/a0/d0/dna_43" BEL
+        "okHI/core0/core0/a0/d0/dna_42" BEL "okHI/core0/core0/a0/d0/dna_41"
+        BEL "okHI/core0/core0/a0/d0/dna_40" BEL
+        "okHI/core0/core0/a0/d0/dna_39" BEL "okHI/core0/core0/a0/d0/dna_38"
+        BEL "okHI/core0/core0/a0/d0/dna_37" BEL
+        "okHI/core0/core0/a0/d0/dna_36" BEL "okHI/core0/core0/a0/d0/dna_35"
+        BEL "okHI/core0/core0/a0/d0/dna_34" BEL
+        "okHI/core0/core0/a0/d0/dna_33" BEL "okHI/core0/core0/a0/d0/dna_32"
+        BEL "okHI/core0/core0/a0/d0/dna_31" BEL
+        "okHI/core0/core0/a0/d0/dna_30" BEL "okHI/core0/core0/a0/d0/dna_29"
+        BEL "okHI/core0/core0/a0/d0/dna_28" BEL
+        "okHI/core0/core0/a0/d0/dna_27" BEL "okHI/core0/core0/a0/d0/dna_26"
+        BEL "okHI/core0/core0/a0/d0/dna_25" BEL
+        "okHI/core0/core0/a0/d0/dna_24" BEL "okHI/core0/core0/a0/d0/dna_23"
+        BEL "okHI/core0/core0/a0/d0/dna_22" BEL
+        "okHI/core0/core0/a0/d0/dna_21" BEL "okHI/core0/core0/a0/d0/dna_20"
+        BEL "okHI/core0/core0/a0/d0/dna_19" BEL
+        "okHI/core0/core0/a0/d0/dna_18" BEL "okHI/core0/core0/a0/d0/dna_17"
+        BEL "okHI/core0/core0/a0/d0/dna_16" BEL
+        "okHI/core0/core0/a0/d0/dna_15" BEL "okHI/core0/core0/a0/d0/dna_14"
+        BEL "okHI/core0/core0/a0/d0/dna_13" BEL
+        "okHI/core0/core0/a0/d0/dna_12" BEL "okHI/core0/core0/a0/d0/dna_11"
+        BEL "okHI/core0/core0/a0/d0/dna_10" BEL "okHI/core0/core0/a0/d0/dna_9"
+        BEL "okHI/core0/core0/a0/d0/dna_8" BEL "okHI/core0/core0/a0/d0/dna_7"
+        BEL "okHI/core0/core0/a0/d0/dna_6" BEL "okHI/core0/core0/a0/d0/dna_5"
+        BEL "okHI/core0/core0/a0/d0/dna_4" BEL "okHI/core0/core0/a0/d0/dna_3"
+        BEL "okHI/core0/core0/a0/d0/dna_2" BEL "okHI/core0/core0/a0/d0/dna_1"
+        BEL "okHI/core0/core0/a0/d0/dna_0" BEL
+        "okHI/core0/core0/a0/d0/dna_read" BEL
+        "okHI/core0/core0/a0/d0/dna_shift" BEL
+        "okHI/core0/core0/a0/c0/baud_count_4" BEL
+        "okHI/core0/core0/a0/c0/baud_count_2" BEL
+        "okHI/core0/core0/a0/c0/baud_count_1" BEL
+        "okHI/core0/core0/a0/c0/baud_count_3" BEL
+        "okHI/core0/core0/a0/c0/baud_count_0" BEL
+        "okHI/core0/core0/a0/c0/t_state_FSM_FFd1" BEL
+        "okHI/core0/core0/a0/c0/t_state_FSM_FFd3" BEL
+        "okHI/core0/core0/a0/c0/t_state_FSM_FFd4" BEL
+        "okHI/core0/core0/a0/c0/t_state_FSM_FFd2" BEL
+        "okHI/core0/core0/a0/c0/read_valid" BEL
+        "okHI/core0/core0/a0/c0/atmel_dout" BEL
+        "okHI/core0/core0/a0/c0/atmel_t" BEL
+        "okHI/core0/core0/a0/c0/t_count_12" BEL
+        "okHI/core0/core0/a0/c0/t_count_11" BEL
+        "okHI/core0/core0/a0/c0/t_count_10" BEL
+        "okHI/core0/core0/a0/c0/t_count_9" BEL
+        "okHI/core0/core0/a0/c0/t_count_8" BEL
+        "okHI/core0/core0/a0/c0/t_count_7" BEL
+        "okHI/core0/core0/a0/c0/t_count_6" BEL
+        "okHI/core0/core0/a0/c0/t_count_5" BEL
+        "okHI/core0/core0/a0/c0/t_count_4" BEL
+        "okHI/core0/core0/a0/c0/t_count_3" BEL
+        "okHI/core0/core0/a0/c0/t_count_2" BEL
+        "okHI/core0/core0/a0/c0/t_count_1" BEL
+        "okHI/core0/core0/a0/c0/t_count_0" BEL
+        "okHI/core0/core0/a0/c0/dataout_7" BEL
+        "okHI/core0/core0/a0/c0/dataout_6" BEL
+        "okHI/core0/core0/a0/c0/dataout_5" BEL
+        "okHI/core0/core0/a0/c0/dataout_4" BEL
+        "okHI/core0/core0/a0/c0/dataout_3" BEL
+        "okHI/core0/core0/a0/c0/dataout_2" BEL
+        "okHI/core0/core0/a0/c0/dataout_1" BEL
+        "okHI/core0/core0/a0/c0/dataout_0" BEL
+        "okHI/core0/core0/a0/c0/t_count_tok_2" BEL
+        "okHI/core0/core0/a0/c0/t_count_tok_1" BEL
+        "okHI/core0/core0/a0/c0/t_count_tok_0" BEL
+        "okHI/core0/core0/a0/c0/done" BEL
+        "okHI/core0/core0/a0/c0/t_count_rd_2" BEL
+        "okHI/core0/core0/a0/c0/t_count_rd_1" BEL
+        "okHI/core0/core0/a0/c0/t_count_rd_0" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_7" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_6" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_5" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_4" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_3" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_2" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_1" BEL
+        "okHI/core0/core0/a0/c0/tok_tx_hold_0" BEL
+        "okHI/core0/core0/a0/c0/baud_en" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[7].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[7].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[7].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[6].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[6].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[6].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[5].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[5].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[5].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[4].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[4].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[4].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[3].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[3].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[3].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[2].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[2].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[2].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[1].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[1].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[1].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[0].medium_spm.spm_flop" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[0].low_hwbuild.shift_rotate_flop"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[0].arith_logical_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_loop[4].upper_stack.pointer_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_loop[3].upper_stack.pointer_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_loop[2].upper_stack.pointer_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_loop[1].upper_stack.pointer_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_loop[0].lsb_stack.pointer_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_bit_flop" BEL
+        "okHI/core0/core0/a0/pc0/shadow_bank_flop" BEL
+        "okHI/core0/core0/a0/pc0/shadow_zero_flag_flop" BEL
+        "okHI/core0/core0/a0/pc0/stack_zero_flop" BEL
+        "okHI/core0/core0/a0/pc0/shadow_carry_flag_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[11].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[11].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[10].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[10].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[9].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[9].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[8].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[8].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[7].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[7].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[6].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[6].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[5].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[5].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[4].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[4].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[3].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[3].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[2].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[2].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[1].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[1].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[0].pc_flop" BEL
+        "okHI/core0/core0/a0/pc0/address_loop[0].return_vector_flop" BEL
+        "okHI/core0/core0/a0/pc0/zero_flag_flop" BEL
+        "okHI/core0/core0/a0/pc0/use_zero_flag_flop" BEL
+        "okHI/core0/core0/a0/pc0/carry_flag_flop" BEL
+        "okHI/core0/core0/a0/pc0/shift_carry_flop" BEL
+        "okHI/core0/core0/a0/pc0/arith_carry_flop" BEL
+        "okHI/core0/core0/a0/pc0/sx_addr4_flop" BEL
+        "okHI/core0/core0/a0/pc0/bank_flop" BEL
+        "okHI/core0/core0/a0/pc0/write_strobe_flop" BEL
+        "okHI/core0/core0/a0/pc0/spm_enable_flop" BEL
+        "okHI/core0/core0/a0/pc0/register_enable_flop" BEL
+        "okHI/core0/core0/a0/pc0/flag_enable_flop" BEL
+        "okHI/core0/core0/a0/pc0/alu_mux_sel1_flop" BEL
+        "okHI/core0/core0/a0/pc0/alu_mux_sel0_flop" BEL
+        "okHI/core0/core0/a0/pc0/interrupt_enable_flop" BEL
+        "okHI/core0/core0/a0/pc0/t_state2_flop" BEL
+        "okHI/core0/core0/a0/pc0/t_state1_flop" BEL
+        "okHI/core0/core0/a0/pc0/internal_reset_flop" BEL
+        "okHI/core0/core0/a0/pc0/run_flop" BEL "okHI/core0/core0/a0/valid" BEL
+        "okHI/core0/core0/a0/des_running" BEL "okHI/core0/core0/a0/edna_valid"
+        BEL "okHI/core0/core0/a0/stop" BEL "okHI/core0/core0/a0/d0/valid" BEL
+        "okHI/core0/core0/state_FSM_FFd2" BEL
+        "okHI/core0/core0/state_FSM_FFd5" BEL
+        "okHI/core0/core0/state_FSM_FFd11" BEL
+        "okHI/core0/core0/state_FSM_FFd12" BEL "okHI/core0/core0/hi_busy" BEL
+        "okHI/core0/core0/a0/atmel_status_valid" BEL
+        "okHI/core0/core0/a0/tok_done_flag" BEL
+        "okHI/core0/core0/a0/c0/wk_start_h" BEL
+        "okHI/core0/core0/a0/c0/tx_start_h" PIN
+        "okHI/core0/core0/a0/pm0/ram_1k_generate.s6.kcpsm6_rom_pins<28>" BEL
+        "okHI/core0/core0/a0/Mshreg_async_dd" BEL
+        "okHI/core0/core0/a0/async_dd" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM32/SP" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM32/DP" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM31/SP" BEL
+        "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM31/DP" BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[7].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[7].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[6].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[6].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[5].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[5].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[4].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[4].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[3].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[3].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[2].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[2].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[1].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[1].medium_spm.spm_ram/LOW"
+        BEL
+        "okHI/core0/core0/a0/pc0/data_path_loop[0].medium_spm.spm_ram/HIGH"
+        BEL "okHI/core0/core0/a0/pc0/data_path_loop[0].medium_spm.spm_ram/LOW"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMA"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMB"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMC"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMA"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMB"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMC"
+        BEL "okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD"
+        BEL "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMA_D1" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMA" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMB_D1" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMB" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMC_D1" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMC" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMD_D1" BEL
+        "okHI/core0/core0/a0/pc0/lower_reg_banks_RAMD" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMA_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMA" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMB_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMB" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMC_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMC" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMD_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_high_RAMD" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMA_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMA" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMB_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMB" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMC_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMC" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMD_D1" BEL
+        "okHI/core0/core0/a0/pc0/stack_ram_low_RAMD" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMA_D1" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMA" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMB_D1" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMB" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMC_D1" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMC" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMD_D1" BEL
+        "okHI/core0/core0/a0/pc0/upper_reg_banks_RAMD" BEL "okHI/hi_clkbuf"
+        PIN "SP6_INS_BUFIO2FB_DCM_ML_BUFIO2FB_1_pins<1>" PIN
+        "okHI/hi_dcm_pins<1>";
+TIMEGRP okHostINOUT_grp = BEL "hi_inout<15>" BEL "hi_inout<14>" BEL
+        "hi_inout<13>" BEL "hi_inout<12>" BEL "hi_inout<11>" BEL
+        "hi_inout<10>" BEL "hi_inout<9>" BEL "hi_inout<8>" BEL "hi_inout<7>"
+        BEL "hi_inout<6>" BEL "hi_inout<5>" BEL "hi_inout<4>" BEL
+        "hi_inout<3>" BEL "hi_inout<2>" BEL "hi_inout<1>" BEL "hi_inout<0>";
+TS_okHostClk = PERIOD TIMEGRP "okHostClk" 20.83 ns HIGH 50%;
+TS_okHI_dcm_clk0 = PERIOD TIMEGRP "okHI_dcm_clk0" TS_okHostClk HIGH 50%;
+COMP "hi_out<0>" OFFSET = OUT 11.93 ns AFTER COMP "hi_in<0>" "RISING";
+COMP "hi_in<7>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<6>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<5>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<4>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<3>" OFFSET = IN 14.13 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<2>" OFFSET = IN 14.13 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+COMP "hi_in<1>" OFFSET = IN 14.13 ns VALID 20.83 ns BEFORE COMP "hi_in<0>"
+        "RISING";
+TIMEGRP "okHostINOUT_grp" OFFSET = IN 9.83 ns VALID 9.83 ns BEFORE COMP
+        "hi_in<0>" "RISING";
+TIMEGRP "okHostINOUT_grp" OFFSET = OUT 11.63 ns AFTER COMP "hi_in<0>"
+        "RISING";
+SCHEMATIC END;
+

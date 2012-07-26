@@ -1,0 +1,3 @@
+vhdl work "okLibrary.vhd"
+vhdl work "dds_fifo.vhd"
+vhdl work "photon.vhd"

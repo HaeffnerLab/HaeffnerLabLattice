@@ -608,9 +608,9 @@ ram1: pulser_ram port map (
 ----- 2 ------ bluePI
 ----- 3 ------ 110DP
 ----- 4 ------ axial
------ 5 ------ 729Switch
------ 6 ------ 110DPlist
------ 7 ------ camera: P13
+----- 5 ------ camera
+----- 6 
+----- 7 ------ pump
 ----- 8
 ----- 9
 ----- 16 ----- pmt counter trigger for differential mode (DiffCountTrigger)
@@ -618,6 +618,8 @@ ram1: pulser_ram port map (
 ----- 18 ----- dds step to next value
 ----- 19 ----- reset dds
 ----- 20 ----- readout_should_count
+----- 21 ----- advance dds 729
+----- 22 ----- reset dds 729
 -----------------------------------------------------------------------------------
 ------ This part: if ep02 = '0' and ep 03 = '0', then follow the logic
 ------------------if ep02 = '0' and ep 03 = '1', then invert the logic
@@ -665,9 +667,23 @@ ram1: pulser_ram port map (
 						 NOT master_logic(9)   WHEN (ep02wire(9)='0' AND ep03wire(9)='1') ELSE
 						 '0' 					WHEN (ep02wire(9)='1' AND ep03wire(9)='0') ELSE
 						 '1';
+	LOGIC_OUT(10) <= master_logic(10) 		WHEN (ep02wire(10)='0' AND ep03wire(10)='0') ELSE
+						 NOT master_logic(10)   WHEN (ep02wire(10)='0' AND ep03wire(10)='1') ELSE
+						 '0' 					WHEN (ep02wire(10)='1' AND ep03wire(10)='0') ELSE
+						 '1';
+	LOGIC_OUT(11) <= master_logic(11) 		WHEN (ep02wire(11)='0' AND ep03wire(11)='0') ELSE
+						 NOT master_logic(11)   WHEN (ep02wire(11)='0' AND ep03wire(11)='1') ELSE
+						 '0' 					WHEN (ep02wire(11)='1' AND ep03wire(11)='0') ELSE
+						 '1';									 
 ------------------------------------------------------------------------------------------
 ----- If more channels are needed, just copy above ---------------------------------------
-	LOGIC_OUT(31 downto 10) <= master_logic(31 downto 10);
+	LOGIC_OUT(31 downto 16) <= master_logic(31 downto 16);
+
+----------- 729 DDS BNC connections -----------	
+	LOGIC_OUT(12) <= master_logic(21);
+	LOGIC_OUT(13) <= master_logic(22);
+	LOGIC_OUT(14) <= '0';
+	LOGIC_OUT(15) <= '0';
 
 ---- This is the data that indicates the number of photon tagged stored in the fifo ------
 ----- It will be twice the number of photon tagged because each photon tag requires 32 bit

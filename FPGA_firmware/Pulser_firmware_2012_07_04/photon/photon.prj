@@ -1,8 +1,0 @@
-vhdl work "okLibrary.vhd"
-vhdl work "normal_pmt_fifo.vhd"
-vhdl work "ipcore_dir/pulse_fifo.vhd"
-vhdl work "ipcore_dir/pulser_ram.vhd"
-vhdl work "ipcore_dir/fifo_photon.vhd"
-vhdl work "ipcore_dir/clk_pll_100_in_200_out.vhd"
-vhdl work "dds_fifo.vhd"
-vhdl work "photon.vhd"

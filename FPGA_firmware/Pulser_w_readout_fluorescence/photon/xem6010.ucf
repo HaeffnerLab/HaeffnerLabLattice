@@ -79,6 +79,7 @@ NET "clk1"       LOC="AB13" | IOSTANDARD="LVCMOS33";
 #NET "clk2"       LOC="Y11"  | IOSTANDARD="LVCMOS33";
 #NET "clk3"       LOC="AB11" | IOSTANDARD="LVCMOS33";
 
+
 ############################################################################
 ## Expansion Connectors                                                         
 ############################################################################
