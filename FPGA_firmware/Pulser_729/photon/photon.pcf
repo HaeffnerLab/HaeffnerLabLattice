@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map P.15xf on Thu Jul 26 10:27:07 2012
+// Written by: Map P.15xf on Thu Jul 26 11:56:28 2012
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -67,7 +67,7 @@ COMP "led<4>" LOCATE = SITE "AA16" LEVEL 1;
 COMP "led<5>" LOCATE = SITE "AB16" LEVEL 1;
 COMP "led<6>" LOCATE = SITE "AA10" LEVEL 1;
 COMP "led<7>" LOCATE = SITE "AB10" LEVEL 1;
-COMP "pmt_input" LOCATE = SITE "V22" LEVEL 1;
+COMP "pmt_input" LOCATE = SITE "G16" LEVEL 1;
 PIN pmt_input_pin<0> = BEL "pmt_input" PINNAME PAD;
 PIN "pmt_input_pin<0>" CLOCK_DEDICATED_ROUTE = FALSE;
 COMP "logic_out<10>" LOCATE = SITE "M22" LEVEL 1;
@@ -95,10 +95,10 @@ COMP "logic_out<29>" LOCATE = SITE "C20" LEVEL 1;
 COMP "dds_logic_fifo_rd_clk" LOCATE = SITE "C10" LEVEL 1;
 PIN dds_logic_fifo_rd_clk_pin<0> = BEL "dds_logic_fifo_rd_clk" PINNAME PAD;
 PIN "dds_logic_fifo_rd_clk_pin<0>" CLOCK_DEDICATED_ROUTE = FALSE;
-COMP "logic_in<0>" LOCATE = SITE "G16" LEVEL 1;
-COMP "logic_in<1>" LOCATE = SITE "G19" LEVEL 1;
-COMP "logic_in<2>" LOCATE = SITE "G17" LEVEL 1;
-COMP "logic_in<3>" LOCATE = SITE "F20" LEVEL 1;
+COMP "logic_in<0>" LOCATE = SITE "V22" LEVEL 1;
+COMP "logic_in<1>" LOCATE = SITE "J16" LEVEL 1;
+COMP "logic_in<2>" LOCATE = SITE "L15" LEVEL 1;
+COMP "logic_in<3>" LOCATE = SITE "M16" LEVEL 1;
 COMP "logic_out<0>" LOCATE = SITE "T21" LEVEL 1;
 COMP "logic_out<1>" LOCATE = SITE "U20" LEVEL 1;
 COMP "logic_out<2>" LOCATE = SITE "T22" LEVEL 1;
