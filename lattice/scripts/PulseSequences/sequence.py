@@ -3,8 +3,15 @@ class Bunch:
         self.__dict__.update(kwds)
 
 class Sequence():
-    def __init__(self, pulser):
-        self.pulser = pulser
+    '''Subclass this to create any pulse sequence'''
+    def __init__(self, pulsers):
+        '''provide a list of pulsers to be programmed'''
+        try:
+            #try parsing as a list
+            self.pulser, self.pulser729 = pulsers
+        except ValueError:
+            #if failed, only one pulser is given
+            self.pulser = pulsers
         self.vars = {}
         self.parameters = None
 
