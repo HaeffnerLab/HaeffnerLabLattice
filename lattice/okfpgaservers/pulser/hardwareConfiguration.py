@@ -13,7 +13,7 @@ class ddsConfiguration():
     """
     Stores complete configuration of each DDS board
     """
-    def __init__(self, address, boardfreqrange, allowedfreqrange, boardamplrange, allowedamplrange, frequency = None, amplitude = None):
+    def __init__(self, address, boardfreqrange, allowedfreqrange, boardamplrange, allowedamplrange, frequency = None, amplitude = None, remote = False):
         '''
         address is the hardware address
         board settings refer to the DIP settings on the board
@@ -72,14 +72,12 @@ class hardwareConfiguration():
                    'ResetDDS729':channelConfiguration(22, False, False, False, False),
                 }
     
+    remote729 = remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
     ddsDict = {
                '866DP':ddsConfiguration(0, (30.0,130.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -33.0),
                '110DP':ddsConfiguration(1, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-3.0), 110.0, -33.0),
                'axial':ddsConfiguration(2, (170.0,270.0), (190.0,250.0), (-63.0,-3.0), (-63.0,-3.0), 220.0, -33.0),
                '854DP':ddsConfiguration(3, (30.0,130.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -33.0),
                'pump':ddsConfiguration(4, (60.0,160.0), (90.0,130.0), (-63.0,-3.0), (-63.0,-10.0), 110.0, -33.0)
+               #'729DP':(remote729, ddsConfiguration)
                }
-    
-    remoteChannels = {
-                      'pulser_729':remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
-                      }
