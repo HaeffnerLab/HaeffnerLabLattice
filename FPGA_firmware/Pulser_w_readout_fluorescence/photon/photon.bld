@@ -98,7 +98,7 @@ NGDBUILD Design Results Summary:
 Total memory usage is 191516 kilobytes
 
 Writing NGD file "photon.ngd" ...
-Total REAL time to NGDBUILD completion:  10 sec
-Total CPU time to NGDBUILD completion:   10 sec
+Total REAL time to NGDBUILD completion:  11 sec
+Total CPU time to NGDBUILD completion:   11 sec
 
 Writing NGDBUILD log file "photon.bld"...

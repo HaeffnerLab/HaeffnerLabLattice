@@ -103,7 +103,6 @@ class GrapherWindow(QtGui.QWidget):
     def createDatasetAnalysisCheckbox(self, dataset, directory, label, index):
 #        datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]) + ' ' + label, self)
         datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + label, self)
-        datasetAnalysisCheckbox.toggle()
         self.datasetAnalysisCheckboxes[dataset, directory, index] = datasetAnalysisCheckbox
         self.analysisWidget.datasetCheckboxListWidget.addItem('')
         self.analysisWidget.datasetCheckboxListWidget.setItemWidget(self.analysisWidget.datasetCheckboxListWidget.item(self.datasetAnalysisCheckboxCounter), datasetAnalysisCheckbox)

@@ -680,8 +680,8 @@ ram1: pulser_ram port map (
 	LOGIC_OUT(31 downto 16) <= master_logic(31 downto 16);
 
 ----------- 729 DDS BNC connections -----------	
-	LOGIC_OUT(12) <= master_logic(21);
-	LOGIC_OUT(13) <= master_logic(22);
+	LOGIC_OUT(12) <= master_logic(18);
+	LOGIC_OUT(13) <= master_logic(19);
 	LOGIC_OUT(14) <= '0';
 	LOGIC_OUT(15) <= '0';
 
