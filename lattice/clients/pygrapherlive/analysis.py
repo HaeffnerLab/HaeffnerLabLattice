@@ -58,12 +58,13 @@ class AnalysisWidget(QtGui.QWidget):
             if self.parent.datasetAnalysisCheckboxes[dataset, directory, index].isChecked():
                 for key in self.analysisCheckboxes.keys():
                     if self.analysisCheckboxes[key].isChecked():
+                        labels = self.parent.qmc.datasetLabelsDict[dataset, directory]
                         print dataset, directory, index, key
                         # MULTIPLE LINES IN THE SAME DATASET!!!!
                         fitFunction = self.fitCurveDictionary[key]
-                        fitFunction(dataset, directory, index)
+                        fitFunction(dataset, directory, index, labels[index])
                         
-    def fitLine(self, dataset, directory, index):
+    def fitLine(self, dataset, directory, index, label):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         slope = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
         print 'Slope: ', slope
@@ -74,14 +75,23 @@ class AnalysisWidget(QtGui.QWidget):
         
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
         modelY = self.fitFuncLine(modelX, [slope, offset])
-        
-                
-        # That's all! DONT forget the analysis checkbox override flag!!! and make the modelX have much more points.
-        
+       
         plotData = np.vstack((modelX, modelY)).transpose()
-              
-        self.parent.qmc.initializeDataset(index, directory, 'something?')
-        self.parent.qmc.setPlotData(index, directory, plotData)
+        
+        
+        directory = list(directory)
+        
+        directory[-1] += ' '
+        directory[-1] += label
+        directory[-1] += ' Model'
+        
+        directory = tuple(directory)
+        
+        print directory
+        
+        
+        self.parent.qmc.initializeDataset(dataset, directory, (label + ' Line Model',))
+        self.parent.qmc.setPlotData(dataset, directory, plotData)
     
     def fitFuncLine(self, x, p):
         """ 
