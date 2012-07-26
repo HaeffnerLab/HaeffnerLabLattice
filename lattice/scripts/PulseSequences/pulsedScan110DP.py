@@ -66,3 +66,4 @@ if __name__ == '__main__':
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
+    print timetags.size

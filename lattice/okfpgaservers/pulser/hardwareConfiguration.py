@@ -52,7 +52,7 @@ class hardwareConfiguration():
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
-                    '729DP':channelConfiguration(6, False, True, True, True),
+
                     'pump':channelConfiguration(7, False, True, True, False), ### channel 1 on the optical to electric translator
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
@@ -60,6 +60,9 @@ class hardwareConfiguration():
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'ReadoutCount':channelConfiguration(20, False, False, False, False),
+                   'AdvanceDDS729':channelConfiguration(21, False, False, False, False),
+                   'ResetDDS729':channelConfiguration(22, False, False, False, False),
+                   
                    }
     
     ddsDict = {
