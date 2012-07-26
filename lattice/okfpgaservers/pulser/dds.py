@@ -165,3 +165,33 @@ class DDS(LabradServer):
         arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
         ans = arr.tostring()
         return ans
+    
+#    def _valToInt(self, chan, freq, ampl, phase = 0):
+#        '''
+#        takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
+#        freq is in MHz
+#        power is in dbm
+#        '''
+#        config = self.ddsDict[chan]
+#        ans = 0
+#        for val,r,m, precision in [(freq,config.boardfreqrange, 1, 32), (ampl,config.boardamplrange, 2 ** 32,  16), (phase,config.boardphaserange, 2 ** 48,  16)]:
+#            minim, maxim = r
+#            resolution = (maxim - minim) / float(2**precision - 1)
+#            seq = int((val - minim)/resolution) #sequential representation
+#            ans += m*seq
+#        return ans
+#    
+#    def _intToBuf(self, num):
+#        '''
+#        takes the integer representing the setting and returns the buffer string for dds programming
+#        '''
+#        freq_num = num % 2**32
+#        a, b = freq_num // 256**2, freq_num % 256**2
+#        freq_arr = array.array('B', [b % 256 ,b // 256, a % 256, a // 256])
+#        
+#        phase_ampl_num = num // 2**32
+#        a, b = phase_ampl_num // 256**2, phase_ampl_num % 256**2
+#        phase_ampl_arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
+#        
+#        ans = phase_ampl_arr.tostring() + freq_arr.tostring()
+#        return ans
