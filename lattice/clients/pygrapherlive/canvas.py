@@ -185,9 +185,9 @@ class Qt4MplCanvas(FigureCanvas):
             self.dataDict[dataset, directory] = [[np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]#, [np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]           
             self.plotDict[dataset, directory] = [[]]*numberOfDependentVariables
             self.parent.createDatasetCheckbox(dataset, directory)
-#            for i in range(numberOfDependentVariables):
-#                label = self.datasetLabelsDict[dataset, directory][i]
-#                self.parent.createDatasetAnalysisCheckbox(dataset, directory, label, i)                
+            for i in range(numberOfDependentVariables):
+                label = self.datasetLabelsDict[dataset, directory][i]
+                self.parent.createDatasetAnalysisCheckbox(dataset, directory, label, i)                
             # plot parameters
             self.plotParametersDict[dataset, directory] = [MAXDATASETSIZE, 0, False, False, False]          
             # update the data points

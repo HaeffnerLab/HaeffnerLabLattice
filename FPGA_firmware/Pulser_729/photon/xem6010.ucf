@@ -60,12 +60,25 @@ NET "hi_in<5>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE "hi_in<0>" RISING;
 NET "hi_in<6>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE "hi_in<0>" RISING;
 NET "hi_in<7>" OFFSET = IN 13.33 ns VALID 20.83 ns BEFORE "hi_in<0>" RISING;
 
+NET "clk1" TNM_NET = "clk1";
+TIMESPEC "TS_Clk1" = PERIOD "clk1" 10 ns HIGH 50%;
+
+NET "clk_200" TNM_NET = "clk_200";
+TIMESPEC "TS_Clk_200" = PERIOD "clk_200" 5 ns HIGH 50%;
+
+NET "clk_100" TNM_NET = "clk_100";
+TIMESPEC "TS_Clk_100" = PERIOD "clk_100" 10 ns HIGH 50%;
+
+PIN "pll/clkout2_buf.O" CLOCK_DEDICATED_ROUTE = FALSE;
+
+
 ############################################################################
 ## System Clocks                                                        
 ############################################################################
 NET "clk1"       LOC="AB13" | IOSTANDARD="LVCMOS33";
 #NET "clk2"       LOC="Y11"  | IOSTANDARD="LVCMOS33";
 #NET "clk3"       LOC="AB11" | IOSTANDARD="LVCMOS33";
+
 
 ############################################################################
 ## Expansion Connectors                                                         
@@ -198,16 +211,53 @@ NET "dds_logic_address[1]"  LOC=C6   | IOSTANDARD=LVCMOS33; #JP2-47
 #NET "yclk1"      LOC=C11  | IOSTANDARD=LVCMOS33; #JP2-77
 #NET "yclk2"      LOC=A11  | IOSTANDARD=LVCMOS33; #JP2-79
 
-########### 729 signal input ######
 
-NET "bnc_in[0]"   LOC="L20"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[1]"   LOC="M20"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[2]"   LOC="L22"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[3]"   LOC="L19"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[4]"   LOC="V22"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[5]"   LOC="J16"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[6]"   LOC="L15"  | IOSTANDARD=LVCMOS33;
-NET "bnc_in[7]"   LOC="M16"  | IOSTANDARD=LVCMOS33;
+####################################
+# I/O for the pulser
+####################################
+
+NET "pmt_input" 	LOC=V22 | IOSTANDARD=LVCMOS33; ##This is through the level translator
+NET "pmt_input" CLOCK_DEDICATED_ROUTE = FALSE;
+#NET "pmt_input" 	LOC=L19 | IOSTANDARD=LVCMOS33;
+
+NET "logic_in[0]" LOC=G16 | IOSTANDARD=LVCMOS33;
+NET "logic_in[1]" LOC=G19 | IOSTANDARD=LVCMOS33;
+NET "logic_in[2]" LOC=G17 | IOSTANDARD=LVCMOS33;
+NET "logic_in[3]" LOC=F20 | IOSTANDARD=LVCMOS33;
+
+NET "logic_out[0]" 	LOC=T21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[1]" 	LOC=U20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[2]" 	LOC=T22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[3]" 	LOC=U22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[4]" 	LOC=P21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[5]" 	LOC=R20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[6]" 	LOC=P22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[7]" 	LOC=R22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[8]" 	LOC=M21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[9]" 	LOC=N20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[10]" 	LOC=M22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[11]" 	LOC=N22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[12]" 	LOC=L20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[13]" 	LOC=M20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[14]" 	LOC=L22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[15]" 	LOC=L19 | IOSTANDARD=LVCMOS33;
+
+NET "logic_out[16]" 	LOC=H21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[17]" 	LOC=K21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[18]" 	LOC=H22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[19]" 	LOC=K22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[20]" 	LOC=F21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[21]" 	LOC=G20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[22]" 	LOC=F22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[23]" 	LOC=G22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[24]" 	LOC=D21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[25]" 	LOC=E20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[26]" 	LOC=D22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[27]" 	LOC=E22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[28]" 	LOC=B21 | IOSTANDARD=LVCMOS33;
+NET "logic_out[29]" 	LOC=C20 | IOSTANDARD=LVCMOS33;
+NET "logic_out[30]" 	LOC=B22 | IOSTANDARD=LVCMOS33;
+NET "logic_out[31]" 	LOC=C22 | IOSTANDARD=LVCMOS33;
 
 
 ############################################################################

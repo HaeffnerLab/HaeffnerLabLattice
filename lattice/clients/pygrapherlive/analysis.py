@@ -2,6 +2,8 @@
 Analysis Widget
 '''
 from PyQt4 import QtCore, QtGui
+import numpy as np
+from scipy import optimize
 
 class AnalysisWidget(QtGui.QWidget):
     """Creates the window for the new plot"""
@@ -51,7 +53,7 @@ class AnalysisWidget(QtGui.QWidget):
 
 
     def fitCurves(self, evt):
-        for dataset,directory, index in self.parent.datasetAnalysisCheckboxes.keys():
+        for dataset,directory,index in self.parent.datasetAnalysisCheckboxes.keys():
             # if dataset is intended to be drawn (a checkbox governs this)
             if self.parent.datasetAnalysisCheckboxes[dataset, directory, index].isChecked():
                 for key in self.analysisCheckboxes.keys():
@@ -59,19 +61,24 @@ class AnalysisWidget(QtGui.QWidget):
                         print dataset, directory, index, key
                         # MULTIPLE LINES IN THE SAME DATASET!!!!
                         fitFunction = self.fitCurveDictionary[key]
-                        fitFunction()
+                        fitFunction(dataset, directory, index)
                         
-    def fitLine(self):
-        parameters = [1, 5]
-        print parameters
+    def fitLine(self, dataset, directory, index):
+        dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+        slope = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
+        print 'Slope: ', slope
+        offset = np.min(dataY)
+        print 'Offset: ', offset
+        slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
+        print 'Solutions: ', slope, offset
     
-    def fitFuncLine(self, x, p, expectedNumberOfIons):
-        """p = [slope, offset] """   
-        fitFunc = 0
-        for i in self.positionDict[str(expectedNumberOfIons)]:
-            fitFunc += p[0]*np.exp(-(((x-i*p[1] - p[2])/p[3])**2)/2)
-    #    fitFunc = offset() + height()*exp(-(((x+1.7429*alpha())/sigma())**2)/2) + height()*exp(-(((x+0.8221*alpha())/sigma())**2)/2) + height()*exp(-(((x)/sigma())**2)/2) + height()*exp(-(((x-0.8221*alpha())/sigma())**2)/2) + height()*exp(-(((x-1.7429*alpha())/sigma())**2)/2)
-        return fitFunc + p[4]
+    def fitFuncLine(self, x, p):
+        """ 
+            Line
+            p = [slope, offset] """   
+        fitFunc = p[0]*x + p[1]
+#        fitFunc += p[0]*np.exp(-(((x-i*p[1] - p[2])/p[3])**2)/2) # gaussian
+        return fitFunc
     
     def fit(self, function, parameters, y, x = None):  
         solutions = [None]*len(parameters)

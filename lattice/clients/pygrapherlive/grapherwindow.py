@@ -48,8 +48,8 @@ class GrapherWindow(QtGui.QWidget):
         self.datasetCheckboxListWidget = QtGui.QListWidget()
         self.datasetCheckboxListWidget.setMaximumWidth(180)
         datasetLayout.addWidget(self.datasetCheckboxListWidget)
-#        self.analysisWidget = AnalysisWidget(self)
-#        datasetLayout.addWidget(self.analysisWidget)
+        self.analysisWidget = AnalysisWidget(self)
+        datasetLayout.addWidget(self.analysisWidget)
         
         
 
