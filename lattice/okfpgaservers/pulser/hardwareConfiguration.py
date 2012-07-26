@@ -52,8 +52,9 @@ class hardwareConfiguration():
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
-
-                    'pump':channelConfiguration(7, False, True, True, False), ### channel 1 on the optical to electric translator
+                   
+                   ### 7 is channel 1 on the optical to electric translator
+                   'pump':channelConfiguration(7, False, True, True, False),
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
@@ -62,8 +63,7 @@ class hardwareConfiguration():
                    'ReadoutCount':channelConfiguration(20, False, False, False, False),
                    'AdvanceDDS729':channelConfiguration(21, False, False, False, False),
                    'ResetDDS729':channelConfiguration(22, False, False, False, False),
-                   
-                   }
+                }
     
     ddsDict = {
                '866DP':ddsConfiguration(0, (30.0,130.0), (70.0,90.0), (-63.0,-3.0), (-63.0,-3.0), 80.0, -33.0),

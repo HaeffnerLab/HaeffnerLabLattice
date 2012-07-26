@@ -14,7 +14,9 @@ class sample_729(Sequence):
         self.recordTime =  p.record  
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0 ,  self.recordTime )
         pulser729.add_dds_pulses('729DP',[(0.1 , 220.0 , -33.0, 0.0)])
-        pulser729.add_dds_pulses('729DP',[(0.5 , 210.0 , -33.0, 0.0)])
+        pulser729.add_dds_pulses('729DP',[(0.5 , 220.0 , -33.0, 180.0)])
+        pulser.add_dds_pulses('110DP',[(0.1 , 110.0 , -63.0)])
+        pulser.add_dds_pulses('110DP',[(0.5 , 110.0 , -63.0)])
         
 if __name__ == '__main__':
     import labrad
@@ -36,5 +38,6 @@ if __name__ == '__main__':
     pulser.start_single()
     pulser.wait_sequence_done()
     pulser.stop_sequence()
+    pulser729.stop_sequence()
     timetags = pulser.get_timetags().asarray
     print timetags.size
