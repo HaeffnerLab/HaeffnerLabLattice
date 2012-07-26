@@ -344,8 +344,8 @@ dds_logic_data_out <= fifo_dds_dout;
 fifo_dds_rd_clk <= dds_logic_fifo_rd_clk;
 fifo_dds_rd_en <= dds_logic_fifo_rd_en;
 dds_logic_fifo_empty <= fifo_dds_empty;
-dds_logic_ram_reset <= logic_in(1); -----------dds reset----------
-dds_logic_step_to_next_value <= logic_in(0);
+dds_logic_ram_reset <= logic_in(1) or ep40wire(4); -----------dds reset----------
+dds_logic_step_to_next_value <= logic_in(0) or ep40wire(5);
 dds_logic_reset_dds_chip <= ep40wire(6);
 
 dds_logic_address <= ep04wire(2 downto 0); ---------------set dds channel

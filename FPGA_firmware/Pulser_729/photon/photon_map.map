@@ -10,7 +10,7 @@ Target Device  : xc6slx45
 Target Package : fgg484
 Target Speed   : -2
 Mapper Version : spartan6 -- $Revision: 1.55 $
-Mapped Date    : Thu Jul 26 10:11:16 2012
+Mapped Date    : Thu Jul 26 10:25:38 2012
 
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 INFO:Security:54 - 'xc6slx45' is a WebPack part.
@@ -29,13 +29,13 @@ Total REAL time at the beginning of Placer: 20 secs
 Total CPU  time at the beginning of Placer: 19 secs 
 
 Phase 1.1  Initial Placement Analysis
-Phase 1.1  Initial Placement Analysis (Checksum:dfb3e1a8) REAL time: 23 secs 
+Phase 1.1  Initial Placement Analysis (Checksum:68e65bc6) REAL time: 22 secs 
 
 Phase 2.7  Design Feasibility Check
-Phase 2.7  Design Feasibility Check (Checksum:dfb3e1a8) REAL time: 23 secs 
+Phase 2.7  Design Feasibility Check (Checksum:68e65bc6) REAL time: 23 secs 
 
 Phase 3.31  Local Placement Optimization
-Phase 3.31  Local Placement Optimization (Checksum:71970488) REAL time: 23 secs 
+Phase 3.31  Local Placement Optimization (Checksum:fc65eac6) REAL time: 23 secs 
 
 Phase 4.2  Initial Placement for Architecture Specific Features
 
@@ -54,41 +54,40 @@ WARNING:Place:1109 - A clock IOB / BUFGMUX clock component pair have been found
    results. It is recommended that this error condition be corrected in the
    design.
 Phase 4.2  Initial Placement for Architecture Specific Features
-(Checksum:ae187976) REAL time: 52 secs 
+(Checksum:f56dea44) REAL time: 52 secs 
 
 Phase 5.36  Local Placement Optimization
-Phase 5.36  Local Placement Optimization (Checksum:ae187976) REAL time: 52 secs 
+Phase 5.36  Local Placement Optimization (Checksum:f56dea44) REAL time: 52 secs 
 
 Phase 6.30  Global Clock Region Assignment
-Phase 6.30  Global Clock Region Assignment (Checksum:ae187976) REAL time: 52 secs 
+Phase 6.30  Global Clock Region Assignment (Checksum:f56dea44) REAL time: 52 secs 
 
 Phase 7.3  Local Placement Optimization
-Phase 7.3  Local Placement Optimization (Checksum:ae187976) REAL time: 53 secs 
+Phase 7.3  Local Placement Optimization (Checksum:f56dea44) REAL time: 52 secs 
 
 Phase 8.5  Local Placement Optimization
-Phase 8.5  Local Placement Optimization (Checksum:ae187976) REAL time: 53 secs 
+Phase 8.5  Local Placement Optimization (Checksum:f56dea44) REAL time: 52 secs 
 
 Phase 9.8  Global Placement
-..................................
-........................................................................................................................................................................................
-................
-.....
-Phase 9.8  Global Placement (Checksum:bdf201aa) REAL time: 1 mins 18 secs 
+............................................
+...................................................................................
+.................
+Phase 9.8  Global Placement (Checksum:c0c907b) REAL time: 1 mins 9 secs 
 
 Phase 10.5  Local Placement Optimization
-Phase 10.5  Local Placement Optimization (Checksum:bdf201aa) REAL time: 1 mins 18 secs 
+Phase 10.5  Local Placement Optimization (Checksum:c0c907b) REAL time: 1 mins 9 secs 
 
 Phase 11.18  Placement Optimization
-Phase 11.18  Placement Optimization (Checksum:64581f01) REAL time: 1 mins 25 secs 
+Phase 11.18  Placement Optimization (Checksum:1f80ca05) REAL time: 1 mins 20 secs 
 
 Phase 12.5  Local Placement Optimization
-Phase 12.5  Local Placement Optimization (Checksum:64581f01) REAL time: 1 mins 25 secs 
+Phase 12.5  Local Placement Optimization (Checksum:1f80ca05) REAL time: 1 mins 20 secs 
 
 Phase 13.34  Placement Validation
-Phase 13.34  Placement Validation (Checksum:990fe048) REAL time: 1 mins 26 secs 
+Phase 13.34  Placement Validation (Checksum:6bda4420) REAL time: 1 mins 21 secs 
 
-Total REAL time to Placer completion: 1 mins 32 secs 
-Total CPU  time to Placer completion: 1 mins 29 secs 
+Total REAL time to Placer completion: 1 mins 27 secs 
+Total CPU  time to Placer completion: 1 mins 26 secs 
 Running post-placement packing...
 Writing output files...
 WARNING:PhysDesignRules:372 - Gated clock. Clock net
@@ -220,10 +219,10 @@ WARNING:PhysDesignRules:372 - Gated clock. Clock net
    combinatorial pin. This is not good design practice. Use the CE pin to
    control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 
 Design Summary
@@ -233,16 +232,16 @@ Design Summary:
 Number of errors:      0
 Number of warnings:   35
 Slice Logic Utilization:
-  Number of Slice Registers:                 2,303 out of  54,576    4%
-    Number used as Flip Flops:               2,270
+  Number of Slice Registers:                 2,307 out of  54,576    4%
+    Number used as Flip Flops:               2,274
     Number used as Latches:                     33
     Number used as Latch-thrus:                  0
     Number used as AND/OR logics:                0
-  Number of Slice LUTs:                      2,039 out of  27,288    7%
-    Number used as logic:                    1,837 out of  27,288    6%
-      Number using O6 output only:           1,130
+  Number of Slice LUTs:                      2,029 out of  27,288    7%
+    Number used as logic:                    1,838 out of  27,288    6%
+      Number using O6 output only:           1,128
       Number using O5 output only:             199
-      Number using O5 and O6:                  508
+      Number using O5 and O6:                  511
       Number used as ROM:                        0
     Number used as Memory:                      45 out of   6,408    1%
       Number used as Dual Port RAM:             20
@@ -257,21 +256,21 @@ Slice Logic Utilization:
         Number using O6 output only:             1
         Number using O5 output only:             0
         Number using O5 and O6:                  0
-    Number used exclusively as route-thrus:    157
-      Number with same-slice register load:    148
+    Number used exclusively as route-thrus:    146
+      Number with same-slice register load:    137
       Number with same-slice carry load:         9
       Number with other load:                    0
 
 Slice Logic Distribution:
-  Number of occupied Slices:                   995 out of   6,822   14%
+  Number of occupied Slices:                 1,030 out of   6,822   15%
   Nummber of MUXCYs used:                      536 out of  13,644    3%
-  Number of LUT Flip Flop pairs used:        2,801
-    Number with an unused Flip Flop:           814 out of   2,801   29%
-    Number with an unused LUT:                 762 out of   2,801   27%
-    Number of fully used LUT-FF pairs:       1,225 out of   2,801   43%
+  Number of LUT Flip Flop pairs used:        2,830
+    Number with an unused Flip Flop:           830 out of   2,830   29%
+    Number with an unused LUT:                 801 out of   2,830   28%
+    Number of fully used LUT-FF pairs:       1,199 out of   2,830   42%
     Number of unique control sets:             227
     Number of slice register sites lost
-      to control set restrictions:           1,188 out of  54,576    2%
+      to control set restrictions:           1,184 out of  54,576    2%
 
   A LUT Flip Flop pair for this architecture represents one LUT paired with
   one Flip Flop within a slice.  A control set is a unique combination of
@@ -322,9 +321,9 @@ Specific Feature Utilization:
 
 Average Fanout of Non-Clock Nets:                3.75
 
-Peak Memory Usage:  525 MB
-Total REAL time to MAP completion:  1 mins 36 secs 
-Total CPU time to MAP completion:   1 mins 33 secs 
+Peak Memory Usage:  522 MB
+Total REAL time to MAP completion:  1 mins 31 secs 
+Total CPU time to MAP completion:   1 mins 30 secs 
 
 Mapping completed.
 See MAP report file "photon_map.mrp" for details.

@@ -71,6 +71,14 @@ class AnalysisWidget(QtGui.QWidget):
         print 'Offset: ', offset
         slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
         print 'Solutions: ', slope, offset
+        modelY = self.fitFuncLine(dataX, [slope, offset])
+        
+        # That's all! DONT forget the analysis checkbox override flag!!! and make the modelX have much more points.
+        
+        plotData = np.array(modelX, modelY) #??
+        
+        self.parent.qmc.initializeDataset(index, directory, 'something?')
+        self.parent.setPlotData(index, directory, plotData)
     
     def fitFuncLine(self, x, p):
         """ 

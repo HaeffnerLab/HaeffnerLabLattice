@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map P.15xf on Thu Jul 26 10:12:50 2012
+// Written by: Map P.15xf on Thu Jul 26 10:27:07 2012
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -371,12 +371,14 @@ TIMEGRP clk_100 = BEL "ram_data_out_2_0" BEL "ram_data_out_2_1" BEL
         "_i000202_1_C_1" BEL "_i000202_1_P_1" BEL "_i000202_2_C_2" BEL
         "_i000202_2_P_2" BEL "count_1_P_1" BEL "ep40/trigff0_0" BEL
         "ep40/trigff0_1" BEL "ep40/trigff0_2" BEL "ep40/trigff0_3" BEL
-        "ep40/trigff0_4" BEL "ep40/trigff0_6" BEL "ep40/trigff0_7" BEL
-        "ep40/trigff1_0" BEL "ep40/trigff1_1" BEL "ep40/trigff1_2" BEL
-        "ep40/trigff1_3" BEL "ep40/trigff1_4" BEL "ep40/trigff1_6" BEL
-        "ep40/trigff1_7" BEL "ep40/ep_trigger_0" BEL "ep40/ep_trigger_1" BEL
-        "ep40/ep_trigger_2" BEL "ep40/ep_trigger_3" BEL "ep40/ep_trigger_4"
-        BEL "ep40/ep_trigger_6" BEL "ep40/ep_trigger_7" BEL
+        "ep40/trigff0_4" BEL "ep40/trigff0_5" BEL "ep40/trigff0_6" BEL
+        "ep40/trigff0_7" BEL "ep40/trigff1_0" BEL "ep40/trigff1_1" BEL
+        "ep40/trigff1_2" BEL "ep40/trigff1_3" BEL "ep40/trigff1_4" BEL
+        "ep40/trigff1_5" BEL "ep40/trigff1_6" BEL "ep40/trigff1_7" BEL
+        "ep40/ep_trigger_0" BEL "ep40/ep_trigger_1" BEL "ep40/ep_trigger_2"
+        BEL "ep40/ep_trigger_3" BEL "ep40/ep_trigger_4" BEL
+        "ep40/ep_trigger_5" BEL "ep40/ep_trigger_6" BEL "ep40/ep_trigger_7"
+        BEL
         "fifo3/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwas.wsts/ram_full_fb_i"
         BEL
         "fifo3/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/RST_FULL_GEN"
@@ -897,12 +899,14 @@ TIMEGRP pll_clk0 = BEL "ram_data_out_2_0" BEL "ram_data_out_2_1" BEL
         "_i000202_1_C_1" BEL "_i000202_1_P_1" BEL "_i000202_2_C_2" BEL
         "_i000202_2_P_2" BEL "count_1_P_1" BEL "ep40/trigff0_0" BEL
         "ep40/trigff0_1" BEL "ep40/trigff0_2" BEL "ep40/trigff0_3" BEL
-        "ep40/trigff0_4" BEL "ep40/trigff0_6" BEL "ep40/trigff0_7" BEL
-        "ep40/trigff1_0" BEL "ep40/trigff1_1" BEL "ep40/trigff1_2" BEL
-        "ep40/trigff1_3" BEL "ep40/trigff1_4" BEL "ep40/trigff1_6" BEL
-        "ep40/trigff1_7" BEL "ep40/ep_trigger_0" BEL "ep40/ep_trigger_1" BEL
-        "ep40/ep_trigger_2" BEL "ep40/ep_trigger_3" BEL "ep40/ep_trigger_4"
-        BEL "ep40/ep_trigger_6" BEL "ep40/ep_trigger_7" BEL
+        "ep40/trigff0_4" BEL "ep40/trigff0_5" BEL "ep40/trigff0_6" BEL
+        "ep40/trigff0_7" BEL "ep40/trigff1_0" BEL "ep40/trigff1_1" BEL
+        "ep40/trigff1_2" BEL "ep40/trigff1_3" BEL "ep40/trigff1_4" BEL
+        "ep40/trigff1_5" BEL "ep40/trigff1_6" BEL "ep40/trigff1_7" BEL
+        "ep40/ep_trigger_0" BEL "ep40/ep_trigger_1" BEL "ep40/ep_trigger_2"
+        BEL "ep40/ep_trigger_3" BEL "ep40/ep_trigger_4" BEL
+        "ep40/ep_trigger_5" BEL "ep40/ep_trigger_6" BEL "ep40/ep_trigger_7"
+        BEL
         "fifo3/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwas.wsts/ram_full_fb_i"
         BEL
         "fifo3/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/RST_FULL_GEN"
@@ -1808,32 +1812,32 @@ TIMEGRP okHI_dcm_clk0 = BEL "ep21wire_0" BEL "ep21wire_1" BEL "ep21wire_2" BEL
         BEL "wi00/ep_dataout_1" BEL "wi00/ep_dataout_2" BEL
         "wi00/ep_dataout_5" BEL "wi00/ep_dataout_6" BEL "wi00/ep_dataout_7"
         BEL "ep40/eptrig_0" BEL "ep40/eptrig_1" BEL "ep40/eptrig_2" BEL
-        "ep40/eptrig_3" BEL "ep40/eptrig_4" BEL "ep40/eptrig_6" BEL
-        "ep40/eptrig_7" BEL "wo22/wirehold_0" BEL "wo22/wirehold_1" BEL
-        "wo22/wirehold_2" BEL "wo22/wirehold_3" BEL "wo22/wirehold_4" BEL
-        "wo22/wirehold_5" BEL "wo22/wirehold_6" BEL "wo22/wirehold_7" BEL
-        "wo22/wirehold_8" BEL "wo22/wirehold_9" BEL "wo22/wirehold_10" BEL
-        "wo22/wirehold_11" BEL "wo22/wirehold_12" BEL "wo22/wirehold_13" BEL
-        "wo22/wirehold_14" BEL "wo22/wirehold_15" BEL "wo21/wirehold_0" BEL
-        "wo21/wirehold_1" BEL "wo21/wirehold_2" BEL "wo21/wirehold_3" BEL
-        "wo21/wirehold_4" BEL "wo21/wirehold_5" BEL "wo21/wirehold_6" BEL
-        "wo21/wirehold_7" BEL "wo21/wirehold_8" BEL "wo21/wirehold_9" BEL
-        "wo21/wirehold_10" BEL "wo21/wirehold_11" BEL "wo21/wirehold_12" BEL
-        "wo21/wirehold_13" BEL "wo21/wirehold_14" BEL "wo21/wirehold_15" BEL
-        "ep81/ep_dataout_0" BEL "ep81/ep_dataout_1" BEL "ep81/ep_dataout_2"
-        BEL "ep81/ep_dataout_3" BEL "ep81/ep_dataout_4" BEL
-        "ep81/ep_dataout_5" BEL "ep81/ep_dataout_6" BEL "ep81/ep_dataout_7"
-        BEL "ep81/ep_dataout_8" BEL "ep81/ep_dataout_9" BEL
-        "ep81/ep_dataout_10" BEL "ep81/ep_dataout_11" BEL "ep81/ep_dataout_12"
-        BEL "ep81/ep_dataout_13" BEL "ep81/ep_dataout_14" BEL
-        "ep81/ep_dataout_15" BEL "ep81/ep_write" BEL "ep80/ep_dataout_0" BEL
-        "ep80/ep_dataout_1" BEL "ep80/ep_dataout_2" BEL "ep80/ep_dataout_3"
-        BEL "ep80/ep_dataout_4" BEL "ep80/ep_dataout_5" BEL
-        "ep80/ep_dataout_6" BEL "ep80/ep_dataout_7" BEL "ep80/ep_dataout_8"
-        BEL "ep80/ep_dataout_9" BEL "ep80/ep_dataout_10" BEL
-        "ep80/ep_dataout_11" BEL "ep80/ep_dataout_12" BEL "ep80/ep_dataout_13"
-        BEL "ep80/ep_dataout_14" BEL "ep80/ep_dataout_15" BEL "ep80/ep_write"
-        BEL
+        "ep40/eptrig_3" BEL "ep40/eptrig_4" BEL "ep40/eptrig_5" BEL
+        "ep40/eptrig_6" BEL "ep40/eptrig_7" BEL "wo22/wirehold_0" BEL
+        "wo22/wirehold_1" BEL "wo22/wirehold_2" BEL "wo22/wirehold_3" BEL
+        "wo22/wirehold_4" BEL "wo22/wirehold_5" BEL "wo22/wirehold_6" BEL
+        "wo22/wirehold_7" BEL "wo22/wirehold_8" BEL "wo22/wirehold_9" BEL
+        "wo22/wirehold_10" BEL "wo22/wirehold_11" BEL "wo22/wirehold_12" BEL
+        "wo22/wirehold_13" BEL "wo22/wirehold_14" BEL "wo22/wirehold_15" BEL
+        "wo21/wirehold_0" BEL "wo21/wirehold_1" BEL "wo21/wirehold_2" BEL
+        "wo21/wirehold_3" BEL "wo21/wirehold_4" BEL "wo21/wirehold_5" BEL
+        "wo21/wirehold_6" BEL "wo21/wirehold_7" BEL "wo21/wirehold_8" BEL
+        "wo21/wirehold_9" BEL "wo21/wirehold_10" BEL "wo21/wirehold_11" BEL
+        "wo21/wirehold_12" BEL "wo21/wirehold_13" BEL "wo21/wirehold_14" BEL
+        "wo21/wirehold_15" BEL "ep81/ep_dataout_0" BEL "ep81/ep_dataout_1" BEL
+        "ep81/ep_dataout_2" BEL "ep81/ep_dataout_3" BEL "ep81/ep_dataout_4"
+        BEL "ep81/ep_dataout_5" BEL "ep81/ep_dataout_6" BEL
+        "ep81/ep_dataout_7" BEL "ep81/ep_dataout_8" BEL "ep81/ep_dataout_9"
+        BEL "ep81/ep_dataout_10" BEL "ep81/ep_dataout_11" BEL
+        "ep81/ep_dataout_12" BEL "ep81/ep_dataout_13" BEL "ep81/ep_dataout_14"
+        BEL "ep81/ep_dataout_15" BEL "ep81/ep_write" BEL "ep80/ep_dataout_0"
+        BEL "ep80/ep_dataout_1" BEL "ep80/ep_dataout_2" BEL
+        "ep80/ep_dataout_3" BEL "ep80/ep_dataout_4" BEL "ep80/ep_dataout_5"
+        BEL "ep80/ep_dataout_6" BEL "ep80/ep_dataout_7" BEL
+        "ep80/ep_dataout_8" BEL "ep80/ep_dataout_9" BEL "ep80/ep_dataout_10"
+        BEL "ep80/ep_dataout_11" BEL "ep80/ep_dataout_12" BEL
+        "ep80/ep_dataout_13" BEL "ep80/ep_dataout_14" BEL "ep80/ep_dataout_15"
+        BEL "ep80/ep_write" BEL
         "fifo2/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwas.wsts/ram_full_fb_i"
         BEL
         "fifo2/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/rstblk/RST_FULL_GEN"

@@ -14,55 +14,55 @@
 <msg type="warning" file="HDLCompiler" num="634" delta="old" >"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd" Line 275: Net &lt;<arg fmt="%s" index="1">pulser_flag_register[15]</arg>&gt; does not have a driver.
 </msg>
 
-<msg type="warning" file="Xst" num="647" delta="new" >Input &lt;<arg fmt="%s" index="1">logic_in&lt;3:2&gt;</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+<msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">logic_in&lt;3:2&gt;</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">321</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo4</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">321</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo4</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">321</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo4</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">321</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo4</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">364</arg>: Output port &lt;<arg fmt="%s" index="3">CLK_OUT3</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">pll</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">364</arg>: Output port &lt;<arg fmt="%s" index="3">CLK_OUT3</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">pll</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">378</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo2</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">378</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo2</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">378</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo2</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">378</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo2</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">735</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo1</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">735</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">735</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo1</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">735</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">789</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">789</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">789</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">789</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo3</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">866</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo5</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">866</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo5</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">866</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo5</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">866</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo5</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">934</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">934</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">936</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">936</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">939</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA0</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">939</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA0</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">942</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">942</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">945</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.vhd</arg>&quot; line <arg fmt="%s" index="2">945</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="warning" file="Xst" num="653" delta="old" >Signal &lt;<arg fmt="%s" index="1">pulser_flag_register&lt;15:1&gt;</arg>&gt; is used but never assigned. This sourceless signal will be automatically connected to value <arg fmt="%s" index="2">GND</arg>.

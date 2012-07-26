@@ -4,13 +4,13 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.16 secs
+Total CPU time to Xst completion: 0.14 secs
  
 --> Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.16 secs
+Total CPU time to Xst completion: 0.15 secs
  
 --> Reading design: photon.prj
 
@@ -826,11 +826,11 @@ Top Level Output File Name         : photon.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 3088
+# BELS                             : 3090
 #      GND                         : 19
 #      INV                         : 68
 #      LUT1                        : 206
-#      LUT2                        : 467
+#      LUT2                        : 469
 #      LUT3                        : 206
 #      LUT4                        : 325
 #      LUT5                        : 217
@@ -886,17 +886,17 @@ Selected Device : 6slx45fgg484-2
 
 Slice Logic Utilization: 
  Number of Slice Registers:            2467  out of  54576     4%  
- Number of Slice LUTs:                 2305  out of  27288     8%  
-    Number used as Logic:              2260  out of  27288     8%  
+ Number of Slice LUTs:                 2307  out of  27288     8%  
+    Number used as Logic:              2262  out of  27288     8%  
     Number used as Memory:               45  out of   6408     0%  
        Number used as RAM:               44
        Number used as SRL:                1
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   3631
-   Number with an unused Flip Flop:    1164  out of   3631    32%  
-   Number with an unused LUT:          1326  out of   3631    36%  
-   Number of fully used LUT-FF pairs:  1141  out of   3631    31%  
+ Number of LUT Flip Flop pairs used:   3632
+   Number with an unused Flip Flop:    1165  out of   3632    32%  
+   Number with an unused LUT:          1325  out of   3632    36%  
+   Number of fully used LUT-FF pairs:  1142  out of   3632    31%  
    Number of unique control sets:       248
 
 IO Utilization: 
@@ -989,7 +989,7 @@ Speed Grade: -2
    Minimum period: 9.609ns (Maximum Frequency: 104.074MHz)
    Minimum input arrival time before clock: 7.073ns
    Maximum output required time after clock: 5.389ns
-   Maximum combinational path delay: 4.921ns
+   Maximum combinational path delay: 5.961ns
 
 Timing Details:
 ---------------
@@ -1265,7 +1265,7 @@ Offset:              5.263ns (Levels of Logic = 3)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clk1'
-  Total number of paths / destination ports: 31 / 31
+  Total number of paths / destination ports: 33 / 33
 -------------------------------------------------------------------------
 Offset:              5.389ns (Levels of Logic = 1)
   Source:            master_logic_20 (FF)
@@ -1307,7 +1307,7 @@ Offset:              5.098ns (Levels of Logic = 3)
 Timing constraint: Default path analysis
   Total number of paths / destination ports: 18 / 18
 -------------------------------------------------------------------------
-Delay:               4.921ns (Levels of Logic = 2)
+Delay:               5.961ns (Levels of Logic = 3)
   Source:            logic_in<1> (PAD)
   Destination:       dds_logic_ram_reset (PAD)
 
@@ -1315,11 +1315,12 @@ Delay:               4.921ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             1   1.328   0.681  logic_in_1_IBUF (dds_logic_ram_reset_OBUF)
+     IBUF:I->O             1   1.328   0.790  logic_in_1_IBUF (logic_in_1_IBUF)
+     LUT2:I0->O            1   0.250   0.681  dds_logic_ram_reset1 (dds_logic_ram_reset_OBUF)
      OBUF:I->O                 2.912          dds_logic_ram_reset_OBUF (dds_logic_ram_reset)
     ----------------------------------------
-    Total                      4.921ns (4.240ns logic, 0.681ns route)
-                                       (86.2% logic, 13.8% route)
+    Total                      5.961ns (4.490ns logic, 1.471ns route)
+                                       (75.3% logic, 24.7% route)
 
 =========================================================================
 
@@ -1719,12 +1720,12 @@ pmt_synced     |         |         |    2.729|         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 40.00 secs
-Total CPU time to Xst completion: 39.87 secs
+Total REAL time to Xst completion: 38.00 secs
+Total CPU time to Xst completion: 37.86 secs
  
 --> 
 
-Total memory usage is 324860 kilobytes
+Total memory usage is 324796 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :   96 (   0 filtered)
