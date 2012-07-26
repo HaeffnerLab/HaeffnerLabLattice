@@ -644,7 +644,7 @@ class IonCount():
             yield dv.open(int(i+1))
             Data = yield dv.get()
             data = Data.asarray
-            print data
+#            print data
             print 'lendata: ', len(data), (i+1)
             zData = np.array([None]*len(data))
             for j in np.arange(len(data)):

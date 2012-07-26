@@ -193,11 +193,14 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         overlayWindows = self.getOverlayingWindows()
         overlayWindowNames = []
         if overlayWindows:
-            self.dwDict[datasetObject] = overlayWindows
+            # if the dataset is already in the window
+            overlayWindows = [x for x in overlayWindows if ((dataset, directory) not in x.qmc.dataDict.keys())]
             for overlayWindow in overlayWindows:
                 overlayWindow.qmc.initializeDataset(dataset, directory, datasetLabels)
 #                overlayWindow.createDatasetCheckbox(dataset, directory)
                 overlayWindowNames.append(overlayWindow.windowName)
+            if overlayWindows:
+                self.dwDict[datasetObject] = overlayWindows
         elif (len(windowNames) == 0):
             windowName = 'Window ' + str(self.windowCounter)
             self.windowCounter = self.windowCounter + 1

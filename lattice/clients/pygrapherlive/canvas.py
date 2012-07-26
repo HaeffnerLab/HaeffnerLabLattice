@@ -181,13 +181,13 @@ class Qt4MplCanvas(FigureCanvas):
         # First Time
         numberOfDependentVariables = data.shape[1] - 1 # total number of variables minus the independent variable           
         numberOfDataPoints = data.shape[0]
-        print 'print datadict'
-        print self.dataDict[dataset, directory]
         if (self.dataDict[dataset, directory] == None):        
             self.dataDict[dataset, directory] = [[np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]#, [np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]           
-            print 'why didnt i happen?'
             self.plotDict[dataset, directory] = [[]]*numberOfDependentVariables
-            self.parent.createDatasetCheckbox(dataset, directory)    
+            self.parent.createDatasetCheckbox(dataset, directory)
+#            for i in range(numberOfDependentVariables):
+#                label = self.datasetLabelsDict[dataset, directory][i]
+#                self.parent.createDatasetAnalysisCheckbox(dataset, directory, label, i)                
             # plot parameters
             self.plotParametersDict[dataset, directory] = [MAXDATASETSIZE, 0, False, False, False]          
             # update the data points
@@ -334,8 +334,6 @@ class Qt4MplCanvas(FigureCanvas):
 #        handles, labels = self.ax.get_legend_handles_labels()
         handles = []
         labels = []
-        print 'printing!'
-        print self.plotDict
         for dataset,directory in self.parent.datasetCheckboxes.keys():
             if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in self.plotDict[dataset, directory]:
@@ -379,6 +377,7 @@ class Qt4MplCanvas(FigureCanvas):
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE 
             #print 'drawRange: ', drawRange, ' array to plot: ', self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
             for i in range(numberOfDependentVariables):
+                #if the box is checked, otherwise skip this!
                 self.plotDict[dataset, directory][i].set_data(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange],self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange])
                 try:
                     self.ax.draw_artist(self.plotDict[dataset, directory][i])

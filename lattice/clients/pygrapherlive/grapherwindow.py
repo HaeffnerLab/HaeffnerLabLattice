@@ -6,6 +6,7 @@ from PyQt4 import QtGui, QtCore
 from canvas import Qt4MplCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from datavault import DataVaultWidget
+from analysis import AnalysisWidget
 import time
 
 class GrapherWindow(QtGui.QWidget):
@@ -18,7 +19,9 @@ class GrapherWindow(QtGui.QWidget):
         self.windowName = windowName
         self.parameterWindows = {}
         self.datasetCheckboxes = {}
+        self.datasetAnalysisCheckboxes = {}
         self.datasetCheckboxCounter = 0
+        self.datasetAnalysisCheckboxCounter = 0
         self.manuallyLoaded = True
         self.setWindowTitle(self.windowName)
    
@@ -41,10 +44,14 @@ class GrapherWindow(QtGui.QWidget):
         mainLayout.addLayout(datasetLayout)
         mainLayout.addLayout(grapherLayout)
         
-        # Layout for keeping track of datasets on a graph
+        # Layout for keeping track of datasets on a graph and analysis
         self.datasetCheckboxListWidget = QtGui.QListWidget()
         self.datasetCheckboxListWidget.setMaximumWidth(180)
         datasetLayout.addWidget(self.datasetCheckboxListWidget)
+#        self.analysisWidget = AnalysisWidget(self)
+#        datasetLayout.addWidget(self.analysisWidget)
+        
+        
 
         self.setLayout(mainLayout)
 
@@ -69,6 +76,8 @@ class GrapherWindow(QtGui.QWidget):
         windowNameButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         windowNameButton.clicked.connect(self.changeWindowName)
         
+        
+        
         # Layout that controls graph options
         buttonBox = QtGui.QHBoxLayout()
         buttonBox.addWidget(self.cb1) 
@@ -82,12 +91,24 @@ class GrapherWindow(QtGui.QWidget):
     # adds a checkbox when a new dataset is overlaid on the graph
     def createDatasetCheckbox(self, dataset, directory):
         datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]), self)
+#        datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + label, self)
         datasetCheckbox.toggle()
         datasetCheckbox.clicked.connect(self.datasetCheckboxSignal)
         self.datasetCheckboxes[dataset, directory] = datasetCheckbox
         self.datasetCheckboxListWidget.addItem('')
         self.datasetCheckboxListWidget.setItemWidget(self.datasetCheckboxListWidget.item(self.datasetCheckboxCounter), datasetCheckbox)
         self.datasetCheckboxCounter = self.datasetCheckboxCounter + 1
+
+    # adds a checkbox when a new dataset is overlaid on the graph
+    def createDatasetAnalysisCheckbox(self, dataset, directory, label, index):
+#        datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]) + ' ' + label, self)
+        datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + label, self)
+        datasetAnalysisCheckbox.toggle()
+        self.datasetAnalysisCheckboxes[dataset, directory, index] = datasetAnalysisCheckbox
+        self.analysisWidget.datasetCheckboxListWidget.addItem('')
+        self.analysisWidget.datasetCheckboxListWidget.setItemWidget(self.analysisWidget.datasetCheckboxListWidget.item(self.datasetAnalysisCheckboxCounter), datasetAnalysisCheckbox)
+        self.datasetAnalysisCheckboxCounter = self.datasetAnalysisCheckboxCounter + 1
+
 
     def datasetCheckboxSignal(self):
         self.qmc.drawLegend()
