@@ -47,6 +47,7 @@ class GrapherWindow(QtGui.QWidget):
         # Layout for keeping track of datasets on a graph and analysis
         self.datasetCheckboxListWidget = QtGui.QListWidget()
         self.datasetCheckboxListWidget.setMaximumWidth(180)
+        self.datasetCheckboxListWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         datasetLayout.addWidget(self.datasetCheckboxListWidget)
         self.analysisWidget = AnalysisWidget(self)
         datasetLayout.addWidget(self.analysisWidget)
@@ -95,7 +96,13 @@ class GrapherWindow(QtGui.QWidget):
         datasetCheckbox.toggle()
         datasetCheckbox.clicked.connect(self.datasetCheckboxSignal)
         self.datasetCheckboxes[dataset, directory] = datasetCheckbox
-        self.datasetCheckboxListWidget.addItem('')
+        # The trick here is to create an item with enough text to activate the scrollbar, and then hide the text.
+        # This must be done because a checkbox, even with a lot of text, does not activate the scroll bar horizontally
+        item = QtGui.QListWidgetItem()
+        item.setText('     ' + str(dataset) + ' ' + str(directory[-1]))
+        item.setTextColor(QtGui.QColor(255, 255, 255))
+        self.datasetCheckboxListWidget.addItem(item)
+#        self.datasetCheckboxListWidget.addItem(str(dataset) + ' ' + str(directory[-1]))
         self.datasetCheckboxListWidget.setItemWidget(self.datasetCheckboxListWidget.item(self.datasetCheckboxCounter), datasetCheckbox)
         self.datasetCheckboxCounter = self.datasetCheckboxCounter + 1
 
@@ -104,7 +111,13 @@ class GrapherWindow(QtGui.QWidget):
 #        datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' ' + str(directory[-1]) + ' ' + label, self)
         datasetAnalysisCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + label, self)
         self.datasetAnalysisCheckboxes[dataset, directory, index] = datasetAnalysisCheckbox
-        self.analysisWidget.datasetCheckboxListWidget.addItem('')
+        # The trick here is to create an item with enough text to activate the scrollbar, and then hide the text.
+        # This must be done because a checkbox, even with a lot of text, does not activate the scroll bar horizontally
+        item = QtGui.QListWidgetItem()
+        item.setText('     ' + str(dataset) + ' - ' + label)
+        item.setTextColor(QtGui.QColor(255, 255, 255))
+        #self.analysisWidget.datasetCheckboxListWidget.addItem(str(dataset) + ' - ' + label)
+        self.analysisWidget.datasetCheckboxListWidget.addItem(item)
         self.analysisWidget.datasetCheckboxListWidget.setItemWidget(self.analysisWidget.datasetCheckboxListWidget.item(self.datasetAnalysisCheckboxCounter), datasetAnalysisCheckbox)
         self.datasetAnalysisCheckboxCounter = self.datasetAnalysisCheckboxCounter + 1
 
