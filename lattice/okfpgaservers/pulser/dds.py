@@ -160,8 +160,10 @@ class DDS(LabradServer):
         cxn = self.remoteConnections[channel.remote]
         remote_info = self.remoteChannels[channel.remote]
         server, reset, program = remote_info.server, remote_info.reset, remote_info.program
-        yield cxn.servers[server][reset]()
-        yield cxn.servers[server][program]((channel.channelnumber, buf))
+        test = yield cxn.servers[server][reset]
+        print test
+        ###yield cxn.servers[server][reset]()
+        ###yield cxn.servers[server][program]((channel.channelnumber, buf))
     
     def _addDDSInitial(self, seq):
         for channel in self.ddsDict.itervalues():
