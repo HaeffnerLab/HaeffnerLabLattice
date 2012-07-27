@@ -165,8 +165,6 @@ class DDS(LabradServer):
         print remote_info
         server, reset, program = remote_info.server, remote_info.reset, remote_info.program
         print server,reset, program
-        test = yield cxn.servers[server][reset]
-        print test
         ###yield cxn.servers[server][reset]()
         ###yield cxn.servers[server][program]((channel.channelnumber, buf))
     
