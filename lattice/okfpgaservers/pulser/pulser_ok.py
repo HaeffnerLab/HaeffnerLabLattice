@@ -53,8 +53,7 @@ class Pulser(LabradServer, DDS):
         self.initializeBoard()
         yield self.initializeRemote()
         self.initializeSettings()
-        self.initializeDDS()
- 
+        yield self.initializeDDS()
         self.listeners = set()
 
     def initializeBoard(self):
