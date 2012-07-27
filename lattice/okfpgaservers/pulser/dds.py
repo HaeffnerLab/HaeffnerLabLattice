@@ -157,14 +157,10 @@ class DDS(LabradServer):
     
     @inlineCallbacks
     def _setDDSRemote(self, channel, addr, buf):
-        print 'programming remote'
-        print channel.remote
         cxn = self.remoteConnections[channel.remote]
-        print cxn
         remote_info = self.remoteChannels[channel.remote]
-        print remote_info
         server, reset, program = remote_info.server, remote_info.reset, remote_info.program
-        print server,reset, program
+        yield None
         ###yield cxn.servers[server][reset]()
         ###yield cxn.servers[server][program]((channel.channelnumber, buf))
     
