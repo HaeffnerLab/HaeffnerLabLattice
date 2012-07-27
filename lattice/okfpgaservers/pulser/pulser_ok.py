@@ -84,7 +84,12 @@ class Pulser(LabradServer, DDS):
         if len(self.remoteChannels):
             from labrad.wrappers import connectAsync
             for name,rc in self.remoteChannels.iteritems():
-                self.remoteConnections[name] = yield connectAsync(rc.ip)
+                try:
+                    self.remoteConnections[name] = yield connectAsync(rc.ip)
+                    print 'Connected to {}'.format(name)
+                except:
+                    print 'Not Able to connect to {}'.format(name)
+                    self.remoteConnections[name] = None
 
     @setting(0, "New Sequence", returns = '')
     def newSequence(self, c):

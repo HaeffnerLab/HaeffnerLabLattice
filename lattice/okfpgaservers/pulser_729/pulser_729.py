@@ -2,7 +2,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Pulser_729
-version = 0.2
+version = 1.0
 description =
 instancename = Pulser_729
 
@@ -16,8 +16,9 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting
-from twisted.internet.defer import DeferredLock, inlineCallbacks
+from twisted.internet.defer import Deferred, DeferredLock, inlineCallbacks
 from twisted.internet.threads import deferToThread
+from twisted.internet import reactor
 from api import api
 
 class Pulser_729(LabradServer):
@@ -41,13 +42,13 @@ class Pulser_729(LabradServer):
     @setting(0, 'Reset DDS', returns = '')
     def resetDDS(self , c):
         """
-        Reset the DDS position
+        Reset the ram position to 0
         """
         yield self.inCommunication.acquire()
         yield deferToThread(self.api.resetAllDDS)
         self.inCommunication.release()
         
-    @setting(1, "Program DDS", returns = '*(is)')
+    @setting(1, "Program DDS", program = '*(is)', returns = '')
     def programDDS(self, c, program):
         """
         Programs the DDS, the input is a tuple of channel numbers and buf objects for the channels
@@ -56,12 +57,29 @@ class Pulser_729(LabradServer):
         yield deferToThread(self._programDDSSequence, program)
         self.inCommunication.release()
     
+    @setting(1, "Reinitialize DDS", returns = '')
+    def reinitializeDDS(self, c):
+        """
+        Reprograms the DDS chip to its initial state
+        """
+        yield self.inCommunication.acquire()
+        yield deferToThread(self._initializeDDS)
+        self.inCommunication.release()
+    
     def _programDDSSequence(self, program):
         '''takes the parsed dds sequence and programs the board with it'''
         for chan, buf in program:
+#            buf = '\x00\x00\xff\xff\x00\x00\x00\x40'
+#            buf = buf + '\x00\x00' #adding termination
             self.api.setDDSchannel(chan)
             self.api.programDDS(buf)
         self.api.resetAllDDS()
+    
+    def wait(self, seconds, result=None):
+        """Returns a deferred that will be fired later"""
+        d = Deferred()
+        reactor.callLater(seconds, d.callback, result)
+        return d
         
 if __name__ == "__main__":
     from labrad import util

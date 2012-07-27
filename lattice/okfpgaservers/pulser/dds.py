@@ -36,7 +36,7 @@ class DDS(LabradServer):
             raise Exception("DDS access is locked. Running pulse sequence.")
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
-        channel = self.ddsDict.keys[name]
+        channel = self.ddsDict[name]
         if amplitude is not None:
             #set the amplitude
             amplitude = amplitude.inUnitsOf('dBm')
@@ -56,7 +56,7 @@ class DDS(LabradServer):
             raise Exception("DDS access is locked. Running pulse sequence.")
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
-        channel = self.ddsDict.keys[name]
+        channel = self.ddsDict[name]
         if frequency is not None:
             #set the amplitude
             frequency = frequency.inUnitsOf('MHz')
@@ -148,7 +148,6 @@ class DDS(LabradServer):
         else:
             num = self._valToInt_remote(channel, freq, ampl)
             buf = self._intToBuf_remote(num)
-            buf = buf + '\x00\x00' #adding termination
             yield self._setDDSRemote(channel, addr, buf)
     
     def _setDDSLocal(self, addr, buf):
@@ -161,9 +160,15 @@ class DDS(LabradServer):
         cxn = self.remoteConnections[channel.remote]
         remote_info = self.remoteChannels[channel.remote]
         server, reset, program = remote_info.server, remote_info.reset, remote_info.program
-        yield None
-        ###yield cxn.servers[server][reset]()
-        ###yield cxn.servers[server][program]((channel.channelnumber, buf))
+        try:
+            #channel.channelnumber = 0
+            #buf = '\x00\x00\xff\xff\x00\x00\x00\x30\x00\x00'
+            print 'in remote program'
+            print [buf]
+            #yield cxn.servers[server][reset]()
+            yield cxn.servers[server][program]([(channel.channelnumber, buf)])
+        except (KeyError,AttributeError):
+            print 'Not programing remote channel {}'.format(channel.remote)            
     
     def _addDDSInitial(self, seq):
         '''
