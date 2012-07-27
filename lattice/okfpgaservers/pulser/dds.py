@@ -87,7 +87,7 @@ class DDS(LabradServer):
             except ValueError:
                 start,freq,ampl,phase = value
             if not channel.remote:
-                num = self._valToInt(channel, freq, ampl, phase)
+                num = self._valToInt(channel, freq, ampl)
             else:
                 num = self._valToInt_remote(channel, freq, ampl, phase)
             sequence.addDDS(name, start, num)

@@ -12,9 +12,9 @@ class sample_729(Sequence):
         #caluclate time intervals
         self.recordTime =  p.record  
         pulser.add_ttl_pulse('TimeResolvedCount', 0.0 ,  2.0 )
-        pulser.add_dds_pulses('729DP',[(0.1 , 210.0 , -33.0)])
-        pulser.add_dds_pulses('729DP',[(0.5 , 230.0 , -43.0)])
-        pulser.add_dds_pulses('729DP',[(1.0 , 250.0 , -53.0)])
+        for i in range(20):
+            pulser.add_dds_pulses('axial',[(40e-9 + i/20.0 , 190.0 + i , -13.0)])
+            pulser.add_dds_pulses('729DP',[(40e-9  +i/20.0 , 250.0 - i , -33.0)])
         
 if __name__ == '__main__':
     import labrad
