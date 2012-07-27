@@ -85,7 +85,7 @@ class Pulser(LabradServer, DDS):
         """
         Create New Pulse Sequence
         """
-        c['sequence'] = Sequence()
+        c['sequence'] = Sequence(self)
     
     @setting(1, "Program Sequence", returns = '')
     def programSequence(self, c, sequence):
@@ -99,7 +99,7 @@ class Pulser(LabradServer, DDS):
         dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
         yield deferToThread(self.api.programBoard, ttl)
-        if dds is not None: yield deferToThread(self._programDDSSequence, dds)
+        if dds is not None: yield self._programDDSSequence(dds)
         self.inCommunication.release()
         self.isProgrammed = True
     

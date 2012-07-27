@@ -77,7 +77,6 @@ class DDS(LabradServer):
             channel = self.ddsDict[name]
         except KeyError:
             raise Exception("Unknown DDS channel {}".format(name))
-        hardwareAddr = channel.channelnumber
         sequence = c.get('sequence')
         #simple error checking
         if not sequence: raise Exception ("Please create new sequence first")
@@ -88,10 +87,10 @@ class DDS(LabradServer):
             except ValueError:
                 start,freq,ampl,phase = value
             if not channel.remote:
-                sett = self._valToInt(channel, freq, ampl, phase)
+                num = self._valToInt(channel, freq, ampl, phase)
             else:
-                sett = self._valToInt_remote(channel, freq, ampl, phase)
-            sequence.addDDS(hardwareAddr, start, sett)
+                num = self._valToInt_remote(channel, freq, ampl, phase)
+            sequence.addDDS(name, start, num)
     
     @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
     def getDDSAmplRange(self, c):
@@ -126,15 +125,17 @@ class DDS(LabradServer):
         yield self._setParameters( channel, freq, ampl)
         self.inCommunication.release()
     
+    @inlineCallbacks
     def _programDDSSequence(self, dds):
         '''takes the parsed dds sequence and programs the board with it'''
         self.ddsLock = True
-        for config in self.ddsDict.itervalues():
-            chan = config.channelnumber
-            buf = dds[chan]
-            self.api.resetAllDDS()
-            self.api.setDDSchannel(chan)
-            self.api.programDDS(buf)
+        for name,channel in self.ddsDict.iteritems():
+            addr = channel.channelnumber
+            buf = dds[name]
+            if not channel.remote: 
+                yield deferToThread(self._setDDSLocal, addr, buf)
+            else:
+                yield self._setDDSRemote(channel, addr, buf)
     
     @inlineCallbacks
     def _setParameters(self, channel, freq, ampl):
@@ -165,16 +166,18 @@ class DDS(LabradServer):
         ###yield cxn.servers[server][program]((channel.channelnumber, buf))
     
     def _addDDSInitial(self, seq):
-        for channel in self.ddsDict.itervalues():
+        '''
+        Writes the current values to the 0 time position of the pulse sequence.
+        '''
+        for name,channel in self.ddsDict.iteritems():
             freq,ampl = (channel.frequency, channel.amplitude)
             self._checkRange('amplitude', channel, ampl)
             self._checkRange('frequency', channel, freq)
-            addr = channel.channelnumber
             if not channel.remote:
                 num = self._valToInt(channel, freq, ampl)
             else:
                 num = self._valToInt_remote(channel, freq, ampl)
-            seq.addDDS(addr, 0, num)
+            seq.addDDS(name, 0, num)
         
     def _valToInt(self, channel, freq, ampl):
         '''

@@ -33,7 +33,6 @@ class remoteChannel(object):
         
 class hardwareConfiguration(object):
     channelTotal = 32
-    ddsChannelTotal = 8
     timeResolution = 40.0e-9 #seconds
     timeResolvedResolution = timeResolution/4.0
     maxSwitches = 1022

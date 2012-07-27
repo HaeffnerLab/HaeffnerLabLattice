@@ -1,12 +1,11 @@
 import numpy
 from hardwareConfiguration import hardwareConfiguration
-import array ####
 
 class Sequence():
     """Sequence for programming pulses"""
-    def __init__(self):
+    def __init__(self, parent):
+        self.parent = parent
         self.channelTotal = hardwareConfiguration.channelTotal
-        self.ddsChannelTotal = hardwareConfiguration.ddsChannelTotal
         self.timeResolution = hardwareConfiguration.timeResolution
         self.MAX_SWITCHES = hardwareConfiguration.maxSwitches
         #dictionary in the form time:which channels to switch
@@ -15,21 +14,21 @@ class Sequence():
         self.switchingTimes = {0:numpy.zeros(self.channelTotal, dtype = numpy.int8)} 
         self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
         #dictionary for storing information about dds switches, in the format:
-        #timestep: channel settings where channel settings is a channel-long list of integers representing the state
+        #timestep: {channel_name: integer representing the state}
         self.ddsSettings = {}
         self.advanceDDS = hardwareConfiguration.channelDict['AdvanceDDS'].channelnumber
         self.resetDDS = hardwareConfiguration.channelDict['ResetDDS'].channelnumber
         
-    def addDDS(self, chan, start, setting):
+    def addDDS(self, name, start, setting):
         '''add DDS setting'''
         timeStep = self.secToStep(start)
         if self.ddsSettings.has_key(timeStep):
-            #if dds settings already exist, check for duplicate entry
-            if self.ddsSettings[timeStep][chan]: raise Exception ('Double setting at time {} for DDS channel {}'.format(timeStep, chan))
+            #check for duplicate entry
+            if self.ddsSettings[timeStep].has_key(name): raise Exception ('Double setting at time {} for DDS channel {}'.format(timeStep, name))
         else:
             #else, create it
-            self.ddsSettings[timeStep] = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
-        self.ddsSettings[timeStep][chan] = setting
+            self.ddsSettings[timeStep] = {}
+        self.ddsSettings[timeStep][name] = setting
             
     def addPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
@@ -55,7 +54,7 @@ class Sequence():
 
     def _addNewSwitch(self, timeStep, chan, value):
         if self.switchingTimes.has_key(timeStep):
-            if self.switchingTimes[timeStep][chan]: raise Exception ('Double switch at time {} for channel {}'.format(t, chan))
+            if self.switchingTimes[timeStep][chan]: raise Exception ('Double switch at time {} for channel {}'.format(timeStep, chan))
             self.switchingTimes[timeStep][chan] = value
         else:
             if self.switches == self.MAX_SWITCHES: raise Exception("Exceeded maximum number of switches {}".format(self.switches))
@@ -73,43 +72,38 @@ class Sequence():
     
     def parseDDS(self):
         '''uses the ddsSettings dictionary to create an easily programmable list in the form
-        [buf_for_chan0, buf_for_chan1,...]
-        The length of each bufstring is equal to the number of total number of dds settings because all the ttl settings are advanced together:
+        {channel_name : buf}
+        The length of each bufstring is equal because all the ttl settings are advanced together:
         If a setting doesn't change, it's repeated.
         During the parsing the necessary ttls to advance dds settings are added automatically.
         At the end of the pulse sequence, the ram position of dds is set again to the initial value of 0.
         '''
         if not self.userAddedDDS(): return None
-        totalState = ['']*self.ddsChannelTotal
-        state = numpy.zeros(self.ddsChannelTotal, dtype = numpy.uint32)
-        for key,settings in sorted(self.ddsSettings.iteritems()):
-            updated = settings.nonzero()
-            state[updated] = settings[updated]
-            for i in range(len(state)):
-                totalState[i] += self._intToBuf(state[i])####self.numToHex(state[i])
+        dds_program = {}
+        state = {}
+        for timeStep,new_setting in sorted(self.ddsSettings.iteritems()):
+            state.update(new_setting)
+            for name,num in state.iteritems():
+                if not hardwareConfiguration.ddsDict[name].remote:
+                    buf = self.parent._intToBuf(num)
+                else:  
+                    buf = self.parent._intToBuf_remote(num)
+                try:
+                    dds_program[name] += buf
+                except KeyError: #first addition
+                    dds_program[name] = buf
             #advance the state of the dds by settings the advance channel high for one timestep
-            if not key == 0: ####
-                self._addNewSwitch(key,self.advanceDDS,1)
-                self._addNewSwitch(key + 1,self.advanceDDS,-1)
+            if not timeStep == 0:
+                self._addNewSwitch(timeStep,self.advanceDDS,1)
+                self._addNewSwitch(timeStep + 1,self.advanceDDS,-1)
         #at the end of the sequence, reset dds
         lastTTL = max(self.switchingTimes.keys())
         self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
         self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
         #add termination
-        for i in range(len(totalState)):
-            totalState[i] +=  '\x00\x00'
-        return totalState
-    
-    ####same as hex???
-    def _intToBuf(self, num):
-        '''
-        takes the integer representing the setting and returns the buffer string for dds programming
-        '''
-        #converts value to buffer string, i.e 128 -> \x00\x00\x00\x80
-        a, b = num // 256**2, num % 256**2
-        arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
-        ans = arr.tostring()
-        return ans
+        for name in dds_program.iterkeys():
+            dds_program[name] +=  '\x00\x00'
+        return dds_program
         
     def parseTTL(self):
         """Returns the representation of the sequence for programming the FPGA"""
