@@ -17,6 +17,12 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
+#TODO
+#remove comment on yielding
+#reset DDS option setting
+#signal for dds
+#vhdl control for remote dds
+
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
 from twisted.internet.defer import returnValue, DeferredLock, Deferred, inlineCallbacks
