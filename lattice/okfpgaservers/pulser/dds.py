@@ -148,6 +148,7 @@ class DDS(LabradServer):
         else:
             num = self._valToInt_remote(channel, freq, ampl)
             buf = self._intToBuf_remote(num)
+            buf = buf + '\x00\x00' #adding termination
             yield self._setDDSRemote(channel, addr, buf)
     
     def _setDDSLocal(self, addr, buf):
@@ -161,11 +162,7 @@ class DDS(LabradServer):
         remote_info = self.remoteChannels[channel.remote]
         server, reset, program = remote_info.server, remote_info.reset, remote_info.program
         try:
-            #channel.channelnumber = 0
-            #buf = '\x00\x00\xff\xff\x00\x00\x00\x30\x00\x00'
-            print 'in remote program'
-            print [buf]
-            #yield cxn.servers[server][reset]()
+            yield cxn.servers[server][reset]()
             yield cxn.servers[server][program]([(channel.channelnumber, buf)])
         except (KeyError,AttributeError):
             print 'Not programing remote channel {}'.format(channel.remote)            
