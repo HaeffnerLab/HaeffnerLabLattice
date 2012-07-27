@@ -138,11 +138,11 @@ class DDS(LabradServer):
     
     @inlineCallbacks
     def _setParameters(self, channel, freq, ampl):
+        addr = channel.channelnumber
         if not channel.remote:
             num = self._valToInt(channel, freq, ampl)
             buf = self._intToBuf(num)
             buf = buf + '\x00\x00' #adding termination
-            addr = channel.channelnumber
             yield deferToThread(self._setDDSLocal, addr, buf)
         else:
             num = self._valToInt_remote(channel, freq, ampl)
