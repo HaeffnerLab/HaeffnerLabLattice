@@ -93,6 +93,8 @@ class Sequence():
                 except KeyError: #first addition
                     dds_program[name] = buf
             #advance the state of the dds by settings the advance channel high for one timestep
+            #print self.ddsSettings
+            print timeStep
             if not timeStep == 0:
                 self._addNewSwitch(timeStep,self.advanceDDS,1)
                 self._addNewSwitch(timeStep + 1,self.advanceDDS,-1)

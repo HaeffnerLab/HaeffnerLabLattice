@@ -1,65 +1,101 @@
 from sequence import Sequence
 
 class scan729(Sequence):
-    
+        
     requiredVars = {
-                    'backgroundMeasure':(float, 10e-9, 5.0, 100e-3),
-                    'initial_cooling':(float, 10e-9, 5.0, 100e-3),
-                    'optical_pumping':(float, 10e-9, 5.0, 100e-3),
-                    'rabitime':(float, 10e-9, 5.0, 100e-3),
-                    'readout_time':(float, 10e-9, 5.0, 100e-3),
-                    'repump854':(float, 10e-9, 5.0, 100e-3),
-                    'repumpPower':(float, -63.0, -3.0, -3.0),
-                    'coolingFreq397':(float, 90.0, 130.0, 110.0),
-                    'readoutFreq397':(float, 90.0, 130.0, 120.0),
-                    'coolingPower397':(float, -63.0, -3.0, -11.0),
-                    'readoutPower397':(float, -63.0, -3.0, -11.0),
+                    'frequencies_729':((list,float), 190.0, 250.0, 220.0),
+                    'amplitudes_729':((list,float), -63.0, -3.0,   -3.0),
+                    'doppler_cooling':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'doppler_cooling_freq':(float, 90.0, 130.0, 110.0),
+                    'doppler_cooling_ampl':(float, -63.0, -3.0,   -11.0),
+                    'readout_freq':(float, 90.0, 130.0, 110.0),
+                    'readout_ampl':(float, -63.0, -3.0,   -11.0),
+                    'heating_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'rabi_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'readout_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'repump_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'repump_854_ampl': (float, -63.0, -3.0,   -11.0),
+                    'repump_866_ampl': (float, -63.0, -3.0,   -11.0),
                     }
     
-    def defineSequence(self):   
+    def defineSequence(self):  
+        
         p = self.parameters
         pulser = self.pulser
-        #caluclate time intervals
-        self.recordTime =  p.backgroundMeasure  + p.initial_cooling + p.optical_pumping + p.rabitime + p.readout_time + p.repump854
-        self.startRabi = p.backgroundMeasure +  p.initial_cooling + p.optical_pumping
-        self.startReadout = self.startRabi + p.rabitime
-        self.stopReadout =  self.startReadout + p.readout_time
+        offset = 40e-9 
+        p.repump_freq = 80.0
         
-        pulser.add_ttl_pulse('TimeResolvedCount', 0.0 ,  self.recordTime )
-        #measure_background
-        pulser.add_ttl_pulse('866DP', 0.0, p.backgroundMeasure) #switch off 866 for background measure
-        #initialize dds
-        pulser.add_dds_pulses('110DP',[(40e-9 , p.coolingFreq397 , p.coolingPower397)])
-        pulser.add_dds_pulses('854DP', [(40e-9 , 80.0 , -63.0)])
-        #set dds
-        pulser.add_dds_pulses('854DP', [(p.backgroundMeasure , 80.0 , p.repumpPower)])
-        pulser.add_dds_pulses('854DP', [(p.backgroundMeasure +  p.initial_cooling , 80.0 , -63.0)])
-        #optical pumping after p.backgroundMeasure + p.initial_cooling
-        #also switch off 110DP here
-        #rabi flop
-        pulser.add_ttl_pulse('729DP', self.startRabi, p.rabitime)
-        #switch off cooling while 729 is on
-        pulser.add_ttl_pulse('866DP', self.startRabi, p.rabitime)
-        pulser.add_ttl_pulse('110DP', self.startRabi, p.rabitime)
-        #increase 397 intensity during readout
-        pulser.add_dds_pulses('110DP',[(self.startReadout , p.readoutFreq397 , p.readoutPower397)])
-        #after readout, repump back
-        pulser.add_dds_pulses('110DP',[(self.stopReadout , p.coolingFreq397 , p.coolingPower397)])
+        #computing the times
+        p.cycleTime = p.repump_time + p.doppler_cooling + p.heating_time + p.rabi_time + p.readout_time
+        cT = p.cycleTime
+        start_cooling = offset
+        repump_854_off = offset + p.repump_time
+        cooling_off = repump_854_off + p.doppler_cooling
+        rabi_on = cooling_off + p.heating_time
+        rabi_off = rabi_on + p.rabi_time
+        readout_on = rabi_off
+        freqs = p.frequencies_729
+        ampls = p.amplitudes_729
+        #lists for programming
+        coolingOn = []
+        coolingOff = []
+        repump854On = []
+        repump854Off = []
+        repump866On = []
+        repump866Off = []
+        rabiOn = []
+        rabiOff = []
+        readoutOn = []
+        readoutOff = []
+        readout_count = []
+        for i in range(len(freqs)):      
+            coolingOn.append(    (start_cooling + i  * cT, p.doppler_cooling_freq, p.doppler_cooling_ampl)  )
+            repump866On.append(  (start_cooling + i  * cT, p.repump_freq, p.repump_866_ampl)  )
+            repump854On.append(  (start_cooling + i  * cT, p.repump_freq, p.repump_854_ampl)  )
+            repump854Off.append( (repump_854_off + i  * cT, p.repump_freq, -63.0)  )
+            coolingOff.append(   (cooling_off + i  * cT, p.doppler_cooling_freq, -63.0)  )
+            repump866Off.append( (cooling_off + i  * cT, p.repump_freq, -63.0)  )
+            rabiOn.append(       (rabi_on + i  * cT, freqs[i], ampls[i]) )
+            rabiOff.append(      (rabi_off + i  * cT, 0.0, -63.0) )
+            readoutOn.append(    (readout_on + i  * cT, p.readout_freq, p.readout_ampl  ))
+            repump866On.append(  (readout_on + i  * cT, p.repump_freq, p.repump_866_ampl)  )
+            readout_count.append( ('ReadoutCount', readout_on + i  * cT, p.readout_time)) 
+        
+        pulser.add_ttl_pulses(readout_count)
+        for channel, pulses in [
+                                ('110DP', coolingOn), ('110DP', coolingOff), ('110DP', readoutOn), ('110DP', readoutOff),
+                                ('854DP', repump854On), ('854DP', repump854Off),
+                                ('866DP', repump866On), ('866DP', repump866Off),
+                                ('729DP', rabiOn),('729DP', rabiOff),
+                                ]:
+            pulser.add_dds_pulses(channel, pulses)
         
 if __name__ == '__main__':
     import labrad
+    import numpy
+    freqs = numpy.arange(190.0, 220.0, .30)
+    ampls = numpy.ones_like(freqs) * -11.0
+    print ampls.size
+    freqs = freqs.tolist()
+    ampls = ampls.tolist()
     cxn = labrad.connect()
     pulser = cxn.pulser
     seq = scan729(pulser)
     pulser.new_sequence()
     params = {
-                'backgroundMeasure':1*10**-3,
-                'initial_cooling':5*10**-3,
-                'optical_pumping':1*10**-3,
-                'rabitime':5*10**-3,
+                'frequencies_729':freqs,
+                'amplitudes_729': ampls,
+                'doppler_cooling':5*10**-3,
+                'heating_time':100e-9,
+                'rabi_time':5*10**-3,
                 'readout_time':10*10**-3,
-                'repump854':5*10**-3,
-                'repumpPower':-3.0
+                'repump_time':5*10**-3,
+                'repump_854_ampl': -3.0,
+                'repump_866_ampl': -11.0,
+                'doppler_cooling_freq':110.0,
+                'doppler_cooling_ampl':-11.0,
+                'readout_freq':110.0,
+                'readout_ampl':-11.0
               }
     seq.setVariables(**params)
     seq.defineSequence()
@@ -68,5 +104,7 @@ if __name__ == '__main__':
     pulser.start_single()
     pulser.wait_sequence_done()
     pulser.stop_sequence()
-    timetags = pulser.get_timetags().asarray
-    print timetags.size
+    readouts = pulser.get_readout_counts().asarray
+    print readouts.size
+    print readouts
+    
