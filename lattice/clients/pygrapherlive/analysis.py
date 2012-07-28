@@ -14,7 +14,8 @@ class AnalysisWidget(QtGui.QWidget):
         self.analysisCheckboxes = {}      
         self.fitCurveDictionary = {'Line': self.fitLine,
                                    'Gaussian': self.fitGaussian,
-                                   'Lorentzian': self.fitLorentzian
+                                   'Lorentzian': self.fitLorentzian,
+                                   'Parabola': self.fitParabola
                                    }   
         self.setMaximumWidth(180)
 
@@ -78,44 +79,20 @@ class AnalysisWidget(QtGui.QWidget):
                         # MULTIPLE LINES IN THE SAME DATASET!!!!
                         fitFunction = self.fitCurveDictionary[key]
                         fitFunction(dataset, directory, index, labels[index])
-                        
-    def fitLine(self, dataset, directory, index, label):
-        dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
-        slope = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
-        offset = np.min(dataY)
-        slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
-        
-        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
-        modelY = self.fitFuncLine(modelX, [slope, offset])
-        plotData = np.vstack((modelX, modelY)).transpose()
-        
-        directory = list(directory)
-        directory[-1] += ' - '
-        directory[-1] += label
-        directory[-1] += ' - '
-        directory[-1] += 'Line Model'
-        directory = tuple(directory)
-        
-        self.parent.qmc.initializeDataset(dataset, directory, (label + ' Line Model',))
-        self.parent.qmc.setPlotData(dataset, directory, plotData)
-    
-    def fitFuncLine(self, x, p):
-        """ 
-            Line
-            p = [slope, offset]
-        """   
-        fitFunc = p[0]*x + p[1]
-#        fitFunc += p[0]*np.exp(-(((x-i*p[1] - p[2])/p[3])**2)/2) # gaussian
-        return fitFunc
 
     def fitGaussian(self, dataset, directory, index, label):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         
-        xValues = np.arange(len(dataY))
-        center = np.sum(xValues*dataY)/np.sum(dataY)
-        sigma = np.abs(np.sum((xValues - center)**2*dataY/np.sum(dataY)))
-        height = np.max(dataY)
-        offset = np.min(dataY)
+#        xValues = np.arange(len(dataY))
+#        center = np.sum(xValues*dataY)/np.sum(dataY)
+#        sigma = np.abs(np.sum((xValues - center)**2*dataY/np.sum(dataY)))
+#        height = np.max(dataY)
+#        offset = np.min(dataY)
+        
+        height = self.parameterWindow.gaussianHeightDoubleSpinBox.value()
+        center = self.parameterWindow.gaussianCenterDoubleSpinBox.value()
+        sigma =  self.parameterWindow.gaussianSigmaDoubleSpinBox.value()
+        offset = self.parameterWindow.gaussianOffsetDoubleSpinBox.value()
                
         height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], dataY, dataX)
                
@@ -145,12 +122,17 @@ class AnalysisWidget(QtGui.QWidget):
     def fitLorentzian(self, dataset, directory, index, label):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         
-        xValues = np.arange(len(dataY))
-        print len(dataY)
-        center = dataX[np.sum(xValues*dataY)/np.sum(dataY)]
-        offset = np.min(dataY)
-        gamma = 10
-        I = np.max(dataY) - np.min(dataY)
+#        xValues = np.arange(len(dataY))
+#        print len(dataY)
+#        center = dataX[np.sum(xValues*dataY)/np.sum(dataY)]
+#        offset = np.min(dataY)
+#        gamma = 10
+#        I = np.max(dataY) - np.min(dataY)
+        
+        gamma = self.parameterWindow.lorentzianGammaDoubleSpinBox.value()
+        center = self.parameterWindow.lorentzianCenterDoubleSpinBox.value()
+        I = self.parameterWindow.lorentzianIDoubleSpinBox.value()
+        offset = self.parameterWindow.lorentzianOffsetDoubleSpinBox.value()
         
         print gamma, center, I, offset
         
@@ -182,6 +164,72 @@ class AnalysisWidget(QtGui.QWidget):
         fitFunc = p[3] + p[2]*(p[0]**2/((x - p[1])**2 + p[0]**2))# Lorentzian
         return fitFunc
 
+    def fitLine(self, dataset, directory, index, label):
+        dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+#        slope = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
+#        offset = np.min(dataY)
+        
+        slope = self.parameterWindow.lineSlopeDoubleSpinBox.value()
+        offset = self.parameterWindow.lineOffsetDoubleSpinBox.value()
+        
+        slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
+        
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelY = self.fitFuncLine(modelX, [slope, offset])
+        plotData = np.vstack((modelX, modelY)).transpose()
+        
+        directory = list(directory)
+        directory[-1] += ' - '
+        directory[-1] += label
+        directory[-1] += ' - '
+        directory[-1] += 'Line Model'
+        directory = tuple(directory)
+        
+        self.parent.qmc.initializeDataset(dataset, directory, (label + ' Line Model',))
+        self.parent.qmc.setPlotData(dataset, directory, plotData)
+    
+    def fitFuncLine(self, x, p):
+        """ 
+            Line
+            p = [slope, offset]
+        """   
+        fitFunc = p[0]*x + p[1]
+        return fitFunc
+    
+    def fitParabola(self, dataset, directory, index, label):
+        dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+#        A = 5
+#        B = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
+#        C = np.min(dataY)
+
+        A = self.parameterWindow.parabolaADoubleSpinBox.value()
+        B = self.parameterWindow.parabolaBDoubleSpinBox.value()
+        C = self.parameterWindow.parabolaCDoubleSpinBox.value()
+
+        A, B, C = self.fit(self.fitFuncParabola, [A, B, C], dataY, dataX)
+        
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelY = self.fitFuncParabola(modelX, [A, B, C])
+        plotData = np.vstack((modelX, modelY)).transpose()
+        
+        directory = list(directory)
+        directory[-1] += ' - '
+        directory[-1] += label
+        directory[-1] += ' - '
+        directory[-1] += 'Parabola Model'
+        directory = tuple(directory)
+        
+        self.parent.qmc.initializeDataset(dataset, directory, (label + ' Parabola Model',))
+        self.parent.qmc.setPlotData(dataset, directory, plotData)
+    
+    def fitFuncParabola(self, x, p):
+        """ 
+            Parabola
+            A*x**2 + B*x + C
+            p = [A, B, C]
+        """   
+        fitFunc = p[0]*x**2 + p[1]*x + p[2]
+        return fitFunc
     
     def fit(self, function, parameters, y, x = None):  
         solutions = [None]*len(parameters)
@@ -215,99 +263,99 @@ class ParameterWindow(QtGui.QWidget):
 
         gaussianHeightLabel = QtGui.QLabel('Height')
         self.gaussianHeightDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.gaussianHeightDoubleSpinBox.setDecimals(4)
-        self.gaussianHeightDoubleSpinBox.setMinimum(0)
-        self.gaussianHeightDoubleSpinBox.setSingleStep(.01)
+        self.gaussianHeightDoubleSpinBox.setDecimals(6)
+        self.gaussianHeightDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.gaussianHeightDoubleSpinBox.setValue(1)
         self.gaussianHeightDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         gaussianCenterLabel = QtGui.QLabel('Center')
         self.gaussianCenterDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.gaussianCenterDoubleSpinBox.setDecimals(4)
-        self.gaussianCenterDoubleSpinBox.setMinimum(0)
-        self.gaussianCenterDoubleSpinBox.setSingleStep(.01)
+        self.gaussianCenterDoubleSpinBox.setDecimals(6)
+        self.gaussianCenterDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.gaussianCenterDoubleSpinBox.setValue(1)
         self.gaussianCenterDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
          
         gaussianSigmaLabel = QtGui.QLabel('Sigma')
         self.gaussianSigmaDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.gaussianSigmaDoubleSpinBox.setDecimals(4)
-        self.gaussianSigmaDoubleSpinBox.setMinimum(0)
-        self.gaussianSigmaDoubleSpinBox.setSingleStep(.01)
+        self.gaussianSigmaDoubleSpinBox.setDecimals(6)
+        self.gaussianSigmaDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.gaussianSigmaDoubleSpinBox.setValue(1)
         self.gaussianSigmaDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         gaussianOffsetLabel = QtGui.QLabel('Offset')
         self.gaussianOffsetDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.gaussianOffsetDoubleSpinBox.setDecimals(4)
-        self.gaussianOffsetDoubleSpinBox.setMinimum(0)
-        self.gaussianOffsetDoubleSpinBox.setSingleStep(.01)
+        self.gaussianOffsetDoubleSpinBox.setDecimals(6)
+        self.gaussianOffsetDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.gaussianOffsetDoubleSpinBox.setValue(1)
         self.gaussianOffsetDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Lorentzian
 
         lorentzianGammaLabel = QtGui.QLabel('Gamma')
         self.lorentzianGammaDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lorentzianGammaDoubleSpinBox.setDecimals(4)
-        self.lorentzianGammaDoubleSpinBox.setMinimum(0)
-        self.lorentzianGammaDoubleSpinBox.setSingleStep(.01)
+        self.lorentzianGammaDoubleSpinBox.setDecimals(6)
+        self.lorentzianGammaDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lorentzianGammaDoubleSpinBox.setValue(1)
         self.lorentzianGammaDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         lorentzianCenterLabel = QtGui.QLabel('Center')
         self.lorentzianCenterDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lorentzianCenterDoubleSpinBox.setDecimals(4)
-        self.lorentzianCenterDoubleSpinBox.setMinimum(0)
-        self.lorentzianCenterDoubleSpinBox.setSingleStep(.01)
+        self.lorentzianCenterDoubleSpinBox.setDecimals(6)
+        self.lorentzianCenterDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lorentzianCenterDoubleSpinBox.setValue(1)
         self.lorentzianCenterDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
          
         lorentzianILabel = QtGui.QLabel('I')
         self.lorentzianIDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lorentzianIDoubleSpinBox.setDecimals(4)
-        self.lorentzianIDoubleSpinBox.setMinimum(0)
-        self.lorentzianIDoubleSpinBox.setSingleStep(.01)
+        self.lorentzianIDoubleSpinBox.setDecimals(6)
+        self.lorentzianIDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lorentzianIDoubleSpinBox.setValue(1)
         self.lorentzianIDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         lorentzianOffsetLabel = QtGui.QLabel('Offset')
         self.lorentzianOffsetDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lorentzianOffsetDoubleSpinBox.setDecimals(4)
-        self.lorentzianOffsetDoubleSpinBox.setMinimum(0)
-        self.lorentzianOffsetDoubleSpinBox.setSingleStep(.01)
+        self.lorentzianOffsetDoubleSpinBox.setDecimals(6)
+        self.lorentzianOffsetDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lorentzianOffsetDoubleSpinBox.setValue(1)
         self.lorentzianOffsetDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Line
 
         lineSlopeLabel = QtGui.QLabel('Slope')
         self.lineSlopeDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lineSlopeDoubleSpinBox.setDecimals(4)
-        self.lineSlopeDoubleSpinBox.setMinimum(0)
-        self.lineSlopeDoubleSpinBox.setSingleStep(.01)
+        self.lineSlopeDoubleSpinBox.setDecimals(6)
+        self.lineSlopeDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lineSlopeDoubleSpinBox.setValue(1)
         self.lineSlopeDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         lineOffsetLabel = QtGui.QLabel('Offset')
         self.lineOffsetDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.lineOffsetDoubleSpinBox.setDecimals(4)
-        self.lineOffsetDoubleSpinBox.setMinimum(0)
-        self.lineOffsetDoubleSpinBox.setSingleStep(.01)
+        self.lineOffsetDoubleSpinBox.setDecimals(6)
+        self.lineOffsetDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.lineOffsetDoubleSpinBox.setValue(1)
         self.lineOffsetDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Parabola
 
         parabolaALabel = QtGui.QLabel('A')
         self.parabolaADoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.parabolaADoubleSpinBox.setDecimals(4)
-        self.parabolaADoubleSpinBox.setMinimum(0)
-        self.parabolaADoubleSpinBox.setSingleStep(.01)
+        self.parabolaADoubleSpinBox.setDecimals(6)
+        self.parabolaADoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.parabolaADoubleSpinBox.setValue(1)
         self.parabolaADoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         parabolaBLabel = QtGui.QLabel('B')
         self.parabolaBDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.parabolaBDoubleSpinBox.setDecimals(4)
-        self.parabolaBDoubleSpinBox.setMinimum(0)
-        self.parabolaBDoubleSpinBox.setSingleStep(.01)
+        self.parabolaBDoubleSpinBox.setDecimals(6)
+        self.parabolaBDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.parabolaBDoubleSpinBox.setValue(1)
         self.parabolaBDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         parabolaCLabel = QtGui.QLabel('C')
         self.parabolaCDoubleSpinBox = QtGui.QDoubleSpinBox()
-        self.parabolaCDoubleSpinBox.setDecimals(4)
-        self.parabolaCDoubleSpinBox.setMinimum(0)
-        self.parabolaCDoubleSpinBox.setSingleStep(.01)
+        self.parabolaCDoubleSpinBox.setDecimals(6)
+        self.parabolaCDoubleSpinBox.setRange(-1000000000, 1000000000)
+        self.parabolaCDoubleSpinBox.setValue(1)
         self.parabolaCDoubleSpinBox.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         # Layout
@@ -353,7 +401,7 @@ class ParameterWindow(QtGui.QWidget):
         self.grid.addWidget(parabolaCLabel, 7, 5, QtCore.Qt.AlignCenter)
         self.grid.addWidget(self.parabolaCDoubleSpinBox, 7, 6, QtCore.Qt.AlignCenter)
         
-        self.setFixedSize(800, 200)
+        self.setFixedSize(1000, 200)
 
 
     def closeEvent(self, evt):
