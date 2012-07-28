@@ -1,10 +1,10 @@
 from qtui.QCustomFreqPower import QCustomFreqPower
 from twisted.internet.defer import inlineCallbacks
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 
 class DDS_CHAN(QCustomFreqPower):
     def __init__(self, chan, reactor, parent=None):
-        super(DDS_CHAN, self).__init__('DDS: {}'.format(chan), False, parent)
+        super(DDS_CHAN, self).__init__('DDS: {}'.format(chan), True, parent)
         self.reactor = reactor
         self.chan = chan
         self.connect()
@@ -29,11 +29,15 @@ class DDS_CHAN(QCustomFreqPower):
         #get initial values
         initpower = yield self.server.amplitude()
         initfreq = yield self.server.frequency()
+        initstate = yield self.server.output()
+        self.buttonSwitch.setChecked(initstate)
+        self.setText(initstate)
         self.spinPower.setValue(initpower)
         self.spinFreq.setValue(initfreq)
         #connect functions
         self.spinPower.valueChanged.connect(self.powerChanged)
         self.spinFreq.valueChanged.connect(self.freqChanged) 
+        self.buttonSwitch.toggled.connect(self.switchChanged)
         
     @inlineCallbacks
     def powerChanged(self, pwr):
@@ -44,6 +48,10 @@ class DDS_CHAN(QCustomFreqPower):
     def freqChanged(self, freq):
         val = self.T.Value(freq, 'MHz')
         yield self.server.frequency(val)
+    
+    @inlineCallbacks
+    def switchChanged(self, pressed):
+        yield self.server.output(pressed)
 
     def closeEvent(self, x):
         self.reactor.stop()
@@ -110,6 +118,9 @@ class RS_CHAN(QCustomFreqPower):
         self.reactor.stop()  
 
 class DDS_CONTROL(QtGui.QWidget):
+    
+    widgets_per_row = 4
+    
     def __init__(self, reactor):
         super(DDS_CONTROL, self).__init__()
         self.reactor = reactor
@@ -122,11 +133,13 @@ class DDS_CONTROL(QtGui.QWidget):
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.pulser
         allChannels = yield self.server.get_dds_channels()
-        layout = QtGui.QHBoxLayout()
+        layout = QtGui.QGridLayout()
+        item = 0
         for chan in self.channels:
             if chan in allChannels:
                 widget = DDS_CHAN(chan, self.reactor)
-                layout.addWidget(widget)
+                layout.addWidget(widget, item // self.widgets_per_row, item % self.widgets_per_row)
+                item += 1
         self.setLayout(layout)
     
     def closeEvent(self, x):

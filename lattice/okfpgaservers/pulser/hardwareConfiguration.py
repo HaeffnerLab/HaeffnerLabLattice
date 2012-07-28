@@ -19,9 +19,11 @@ class ddsConfiguration(object):
         self.allowedamplrange = allowedamplrange
         self.frequency = frequency
         self.amplitude = amplitude
+        self.state = True
         self.boardfreqrange = args.get('boardfreqrange', (0.0, 800.0))
         self.boardamplrange = args.get('boardamplrange', (-63.0, -3.0))
         self.boardphaserange = args.get('boardphaserange', (0.0, 360.0))
+        self.off_parameters = args.get('off_parameters', (0.0, -63.0))
         self.remote = args.get('remote', False)        
 
 class remoteChannel(object):
@@ -66,16 +68,31 @@ class hardwareConfiguration(object):
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict = {
                #local channels
-               '866DP':ddsConfiguration(0, (70.0,90.0), (-63.0,-3.0), 80.0, -33.0, boardfreqrange = (30.0,130.0)),
-               '110DP':ddsConfiguration(1, (90.0,130.0), (-63.0,-3.0), 110.0, -33.0, boardfreqrange = (60.0,160.0)),
-               'axial':ddsConfiguration(2, (190.0,250.0), (-63.0,-3.0), 220.0, -33.0, boardfreqrange = (170.0,270.0)),
-               '854DP':ddsConfiguration(3, (70.0,90.0), (-63.0,-3.0), 80.0, -33.0, boardfreqrange = (30.0,130.0)),
-               'pump':ddsConfiguration(4, (90.0,130.0), (-63.0,-10.0), 110.0, -33.0, boardfreqrange = (60.0,160.0)),
+               '866DP':ddsConfiguration(0, (70.0,90.0), (-63.0,-3.0), 80.0, -33.0, 
+                                        boardfreqrange = (30.0,130.0),
+                                        off_parameters = (80.0, -63.0)
+                                        ),
+               '110DP':ddsConfiguration(1, (90.0,130.0), (-63.0,-3.0), 110.0, -33.0, 
+                                        boardfreqrange = (60.0,160.0),
+                                        off_parameters = (110.0, -63.0)
+                                        ),
+               'axial':ddsConfiguration(2, (190.0,250.0), (-63.0,-3.0), 220.0, -33.0,
+                                        boardfreqrange = (170.0,270.0),
+                                        off_parameters = (220.0, -63.0)
+                                         ),
+               '854DP':ddsConfiguration(3, (70.0,90.0), (-63.0,-3.0), 80.0, -33.0, 
+                                        boardfreqrange = (30.0,130.0),
+                                        off_parameters = (80.0, -63.0)                                        
+                                        ),
+               'pump':ddsConfiguration(4, (90.0,130.0), (-63.0,-10.0), 110.0, -33.0, 
+                                        boardfreqrange = (60.0,160.0),
+                                        off_parameters = (110.0, -63.0)
+                                       ),
                #remote channels
                '729DP':ddsConfiguration(0, (190.0,250.0),  (-63.0,-3.0), 220.0, -33.0, remote = 'pulser_729')
                }
     
     remoteChannels = {
-                      'pulser_729': remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
+                        'pulser_729': remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
                       }
     

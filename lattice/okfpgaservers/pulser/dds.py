@@ -104,6 +104,29 @@ class DDS(LabradServer):
         if name is None: raise Exception ("Channel not provided and not selected")
         return self.ddsDict[name].allowedfreqrange
     
+    @setting(48, 'Output', state = 'b', returns =' b')
+    def output(self, c, state = None):
+        """To turn off and on the dds. Turning off the DDS sets the frequency and amplitude 
+        to the off_parameters provided in the configuration.
+        """
+        if self.ddsLock: 
+            self.ddsLock = False
+            raise Exception("DDS access is locked. Running pulse sequence.")
+        name = c.get('ddschan')
+        if name is None: raise Exception ("Channel not provided and not selected")
+        channel = self.ddsDict[name]
+        if state is not None:
+            if state and not channel.state:
+                #if asked to turn on and is currently off
+                yield self._setParameters(channel, channel.frequency, channel.amplitude)
+            elif (channel.state and not state):
+                #asked to turn off and is currently on
+                freq,ampl = channel.off_parameters
+                yield self._setParameters(channel, freq, ampl)
+            channel.state = state
+        state = channel.state
+        returnValue(state)
+    
     def _checkRange(self, t, channel, val):
         if t == 'amplitude':
             r = channel.allowedamplrange
