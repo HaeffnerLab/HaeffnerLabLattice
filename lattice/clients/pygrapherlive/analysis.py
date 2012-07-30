@@ -17,6 +17,7 @@ class AnalysisWidget(QtGui.QWidget):
                                    'Lorentzian': self.fitLorentzian,
                                    'Parabola': self.fitParabola
                                    }   
+        self.solutionsDictionary = {}
         self.setMaximumWidth(180)
 
         mainLayout = QtGui.QVBoxLayout()
@@ -69,6 +70,7 @@ class AnalysisWidget(QtGui.QWidget):
         # create the parameter window upstairs, spinboxes will be part of it
 
     def fitCurves(self, evt):
+        self.solutionsDictionary = {}
         for dataset,directory,index in self.parent.datasetAnalysisCheckboxes.keys():
             # if dataset is intended to be drawn (a checkbox governs this)
             if self.parent.datasetAnalysisCheckboxes[dataset, directory, index].isChecked():
@@ -79,6 +81,8 @@ class AnalysisWidget(QtGui.QWidget):
                         # MULTIPLE LINES IN THE SAME DATASET!!!!
                         fitFunction = self.fitCurveDictionary[key]
                         fitFunction(dataset, directory, index, labels[index])
+        self.solutionsWindow = SolutionsWindow(self.solutionsDictionary)
+        self.solutionsWindow.show()
 
     def fitGaussian(self, dataset, directory, index, label):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
@@ -95,6 +99,8 @@ class AnalysisWidget(QtGui.QWidget):
         offset = self.parameterWindow.gaussianOffsetDoubleSpinBox.value()
                
         height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], dataY, dataX)
+        
+        self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]'] = [height, center, sigma, offset]
                
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
         modelY = self.fitFuncGaussian(modelX, [height, center, sigma, offset])
@@ -134,12 +140,9 @@ class AnalysisWidget(QtGui.QWidget):
         I = self.parameterWindow.lorentzianIDoubleSpinBox.value()
         offset = self.parameterWindow.lorentzianOffsetDoubleSpinBox.value()
         
-        print gamma, center, I, offset
-        
-        
         gamma, center, I, offset = self.fit(self.fitFuncLorentzian, [gamma, center, I, offset], dataY, dataX)
-
-        print gamma, center, I, offset
+        
+        self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]'] = [gamma, center, I, offset] 
                
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
         modelY = self.fitFuncLorentzian(modelX, [gamma, center, I, offset])
@@ -174,6 +177,8 @@ class AnalysisWidget(QtGui.QWidget):
         
         slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
         
+        self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]'] = [slope, offset] 
+        
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
         modelY = self.fitFuncLine(modelX, [slope, offset])
         plotData = np.vstack((modelX, modelY)).transpose()
@@ -207,6 +212,8 @@ class AnalysisWidget(QtGui.QWidget):
         C = self.parameterWindow.parabolaCDoubleSpinBox.value()
 
         A, B, C = self.fit(self.fitFuncParabola, [A, B, C], dataY, dataX)
+        
+        self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]'] = [A, B, C] 
         
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
         modelY = self.fitFuncParabola(modelX, [A, B, C])
@@ -244,7 +251,7 @@ class AnalysisWidget(QtGui.QWidget):
         return solutions
 
 class ParameterWindow(QtGui.QWidget):
-    """Creates the device parameter window"""
+    """Creates the fitting parameter window"""
 
     def __init__(self, parent):
         QtGui.QWidget.__init__(self)
@@ -406,4 +413,33 @@ class ParameterWindow(QtGui.QWidget):
 
     def closeEvent(self, evt):
         self.hide()        
+
+class SolutionsWindow(QtGui.QWidget):
+    """Creates the fitting parameter window"""
+
+    def __init__(self, solutionsDictionary):
+        QtGui.QWidget.__init__(self)
+        self.solutionsDictionary = solutionsDictionary
+        self.labels = []
+        self.textBoxes = []
+        self.setWindowTitle('Solutions')
+        self.setupUI()
    
+    def setupUI(self):
+        self.grid = QtGui.QGridLayout()
+        self.grid.setSpacing(5)        
+        
+        for dataset, directory, label, curve, parameters in self.solutionsDictionary.keys():
+            datasetLabel = QtGui.QLabel(str(dataset) + ' - ' + str(directory[-1]) + ' - ' + label)
+            self.labels.append(datasetLabel)
+            textBox = QtGui.QLineEdit(readOnly=True)
+            textBox.setText(str(curve) + ', ' + str(self.solutionsDictionary[dataset, directory, label, curve, parameters]))
+            textBox.setMinimumWidth(550)
+            self.textBoxes.append(textBox)
+        
+        for i in range(len(self.labels)):
+            self.grid.addWidget(self.labels[i], i, 0, QtCore.Qt.AlignCenter)
+            self.grid.addWidget(self.textBoxes[i], i, 1, QtCore.Qt.AlignCenter)
+
+        self.setLayout(self.grid)
+        self.show()
