@@ -156,7 +156,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     @inlineCallbacks
     def newDataset(self, dataset, directory, manuallyLoaded, datasetName):
         context = yield self.cxn.context() # create a new context
-        datasetObject = Dataset(self.cxn, context, dataset, directory, datasetName, self.reactor)
+        datasetObject = Dataset(self, self.cxn, context, dataset, directory, datasetName, self.reactor)
         self.datasetDict[dataset, directory] = datasetObject
         yield datasetObject.openDataset(context)
         yield datasetObject.setupParameterListener(context)

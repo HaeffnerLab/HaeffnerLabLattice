@@ -1,5 +1,5 @@
 '''
-Live Grapher for Pylabrad Version 3.0
+Live Grapher for Pylabrad Version 5.0
 
 Overview:
 
