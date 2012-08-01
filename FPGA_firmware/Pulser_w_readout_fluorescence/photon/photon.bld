@@ -10,9 +10,6 @@ Reading NGO file
 ton/photon.ngc" ...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
-ton/dds_fifo.ngc"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
 ton/okWireIn.ngc"...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
@@ -26,6 +23,9 @@ ton/okBTPipeIn.ngc"...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
 ton/okBTPipeOut.ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
+ton/dds_fifo.ngc"...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_w_readout_fluorescence\pho
 ton/pulse_fifo.ngc"...
@@ -98,7 +98,7 @@ NGDBUILD Design Results Summary:
 Total memory usage is 191516 kilobytes
 
 Writing NGD file "photon.ngd" ...
-Total REAL time to NGDBUILD completion:  11 sec
-Total CPU time to NGDBUILD completion:   11 sec
+Total REAL time to NGDBUILD completion:  10 sec
+Total CPU time to NGDBUILD completion:   10 sec
 
 Writing NGDBUILD log file "photon.bld"...

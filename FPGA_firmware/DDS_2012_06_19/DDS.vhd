@@ -49,12 +49,18 @@ entity dds is
 
     -- LVDS BUS input
 	 bus_in_data : in std_logic_vector (15 downto 0);
-	 bus_in_fifo_rd_clk : out std_logic;
-	 bus_in_fifo_rd_en: out std_logic;
-	 bus_in_fifo_empty: in std_logic;
-	 bus_in_ram_reset: in std_logic;
-	 bus_in_step_to_next_value: in std_logic;
-	 bus_in_reset_dds_chip: in std_logic;
+	 bus_in_fifo_rd_clk_1 : out std_logic;
+	 bus_in_fifo_rd_clk_2 : out std_logic;
+	 bus_in_fifo_rd_en_1: out std_logic;
+	 bus_in_fifo_rd_en_2: out std_logic;
+	 bus_in_fifo_empty_1: in std_logic;
+	 bus_in_fifo_empty_2: in std_logic;
+	 bus_in_ram_reset_1: in std_logic;
+	 bus_in_ram_reset_2: in std_logic;
+	 bus_in_step_to_next_value_1: in std_logic;
+	 bus_in_step_to_next_value_2: in std_logic;
+	 bus_in_reset_dds_chip_1: in std_logic;
+	 bus_in_reset_dds_chip_2: in std_logic;
 	 bus_in_address: in std_logic_vector (2 downto 0)
     );
 
@@ -103,8 +109,31 @@ architecture behaviour of dds is
 	signal	fifo_dds_rd_en			: STD_LOGIC;
 	
 	signal   dds_step_to_next_freq : STD_LOGIC;
+	signal   bus_in_fifo_rd_clk: STD_LOGIC;
+	signal   bus_in_fifo_rd_en: STD_LOGIC;
+	signal   bus_in_ram_reset: STD_LOGIC;
+	signal   bus_in_step_to_next_value: std_logic;
+	signal   bus_in_reset_dds_chip: std_logic;
+	signal   bus_in_fifo_empty: std_logic;
 	
 begin
+	----- port connect----
+	bus_in_fifo_rd_clk_1 <= bus_in_fifo_rd_clk;
+	bus_in_fifo_rd_clk_2 <= bus_in_fifo_rd_clk;
+	
+	bus_in_fifo_rd_en_1 <=bus_in_fifo_rd_en;
+	bus_in_fifo_rd_en_2 <=bus_in_fifo_rd_en;
+	
+	bus_in_ram_reset <= bus_in_ram_reset_1 and bus_in_ram_reset_2;
+	
+	bus_in_step_to_next_value <= bus_in_step_to_next_value_1 and bus_in_step_to_next_value_2;
+	
+	bus_in_reset_dds_chip <=bus_in_reset_dds_chip_1 and bus_in_reset_dds_chip_2;
+	
+	bus_in_fifo_empty <= bus_in_fifo_empty_1 and bus_in_fifo_empty_2;
+	
+	
+	
 	LED_CLK <= clk_system;
 	--PLL: dds_pll PORT MAP (clk_in0,clk_system,clk_system_10); ---clk_in0 is 100 MHz, clk_system is 20 MHz. clk_system_10 is 10 MHz
 	PLL: dds_pll PORT MAP (clk_25,clk_100); ---clk_in0 is 100 MHz, clk_system is 20 MHz. clk_system_10 is 10 MHz

@@ -150,7 +150,6 @@ class GrapherWindow(QtGui.QWidget):
         
         # toggle the datasets we care about
         for datasetToFit in datasetsToFit:
-            print 'datasetToFit: ', datasetToFit
             for checkBoxDataset, checkBoxDirectory, checkBoxIndex in self.datasetAnalysisCheckboxes.keys():
                 if (dataset == checkBoxDataset and directory == checkBoxDirectory and datasetToFit == checkBoxIndex):
                     self.datasetAnalysisCheckboxes[dataset, directory, datasetToFit].toggle()

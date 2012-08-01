@@ -1,5 +1,5 @@
 Assembler report for DDS
-Fri Jun 15 14:58:24 2012
+Tue Jul 31 21:32:41 2012
 Quartus II 32-bit Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
 
 
@@ -10,8 +10,8 @@ Quartus II 32-bit Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Editio
   2. Assembler Summary
   3. Assembler Settings
   4. Assembler Generated Files
-  5. Assembler Device Options: C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.sof
-  6. Assembler Device Options: C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.pof
+  5. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.sof
+  6. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.pof
   7. Assembler Messages
 
 
@@ -38,7 +38,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Fri Jun 15 14:58:24 2012 ;
+; Assembler Status      ; Successful - Tue Jul 31 21:32:41 2012 ;
 ; Revision Name         ; DDS                                   ;
 ; Top-level Entity Name ; dds                                   ;
 ; Family                ; Cyclone II                            ;
@@ -78,37 +78,37 @@ applicable agreement for further details.
 +-----------------------------------------------------------------------------+----------+---------------+
 
 
-+--------------------------------------------------------------------------------------------+
-; Assembler Generated Files                                                                  ;
-+--------------------------------------------------------------------------------------------+
-; File Name                                                                                  ;
-+--------------------------------------------------------------------------------------------+
-; C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.sof ;
-; C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.pof ;
-+--------------------------------------------------------------------------------------------+
++----------------------------------------------------------------------+
+; Assembler Generated Files                                            ;
++----------------------------------------------------------------------+
+; File Name                                                            ;
++----------------------------------------------------------------------+
+; C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.sof ;
+; C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.pof ;
++----------------------------------------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.sof ;
-+----------------+-----------------------------------------------------------------------------------------------------+
-; Option         ; Setting                                                                                             ;
-+----------------+-----------------------------------------------------------------------------------------------------+
-; Device         ; EP2C5T144C6                                                                                         ;
-; JTAG usercode  ; 0xFFFFFFFF                                                                                          ;
-; Checksum       ; 0x000A7F68                                                                                          ;
-+----------------+-----------------------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.sof ;
++----------------+-------------------------------------------------------------------------------+
+; Option         ; Setting                                                                       ;
++----------------+-------------------------------------------------------------------------------+
+; Device         ; EP2C5T144C6                                                                   ;
+; JTAG usercode  ; 0xFFFFFFFF                                                                    ;
+; Checksum       ; 0x000A9CCC                                                                    ;
++----------------+-------------------------------------------------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.pof ;
-+--------------------+-------------------------------------------------------------------------------------------------+
-; Option             ; Setting                                                                                         ;
-+--------------------+-------------------------------------------------------------------------------------------------+
-; Device             ; EPCS4                                                                                           ;
-; JTAG usercode      ; 0x00000000                                                                                      ;
-; Checksum           ; 0x074C1A88                                                                                      ;
-; Compression Ratio  ; 3                                                                                               ;
-+--------------------+-------------------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.pof ;
++--------------------+---------------------------------------------------------------------------+
+; Option             ; Setting                                                                   ;
++--------------------+---------------------------------------------------------------------------+
+; Device             ; EPCS4                                                                     ;
+; JTAG usercode      ; 0x00000000                                                                ;
+; Checksum           ; 0x074C2BCB                                                                ;
+; Compression Ratio  ; 3                                                                         ;
++--------------------+---------------------------------------------------------------------------+
 
 
 +--------------------+
@@ -117,14 +117,14 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Assembler
     Info: Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
-    Info: Processing started: Fri Jun 15 14:58:21 2012
+    Info: Processing started: Tue Jul 31 21:32:39 2012
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off DDS -c DDS
 Info (115031): Writing out detailed assembly data for power analysis
 Info (115030): Assembler is generating device programming files
 Info: Quartus II 32-bit Assembler was successful. 0 errors, 0 warnings
     Info: Peak virtual memory: 279 megabytes
-    Info: Processing ended: Fri Jun 15 14:58:24 2012
-    Info: Elapsed time: 00:00:03
+    Info: Processing ended: Tue Jul 31 21:32:41 2012
+    Info: Elapsed time: 00:00:02
     Info: Total CPU time (on all processors): 00:00:01
 
 

@@ -2638,7 +2638,7 @@ ON
 # case_insensitive
 # source_file
 dds.vhd
-5a531c2212423337669e899f1127646
+184f474fffe6bfa3c4f9b26086e92217
 5
 # internal_option {
 HDL_INITIAL_FANOUT_LIMIT

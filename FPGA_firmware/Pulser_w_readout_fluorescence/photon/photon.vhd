@@ -28,12 +28,18 @@ entity photon is
 		led       : out   STD_LOGIC_VECTOR(7 downto 0);
 		------- TO DDS ---------------------
 		dds_logic_data_out : out STD_LOGIC_VECTOR (15 downto 0);
-		dds_logic_fifo_rd_clk: in STD_LOGIC;
-		dds_logic_fifo_rd_en: in STD_LOGIC;
-		dds_logic_fifo_empty: out STD_LOGIC;
-		dds_logic_ram_reset: out STD_LOGIC;
-		dds_logic_step_to_next_value: out STD_LOGIC;
-		dds_logic_reset_dds_chip: out STD_LOGIC;
+		dds_logic_fifo_rd_clk_1: in STD_LOGIC;
+		dds_logic_fifo_rd_clk_2: in STD_LOGIC;
+		dds_logic_fifo_rd_en_1: in STD_LOGIC;
+		dds_logic_fifo_rd_en_2: in STD_LOGIC;
+		dds_logic_fifo_empty_1: out STD_LOGIC;
+		dds_logic_fifo_empty_2: out STD_LOGIC;
+		dds_logic_ram_reset_1: out STD_LOGIC;
+		dds_logic_ram_reset_2: out STD_LOGIC;
+		dds_logic_step_to_next_value_1: out STD_LOGIC;
+		dds_logic_step_to_next_value_2: out STD_LOGIC;
+		dds_logic_reset_dds_chip_1: out STD_LOGIC;
+		dds_logic_reset_dds_chip_2: out STD_LOGIC;
 		dds_logic_address : out STD_LOGIC_VECTOR (2 downto 0)
 		
 		--dds_logic : inout   STD_LOGIC_VECTOR(31 downto 0)
@@ -311,9 +317,28 @@ architecture arch of photon is
 	signal	pmt_readout_count: INTEGER RANGE 0 TO 2147483647:=0;
 	signal	readout_should_count : STD_LOGIC := '0';
 	
+	--------------------aux logic for dds -----
+	
+	signal	   dds_logic_fifo_rd_clk:STD_LOGIC;
+	signal		dds_logic_fifo_rd_en:STD_LOGIC;
+	signal		dds_logic_fifo_empty:STD_LOGIC;
+	signal		dds_logic_ram_reset: STD_LOGIC;
+	signal		dds_logic_step_to_next_value: STD_LOGIC;
+	signal		dds_logic_reset_dds_chip: STD_LOGIC;
 
 begin
 
+
+		dds_logic_fifo_rd_clk <= dds_logic_fifo_rd_clk_1 and dds_logic_fifo_rd_clk_2;
+		dds_logic_fifo_rd_en <= dds_logic_fifo_rd_en_1 and dds_logic_fifo_rd_en_2;
+		dds_logic_fifo_empty_1<=dds_logic_fifo_empty;
+		dds_logic_fifo_empty_2<=dds_logic_fifo_empty;
+		dds_logic_ram_reset_1<=dds_logic_ram_reset;
+		dds_logic_ram_reset_2<=dds_logic_ram_reset;
+		dds_logic_step_to_next_value_1<=dds_logic_step_to_next_value;
+		dds_logic_step_to_next_value_2<=dds_logic_step_to_next_value;
+		dds_logic_reset_dds_chip_1<=dds_logic_reset_dds_chip;
+		dds_logic_reset_dds_chip_2<=dds_logic_reset_dds_chip;
 
 -----------------------------------------------------------------------------
 
