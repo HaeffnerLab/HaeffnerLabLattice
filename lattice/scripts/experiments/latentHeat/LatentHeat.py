@@ -185,7 +185,7 @@ if __name__ == '__main__':
         'xtal_ampl_397':-11.0,
     }
     exprtParams = {
-       'iterations':25, 
+       'iterations':5, 
        'rf_power': T.Value(-3.5,'dBm'), #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,

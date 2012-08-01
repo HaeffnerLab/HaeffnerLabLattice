@@ -160,7 +160,7 @@ if __name__ == '__main__':
         'initial_cooling': 25e-3,###DO NOT CHANGE
         'heat_delay':10e-3,###DO NOT CHANGE
         'axial_heat':100*10**-9,
-        'readout_delay':20000*10**-3,
+        'readout_delay':100*10**-3,
         'readout_time':10.0*10**-3,###DO NOT CHANGE
         'xtal_record':100e-3,
         'cooling_ampl_866':-3.0,
@@ -177,7 +177,7 @@ if __name__ == '__main__':
         'heating_ampl_397':-63.0,
         }
     exprtParams = {
-       'iterations':25,
+       'iterations':5,
        'rf_power': T.Value(-3.5,'dBm'), #### make optional
        'rf_settling_time':0.3,
        'auto_crystal':True,

@@ -73,7 +73,7 @@ class scan729(Sequence):
 if __name__ == '__main__':
     import labrad
     import numpy
-    freqs = numpy.arange(190.0, 220.0, .30)
+    freqs = numpy.arange(190.0, 220.0, 0.3)
     ampls = numpy.ones_like(freqs) * -11.0
     print ampls.size
     freqs = freqs.tolist()
@@ -101,7 +101,9 @@ if __name__ == '__main__':
     seq.defineSequence()
     pulser.program_sequence()
     pulser.reset_timetags()
-    pulser.start_single()
+    pulser.start_number(1)
+    #pulser.start_single()
+    #pulser.start_looped()
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     readouts = pulser.get_readout_counts().asarray
