@@ -61,7 +61,7 @@ class BFieldMonitorServer(LabradServer):
     @setting(2, "Start Measurement", returns="")
     def startMeasurement(self, c, ):
         """Starts the Measurement"""
-        self._startMeasurement()
+        yield deferToThread(self._startMeasurement)
 
 
 if __name__ == "__main__":

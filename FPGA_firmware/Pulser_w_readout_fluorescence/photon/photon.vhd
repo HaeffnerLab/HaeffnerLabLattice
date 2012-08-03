@@ -28,18 +28,12 @@ entity photon is
 		led       : out   STD_LOGIC_VECTOR(7 downto 0);
 		------- TO DDS ---------------------
 		dds_logic_data_out : out STD_LOGIC_VECTOR (15 downto 0);
-		dds_logic_fifo_rd_clk_1: in STD_LOGIC;
-		dds_logic_fifo_rd_clk_2: in STD_LOGIC;
-		dds_logic_fifo_rd_en_1: in STD_LOGIC;
-		dds_logic_fifo_rd_en_2: in STD_LOGIC;
-		dds_logic_fifo_empty_1: out STD_LOGIC;
-		dds_logic_fifo_empty_2: out STD_LOGIC;
-		dds_logic_ram_reset_1: out STD_LOGIC;
-		dds_logic_ram_reset_2: out STD_LOGIC;
-		dds_logic_step_to_next_value_1: out STD_LOGIC;
-		dds_logic_step_to_next_value_2: out STD_LOGIC;
-		dds_logic_reset_dds_chip_1: out STD_LOGIC;
-		dds_logic_reset_dds_chip_2: out STD_LOGIC;
+		dds_logic_fifo_rd_clk: in STD_LOGIC;
+		dds_logic_fifo_rd_en: in STD_LOGIC;
+		dds_logic_fifo_empty: out STD_LOGIC;
+		dds_logic_ram_reset: out STD_LOGIC;
+		dds_logic_step_to_next_value: out STD_LOGIC;
+		dds_logic_reset_dds_chip: out STD_LOGIC;
 		dds_logic_address : out STD_LOGIC_VECTOR (2 downto 0)
 		
 		--dds_logic : inout   STD_LOGIC_VECTOR(31 downto 0)
@@ -234,6 +228,7 @@ architecture arch of photon is
 	
 	signal   fifo_dds_rst 		: STD_LOGIC;
 	signal	fifo_dds_rd_clk	: STD_LOGIC;
+	signal   fifo_dds_rd_clk_temp: STD_LOGIC;
 	signal	fifo_dds_rd_en		: STD_LOGIC;
 	signal	fifo_dds_dout		: STD_LOGIC_VECTOR(15 downto 0);
 	signal	fifo_dds_full		: STD_LOGIC;
@@ -318,27 +313,10 @@ architecture arch of photon is
 	signal	readout_should_count : STD_LOGIC := '0';
 	
 	--------------------aux logic for dds -----
-	
-	signal	   dds_logic_fifo_rd_clk:STD_LOGIC;
-	signal		dds_logic_fifo_rd_en:STD_LOGIC;
-	signal		dds_logic_fifo_empty:STD_LOGIC;
-	signal		dds_logic_ram_reset: STD_LOGIC;
-	signal		dds_logic_step_to_next_value: STD_LOGIC;
-	signal		dds_logic_reset_dds_chip: STD_LOGIC;
+
 
 begin
 
-
-		dds_logic_fifo_rd_clk <= dds_logic_fifo_rd_clk_1 and dds_logic_fifo_rd_clk_2;
-		dds_logic_fifo_rd_en <= dds_logic_fifo_rd_en_1 and dds_logic_fifo_rd_en_2;
-		dds_logic_fifo_empty_1<=dds_logic_fifo_empty;
-		dds_logic_fifo_empty_2<=dds_logic_fifo_empty;
-		dds_logic_ram_reset_1<=dds_logic_ram_reset;
-		dds_logic_ram_reset_2<=dds_logic_ram_reset;
-		dds_logic_step_to_next_value_1<=dds_logic_step_to_next_value;
-		dds_logic_step_to_next_value_2<=dds_logic_step_to_next_value;
-		dds_logic_reset_dds_chip_1<=dds_logic_reset_dds_chip;
-		dds_logic_reset_dds_chip_2<=dds_logic_reset_dds_chip;
 
 -----------------------------------------------------------------------------
 
@@ -362,11 +340,26 @@ led(6 downto 4) <= not ep04wire(2 downto 0);
 led(3 downto 1) <= ep00wire(7 downto 5);
 led(0) <= '0';
 
+---------------------------------------------------------
+---------- condition read clk ---------------------------
+---------------------------------------------------------
+
+	process(clk_20, fifo_dds_rd_clk_temp)
+	begin
+		if (rising_edge(clk_20)) then
+			if (fifo_dds_rd_clk_temp = '1') then
+				fifo_dds_rd_clk <= '1';
+			else
+				fifo_dds_rd_clk <= '0';
+			end if;
+		end if;
+	end process;
+
 ---============= DDS stuff ==============================
 ---------------------------------------------------------
 
 dds_logic_data_out <= fifo_dds_dout;
-fifo_dds_rd_clk <= dds_logic_fifo_rd_clk;
+fifo_dds_rd_clk_temp <= dds_logic_fifo_rd_clk;
 fifo_dds_rd_en <= dds_logic_fifo_rd_en;
 dds_logic_fifo_empty <= fifo_dds_empty;
 dds_logic_ram_reset <= master_logic(19) or ep40wire(4); -----------dds reset----------
@@ -953,7 +946,7 @@ wi02 : okWireIn    port map (ok1=>ok1,                                  ep_addr=
 wi03 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"03", ep_dataout=>ep03wire);
 wi04 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"04", ep_dataout=>ep04wire);
 wi05 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"05", ep_dataout=>ep05wire);
-ep40 : okTriggerIn  port map (ok1=>ok1,                                  ep_addr=>x"40", ep_clk=>clk_100, ep_trigger=>ep40wire);
+ep40 : okTriggerIn  port map (ok1=>ok1,                                  ep_addr=>x"40", ep_clk=>clk_20, ep_trigger=>ep40wire);
 wo21 : okWireOut   port map (ok1=>ok1, ok2=>ok2s( 1*17-1 downto 0*17 ), ep_addr=>x"21", ep_datain=>ep21wire);
 wo22 : okWireOut   port map (ok1=>ok1, ok2=>ok2s( 4*17-1 downto 3*17 ), ep_addr=>x"22", ep_datain=>ep22wire);
 ep80 : okBTPipeIn  port map (ok1=>ok1, ok2=>ok2s( 2*17-1 downto 1*17 ), ep_addr=>x"80", 

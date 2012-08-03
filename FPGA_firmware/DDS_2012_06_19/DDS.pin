@@ -185,26 +185,26 @@ bus_in_data[13]              : 118       : input  : 3.3-V LVTTL       :         
 bus_in_data[14]              : 119       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_data[15]              : 120       : input  : 3.3-V LVTTL       :         : 2         : Y              
 GND*                         : 121       :        :                   :         : 2         :                
-bus_in_fifo_rd_en_1          : 122       : output : 3.3-V LVTTL       :         : 2         : Y              
+bus_in_fifo_rd_en            : 122       : output : 3.3-V LVTTL       :         : 2         : Y              
 GND                          : 123       : gnd    :                   :         :           :                
 VCCINT                       : 124       : power  :                   : 1.2V    :           :                
-bus_in_fifo_rd_en_2          : 125       : output : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_ram_reset_1           : 126       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 125       :        :                   :         : 2         :                
+bus_in_ram_reset             : 126       : input  : 3.3-V LVTTL       :         : 2         : Y              
 VCCIO2                       : 127       : power  :                   : 3.3V    : 2         :                
 GND                          : 128       : gnd    :                   :         :           :                
-bus_in_ram_reset_2           : 129       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 129       :        :                   :         : 2         :                
 GND                          : 130       : gnd    :                   :         :           :                
 VCCINT                       : 131       : power  :                   : 1.2V    :           :                
-bus_in_reset_dds_chip_1      : 132       : input  : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_reset_dds_chip_2      : 133       : input  : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_fifo_rd_clk_1         : 134       : output : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_fifo_rd_clk_2         : 135       : output : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_step_to_next_value_1  : 136       : input  : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_step_to_next_value_2  : 137       : input  : 3.3-V LVTTL       :         : 2         : Y              
+bus_in_reset_dds_chip        : 132       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 133       :        :                   :         : 2         :                
+bus_in_fifo_rd_clk           : 134       : output : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 135       :        :                   :         : 2         :                
+bus_in_step_to_next_value    : 136       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 137       :        :                   :         : 2         :                
 VCCIO2                       : 138       : power  :                   : 3.3V    : 2         :                
-bus_in_fifo_empty_1          : 139       : input  : 3.3-V LVTTL       :         : 2         : Y              
+bus_in_fifo_empty            : 139       : input  : 3.3-V LVTTL       :         : 2         : Y              
 GND                          : 140       : gnd    :                   :         :           :                
-bus_in_fifo_empty_2          : 141       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 141       :        :                   :         : 2         :                
 bus_in_address[0]            : 142       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_address[1]            : 143       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_address[2]            : 144       : input  : 3.3-V LVTTL       :         : 2         : Y              

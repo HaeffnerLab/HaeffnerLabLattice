@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EPCS4) Path("C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/") File("DDS.pof") MfrSpec(OpMask(3) Child_OpMask(1 3));
+		Device PartName(EPCS4) Path("C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/") File("DDS.pof") MfrSpec(OpMask(3) Child_OpMask(1 3));
 
 ChainEnd;
 
