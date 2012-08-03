@@ -471,7 +471,7 @@ class Pulser(LabradServer, DDS):
     def cnot(self, control, inp):
         if control:
             inp = not inp
-        return input
+        return inp
     
     def notifyOtherListeners(self, context, message, f):
         """

@@ -5,15 +5,15 @@ class scan729(Sequence):
     requiredVars = {
                     'frequencies_729':((list,float), 190.0, 250.0, 220.0),
                     'amplitudes_729':((list,float), -63.0, -3.0,   -3.0),
-                    'doppler_cooling':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'doppler_cooling':(float, 10e-9, 100*10**-3, 1.0*10**-3),
                     'doppler_cooling_freq':(float, 90.0, 130.0, 110.0),
                     'doppler_cooling_ampl':(float, -63.0, -3.0,   -11.0),
                     'readout_freq':(float, 90.0, 130.0, 110.0),
                     'readout_ampl':(float, -63.0, -3.0,   -11.0),
-                    'heating_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
-                    'rabi_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
-                    'readout_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
-                    'repump_time':(float, 10e-9, 50*10**-3, 1.0*10**-3),
+                    'heating_time':(float, 10e-9, 500*10**-3, 1.0*10**-3),
+                    'rabi_time':(float, 10e-9, 1000*10**-3, 1.0*10**-3),
+                    'readout_time':(float, 10e-9, 100*10**-3, 1.0*10**-3),
+                    'repump_time':(float, 10e-9, 100*10**-3, 1.0*10**-3),
                     'repump_854_ampl': (float, -63.0, -3.0,   -11.0),
                     'repump_866_ampl': (float, -63.0, -3.0,   -11.0),
                     }
@@ -23,7 +23,8 @@ class scan729(Sequence):
         p = self.parameters
         pulser = self.pulser
         offset = 40e-9 
-        p.repump_freq = 80.0
+        p.repump_freq_854 = 90.0
+        p.repump_freq_866 = 70.0
         
         #computing the times
         p.cycleTime = p.repump_time + p.doppler_cooling + p.heating_time + p.rabi_time + p.readout_time
@@ -50,17 +51,17 @@ class scan729(Sequence):
         readout_count = []
         for i in range(len(freqs)):      
             coolingOn.append(    (start_cooling + i  * cT, p.doppler_cooling_freq, p.doppler_cooling_ampl)  )
-            repump866On.append(  (start_cooling + i  * cT, p.repump_freq, p.repump_866_ampl)  )
-            repump854On.append(  (start_cooling + i  * cT, p.repump_freq, p.repump_854_ampl)  )
-            repump854Off.append( (repump_854_off + i  * cT, p.repump_freq, -63.0)  )
+            repump866On.append(  (start_cooling + i  * cT, p.repump_freq_866, p.repump_866_ampl)  )
+            repump854On.append(  (start_cooling + i  * cT, p.repump_freq_854, p.repump_854_ampl)  )
+            repump854Off.append( (repump_854_off + i  * cT, p.repump_freq_854, -63.0)  )
             coolingOff.append(   (cooling_off + i  * cT, p.doppler_cooling_freq, -63.0)  )
-            repump866Off.append( (cooling_off + i  * cT, p.repump_freq, -63.0)  )
+            repump866Off.append( (cooling_off + i  * cT, p.repump_freq_866, -63.0)  )
             rabiOn.append(       (rabi_on + i  * cT, freqs[i], ampls[i]) )
             rabiOff.append(      (rabi_off + i  * cT, 0.0, -63.0) )
             readoutOn.append(    (readout_on + i  * cT, p.readout_freq, p.readout_ampl  ))
-            repump866On.append(  (readout_on + i  * cT, p.repump_freq, p.repump_866_ampl)  )
+            repump866On.append(  (readout_on + i  * cT, p.repump_freq_866, p.repump_866_ampl)  )
             readout_count.append( ('ReadoutCount', readout_on + i  * cT, p.readout_time)) 
-        
+        print readout_count
         pulser.add_ttl_pulses(readout_count)
         for channel, pulses in [
                                 ('110DP', coolingOn), ('110DP', coolingOff), ('110DP', readoutOn), ('110DP', readoutOff),
@@ -73,7 +74,7 @@ class scan729(Sequence):
 if __name__ == '__main__':
     import labrad
     import numpy
-    freqs = numpy.arange(190.0, 220.0, 0.3)
+    freqs = numpy.arange(210.0, 220.0, 0.5)
     ampls = numpy.ones_like(freqs) * -11.0
     print ampls.size
     freqs = freqs.tolist()
@@ -88,13 +89,13 @@ if __name__ == '__main__':
                 'doppler_cooling':5*10**-3,
                 'heating_time':100e-9,
                 'rabi_time':5*10**-3,
-                'readout_time':10*10**-3,
+                'readout_time':50*10**-3,
                 'repump_time':5*10**-3,
                 'repump_854_ampl': -3.0,
                 'repump_866_ampl': -11.0,
-                'doppler_cooling_freq':110.0,
+                'doppler_cooling_freq':103.0,
                 'doppler_cooling_ampl':-11.0,
-                'readout_freq':110.0,
+                'readout_freq':103.0,
                 'readout_ampl':-11.0
               }
     seq.setVariables(**params)
