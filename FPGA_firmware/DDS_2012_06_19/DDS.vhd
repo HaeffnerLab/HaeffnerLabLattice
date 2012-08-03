@@ -96,15 +96,16 @@ architecture behaviour of dds is
 	signal	dds_ram_wren		   : STD_LOGIC;
 	signal	dds_ram_data_out		: STD_LOGIC_VECTOR (31 DOWNTO 0);
 	signal 	dds_ram_reset        : STD_LOGIC;
+	signal   dds_step_to_next_freq: STD_LOGIC;
+	signal 	dds_step_to_next_freq_sampled: STD_LOGIC;
 	
 	signal   fifo_dds_dout			: STD_LOGIC_VECTOR (15 downto 0);
 	signal 	fifo_dds_empty			: STD_LOGIC;
 	signal	fifo_dds_rd_clk      : STD_LOGIC;
 	signal	fifo_dds_rd_en			: STD_LOGIC;
 	
-	signal   dds_step_to_next_freq : STD_LOGIC;
-	
 begin
+	
 	LED_CLK <= clk_system;
 	--PLL: dds_pll PORT MAP (clk_in0,clk_system,clk_system_10); ---clk_in0 is 100 MHz, clk_system is 20 MHz. clk_system_10 is 10 MHz
 	PLL: dds_pll PORT MAP (clk_25,clk_100); ---clk_in0 is 100 MHz, clk_system is 20 MHz. clk_system_10 is 10 MHz
@@ -148,16 +149,58 @@ begin
 	
 	-------- step the ram address to the next value when detect the pulse to step to next parameter ------
 	
-	process (dds_step_to_next_freq, dds_ram_reset)
+	--process (dds_step_to_next_freq, dds_ram_reset)
+	--	variable dds_step_count: integer range 0 to 1023:=0;
+	--begin
+	--		if (dds_ram_reset = '1') then
+	--			dds_step_count:=0;
+	--		elsif (rising_edge(dds_step_to_next_freq)) then	
+	--			dds_step_count := dds_step_count+1;
+	--		end if;
+	--		dds_ram_rdaddress<=CONV_STD_LOGIC_VECTOR(dds_step_count,10);
+	--end process;
+	------------------------------------------------------------------
+	------------------------------------------------------------------
+	--------- detect advance dds channel pulses ----------------------
+	------------------------------------------------------------------
+	
+	--dds_step_to_next_freq_sampled<=dds_step_to_next_freq;
+	
+	process(clk_100, dds_step_to_next_freq)
+		variable count: integer range 0 to 1023:=0;
+	begin
+		if (rising_edge(clk_100)) then
+			if (dds_step_to_next_freq = '1') then
+				count:=count+1;
+				if (count<3) then ---------------adjust: how long the pulse should be
+					dds_step_to_next_freq_sampled <= '0';
+				end if;
+			else 
+				if (count=0) then
+					dds_step_to_next_freq_sampled <= '0';
+				elsif ((count>2) and (count<20)) then --------------- adjust: dead time
+					dds_step_to_next_freq_sampled <= '1';
+					count := count+1;
+				else
+					count:=0;
+				end if;
+			end if;
+		end if;
+	end process;
+	
+	
+	process (dds_step_to_next_freq_sampled, dds_ram_reset)
 		variable dds_step_count: integer range 0 to 1023:=0;
 	begin
 			if (dds_ram_reset = '1') then
 				dds_step_count:=0;
-			elsif (rising_edge(dds_step_to_next_freq)) then	
+			elsif (rising_edge(dds_step_to_next_freq_sampled)) then	
 				dds_step_count := dds_step_count+1;
 			end if;
 			dds_ram_rdaddress<=CONV_STD_LOGIC_VECTOR(dds_step_count,10);
 	end process;
+	
+
 	
 	
 	process (clk_system,dds_ram_reset)
@@ -285,30 +328,6 @@ begin
 		END IF;
 	END PROCESS;
 	
---	PROCESS (clk_100)
---		VARIABLE main_count: INTEGER range 0 to 5:=0;
---	BEGIN
---		IF (clk_100'event and clk_100='0') then
---			CASE main_count IS
---				WHEN 0 => parallel_data (13 downto 0) <= dds_ram_data_out (31 downto 18); -----set amplitude
---							 dac_wr_pin <= '0';
---							 txen_pin <= '0';
---							 main_count:=1;
---				WHEN 1 => dac_wr_pin <= '1'; -------------write to dac for amplitude
---				          main_count:=2;
---				WHEN 2 => dac_wr_pin <= '0'; -------------stop write dac
---							 main_count:=3;
---				WHEN 3 => parallel_data<=dds_ram_data_out(15 downto 0); ---------set frequency
---							 dac_wr_pin <= '0';
---							 main_count:=4;
---				WHEN 4 => txen_pin <= '1'; -------write freq
---							 main_count:=5;
---				WHEN 5 => txen_pin <= '0'; -------stop write freq
---							 main_count:=0;
---				WHEN OTHERS => NULL;
---			END CASE;
---		END IF;
---	END PROCESS;
 	                                                                                                      
 	cs_pin<='0';
 	
@@ -337,15 +356,6 @@ begin
 	CFR2_DATA (11 downto 4) <= "10000111";----parallel port configuration
 	CFR2_DATA (3 downto 0) <= "1101";-----gain for freq tuning
 	pargain_pin <= "10";
-	--txen_pin <= '1';
-	
-	-------PLL control------
-	
---	CFR3_DATA (31 downto 30) <= "00"; ----Open
---	CFR3_DATA (29 downto 16) <= "00010000111000";-----default
---	CFR3_DATA (15 downto 8) <= "11000001";----
---	CFR3_DATA (7 downto 1) <= "0100000";---- PLL divider
---	CFR3_DATA(0) <= '0';
 	
 	---- no pll -----
 	CFR3_DATA (31 downto 30) <= "00"; ----Open

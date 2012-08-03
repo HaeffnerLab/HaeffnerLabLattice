@@ -1,5 +1,5 @@
 Assembler report for DDS
-Mon Jul 23 19:58:05 2012
+Thu Aug 02 13:58:37 2012
 Quartus II 32-bit Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
 
 
@@ -10,8 +10,8 @@ Quartus II 32-bit Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Editio
   2. Assembler Summary
   3. Assembler Settings
   4. Assembler Generated Files
-  5. Assembler Device Options: C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.sof
-  6. Assembler Device Options: C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.pof
+  5. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.sof
+  6. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.pof
   7. Assembler Messages
 
 
@@ -38,7 +38,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Mon Jul 23 19:58:05 2012 ;
+; Assembler Status      ; Successful - Thu Aug 02 13:58:37 2012 ;
 ; Revision Name         ; DDS                                   ;
 ; Top-level Entity Name ; dds                                   ;
 ; Family                ; Cyclone II                            ;
@@ -78,37 +78,37 @@ applicable agreement for further details.
 +-----------------------------------------------------------------------------+----------+---------------+
 
 
-+------------------------------------------------------------------------------------+
-; Assembler Generated Files                                                          ;
-+------------------------------------------------------------------------------------+
-; File Name                                                                          ;
-+------------------------------------------------------------------------------------+
-; C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.sof ;
-; C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.pof ;
-+------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------+
+; Assembler Generated Files                                                      ;
++--------------------------------------------------------------------------------+
+; File Name                                                                      ;
++--------------------------------------------------------------------------------+
+; C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.sof ;
+; C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.pof ;
++--------------------------------------------------------------------------------+
 
 
-+--------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.sof ;
-+----------------+---------------------------------------------------------------------------------------------+
-; Option         ; Setting                                                                                     ;
-+----------------+---------------------------------------------------------------------------------------------+
-; Device         ; EP2C5T144C6                                                                                 ;
-; JTAG usercode  ; 0xFFFFFFFF                                                                                  ;
-; Checksum       ; 0x000BB64E                                                                                  ;
-+----------------+---------------------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.sof ;
++----------------+-----------------------------------------------------------------------------------------+
+; Option         ; Setting                                                                                 ;
++----------------+-----------------------------------------------------------------------------------------+
+; Device         ; EP2C5T144C6                                                                             ;
+; JTAG usercode  ; 0xFFFFFFFF                                                                              ;
+; Checksum       ; 0x000BE98C                                                                              ;
++----------------+-----------------------------------------------------------------------------------------+
 
 
-+--------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/lattice/Desktop/DDS_729_laser_2012_07_16/DDS_729_laser_2012_07_16/DDS.pof ;
-+--------------------+-----------------------------------------------------------------------------------------+
-; Option             ; Setting                                                                                 ;
-+--------------------+-----------------------------------------------------------------------------------------+
-; Device             ; EPCS4                                                                                   ;
-; JTAG usercode      ; 0x00000000                                                                              ;
-; Checksum           ; 0x0749B339                                                                              ;
-; Compression Ratio  ; 2                                                                                       ;
-+--------------------+-----------------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_729_laser_2012_07_23/DDS.pof ;
++--------------------+-------------------------------------------------------------------------------------+
+; Option             ; Setting                                                                             ;
++--------------------+-------------------------------------------------------------------------------------+
+; Device             ; EPCS4                                                                               ;
+; JTAG usercode      ; 0x00000000                                                                          ;
+; Checksum           ; 0x0749F9CD                                                                          ;
+; Compression Ratio  ; 2                                                                                   ;
++--------------------+-------------------------------------------------------------------------------------+
 
 
 +--------------------+
@@ -117,14 +117,14 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Assembler
     Info: Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
-    Info: Processing started: Mon Jul 23 19:58:03 2012
+    Info: Processing started: Thu Aug 02 13:58:36 2012
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off DDS -c DDS
 Info (115031): Writing out detailed assembly data for power analysis
 Info (115030): Assembler is generating device programming files
 Info: Quartus II 32-bit Assembler was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 263 megabytes
-    Info: Processing ended: Mon Jul 23 19:58:05 2012
-    Info: Elapsed time: 00:00:02
+    Info: Peak virtual memory: 280 megabytes
+    Info: Processing ended: Thu Aug 02 13:58:37 2012
+    Info: Elapsed time: 00:00:01
     Info: Total CPU time (on all processors): 00:00:01
 
 

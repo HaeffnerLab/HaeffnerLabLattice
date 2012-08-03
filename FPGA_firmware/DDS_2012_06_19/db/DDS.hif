@@ -2638,7 +2638,7 @@ ON
 # case_insensitive
 # source_file
 dds.vhd
-5a531c2212423337669e899f1127646
+712ce610f723276e461e43f7ad536466
 5
 # internal_option {
 HDL_INITIAL_FANOUT_LIMIT
@@ -2651,10 +2651,10 @@ AUTO_ROM_RECOGNITION
 ON
 }
 # include_file {
-dds_pll.vhd
-e71c364e2f9e1a3ef27133fb132d3d
 dds_ram.vhd
 62ca9521893e9b9b21de2952877f47
+dds_pll.vhd
+e71c364e2f9e1a3ef27133fb132d3d
 }
 # hierarchies {
 |

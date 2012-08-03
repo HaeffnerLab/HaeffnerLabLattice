@@ -103,6 +103,7 @@ architecture behaviour of dds is
 	signal	fifo_dds_rd_en			: STD_LOGIC;
 	
 	signal   dds_step_to_next_freq : STD_LOGIC;
+	signal 	dds_step_to_next_freq_sampled: STD_LOGIC;
 	
 	
 	------------------------------------------------------------
@@ -152,18 +153,48 @@ begin
 	--led_VALUE (7 downto 0) <= dds_ram_data_out (15 downto 8);
 	
 	
-	-------- step the ram address to the next value when detect the pulse to step to next parameter ------
+	------------------------------------------------------------------
+	------------------------------------------------------------------
+	--------- detect advance dds channel pulses ----------------------
+	------------------------------------------------------------------
 	
-	process (dds_step_to_next_freq, dds_ram_reset)
+	--dds_step_to_next_freq_sampled<=dds_step_to_next_freq;
+	
+	process(clk_100, dds_step_to_next_freq)
+		variable count: integer range 0 to 1023:=0;
+	begin
+		if (rising_edge(clk_100)) then
+			if (dds_step_to_next_freq = '1') then
+				count:=count+1;
+				if (count<3) then ---------------adjust: how long the pulse should be
+					dds_step_to_next_freq_sampled <= '0';
+				end if;
+			else 
+				if (count=0) then
+					dds_step_to_next_freq_sampled <= '0';
+				elsif ((count>2) and (count<20)) then --------------- adjust: dead time
+					dds_step_to_next_freq_sampled <= '1';
+					count := count+1;
+				else
+					count:=0;
+				end if;
+			end if;
+		end if;
+	end process;
+	
+	
+	process (dds_step_to_next_freq_sampled, dds_ram_reset)
 		variable dds_step_count: integer range 0 to 1023:=0;
 	begin
 			if (dds_ram_reset = '1') then
 				dds_step_count:=0;
-			elsif (rising_edge(dds_step_to_next_freq)) then	
+			elsif (rising_edge(dds_step_to_next_freq_sampled)) then	
 				dds_step_count := dds_step_count+1;
 			end if;
 			dds_ram_rdaddress<=CONV_STD_LOGIC_VECTOR(dds_step_count,9);
 	end process;
+	
+
 	
 	
 	process (clk_system,dds_ram_reset)

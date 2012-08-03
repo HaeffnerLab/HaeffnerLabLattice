@@ -1,7 +1,7 @@
 Release 14.1 - par P.15xf (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-Thu Jul 26 13:42:35 2012
+Thu Aug 02 16:59:00 2012
 
 
 INFO: The IO information is provided in three file formats as part of the Place and Route (PAR) process.  These formats are:
@@ -117,9 +117,9 @@ Pinout by Pin Number:
 |C7        |                            |IOBM     |IO_L5P_0                     |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |C8        |dds_logic_ram_reset         |IOB      |IO_L7N_0                     |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
 |C9        |                            |IOBM     |IO_L8P_0                     |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
-|C10       |dds_logic_fifo_rd_clk       |IOB      |IO_L33N_0                    |INPUT    |LVCMOS33   |0             |          |         |           |NONE     |         |LOCATED   |NO         |NONE            |
+|C10       |dds_logic_fifo_rd_clk       |IOB      |IO_L33N_0                    |INPUT    |LVCMOS33   |0             |          |         |           |NONE     |         |LOCATED   |YES        |NONE            |
 |C11       |                            |IOBM     |IO_L35P_GCLK17_0             |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
-|C12       |                            |IOBS     |IO_L36N_GCLK14_0             |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
+|C12       |dds_logic_fifo_empty        |IOB      |IO_L36N_GCLK14_0             |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
 |C13       |                            |IOBM     |IO_L38P_0                    |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |C14       |dds_logic_data_out<14>      |IOB      |IO_L49N_0                    |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
 |C15       |                            |IOBM     |IO_L51P_0                    |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
@@ -136,11 +136,11 @@ Pinout by Pin Number:
 |D4        |                            |         |GND                          |         |           |              |          |         |           |         |         |          |           |                |
 |D5        |                            |IOBM     |IO_L58P_3                    |UNUSED   |           |3             |          |         |           |         |         |          |           |                |
 |D6        |                            |IOBM     |IO_L3P_0                     |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
-|D7        |dds_logic_step_to_next_value|IOB      |IO_L32P_0                    |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
+|D7        |                            |IOBM     |IO_L32P_0                    |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |D8        |                            |IOBS     |IO_L32N_0                    |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |D9        |dds_logic_fifo_rd_en        |IOB      |IO_L7P_0                     |INPUT    |LVCMOS33   |0             |          |         |           |NONE     |         |LOCATED   |NO         |NONE            |
 |D10       |dds_logic_reset_dds_chip    |IOB      |IO_L33P_0                    |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
-|D11       |                            |IOBM     |IO_L36P_GCLK15_0             |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
+|D11       |dds_logic_step_to_next_value|IOB      |IO_L36P_GCLK15_0             |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
 |D12       |                            |         |NC                           |         |           |              |          |         |           |         |         |          |           |                |
 |D13       |                            |         |NC                           |         |           |              |          |         |           |         |         |          |           |                |
 |D14       |dds_logic_data_out<12>      |IOB      |IO_L49P_0                    |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
@@ -279,7 +279,7 @@ Pinout by Pin Number:
 |K15       |                            |         |VCCAUX                       |         |           |              |          |         |           |         |3.3      |          |           |                |
 |K16       |                            |IOBM     |IO_L21P_1                    |UNUSED   |           |1             |          |         |           |         |         |          |           |                |
 |K17       |                            |IOBS     |IO_L36N_A8_M1BA1_1           |UNUSED   |           |1             |          |         |           |         |         |          |           |                |
-|K18       |dds_logic_fifo_empty        |IOB      |IO_L61N_1                    |OUTPUT   |LVCMOS33   |1             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
+|K18       |                            |IOBS     |IO_L61N_1                    |UNUSED   |           |1             |          |         |           |         |         |          |           |                |
 |K19       |                            |IOBS     |IO_L40N_GCLK10_M1A6_1        |UNUSED   |           |1             |          |         |           |         |         |          |           |                |
 |K20       |                            |IOBM     |IO_L40P_GCLK11_M1A5_1        |UNUSED   |           |1             |          |         |           |         |         |          |           |                |
 |K21       |logic_out<17>               |IOB      |IO_L44P_A3_M1DQ6_1           |OUTPUT   |LVCMOS33   |1             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |

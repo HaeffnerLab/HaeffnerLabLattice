@@ -155,7 +155,7 @@ NET "dds_logic_fifo_rd_en"   LOC=D9   | IOSTANDARD=LVCMOS33; #JP2-32
 NET "dds_logic_fifo_rd_clk"   LOC=C10  | IOSTANDARD=LVCMOS33; #JP2-31
 NET "dds_logic_fifo_rd_clk" CLOCK_DEDICATED_ROUTE = FALSE;
 NET "dds_logic_reset_dds_chip"  LOC=D10  | IOSTANDARD=LVCMOS33; #JP2-38
-NET "dds_logic_step_to_next_value"  LOC=D7   | IOSTANDARD=LVCMOS33; #JP2-37
+NET "dds_logic_step_to_next_value"  LOC=D11   | IOSTANDARD=LVCMOS33; #JP2-37
 #NET "dds_logic[25]"  LOC=D11  | IOSTANDARD=LVCMOS33; #JP2-42
 #NET "dds_logic[24]"  LOC=L17  | IOSTANDARD=LVCMOS33; #JP2-41
 NET "dds_logic_address[0]"  LOC=D15  | IOSTANDARD=LVCMOS33; #JP2-46
@@ -184,7 +184,7 @@ NET "dds_logic_data_out[15]"   LOC=R19  | IOSTANDARD=LVCMOS33; #JP2-30
 NET "dds_logic_data_out[14]"   LOC=C14  | IOSTANDARD=LVCMOS33; #JP2-29
 NET "dds_logic_ram_reset"   LOC=C8   | IOSTANDARD=LVCMOS33; #JP2-34
 ####NET "dds_logic_fifo_empty"   LOC=D17  | IOSTANDARD=LVCMOS33; #JP2-33
-NET "dds_logic_fifo_empty"   LOC=K18  | IOSTANDARD=LVCMOS33; #JP2-33
+NET "dds_logic_fifo_empty"   LOC=C12  | IOSTANDARD=LVCMOS33; #JP2-33
 #NET "dds_logic[23]"  LOC=C10  | IOSTANDARD=LVCMOS33; #JP2-40
 #NET "dds_logic[22]"  LOC=D8   | IOSTANDARD=LVCMOS33; #JP2-39
 #NET "dds_logic[27]"  LOC=C12  | IOSTANDARD=LVCMOS33; #JP2-44

@@ -66,6 +66,11 @@ INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
 INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
    was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
    and period specifications were generated at the DCM_SP output(s): 
+   CLKFX: <TIMESPEC TS_pll_clkfx = PERIOD "pll_clkfx" TS_Clk1 / 0.2 HIGH 50%>
+
+INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
+   was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
+   and period specifications were generated at the DCM_SP output(s): 
    CLK0: <TIMESPEC TS_pll_clk0 = PERIOD "pll_clk0" TS_Clk1 HIGH 50%>
 
 Done...
@@ -95,10 +100,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 191516 kilobytes
+Total memory usage is 192220 kilobytes
 
 Writing NGD file "photon.ngd" ...
 Total REAL time to NGDBUILD completion:  11 sec
-Total CPU time to NGDBUILD completion:   11 sec
+Total CPU time to NGDBUILD completion:   10 sec
 
 Writing NGDBUILD log file "photon.bld"...

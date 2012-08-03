@@ -1,5 +1,5 @@
 Fitter report for DDS
-Fri Jun 15 14:58:15 2012
+Thu Aug 02 13:13:50 2012
 Quartus II 32-bit Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
 
 
@@ -64,17 +64,17 @@ applicable agreement for further details.
 +------------------------------------------------------------------------------------+
 ; Fitter Summary                                                                     ;
 +------------------------------------+-----------------------------------------------+
-; Fitter Status                      ; Successful - Fri Jun 15 14:58:15 2012         ;
+; Fitter Status                      ; Successful - Thu Aug 02 13:13:50 2012         ;
 ; Quartus II 32-bit Version          ; 11.1 Build 259 01/25/2012 SP 2 SJ Web Edition ;
 ; Revision Name                      ; DDS                                           ;
 ; Top-level Entity Name              ; dds                                           ;
 ; Family                             ; Cyclone II                                    ;
 ; Device                             ; EP2C5T144C6                                   ;
 ; Timing Models                      ; Final                                         ;
-; Total logic elements               ; 247 / 4,608 ( 5 % )                           ;
-;     Total combinational functions  ; 220 / 4,608 ( 5 % )                           ;
-;     Dedicated logic registers      ; 135 / 4,608 ( 3 % )                           ;
-; Total registers                    ; 135                                           ;
+; Total logic elements               ; 281 / 4,608 ( 6 % )                           ;
+;     Total combinational functions  ; 254 / 4,608 ( 6 % )                           ;
+;     Dedicated logic registers      ; 146 / 4,608 ( 3 % )                           ;
+; Total registers                    ; 146                                           ;
 ; Total pins                         ; 72 / 89 ( 81 % )                              ;
 ; Total virtual pins                 ; 0                                             ;
 ; Total memory bits                  ; 32,768 / 119,808 ( 27 % )                     ;
@@ -150,8 +150,8 @@ Parallel compilation was disabled, but you have multiple processors available. E
 ; Type                ; Value                  ;
 +---------------------+------------------------+
 ; Placement (by node) ;                        ;
-;     -- Requested    ; 0 / 452 ( 0.00 % )     ;
-;     -- Achieved     ; 0 / 452 ( 0.00 % )     ;
+;     -- Requested    ; 0 / 498 ( 0.00 % )     ;
+;     -- Achieved     ; 0 / 498 ( 0.00 % )     ;
 ;                     ;                        ;
 ; Routing (by net)    ;                        ;
 ;     -- Requested    ; 0 / 0 ( 0.00 % )       ;
@@ -174,7 +174,7 @@ Parallel compilation was disabled, but you have multiple processors available. E
 +--------------------------------+---------+-------------------+-------------------------+-------------------+
 ; Partition Name                 ; # Nodes ; # Preserved Nodes ; Preservation Level Used ; Netlist Type Used ;
 +--------------------------------+---------+-------------------+-------------------------+-------------------+
-; Top                            ; 447     ; 0                 ; N/A                     ; Source File       ;
+; Top                            ; 493     ; 0                 ; N/A                     ; Source File       ;
 ; hard_block:auto_generated_inst ; 5       ; 0                 ; N/A                     ; Source File       ;
 +--------------------------------+---------+-------------------+-------------------------+-------------------+
 
@@ -182,7 +182,7 @@ Parallel compilation was disabled, but you have multiple processors available. E
 +--------------+
 ; Pin-Out File ;
 +--------------+
-The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.pin.
+The pin-out file can be found in C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/DDS_2012_06_19/DDS.pin.
 
 
 +-------------------------------------------------------------------------+
@@ -190,48 +190,48 @@ The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK
 +---------------------------------------------+---------------------------+
 ; Resource                                    ; Usage                     ;
 +---------------------------------------------+---------------------------+
-; Total logic elements                        ; 247 / 4,608 ( 5 % )       ;
-;     -- Combinational with no register       ; 112                       ;
+; Total logic elements                        ; 281 / 4,608 ( 6 % )       ;
+;     -- Combinational with no register       ; 135                       ;
 ;     -- Register only                        ; 27                        ;
-;     -- Combinational with a register        ; 108                       ;
+;     -- Combinational with a register        ; 119                       ;
 ;                                             ;                           ;
 ; Logic element usage by number of LUT inputs ;                           ;
-;     -- 4 input functions                    ; 108                       ;
-;     -- 3 input functions                    ; 54                        ;
-;     -- <=2 input functions                  ; 58                        ;
+;     -- 4 input functions                    ; 117                       ;
+;     -- 3 input functions                    ; 65                        ;
+;     -- <=2 input functions                  ; 72                        ;
 ;     -- Register only                        ; 27                        ;
 ;                                             ;                           ;
 ; Logic elements by mode                      ;                           ;
-;     -- normal mode                          ; 187                       ;
-;     -- arithmetic mode                      ; 33                        ;
+;     -- normal mode                          ; 212                       ;
+;     -- arithmetic mode                      ; 42                        ;
 ;                                             ;                           ;
-; Total registers*                            ; 135 / 4,851 ( 3 % )       ;
-;     -- Dedicated logic registers            ; 135 / 4,608 ( 3 % )       ;
+; Total registers*                            ; 146 / 4,851 ( 3 % )       ;
+;     -- Dedicated logic registers            ; 146 / 4,608 ( 3 % )       ;
 ;     -- I/O registers                        ; 0 / 243 ( 0 % )           ;
 ;                                             ;                           ;
-; Total LABs:  partially or completely used   ; 20 / 288 ( 7 % )          ;
+; Total LABs:  partially or completely used   ; 23 / 288 ( 8 % )          ;
 ; User inserted logic elements                ; 0                         ;
 ; Virtual pins                                ; 0                         ;
 ; I/O pins                                    ; 72 / 89 ( 81 % )          ;
 ;     -- Clock pins                           ; 2 / 4 ( 50 % )            ;
-; Global signals                              ; 4                         ;
+; Global signals                              ; 5                         ;
 ; M4Ks                                        ; 8 / 26 ( 31 % )           ;
 ; Total block memory bits                     ; 32,768 / 119,808 ( 27 % ) ;
 ; Total block memory implementation bits      ; 36,864 / 119,808 ( 31 % ) ;
 ; Embedded Multiplier 9-bit elements          ; 0 / 26 ( 0 % )            ;
 ; PLLs                                        ; 1 / 2 ( 50 % )            ;
-; Global clocks                               ; 4 / 8 ( 50 % )            ;
+; Global clocks                               ; 5 / 8 ( 63 % )            ;
 ; JTAGs                                       ; 0 / 1 ( 0 % )             ;
 ; ASMI blocks                                 ; 0 / 1 ( 0 % )             ;
 ; CRC blocks                                  ; 0 / 1 ( 0 % )             ;
 ; Average interconnect usage (total/H/V)      ; 3% / 3% / 2%              ;
-; Peak interconnect usage (total/H/V)         ; 3% / 4% / 3%              ;
+; Peak interconnect usage (total/H/V)         ; 3% / 4% / 2%              ;
 ; Maximum fan-out node                        ; clk_system~clkctrl        ;
 ; Maximum fan-out                             ; 106                       ;
 ; Highest non-global fan-out signal           ; bus_in_ram_reset          ;
 ; Highest non-global fan-out                  ; 31                        ;
-; Total fan-out                               ; 1355                      ;
-; Average fan-out                             ; 2.94                      ;
+; Total fan-out                               ; 1473                      ;
+; Average fan-out                             ; 2.92                      ;
 +---------------------------------------------+---------------------------+
 *  Register count does not include registers inside RAM blocks or DSP blocks.
 
@@ -244,26 +244,26 @@ The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK
 +---------------------------------------------+--------------------+--------------------------------+
 ; Difficulty Clustering Region                ; Low                ; Low                            ;
 ;                                             ;                    ;                                ;
-; Total logic elements                        ; 247 / 4608 ( 5 % ) ; 0 / 4608 ( 0 % )               ;
-;     -- Combinational with no register       ; 112                ; 0                              ;
+; Total logic elements                        ; 281 / 4608 ( 6 % ) ; 0 / 4608 ( 0 % )               ;
+;     -- Combinational with no register       ; 135                ; 0                              ;
 ;     -- Register only                        ; 27                 ; 0                              ;
-;     -- Combinational with a register        ; 108                ; 0                              ;
+;     -- Combinational with a register        ; 119                ; 0                              ;
 ;                                             ;                    ;                                ;
 ; Logic element usage by number of LUT inputs ;                    ;                                ;
-;     -- 4 input functions                    ; 108                ; 0                              ;
-;     -- 3 input functions                    ; 54                 ; 0                              ;
-;     -- <=2 input functions                  ; 58                 ; 0                              ;
+;     -- 4 input functions                    ; 117                ; 0                              ;
+;     -- 3 input functions                    ; 65                 ; 0                              ;
+;     -- <=2 input functions                  ; 72                 ; 0                              ;
 ;     -- Register only                        ; 27                 ; 0                              ;
 ;                                             ;                    ;                                ;
 ; Logic elements by mode                      ;                    ;                                ;
-;     -- normal mode                          ; 187                ; 0                              ;
-;     -- arithmetic mode                      ; 33                 ; 0                              ;
+;     -- normal mode                          ; 212                ; 0                              ;
+;     -- arithmetic mode                      ; 42                 ; 0                              ;
 ;                                             ;                    ;                                ;
-; Total registers                             ; 135                ; 0                              ;
-;     -- Dedicated logic registers            ; 135 / 4608 ( 2 % ) ; 0 / 4608 ( 0 % )               ;
+; Total registers                             ; 146                ; 0                              ;
+;     -- Dedicated logic registers            ; 146 / 4608 ( 3 % ) ; 0 / 4608 ( 0 % )               ;
 ;     -- I/O registers                        ; 0                  ; 0                              ;
 ;                                             ;                    ;                                ;
-; Total LABs:  partially or completely used   ; 20 / 288 ( 6 % )   ; 0 / 288 ( 0 % )                ;
+; Total LABs:  partially or completely used   ; 23 / 288 ( 7 % )   ; 0 / 288 ( 0 % )                ;
 ;                                             ;                    ;                                ;
 ; Virtual pins                                ; 0                  ; 0                              ;
 ; I/O pins                                    ; 72                 ; 0                              ;
@@ -272,21 +272,21 @@ The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK
 ; Total RAM block bits                        ; 36864              ; 0                              ;
 ; PLL                                         ; 0 / 2 ( 0 % )      ; 1 / 2 ( 50 % )                 ;
 ; M4K                                         ; 8 / 26 ( 30 % )    ; 0 / 26 ( 0 % )                 ;
-; Clock control block                         ; 3 / 10 ( 30 % )    ; 1 / 10 ( 10 % )                ;
+; Clock control block                         ; 4 / 10 ( 40 % )    ; 1 / 10 ( 10 % )                ;
 ;                                             ;                    ;                                ;
 ; Connections                                 ;                    ;                                ;
-;     -- Input Connections                    ; 21                 ; 1                              ;
-;     -- Registered Input Connections         ; 21                 ; 0                              ;
-;     -- Output Connections                   ; 1                  ; 21                             ;
+;     -- Input Connections                    ; 32                 ; 1                              ;
+;     -- Registered Input Connections         ; 32                 ; 0                              ;
+;     -- Output Connections                   ; 1                  ; 32                             ;
 ;     -- Registered Output Connections        ; 0                  ; 0                              ;
 ;                                             ;                    ;                                ;
 ; Internal Connections                        ;                    ;                                ;
-;     -- Total Connections                    ; 1356               ; 23                             ;
-;     -- Registered Connections               ; 674                ; 0                              ;
+;     -- Total Connections                    ; 1474               ; 34                             ;
+;     -- Registered Connections               ; 714                ; 0                              ;
 ;                                             ;                    ;                                ;
 ; External Connections                        ;                    ;                                ;
-;     -- Top                                  ; 0                  ; 22                             ;
-;     -- hard_block:auto_generated_inst       ; 22                 ; 0                              ;
+;     -- Top                                  ; 0                  ; 33                             ;
+;     -- hard_block:auto_generated_inst       ; 33                 ; 0                              ;
 ;                                             ;                    ;                                ;
 ; Partition Interface                         ;                    ;                                ;
 ;     -- Input Ports                          ; 32                 ; 1                              ;
@@ -333,10 +333,10 @@ The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK
 ; bus_in_data[7]            ; 104   ; 3        ; 28           ; 12           ; 0           ; 1                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; bus_in_data[8]            ; 103   ; 3        ; 28           ; 12           ; 1           ; 1                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; bus_in_data[9]            ; 112   ; 2        ; 26           ; 14           ; 0           ; 1                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
-; bus_in_fifo_empty         ; 137   ; 2        ; 3            ; 14           ; 2           ; 4                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
+; bus_in_fifo_empty         ; 139   ; 2        ; 3            ; 14           ; 3           ; 4                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; bus_in_ram_reset          ; 126   ; 2        ; 14           ; 14           ; 1           ; 31                    ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; bus_in_reset_dds_chip     ; 132   ; 2        ; 9            ; 14           ; 2           ; 23                    ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
-; bus_in_step_to_next_value ; 129   ; 2        ; 12           ; 14           ; 0           ; 10                    ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
+; bus_in_step_to_next_value ; 136   ; 2        ; 3            ; 14           ; 1           ; 4                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; clk_25                    ; 17    ; 1        ; 0            ; 6            ; 0           ; 2                     ; 0                  ; yes    ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; clk_in0                   ; 89    ; 3        ; 28           ; 7            ; 2           ; 0                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
 ; dip_in[0]                 ; 3     ; 1        ; 0            ; 13           ; 2           ; 1                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; Off          ; 3.3-V LVTTL  ; Off         ; User                 ;
@@ -542,17 +542,17 @@ The pin-out file can be found in C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK
 ; 126      ; 145        ; 2        ; bus_in_ram_reset                         ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
 ; 127      ;            ; 2        ; VCCIO2                                   ; power  ;              ; 3.3V    ; --         ;                 ; --       ; --           ;
 ; 128      ;            ;          ; GND                                      ; gnd    ;              ;         ; --         ;                 ; --       ; --           ;
-; 129      ; 148        ; 2        ; bus_in_step_to_next_value                ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
+; 129      ; 148        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
 ; 130      ;            ;          ; GND                                      ; gnd    ;              ;         ; --         ;                 ; --       ; --           ;
 ; 131      ;            ;          ; VCCINT                                   ; power  ;              ; 1.2V    ; --         ;                 ; --       ; --           ;
 ; 132      ; 153        ; 2        ; bus_in_reset_dds_chip                    ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
 ; 133      ; 154        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
 ; 134      ; 155        ; 2        ; bus_in_fifo_rd_clk                       ; output ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
 ; 135      ; 162        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
-; 136      ; 163        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
-; 137      ; 164        ; 2        ; bus_in_fifo_empty                        ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
+; 136      ; 163        ; 2        ; bus_in_step_to_next_value                ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
+; 137      ; 164        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
 ; 138      ;            ; 2        ; VCCIO2                                   ; power  ;              ; 3.3V    ; --         ;                 ; --       ; --           ;
-; 139      ; 165        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
+; 139      ; 165        ; 2        ; bus_in_fifo_empty                        ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
 ; 140      ;            ;          ; GND                                      ; gnd    ;              ;         ; --         ;                 ; --       ; --           ;
 ; 141      ; 166        ; 2        ; GND*                                     ;        ;              ;         ; Column I/O ;                 ; no       ; Off          ;
 ; 142      ; 167        ; 2        ; bus_in_address[0]                        ; input  ; 3.3-V LVTTL  ;         ; Column I/O ; Y               ; no       ; Off          ;
@@ -646,7 +646,7 @@ Note: User assignments will override these defaults. The user specified values a
 +-------------------------------------------+-------------+---------------------------+---------------+-------------+------+--------------+---------+-----------+------+--------------+--------------+-------------------+------------------+--------------------------------------------------------------------------------------------------------------+--------------+
 ; Compilation Hierarchy Node                ; Logic Cells ; Dedicated Logic Registers ; I/O Registers ; Memory Bits ; M4Ks ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; LUT-Only LCs ; Register-Only LCs ; LUT/Register LCs ; Full Hierarchy Name                                                                                          ; Library Name ;
 +-------------------------------------------+-------------+---------------------------+---------------+-------------+------+--------------+---------+-----------+------+--------------+--------------+-------------------+------------------+--------------------------------------------------------------------------------------------------------------+--------------+
-; |dds                                      ; 247 (247)   ; 135 (135)                 ; 0 (0)         ; 32768       ; 8    ; 0            ; 0       ; 0         ; 72   ; 0            ; 112 (112)    ; 27 (27)           ; 108 (108)        ; |dds                                                                                                         ;              ;
+; |dds                                      ; 281 (281)   ; 146 (146)                 ; 0 (0)         ; 32768       ; 8    ; 0            ; 0       ; 0         ; 72   ; 0            ; 135 (135)    ; 27 (27)           ; 119 (119)        ; |dds                                                                                                         ;              ;
 ;    |dds_pll:PLL|                          ; 0 (0)       ; 0 (0)                     ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 0 (0)             ; 0 (0)            ; |dds|dds_pll:PLL                                                                                             ;              ;
 ;       |altpll:altpll_component|           ; 0 (0)       ; 0 (0)                     ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 0 (0)             ; 0 (0)            ; |dds|dds_pll:PLL|altpll:altpll_component                                                                     ;              ;
 ;    |dds_ram:ram1|                         ; 0 (0)       ; 0 (0)                     ; 0 (0)         ; 32768       ; 8    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 0 (0)             ; 0 (0)            ; |dds|dds_ram:ram1                                                                                            ;              ;
@@ -714,10 +714,10 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dip_in[0]                 ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
 ; dip_in[1]                 ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
 ; dip_in[2]                 ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
-; bus_in_step_to_next_value ; Input    ; (0) 287 ps    ; (0) 287 ps    ; --                    ; --  ;
 ; bus_in_ram_reset          ; Input    ; (6) 4114 ps   ; (6) 4114 ps   ; --                    ; --  ;
 ; dip_in[3]                 ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
 ; dip_in[4]                 ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
+; bus_in_step_to_next_value ; Input    ; (6) 4114 ps   ; (6) 4114 ps   ; --                    ; --  ;
 ; bus_in_data[0]            ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
 ; bus_in_data[2]            ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
 ; bus_in_data[1]            ; Input    ; (6) 4075 ps   ; (6) 4075 ps   ; --                    ; --  ;
@@ -737,162 +737,156 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +---------------------------+----------+---------------+---------------+-----------------------+-----+
 
 
-+-----------------------------------------------------------------+
-; Pad To Core Delay Chain Fanout                                  ;
-+-----------------------------------+-------------------+---------+
-; Source Pin / Fanout               ; Pad To Core Index ; Setting ;
-+-----------------------------------+-------------------+---------+
-; clk_in0                           ;                   ;         ;
-; sdo_pin                           ;                   ;         ;
-; pd_clk_pin                        ;                   ;         ;
-; clk_25                            ;                   ;         ;
-; bus_in_address[1]                 ;                   ;         ;
-;      - Mux48~2                    ; 1                 ; 6       ;
-;      - Equal1~0                   ; 1                 ; 6       ;
-; bus_in_address[2]                 ;                   ;         ;
-;      - Mux48~1                    ; 1                 ; 6       ;
-;      - Equal1~1                   ; 1                 ; 6       ;
-;      - Mux5~0                     ; 1                 ; 6       ;
-; bus_in_address[0]                 ;                   ;         ;
-;      - Mux48~2                    ; 0                 ; 6       ;
-;      - Equal1~0                   ; 0                 ; 6       ;
-; bus_in_fifo_empty                 ;                   ;         ;
-;      - Mux48~4                    ; 0                 ; 6       ;
-;      - Mux5~0                     ; 0                 ; 6       ;
-;      - Mux6~1                     ; 0                 ; 6       ;
-;      - Mux5~2                     ; 0                 ; 6       ;
-; bus_in_reset_dds_chip             ;                   ;         ;
-;      - \process_5:main_count[0]   ; 0                 ; 6       ;
-;      - \process_5:main_count[1]   ; 0                 ; 6       ;
-;      - \process_5:main_count[2]   ; 0                 ; 6       ;
-;      - \process_5:main_count[3]   ; 0                 ; 6       ;
-;      - \process_5:main_count[4]   ; 0                 ; 6       ;
-;      - ioreset_pin~reg0           ; 0                 ; 6       ;
-;      - ioup_pin~reg0              ; 0                 ; 6       ;
-;      - sclk_pin~reg0              ; 0                 ; 6       ;
-;      - dds_reset_pin~reg0         ; 0                 ; 6       ;
-;      - sdio_pin~0                 ; 0                 ; 6       ;
-;      - sdio_pin~1                 ; 0                 ; 6       ;
-;      - sdio_pin~2                 ; 0                 ; 6       ;
-;      - command_count[6]           ; 0                 ; 6       ;
-;      - command_count[5]           ; 0                 ; 6       ;
-;      - command_count[4]           ; 0                 ; 6       ;
-;      - command_count[3]           ; 0                 ; 6       ;
-;      - command_count[1]           ; 0                 ; 6       ;
-;      - command_count[0]           ; 0                 ; 6       ;
-;      - command_count[2]           ; 0                 ; 6       ;
-;      - data_bit_count[5]~3        ; 0                 ; 6       ;
-;      - sub_count~0                ; 0                 ; 6       ;
-;      - data_to_write[30]~4        ; 0                 ; 6       ;
-;      - int_bit_count[2]~0         ; 0                 ; 6       ;
-; dip_in[0]                         ;                   ;         ;
-;      - Equal1~0                   ; 0                 ; 6       ;
-; dip_in[1]                         ;                   ;         ;
-;      - Equal1~0                   ; 0                 ; 6       ;
-; dip_in[2]                         ;                   ;         ;
-;      - Equal1~1                   ; 0                 ; 6       ;
-;      - Mux5~0                     ; 0                 ; 6       ;
-; bus_in_step_to_next_value         ;                   ;         ;
-;      - dds_step_count[0]          ; 0                 ; 0       ;
-;      - dds_step_count[2]          ; 0                 ; 0       ;
-;      - dds_step_count[3]          ; 0                 ; 0       ;
-;      - dds_step_count[1]          ; 0                 ; 0       ;
-;      - dds_step_count[4]          ; 0                 ; 0       ;
-;      - dds_step_count[5]          ; 0                 ; 0       ;
-;      - dds_step_count[6]          ; 0                 ; 0       ;
-;      - dds_step_count[7]          ; 0                 ; 0       ;
-;      - dds_step_count[8]          ; 0                 ; 0       ;
-;      - dds_step_count[9]          ; 0                 ; 0       ;
-; bus_in_ram_reset                  ;                   ;         ;
-;      - dds_step_count[0]          ; 0                 ; 6       ;
-;      - dds_step_count[2]          ; 0                 ; 6       ;
-;      - dds_step_count[3]          ; 0                 ; 6       ;
-;      - dds_step_count[1]          ; 0                 ; 6       ;
-;      - dds_step_count[4]          ; 0                 ; 6       ;
-;      - dds_step_count[5]          ; 0                 ; 6       ;
-;      - dds_step_count[6]          ; 0                 ; 6       ;
-;      - dds_step_count[7]          ; 0                 ; 6       ;
-;      - dds_step_count[8]          ; 0                 ; 6       ;
-;      - dds_step_count[9]          ; 0                 ; 6       ;
-;      - write_ram_address[0]       ; 0                 ; 6       ;
-;      - write_ram_address[1]       ; 0                 ; 6       ;
-;      - write_ram_address[2]       ; 0                 ; 6       ;
-;      - write_ram_address[3]       ; 0                 ; 6       ;
-;      - write_ram_address[4]       ; 0                 ; 6       ;
-;      - write_ram_address[5]       ; 0                 ; 6       ;
-;      - write_ram_address[6]       ; 0                 ; 6       ;
-;      - write_ram_address[7]       ; 0                 ; 6       ;
-;      - write_ram_address[8]       ; 0                 ; 6       ;
-;      - write_ram_address[9]       ; 0                 ; 6       ;
-;      - write_ram_address[10]      ; 0                 ; 6       ;
-;      - ram_process_count[0]       ; 0                 ; 6       ;
-;      - ram_process_count[3]       ; 0                 ; 6       ;
-;      - ram_process_count[1]       ; 0                 ; 6       ;
-;      - fifo_dds_rd_clk~0          ; 0                 ; 6       ;
-;      - fifo_dds_rd_clk~1          ; 0                 ; 6       ;
-;      - ram_process_count[2]       ; 0                 ; 6       ;
-;      - fifo_dds_rd_en~0           ; 0                 ; 6       ;
-;      - dds_ram_data_in[2]~0       ; 0                 ; 6       ;
-;      - dds_ram_wrclock~0          ; 0                 ; 6       ;
-;      - dds_ram_data_in[2]~1       ; 0                 ; 6       ;
-; dip_in[3]                         ;                   ;         ;
-;      - data_to_write~3            ; 0                 ; 6       ;
-;      - data_to_write~5            ; 0                 ; 6       ;
-;      - data_to_write~6            ; 0                 ; 6       ;
-;      - data_to_write~7            ; 0                 ; 6       ;
-;      - data_to_write~9            ; 0                 ; 6       ;
-;      - data_to_write~10           ; 0                 ; 6       ;
-;      - data_to_write~13           ; 0                 ; 6       ;
-;      - data_to_write~14           ; 0                 ; 6       ;
-;      - data_to_write~15           ; 0                 ; 6       ;
-;      - data_to_write~17           ; 0                 ; 6       ;
-;      - data_to_write~19           ; 0                 ; 6       ;
-; dip_in[4]                         ;                   ;         ;
-;      - data_to_write~3            ; 1                 ; 6       ;
-;      - data_to_write~5            ; 1                 ; 6       ;
-;      - data_to_write~7            ; 1                 ; 6       ;
-;      - data_to_write~8            ; 1                 ; 6       ;
-;      - data_to_write~10           ; 1                 ; 6       ;
-;      - data_to_write~11           ; 1                 ; 6       ;
-;      - data_to_write~13           ; 1                 ; 6       ;
-;      - data_to_write~14           ; 1                 ; 6       ;
-;      - data_to_write~15           ; 1                 ; 6       ;
-;      - data_to_write~16           ; 1                 ; 6       ;
-;      - data_to_write~19           ; 1                 ; 6       ;
-;      - data_to_write~20           ; 1                 ; 6       ;
-; bus_in_data[0]                    ;                   ;         ;
-;      - dds_ram_data_in[0]         ; 0                 ; 6       ;
-; bus_in_data[2]                    ;                   ;         ;
-;      - dds_ram_data_in[2]~feeder  ; 0                 ; 6       ;
-; bus_in_data[1]                    ;                   ;         ;
-;      - dds_ram_data_in[1]         ; 1                 ; 6       ;
-; bus_in_data[3]                    ;                   ;         ;
-;      - dds_ram_data_in[3]~feeder  ; 0                 ; 6       ;
-; bus_in_data[4]                    ;                   ;         ;
-;      - dds_ram_data_in[4]         ; 1                 ; 6       ;
-; bus_in_data[5]                    ;                   ;         ;
-;      - dds_ram_data_in[5]         ; 0                 ; 6       ;
-; bus_in_data[6]                    ;                   ;         ;
-;      - dds_ram_data_in[6]~feeder  ; 1                 ; 6       ;
-; bus_in_data[7]                    ;                   ;         ;
-;      - dds_ram_data_in[7]         ; 0                 ; 6       ;
-; bus_in_data[8]                    ;                   ;         ;
-;      - dds_ram_data_in[8]~feeder  ; 0                 ; 6       ;
-; bus_in_data[9]                    ;                   ;         ;
-;      - dds_ram_data_in[9]~feeder  ; 0                 ; 6       ;
-; bus_in_data[10]                   ;                   ;         ;
-;      - dds_ram_data_in[10]~feeder ; 0                 ; 6       ;
-; bus_in_data[11]                   ;                   ;         ;
-;      - dds_ram_data_in[11]~feeder ; 0                 ; 6       ;
-; bus_in_data[12]                   ;                   ;         ;
-;      - dds_ram_data_in[12]~feeder ; 0                 ; 6       ;
-; bus_in_data[13]                   ;                   ;         ;
-;      - dds_ram_data_in[13]        ; 0                 ; 6       ;
-; bus_in_data[14]                   ;                   ;         ;
-;      - dds_ram_data_in[14]~feeder ; 0                 ; 6       ;
-; bus_in_data[15]                   ;                   ;         ;
-;      - dds_ram_data_in[15]~feeder ; 0                 ; 6       ;
-+-----------------------------------+-------------------+---------+
++----------------------------------------------------------------------+
+; Pad To Core Delay Chain Fanout                                       ;
++----------------------------------------+-------------------+---------+
+; Source Pin / Fanout                    ; Pad To Core Index ; Setting ;
++----------------------------------------+-------------------+---------+
+; clk_in0                                ;                   ;         ;
+; sdo_pin                                ;                   ;         ;
+; pd_clk_pin                             ;                   ;         ;
+; clk_25                                 ;                   ;         ;
+; bus_in_address[1]                      ;                   ;         ;
+;      - Mux48~2                         ; 0                 ; 6       ;
+;      - Equal1~0                        ; 0                 ; 6       ;
+; bus_in_address[2]                      ;                   ;         ;
+;      - Mux48~1                         ; 0                 ; 6       ;
+;      - Equal1~1                        ; 0                 ; 6       ;
+;      - Mux5~0                          ; 0                 ; 6       ;
+; bus_in_address[0]                      ;                   ;         ;
+;      - Mux48~2                         ; 0                 ; 6       ;
+;      - Equal1~0                        ; 0                 ; 6       ;
+; bus_in_fifo_empty                      ;                   ;         ;
+;      - Mux48~4                         ; 1                 ; 6       ;
+;      - Mux5~0                          ; 1                 ; 6       ;
+;      - Mux6~1                          ; 1                 ; 6       ;
+;      - Mux5~2                          ; 1                 ; 6       ;
+; bus_in_reset_dds_chip                  ;                   ;         ;
+;      - \process_6:main_count[0]        ; 1                 ; 6       ;
+;      - \process_6:main_count[1]        ; 1                 ; 6       ;
+;      - \process_6:main_count[2]        ; 1                 ; 6       ;
+;      - \process_6:main_count[3]        ; 1                 ; 6       ;
+;      - \process_6:main_count[4]        ; 1                 ; 6       ;
+;      - ioreset_pin~reg0                ; 1                 ; 6       ;
+;      - ioup_pin~reg0                   ; 1                 ; 6       ;
+;      - sclk_pin~reg0                   ; 1                 ; 6       ;
+;      - dds_reset_pin~reg0              ; 1                 ; 6       ;
+;      - sdio_pin~0                      ; 1                 ; 6       ;
+;      - sdio_pin~1                      ; 1                 ; 6       ;
+;      - sdio_pin~2                      ; 1                 ; 6       ;
+;      - command_count[6]                ; 1                 ; 6       ;
+;      - command_count[5]                ; 1                 ; 6       ;
+;      - command_count[4]                ; 1                 ; 6       ;
+;      - command_count[3]                ; 1                 ; 6       ;
+;      - command_count[1]                ; 1                 ; 6       ;
+;      - command_count[0]                ; 1                 ; 6       ;
+;      - command_count[2]                ; 1                 ; 6       ;
+;      - data_bit_count[5]~3             ; 1                 ; 6       ;
+;      - sub_count~0                     ; 1                 ; 6       ;
+;      - data_to_write[30]~4             ; 1                 ; 6       ;
+;      - int_bit_count[2]~0              ; 1                 ; 6       ;
+; dip_in[0]                              ;                   ;         ;
+;      - Equal1~0                        ; 0                 ; 6       ;
+; dip_in[1]                              ;                   ;         ;
+;      - Equal1~0                        ; 1                 ; 6       ;
+; dip_in[2]                              ;                   ;         ;
+;      - Equal1~1                        ; 1                 ; 6       ;
+;      - Mux5~0                          ; 1                 ; 6       ;
+; bus_in_ram_reset                       ;                   ;         ;
+;      - dds_step_count[0]               ; 0                 ; 6       ;
+;      - dds_step_count[2]               ; 0                 ; 6       ;
+;      - dds_step_count[3]               ; 0                 ; 6       ;
+;      - dds_step_count[1]               ; 0                 ; 6       ;
+;      - dds_step_count[4]               ; 0                 ; 6       ;
+;      - dds_step_count[5]               ; 0                 ; 6       ;
+;      - dds_step_count[6]               ; 0                 ; 6       ;
+;      - dds_step_count[7]               ; 0                 ; 6       ;
+;      - dds_step_count[8]               ; 0                 ; 6       ;
+;      - dds_step_count[9]               ; 0                 ; 6       ;
+;      - write_ram_address[0]            ; 0                 ; 6       ;
+;      - write_ram_address[1]            ; 0                 ; 6       ;
+;      - write_ram_address[2]            ; 0                 ; 6       ;
+;      - write_ram_address[3]            ; 0                 ; 6       ;
+;      - write_ram_address[4]            ; 0                 ; 6       ;
+;      - write_ram_address[5]            ; 0                 ; 6       ;
+;      - write_ram_address[6]            ; 0                 ; 6       ;
+;      - write_ram_address[7]            ; 0                 ; 6       ;
+;      - write_ram_address[8]            ; 0                 ; 6       ;
+;      - write_ram_address[9]            ; 0                 ; 6       ;
+;      - write_ram_address[10]           ; 0                 ; 6       ;
+;      - ram_process_count[0]            ; 0                 ; 6       ;
+;      - ram_process_count[3]            ; 0                 ; 6       ;
+;      - ram_process_count[1]            ; 0                 ; 6       ;
+;      - fifo_dds_rd_clk~0               ; 0                 ; 6       ;
+;      - fifo_dds_rd_clk~1               ; 0                 ; 6       ;
+;      - ram_process_count[2]            ; 0                 ; 6       ;
+;      - fifo_dds_rd_en~0                ; 0                 ; 6       ;
+;      - dds_ram_data_in[2]~0            ; 0                 ; 6       ;
+;      - dds_ram_wrclock~0               ; 0                 ; 6       ;
+;      - dds_ram_data_in[2]~1            ; 0                 ; 6       ;
+; dip_in[3]                              ;                   ;         ;
+;      - data_to_write~3                 ; 1                 ; 6       ;
+;      - data_to_write~5                 ; 1                 ; 6       ;
+;      - data_to_write~6                 ; 1                 ; 6       ;
+;      - data_to_write~7                 ; 1                 ; 6       ;
+;      - data_to_write~9                 ; 1                 ; 6       ;
+;      - data_to_write~10                ; 1                 ; 6       ;
+;      - data_to_write~13                ; 1                 ; 6       ;
+;      - data_to_write~14                ; 1                 ; 6       ;
+;      - data_to_write~15                ; 1                 ; 6       ;
+;      - data_to_write~17                ; 1                 ; 6       ;
+;      - data_to_write~19                ; 1                 ; 6       ;
+; dip_in[4]                              ;                   ;         ;
+;      - data_to_write~3                 ; 1                 ; 6       ;
+;      - data_to_write~5                 ; 1                 ; 6       ;
+;      - data_to_write~7                 ; 1                 ; 6       ;
+;      - data_to_write~8                 ; 1                 ; 6       ;
+;      - data_to_write~10                ; 1                 ; 6       ;
+;      - data_to_write~11                ; 1                 ; 6       ;
+;      - data_to_write~13                ; 1                 ; 6       ;
+;      - data_to_write~14                ; 1                 ; 6       ;
+;      - data_to_write~15                ; 1                 ; 6       ;
+;      - data_to_write~16                ; 1                 ; 6       ;
+;      - data_to_write~19                ; 1                 ; 6       ;
+;      - data_to_write~20                ; 1                 ; 6       ;
+; bus_in_step_to_next_value              ;                   ;         ;
+;      - dds_step_to_next_freq_sampled~1 ; 0                 ; 6       ;
+;      - dds_step_to_next_freq_sampled~2 ; 0                 ; 6       ;
+;      - \process_1:count[9]~2           ; 0                 ; 6       ;
+;      - \process_1:count[9]~3           ; 0                 ; 6       ;
+; bus_in_data[0]                         ;                   ;         ;
+;      - dds_ram_data_in[0]~feeder       ; 0                 ; 6       ;
+; bus_in_data[2]                         ;                   ;         ;
+;      - dds_ram_data_in[2]~feeder       ; 0                 ; 6       ;
+; bus_in_data[1]                         ;                   ;         ;
+;      - dds_ram_data_in[1]              ; 1                 ; 6       ;
+; bus_in_data[3]                         ;                   ;         ;
+;      - dds_ram_data_in[3]              ; 0                 ; 6       ;
+; bus_in_data[4]                         ;                   ;         ;
+;      - dds_ram_data_in[4]              ; 0                 ; 6       ;
+; bus_in_data[5]                         ;                   ;         ;
+;      - dds_ram_data_in[5]~feeder       ; 0                 ; 6       ;
+; bus_in_data[6]                         ;                   ;         ;
+;      - dds_ram_data_in[6]~feeder       ; 1                 ; 6       ;
+; bus_in_data[7]                         ;                   ;         ;
+;      - dds_ram_data_in[7]~feeder       ; 0                 ; 6       ;
+; bus_in_data[8]                         ;                   ;         ;
+;      - dds_ram_data_in[8]~feeder       ; 0                 ; 6       ;
+; bus_in_data[9]                         ;                   ;         ;
+;      - dds_ram_data_in[9]~feeder       ; 0                 ; 6       ;
+; bus_in_data[10]                        ;                   ;         ;
+;      - dds_ram_data_in[10]~feeder      ; 0                 ; 6       ;
+; bus_in_data[11]                        ;                   ;         ;
+;      - dds_ram_data_in[11]~feeder      ; 0                 ; 6       ;
+; bus_in_data[12]                        ;                   ;         ;
+;      - dds_ram_data_in[12]             ; 0                 ; 6       ;
+; bus_in_data[13]                        ;                   ;         ;
+;      - dds_ram_data_in[13]             ; 1                 ; 6       ;
+; bus_in_data[14]                        ;                   ;         ;
+;      - dds_ram_data_in[14]~feeder      ; 0                 ; 6       ;
+; bus_in_data[15]                        ;                   ;         ;
+;      - dds_ram_data_in[15]~feeder      ; 0                 ; 6       ;
++----------------------------------------+-------------------+---------+
 
 
 +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -900,37 +894,39 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-------------------------------------------+--------------------+---------+----------------------------+--------+----------------------+------------------+---------------------------+
 ; Name                                      ; Location           ; Fan-Out ; Usage                      ; Global ; Global Resource Used ; Global Line Name ; Enable Signal Source Name ;
 +-------------------------------------------+--------------------+---------+----------------------------+--------+----------------------+------------------+---------------------------+
-; Equal1~1                                  ; LCCOMB_X20_Y12_N8  ; 2       ; Output enable              ; no     ; --                   ; --               ; --                        ;
-; Mux45~0                                   ; LCCOMB_X19_Y9_N0   ; 11      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
-; \process_5:main_count[4]                  ; LCFF_X9_Y7_N1      ; 13      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; Equal1~1                                  ; LCCOMB_X9_Y13_N10  ; 2       ; Output enable              ; no     ; --                   ; --               ; --                        ;
+; Mux45~0                                   ; LCCOMB_X20_Y12_N30 ; 11      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; \process_1:count[9]~3                     ; LCCOMB_X6_Y6_N14   ; 9       ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; \process_6:main_count[4]                  ; LCFF_X12_Y9_N17    ; 13      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
 ; bus_in_ram_reset                          ; PIN_126            ; 31      ; Async. clear               ; no     ; --                   ; --               ; --                        ;
 ; bus_in_reset_dds_chip                     ; PIN_132            ; 23      ; Async. clear, Clock enable ; no     ; --                   ; --               ; --                        ;
-; bus_in_step_to_next_value                 ; PIN_129            ; 10      ; Clock                      ; no     ; --                   ; --               ; --                        ;
 ; clk_25                                    ; PIN_17             ; 2       ; Clock                      ; no     ; --                   ; --               ; --                        ;
 ; clk_25                                    ; PIN_17             ; 6       ; Clock                      ; yes    ; Global Clock         ; GCLK2            ; --                        ;
-; clk_system                                ; LCFF_X27_Y6_N25    ; 106     ; Clock                      ; yes    ; Global Clock         ; GCLK5            ; --                        ;
-; data_bit_count[5]~3                       ; LCCOMB_X10_Y9_N4   ; 6       ; Clock enable               ; no     ; --                   ; --               ; --                        ;
-; data_to_write[30]~4                       ; LCCOMB_X10_Y9_N22  ; 19      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
-; dds_pll:PLL|altpll:altpll_component|_clk0 ; PLL_1              ; 21      ; Clock                      ; yes    ; Global Clock         ; GCLK3            ; --                        ;
-; dds_ram_data_in[2]~1                      ; LCCOMB_X20_Y9_N8   ; 27      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
-; dds_ram_wrclock                           ; LCFF_X20_Y9_N23    ; 8       ; Clock                      ; yes    ; Global Clock         ; GCLK7            ; --                        ;
-; dds_ram_wren                              ; LCFF_X20_Y9_N3     ; 9       ; Write enable               ; no     ; --                   ; --               ; --                        ;
-; int_bit_count[2]~0                        ; LCCOMB_X8_Y8_N20   ; 3       ; Clock enable               ; no     ; --                   ; --               ; --                        ;
-; main_count[1]                             ; LCFF_X22_Y10_N1    ; 21      ; Sync. clear                ; no     ; --                   ; --               ; --                        ;
-; parallel_data[3]~0                        ; LCCOMB_X22_Y10_N30 ; 16      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; clk_system                                ; LCFF_X26_Y7_N17    ; 106     ; Clock                      ; yes    ; Global Clock         ; GCLK7            ; --                        ;
+; data_bit_count[5]~3                       ; LCCOMB_X12_Y8_N12  ; 6       ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; data_to_write[30]~4                       ; LCCOMB_X12_Y8_N30  ; 19      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; dds_pll:PLL|altpll:altpll_component|_clk0 ; PLL_1              ; 32      ; Clock                      ; yes    ; Global Clock         ; GCLK3            ; --                        ;
+; dds_ram_data_in[2]~1                      ; LCCOMB_X21_Y12_N12 ; 27      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; dds_ram_wrclock                           ; LCFF_X21_Y12_N29   ; 8       ; Clock                      ; yes    ; Global Clock         ; GCLK5            ; --                        ;
+; dds_ram_wren                              ; LCFF_X21_Y12_N17   ; 9       ; Write enable               ; no     ; --                   ; --               ; --                        ;
+; dds_step_to_next_freq_sampled             ; LCFF_X5_Y6_N3      ; 10      ; Clock                      ; yes    ; Global Clock         ; GCLK1            ; --                        ;
+; int_bit_count[2]~0                        ; LCCOMB_X13_Y9_N28  ; 3       ; Clock enable               ; no     ; --                   ; --               ; --                        ;
+; main_count[1]                             ; LCFF_X22_Y12_N9    ; 21      ; Sync. clear                ; no     ; --                   ; --               ; --                        ;
+; parallel_data[5]~0                        ; LCCOMB_X22_Y12_N30 ; 16      ; Clock enable               ; no     ; --                   ; --               ; --                        ;
 +-------------------------------------------+--------------------+---------+----------------------------+--------+----------------------+------------------+---------------------------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------+
-; Global & Other Fast Signals                                                                                                                 ;
-+-------------------------------------------+-----------------+---------+----------------------+------------------+---------------------------+
-; Name                                      ; Location        ; Fan-Out ; Global Resource Used ; Global Line Name ; Enable Signal Source Name ;
-+-------------------------------------------+-----------------+---------+----------------------+------------------+---------------------------+
-; clk_25                                    ; PIN_17          ; 6       ; Global Clock         ; GCLK2            ; --                        ;
-; clk_system                                ; LCFF_X27_Y6_N25 ; 106     ; Global Clock         ; GCLK5            ; --                        ;
-; dds_pll:PLL|altpll:altpll_component|_clk0 ; PLL_1           ; 21      ; Global Clock         ; GCLK3            ; --                        ;
-; dds_ram_wrclock                           ; LCFF_X20_Y9_N23 ; 8       ; Global Clock         ; GCLK7            ; --                        ;
-+-------------------------------------------+-----------------+---------+----------------------+------------------+---------------------------+
++----------------------------------------------------------------------------------------------------------------------------------------------+
+; Global & Other Fast Signals                                                                                                                  ;
++-------------------------------------------+------------------+---------+----------------------+------------------+---------------------------+
+; Name                                      ; Location         ; Fan-Out ; Global Resource Used ; Global Line Name ; Enable Signal Source Name ;
++-------------------------------------------+------------------+---------+----------------------+------------------+---------------------------+
+; clk_25                                    ; PIN_17           ; 6       ; Global Clock         ; GCLK2            ; --                        ;
+; clk_system                                ; LCFF_X26_Y7_N17  ; 106     ; Global Clock         ; GCLK7            ; --                        ;
+; dds_pll:PLL|altpll:altpll_component|_clk0 ; PLL_1            ; 32      ; Global Clock         ; GCLK3            ; --                        ;
+; dds_ram_wrclock                           ; LCFF_X21_Y12_N29 ; 8       ; Global Clock         ; GCLK5            ; --                        ;
+; dds_step_to_next_freq_sampled             ; LCFF_X5_Y6_N3    ; 10      ; Global Clock         ; GCLK1            ; --                        ;
++-------------------------------------------+------------------+---------+----------------------+------------------+---------------------------+
 
 
 +---------------------------------------------------------------------------------------------------------------------------+
@@ -942,25 +938,25 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dds_ram_data_in[2]~1                                                                                            ; 27      ;
 ; bus_in_reset_dds_chip                                                                                           ; 23      ;
 ; main_count[1]                                                                                                   ; 21      ;
-; \process_5:main_count[0]                                                                                        ; 21      ;
+; \process_6:main_count[0]                                                                                        ; 21      ;
 ; data_to_write[30]~4                                                                                             ; 19      ;
-; parallel_data[3]~0                                                                                              ; 16      ;
-; \process_5:main_count[3]                                                                                        ; 16      ;
-; Equal8~0                                                                                                        ; 15      ;
-; \process_5:main_count[1]                                                                                        ; 15      ;
-; Equal18~0                                                                                                       ; 14      ;
-; \process_5:main_count[2]                                                                                        ; 14      ;
+; parallel_data[5]~0                                                                                              ; 16      ;
+; \process_6:main_count[3]                                                                                        ; 16      ;
+; Equal9~0                                                                                                        ; 15      ;
+; \process_6:main_count[1]                                                                                        ; 15      ;
+; Equal19~0                                                                                                       ; 14      ;
+; \process_6:main_count[2]                                                                                        ; 14      ;
 ; data_bit_count[2]                                                                                               ; 13      ;
-; \process_5:main_count[4]                                                                                        ; 13      ;
+; \process_6:main_count[4]                                                                                        ; 13      ;
 ; dip_in[4]                                                                                                       ; 12      ;
 ; dip_in[3]                                                                                                       ; 11      ;
 ; Mux45~0                                                                                                         ; 11      ;
 ; ram_process_count[0]                                                                                            ; 11      ;
 ; command_count[2]                                                                                                ; 11      ;
-; Equal6~0                                                                                                        ; 11      ;
+; Equal7~0                                                                                                        ; 11      ;
 ; data_bit_count[3]                                                                                               ; 11      ;
 ; dds_step_count[0]                                                                                               ; 11      ;
-; bus_in_step_to_next_value                                                                                       ; 10      ;
+; \process_1:count[9]~2                                                                                           ; 10      ;
 ; ram_process_count[1]                                                                                            ; 10      ;
 ; command_count[1]                                                                                                ; 10      ;
 ; count_serial[1]                                                                                                 ; 10      ;
@@ -968,6 +964,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dds_step_count[1]                                                                                               ; 10      ;
 ; dds_step_count[3]                                                                                               ; 10      ;
 ; dds_step_count[2]                                                                                               ; 10      ;
+; \process_1:count[9]~3                                                                                           ; 9       ;
 ; dds_ram_wren                                                                                                    ; 9       ;
 ; command_count[0]                                                                                                ; 9       ;
 ; data_bit_count[0]                                                                                               ; 9       ;
@@ -989,40 +986,48 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dds_ram_wraddress[2]                                                                                            ; 8       ;
 ; dds_ram_wraddress[1]                                                                                            ; 8       ;
 ; dds_ram_wraddress[0]                                                                                            ; 8       ;
-; Equal20~0                                                                                                       ; 8       ;
+; Equal21~0                                                                                                       ; 8       ;
 ; sub_count                                                                                                       ; 8       ;
 ; count_serial[0]                                                                                                 ; 8       ;
 ; WideOr5~0                                                                                                       ; 7       ;
 ; ram_process_count[3]                                                                                            ; 7       ;
 ; data_bit_count[1]                                                                                               ; 7       ;
 ; count[1]                                                                                                        ; 7       ;
-; Equal6~1                                                                                                        ; 6       ;
+; Equal7~1                                                                                                        ; 6       ;
 ; data_bit_count[5]~3                                                                                             ; 6       ;
 ; main_count[0]                                                                                                   ; 6       ;
-; Equal17~0                                                                                                       ; 6       ;
+; Equal18~0                                                                                                       ; 6       ;
 ; count_serial[2]                                                                                                 ; 6       ;
 ; count[2]                                                                                                        ; 6       ;
-; \process_5:main_count[2]~2                                                                                      ; 5       ;
+; \process_6:main_count[0]~0                                                                                      ; 5       ;
 ; main_count[2]                                                                                                   ; 5       ;
 ; int_bit_count[0]                                                                                                ; 5       ;
 ; int_bit_count[1]                                                                                                ; 5       ;
 ; count_serial[3]                                                                                                 ; 5       ;
 ; count[3]                                                                                                        ; 5       ;
+; bus_in_step_to_next_value                                                                                       ; 4       ;
 ; bus_in_fifo_empty                                                                                               ; 4       ;
 ; data_to_write~12                                                                                                ; 4       ;
-; \process_5:main_count[2]~9                                                                                      ; 4       ;
-; Equal17~1                                                                                                       ; 4       ;
+; \process_6:main_count[0]~9                                                                                      ; 4       ;
+; Equal18~1                                                                                                       ; 4       ;
 ; data_bit_count[4]                                                                                               ; 4       ;
 ; data_bit_count[5]                                                                                               ; 4       ;
 ; bus_in_address[2]                                                                                               ; 3       ;
+; \process_1:count[1]                                                                                             ; 3       ;
+; \process_1:count[0]                                                                                             ; 3       ;
+; \process_1:count[3]                                                                                             ; 3       ;
+; \process_1:count[2]                                                                                             ; 3       ;
+; \process_1:count[4]                                                                                             ; 3       ;
+; Equal2~1                                                                                                        ; 3       ;
+; \process_1:count[9]                                                                                             ; 3       ;
 ; int_bit_count[2]~0                                                                                              ; 3       ;
-; data_to_write[0]~1                                                                                              ; 3       ;
+; data_to_write[30]~1                                                                                             ; 3       ;
 ; command_count[3]                                                                                                ; 3       ;
 ; command_count[4]                                                                                                ; 3       ;
 ; command_count[5]                                                                                                ; 3       ;
 ; command_count[6]                                                                                                ; 3       ;
-; count[4]~0                                                                                                      ; 3       ;
-; Equal17~2                                                                                                       ; 3       ;
+; count[0]~0                                                                                                      ; 3       ;
+; Equal18~2                                                                                                       ; 3       ;
 ; int_bit_count[2]                                                                                                ; 3       ;
 ; Add0~0                                                                                                          ; 3       ;
 ; count[4]                                                                                                        ; 3       ;
@@ -1031,16 +1036,26 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dip_in[2]                                                                                                       ; 2       ;
 ; bus_in_address[0]                                                                                               ; 2       ;
 ; bus_in_address[1]                                                                                               ; 2       ;
-; \process_5:main_count[2]~13                                                                                     ; 2       ;
+; \process_6:main_count[2]~5                                                                                      ; 2       ;
 ; Mux5~0                                                                                                          ; 2       ;
 ; dds_ram_data_in[2]~0                                                                                            ; 2       ;
+; Equal2~3                                                                                                        ; 2       ;
+; process_1~1                                                                                                     ; 2       ;
+; Equal2~2                                                                                                        ; 2       ;
+; process_1~0                                                                                                     ; 2       ;
+; Equal2~0                                                                                                        ; 2       ;
+; \process_1:count[8]                                                                                             ; 2       ;
+; \process_1:count[7]                                                                                             ; 2       ;
+; \process_1:count[6]                                                                                             ; 2       ;
+; \process_1:count[5]                                                                                             ; 2       ;
 ; dds_ram_wren~0                                                                                                  ; 2       ;
 ; fifo_dds_rd_clk~0                                                                                               ; 2       ;
-; \process_5:main_count[2]~6                                                                                      ; 2       ;
+; \process_6:main_count[0]~6                                                                                      ; 2       ;
 ; data_to_write[30]~2                                                                                             ; 2       ;
 ; data_bit_count[5]~1                                                                                             ; 2       ;
 ; data_bit_count[5]~0                                                                                             ; 2       ;
 ; data_to_write~0                                                                                                 ; 2       ;
+; dds_step_to_next_freq_sampled                                                                                   ; 2       ;
 ; fifo_dds_rd_en                                                                                                  ; 2       ;
 ; Equal1~1                                                                                                        ; 2       ;
 ; Equal1~0                                                                                                        ; 2       ;
@@ -1076,6 +1091,16 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; write_ram_address[2]                                                                                            ; 2       ;
 ; write_ram_address[1]                                                                                            ; 2       ;
 ; write_ram_address[0]                                                                                            ; 2       ;
+; Add1~18                                                                                                         ; 2       ;
+; Add1~16                                                                                                         ; 2       ;
+; Add1~14                                                                                                         ; 2       ;
+; Add1~12                                                                                                         ; 2       ;
+; Add1~10                                                                                                         ; 2       ;
+; Add1~8                                                                                                          ; 2       ;
+; Add1~6                                                                                                          ; 2       ;
+; Add1~4                                                                                                          ; 2       ;
+; Add1~2                                                                                                          ; 2       ;
+; Add1~0                                                                                                          ; 2       ;
 ; dac_wr_pin~reg0                                                                                                 ; 2       ;
 ; bus_in_data[15]                                                                                                 ; 1       ;
 ; bus_in_data[14]                                                                                                 ; 1       ;
@@ -1101,8 +1126,18 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dds_step_count[0]~27                                                                                            ; 1       ;
 ; sdio_pin~7                                                                                                      ; 1       ;
 ; sdio_pin~6                                                                                                      ; 1       ;
-; \process_5:main_count[4]~5                                                                                      ; 1       ;
-; \process_5:main_count[4]~4                                                                                      ; 1       ;
+; \process_6:main_count[4]~5                                                                                      ; 1       ;
+; \process_6:main_count[4]~4                                                                                      ; 1       ;
+; count~6                                                                                                         ; 1       ;
+; count~5                                                                                                         ; 1       ;
+; \process_1:count[3]~0                                                                                           ; 1       ;
+; \process_1:count[2]~0                                                                                           ; 1       ;
+; \process_1:count[4]~0                                                                                           ; 1       ;
+; count~4                                                                                                         ; 1       ;
+; \process_1:count[8]~0                                                                                           ; 1       ;
+; \process_1:count[7]~0                                                                                           ; 1       ;
+; \process_1:count[6]~0                                                                                           ; 1       ;
+; \process_1:count[5]~0                                                                                           ; 1       ;
 ; ram_process_count[2]~0                                                                                          ; 1       ;
 ; Mux5~2                                                                                                          ; 1       ;
 ; Mux5~1                                                                                                          ; 1       ;
@@ -1119,6 +1154,12 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; Selector5~0                                                                                                     ; 1       ;
 ; Selector4~0                                                                                                     ; 1       ;
 ; Selector3~0                                                                                                     ; 1       ;
+; dds_step_to_next_freq_sampled~2                                                                                 ; 1       ;
+; LessThan2~2                                                                                                     ; 1       ;
+; LessThan2~1                                                                                                     ; 1       ;
+; LessThan2~0                                                                                                     ; 1       ;
+; dds_step_to_next_freq_sampled~1                                                                                 ; 1       ;
+; dds_step_to_next_freq_sampled~0                                                                                 ; 1       ;
 ; fifo_dds_rd_en~1                                                                                                ; 1       ;
 ; fifo_dds_rd_en~0                                                                                                ; 1       ;
 ; fifo_dds_rd_clk~1                                                                                               ; 1       ;
@@ -1145,7 +1186,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; int_bit_count~2                                                                                                 ; 1       ;
 ; instruction~0                                                                                                   ; 1       ;
 ; int_bit_count[2]~1                                                                                              ; 1       ;
-; Add5~17                                                                                                         ; 1       ;
+; Add6~17                                                                                                         ; 1       ;
 ; data_to_write~20                                                                                                ; 1       ;
 ; data_to_write~19                                                                                                ; 1       ;
 ; data_to_write~18                                                                                                ; 1       ;
@@ -1156,39 +1197,39 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; data_to_write~13                                                                                                ; 1       ;
 ; data_to_write~11                                                                                                ; 1       ;
 ; data_to_write~10                                                                                                ; 1       ;
-; Add5~16                                                                                                         ; 1       ;
+; Add6~16                                                                                                         ; 1       ;
 ; data_to_write~9                                                                                                 ; 1       ;
 ; data_to_write~8                                                                                                 ; 1       ;
-; Add5~15                                                                                                         ; 1       ;
+; Add6~15                                                                                                         ; 1       ;
 ; data_to_write~7                                                                                                 ; 1       ;
 ; data_to_write~6                                                                                                 ; 1       ;
-; Add5~14                                                                                                         ; 1       ;
+; Add6~14                                                                                                         ; 1       ;
 ; data_to_write~5                                                                                                 ; 1       ;
-; Add5~13                                                                                                         ; 1       ;
+; Add6~13                                                                                                         ; 1       ;
 ; data_to_write~3                                                                                                 ; 1       ;
 ; sub_count~0                                                                                                     ; 1       ;
-; \process_5:main_count[1]~3                                                                                      ; 1       ;
-; \process_5:main_count[1]~2                                                                                      ; 1       ;
-; \process_5:main_count[1]~1                                                                                      ; 1       ;
-; \process_5:main_count[1]~0                                                                                      ; 1       ;
-; \process_5:main_count[3]~1                                                                                      ; 1       ;
-; \process_5:main_count[2]~12                                                                                     ; 1       ;
-; \process_5:main_count[2]~11                                                                                     ; 1       ;
-; \process_5:main_count[2]~10                                                                                     ; 1       ;
-; \process_5:main_count[0]~2                                                                                      ; 1       ;
-; \process_5:main_count[3]~0                                                                                      ; 1       ;
-; \process_5:main_count[2]~8                                                                                      ; 1       ;
-; \process_5:main_count[2]~7                                                                                      ; 1       ;
-; \process_5:main_count[2]~5                                                                                      ; 1       ;
-; \process_5:main_count[2]~4                                                                                      ; 1       ;
-; \process_5:main_count[0]~1                                                                                      ; 1       ;
-; \process_5:main_count[0]~0                                                                                      ; 1       ;
-; \process_5:main_count[2]~3                                                                                      ; 1       ;
+; \process_6:main_count[1]~3                                                                                      ; 1       ;
+; \process_6:main_count[1]~2                                                                                      ; 1       ;
+; \process_6:main_count[1]~1                                                                                      ; 1       ;
+; \process_6:main_count[1]~0                                                                                      ; 1       ;
+; \process_6:main_count[3]~1                                                                                      ; 1       ;
+; \process_6:main_count[2]~4                                                                                      ; 1       ;
+; \process_6:main_count[2]~3                                                                                      ; 1       ;
+; \process_6:main_count[2]~2                                                                                      ; 1       ;
+; \process_6:main_count[0]~10                                                                                     ; 1       ;
+; \process_6:main_count[3]~0                                                                                      ; 1       ;
+; \process_6:main_count[0]~8                                                                                      ; 1       ;
+; \process_6:main_count[0]~7                                                                                      ; 1       ;
+; \process_6:main_count[0]~5                                                                                      ; 1       ;
+; \process_6:main_count[0]~4                                                                                      ; 1       ;
+; \process_6:main_count[0]~3                                                                                      ; 1       ;
+; \process_6:main_count[0]~2                                                                                      ; 1       ;
+; \process_6:main_count[0]~1                                                                                      ; 1       ;
 ; data_bit_count[5]~2                                                                                             ; 1       ;
-; Add5~12                                                                                                         ; 1       ;
-; Add3~1                                                                                                          ; 1       ;
+; Add6~12                                                                                                         ; 1       ;
+; Add4~1                                                                                                          ; 1       ;
 ; count_serial~1                                                                                                  ; 1       ;
-; Add3~0                                                                                                          ; 1       ;
+; Add4~0                                                                                                          ; 1       ;
 ; count_serial~0                                                                                                  ; 1       ;
 ; count~3                                                                                                         ; 1       ;
 ; Add0~4                                                                                                          ; 1       ;
@@ -1316,8 +1357,37 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dds_step_count[5]~17                                                                                            ; 1       ;
 ; dds_step_count[4]~16                                                                                            ; 1       ;
 ; dds_step_count[4]~15                                                                                            ; 1       ;
-; Add6~12                                                                                                         ; 1       ;
-; Add6~11                                                                                                         ; 1       ;
+; Add7~12                                                                                                         ; 1       ;
+; Add7~11                                                                                                         ; 1       ;
+; Add7~10                                                                                                         ; 1       ;
+; Add7~9                                                                                                          ; 1       ;
+; Add7~8                                                                                                          ; 1       ;
+; Add7~7                                                                                                          ; 1       ;
+; Add7~6                                                                                                          ; 1       ;
+; Add7~5                                                                                                          ; 1       ;
+; Add7~4                                                                                                          ; 1       ;
+; Add7~3                                                                                                          ; 1       ;
+; Add7~2                                                                                                          ; 1       ;
+; Add7~1                                                                                                          ; 1       ;
+; Add7~0                                                                                                          ; 1       ;
+; Add1~17                                                                                                         ; 1       ;
+; Add1~15                                                                                                         ; 1       ;
+; Add1~13                                                                                                         ; 1       ;
+; Add1~11                                                                                                         ; 1       ;
+; Add1~9                                                                                                          ; 1       ;
+; Add1~7                                                                                                          ; 1       ;
+; Add1~5                                                                                                          ; 1       ;
+; Add1~3                                                                                                          ; 1       ;
+; Add1~1                                                                                                          ; 1       ;
+; Add8~8                                                                                                          ; 1       ;
+; Add8~7                                                                                                          ; 1       ;
+; Add8~6                                                                                                          ; 1       ;
+; Add8~5                                                                                                          ; 1       ;
+; Add8~4                                                                                                          ; 1       ;
+; Add8~3                                                                                                          ; 1       ;
+; Add8~2                                                                                                          ; 1       ;
+; Add8~1                                                                                                          ; 1       ;
+; Add8~0                                                                                                          ; 1       ;
 ; Add6~10                                                                                                         ; 1       ;
 ; Add6~9                                                                                                          ; 1       ;
 ; Add6~8                                                                                                          ; 1       ;
@@ -1329,26 +1399,6 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; Add6~2                                                                                                          ; 1       ;
 ; Add6~1                                                                                                          ; 1       ;
 ; Add6~0                                                                                                          ; 1       ;
-; Add7~8                                                                                                          ; 1       ;
-; Add7~7                                                                                                          ; 1       ;
-; Add7~6                                                                                                          ; 1       ;
-; Add7~5                                                                                                          ; 1       ;
-; Add7~4                                                                                                          ; 1       ;
-; Add7~3                                                                                                          ; 1       ;
-; Add7~2                                                                                                          ; 1       ;
-; Add7~1                                                                                                          ; 1       ;
-; Add7~0                                                                                                          ; 1       ;
-; Add5~10                                                                                                         ; 1       ;
-; Add5~9                                                                                                          ; 1       ;
-; Add5~8                                                                                                          ; 1       ;
-; Add5~7                                                                                                          ; 1       ;
-; Add5~6                                                                                                          ; 1       ;
-; Add5~5                                                                                                          ; 1       ;
-; Add5~4                                                                                                          ; 1       ;
-; Add5~3                                                                                                          ; 1       ;
-; Add5~2                                                                                                          ; 1       ;
-; Add5~1                                                                                                          ; 1       ;
-; Add5~0                                                                                                          ; 1       ;
 ; dds_step_count[3]~14                                                                                            ; 1       ;
 ; dds_step_count[3]~13                                                                                            ; 1       ;
 ; dds_step_count[2]~12                                                                                            ; 1       ;
@@ -1388,13 +1438,13 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------------------------------------------------------------------------------------------------+---------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Fitter RAM Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
-+--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+---------------------------------------------------------------------------------------------------+
-; Name                                                                                                               ; Type ; Mode           ; Clock Mode  ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Port A Input Registers ; Port A Output Registers ; Port B Input Registers ; Port B Output Registers ; Size  ; Implementation Port A Depth ; Implementation Port A Width ; Implementation Port B Depth ; Implementation Port B Width ; Implementation Bits ; M4Ks ; MIF  ; Location                                                                                          ;
-+--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+---------------------------------------------------------------------------------------------------+
-; dds_ram:ram1|altsyncram:altsyncram_component|altsyncram_2ik1:auto_generated|altsyncram_dds1:altsyncram1|ALTSYNCRAM ; AUTO ; True Dual Port ; Dual Clocks ; 1024         ; 32           ; 2048         ; 16           ; yes                    ; yes                     ; yes                    ; no                      ; 32768 ; 1024                        ; 32                          ; 2048                        ; 16                          ; 32768               ; 8    ; None ; M4K_X23_Y6, M4K_X11_Y10, M4K_X23_Y10, M4K_X23_Y9, M4K_X23_Y11, M4K_X23_Y8, M4K_X11_Y7, M4K_X23_Y7 ;
-+--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+---------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Fitter RAM Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
++--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+-------------------------------------------------------------------------------------------------------+
+; Name                                                                                                               ; Type ; Mode           ; Clock Mode  ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Port A Input Registers ; Port A Output Registers ; Port B Input Registers ; Port B Output Registers ; Size  ; Implementation Port A Depth ; Implementation Port A Width ; Implementation Port B Depth ; Implementation Port B Width ; Implementation Bits ; M4Ks ; MIF  ; Location                                                                                              ;
++--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+-------------------------------------------------------------------------------------------------------+
+; dds_ram:ram1|altsyncram:altsyncram_component|altsyncram_2ik1:auto_generated|altsyncram_dds1:altsyncram1|ALTSYNCRAM ; AUTO ; True Dual Port ; Dual Clocks ; 1024         ; 32           ; 2048         ; 16           ; yes                    ; yes                     ; yes                    ; no                      ; 32768 ; 1024                        ; 32                          ; 2048                        ; 16                          ; 32768               ; 8    ; None ; M4K_X11_Y12, M4K_X23_Y12, M4K_X23_Y13, M4K_X11_Y13, M4K_X23_Y9, M4K_X11_Y11, M4K_X23_Y11, M4K_X23_Y10 ;
++--------------------------------------------------------------------------------------------------------------------+------+----------------+-------------+--------------+--------------+--------------+--------------+------------------------+-------------------------+------------------------+-------------------------+-------+-----------------------------+-----------------------------+-----------------------------+-----------------------------+---------------------+------+------+-------------------------------------------------------------------------------------------------------+
 Note: Fitter may spread logical memories into multiple blocks to improve timing. The actual required RAM blocks can be found in the Fitter Resource Usage section.
 
 
@@ -1403,48 +1453,48 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 +----------------------------+-----------------------+
 ; Interconnect Resource Type ; Usage                 ;
 +----------------------------+-----------------------+
-; Block interconnects        ; 479 / 15,666 ( 3 % )  ;
-; C16 interconnects          ; 7 / 812 ( < 1 % )     ;
-; C4 interconnects           ; 297 / 11,424 ( 3 % )  ;
-; Direct links               ; 60 / 15,666 ( < 1 % ) ;
-; Global clocks              ; 4 / 8 ( 50 % )        ;
-; Local interconnects        ; 145 / 4,608 ( 3 % )   ;
-; R24 interconnects          ; 22 / 652 ( 3 % )      ;
-; R4 interconnects           ; 397 / 13,328 ( 3 % )  ;
+; Block interconnects        ; 527 / 15,666 ( 3 % )  ;
+; C16 interconnects          ; 6 / 812 ( < 1 % )     ;
+; C4 interconnects           ; 298 / 11,424 ( 3 % )  ;
+; Direct links               ; 95 / 15,666 ( < 1 % ) ;
+; Global clocks              ; 5 / 8 ( 63 % )        ;
+; Local interconnects        ; 157 / 4,608 ( 3 % )   ;
+; R24 interconnects          ; 21 / 652 ( 3 % )      ;
+; R4 interconnects           ; 447 / 13,328 ( 3 % )  ;
 +----------------------------+-----------------------+
 
 
 +----------------------------------------------------------------------------+
 ; LAB Logic Elements                                                         ;
 +---------------------------------------------+------------------------------+
-; Number of Logic Elements  (Average = 12.35) ; Number of LABs  (Total = 20) ;
+; Number of Logic Elements  (Average = 12.22) ; Number of LABs  (Total = 23) ;
 +---------------------------------------------+------------------------------+
-; 1                                           ; 2                            ;
-; 2                                           ; 0                            ;
+; 1                                           ; 1                            ;
+; 2                                           ; 1                            ;
 ; 3                                           ; 1                            ;
 ; 4                                           ; 0                            ;
 ; 5                                           ; 0                            ;
 ; 6                                           ; 1                            ;
-; 7                                           ; 1                            ;
+; 7                                           ; 3                            ;
 ; 8                                           ; 0                            ;
-; 9                                           ; 1                            ;
+; 9                                           ; 0                            ;
 ; 10                                          ; 0                            ;
 ; 11                                          ; 0                            ;
-; 12                                          ; 1                            ;
+; 12                                          ; 2                            ;
 ; 13                                          ; 0                            ;
 ; 14                                          ; 0                            ;
 ; 15                                          ; 0                            ;
-; 16                                          ; 13                           ;
+; 16                                          ; 14                           ;
 +---------------------------------------------+------------------------------+
 
 
 +-------------------------------------------------------------------+
 ; LAB-wide Signals                                                  ;
 +------------------------------------+------------------------------+
-; LAB-wide Signals  (Average = 1.70) ; Number of LABs  (Total = 20) ;
+; LAB-wide Signals  (Average = 1.48) ; Number of LABs  (Total = 23) ;
 +------------------------------------+------------------------------+
-; 1 Async. clear                     ; 7                            ;
-; 1 Clock                            ; 17                           ;
+; 1 Async. clear                     ; 5                            ;
+; 1 Clock                            ; 19                           ;
 ; 1 Clock enable                     ; 8                            ;
 ; 2 Clock enables                    ; 1                            ;
 ; 2 Clocks                           ; 1                            ;
@@ -1454,39 +1504,39 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 +-----------------------------------------------------------------------------+
 ; LAB Signals Sourced                                                         ;
 +----------------------------------------------+------------------------------+
-; Number of Signals Sourced  (Average = 18.65) ; Number of LABs  (Total = 20) ;
+; Number of Signals Sourced  (Average = 18.04) ; Number of LABs  (Total = 23) ;
 +----------------------------------------------+------------------------------+
 ; 0                                            ; 0                            ;
-; 1                                            ; 2                            ;
+; 1                                            ; 1                            ;
 ; 2                                            ; 0                            ;
-; 3                                            ; 0                            ;
-; 4                                            ; 0                            ;
+; 3                                            ; 1                            ;
+; 4                                            ; 1                            ;
 ; 5                                            ; 0                            ;
-; 6                                            ; 1                            ;
-; 7                                            ; 0                            ;
+; 6                                            ; 0                            ;
+; 7                                            ; 1                            ;
 ; 8                                            ; 0                            ;
 ; 9                                            ; 0                            ;
 ; 10                                           ; 0                            ;
 ; 11                                           ; 0                            ;
-; 12                                           ; 1                            ;
-; 13                                           ; 1                            ;
+; 12                                           ; 3                            ;
+; 13                                           ; 0                            ;
 ; 14                                           ; 0                            ;
 ; 15                                           ; 0                            ;
 ; 16                                           ; 0                            ;
-; 17                                           ; 0                            ;
-; 18                                           ; 3                            ;
-; 19                                           ; 2                            ;
+; 17                                           ; 1                            ;
+; 18                                           ; 2                            ;
+; 19                                           ; 3                            ;
 ; 20                                           ; 1                            ;
 ; 21                                           ; 0                            ;
-; 22                                           ; 1                            ;
-; 23                                           ; 2                            ;
-; 24                                           ; 1                            ;
-; 25                                           ; 3                            ;
+; 22                                           ; 0                            ;
+; 23                                           ; 1                            ;
+; 24                                           ; 2                            ;
+; 25                                           ; 2                            ;
 ; 26                                           ; 0                            ;
-; 27                                           ; 0                            ;
-; 28                                           ; 0                            ;
+; 27                                           ; 2                            ;
+; 28                                           ; 1                            ;
 ; 29                                           ; 0                            ;
-; 30                                           ; 1                            ;
+; 30                                           ; 0                            ;
 ; 31                                           ; 1                            ;
 +----------------------------------------------+------------------------------+
 
@@ -1494,52 +1544,52 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 +--------------------------------------------------------------------------------+
 ; LAB Signals Sourced Out                                                        ;
 +-------------------------------------------------+------------------------------+
-; Number of Signals Sourced Out  (Average = 7.70) ; Number of LABs  (Total = 20) ;
+; Number of Signals Sourced Out  (Average = 8.35) ; Number of LABs  (Total = 23) ;
 +-------------------------------------------------+------------------------------+
 ; 0                                               ; 0                            ;
-; 1                                               ; 3                            ;
-; 2                                               ; 0                            ;
-; 3                                               ; 2                            ;
+; 1                                               ; 2                            ;
+; 2                                               ; 2                            ;
+; 3                                               ; 1                            ;
 ; 4                                               ; 0                            ;
-; 5                                               ; 1                            ;
-; 6                                               ; 1                            ;
-; 7                                               ; 3                            ;
+; 5                                               ; 0                            ;
+; 6                                               ; 2                            ;
+; 7                                               ; 4                            ;
 ; 8                                               ; 1                            ;
-; 9                                               ; 3                            ;
-; 10                                              ; 0                            ;
-; 11                                              ; 2                            ;
+; 9                                               ; 1                            ;
+; 10                                              ; 1                            ;
+; 11                                              ; 4                            ;
 ; 12                                              ; 1                            ;
 ; 13                                              ; 0                            ;
 ; 14                                              ; 2                            ;
 ; 15                                              ; 0                            ;
-; 16                                              ; 1                            ;
+; 16                                              ; 2                            ;
 +-------------------------------------------------+------------------------------+
 
 
 +-----------------------------------------------------------------------------+
 ; LAB Distinct Inputs                                                         ;
 +----------------------------------------------+------------------------------+
-; Number of Distinct Inputs  (Average = 11.70) ; Number of LABs  (Total = 20) ;
+; Number of Distinct Inputs  (Average = 12.00) ; Number of LABs  (Total = 23) ;
 +----------------------------------------------+------------------------------+
 ; 0                                            ; 0                            ;
 ; 1                                            ; 1                            ;
 ; 2                                            ; 1                            ;
-; 3                                            ; 2                            ;
+; 3                                            ; 1                            ;
 ; 4                                            ; 1                            ;
-; 5                                            ; 1                            ;
-; 6                                            ; 1                            ;
-; 7                                            ; 1                            ;
+; 5                                            ; 2                            ;
+; 6                                            ; 0                            ;
+; 7                                            ; 2                            ;
 ; 8                                            ; 0                            ;
 ; 9                                            ; 1                            ;
 ; 10                                           ; 0                            ;
 ; 11                                           ; 2                            ;
-; 12                                           ; 0                            ;
-; 13                                           ; 1                            ;
-; 14                                           ; 1                            ;
+; 12                                           ; 2                            ;
+; 13                                           ; 0                            ;
+; 14                                           ; 2                            ;
 ; 15                                           ; 1                            ;
-; 16                                           ; 0                            ;
-; 17                                           ; 0                            ;
-; 18                                           ; 2                            ;
+; 16                                           ; 1                            ;
+; 17                                           ; 1                            ;
+; 18                                           ; 1                            ;
 ; 19                                           ; 0                            ;
 ; 20                                           ; 1                            ;
 ; 21                                           ; 1                            ;
@@ -1548,8 +1598,7 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 ; 24                                           ; 0                            ;
 ; 25                                           ; 1                            ;
 ; 26                                           ; 0                            ;
-; 27                                           ; 0                            ;
-; 28                                           ; 1                            ;
+; 27                                           ; 1                            ;
 +----------------------------------------------+------------------------------+
 
 
@@ -1588,7 +1637,7 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Fitter
     Info: Version 11.1 Build 259 01/25/2012 Service Pack 2 SJ Web Edition
-    Info: Processing started: Fri Jun 15 14:58:07 2012
+    Info: Processing started: Thu Aug 02 13:13:46 2012
 Info: Command: quartus_fit --read_settings_files=off --write_settings_files=off DDS -c DDS
 Warning (20028): Parallel compilation is not licensed and has been disabled
 Info (119006): Selected device EP2C5T144C6 for design "DDS"
@@ -1622,6 +1671,11 @@ Info (176353): Automatically promoted node dds_ram_wrclock
     Info (176355): Automatically promoted destinations to use location or clock signal Global Clock
     Info (176356): Following destination nodes may be non-global or may not use global or regional clocks
         Info (176357): Destination node dds_ram_wrclock~1
+Info (176353): Automatically promoted node dds_step_to_next_freq_sampled 
+    Info (176355): Automatically promoted destinations to use location or clock signal Global Clock
+    Info (176356): Following destination nodes may be non-global or may not use global or regional clocks
+        Info (176357): Destination node dds_step_to_next_freq_sampled~0
+        Info (176357): Destination node dds_step_to_next_freq_sampled~2
 Info (176233): Starting register packing
 Extra Info (176273): Performing register packing on registers with non-logic cell location assignments
 Extra Info (176274): Completed register packing on registers with non-logic cell location assignments
@@ -1638,7 +1692,7 @@ Info (170191): Fitter placement operations beginning
 Info (170137): Fitter placement was successful
 Info (170192): Fitter placement operations ending: elapsed time is 00:00:00
 Info (170193): Fitter routing operations beginning
-Info (170195): Router estimated average interconnect usage is 2% of the available device resources
+Info (170195): Router estimated average interconnect usage is 3% of the available device resources
     Info (170196): Router estimated peak interconnect usage is 3% of the available device resources in the region that extends from location X14_Y0 to location X28_Y14
 Info (170194): Fitter routing operations ending: elapsed time is 00:00:01
 Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were skipped to reduce compilation time.
@@ -1691,8 +1745,8 @@ Info (176045): Design uses memory blocks. Violating setup or hold times of memor
 Warning (169174): The Reserve All Unused Pins setting has not been specified, and will default to 'As output driving ground'.
 Info: Quartus II 32-bit Fitter was successful. 0 errors, 5 warnings
     Info: Peak virtual memory: 338 megabytes
-    Info: Processing ended: Fri Jun 15 14:58:15 2012
-    Info: Elapsed time: 00:00:08
+    Info: Processing ended: Thu Aug 02 13:13:50 2012
+    Info: Elapsed time: 00:00:04
     Info: Total CPU time (on all processors): 00:00:04
 
 

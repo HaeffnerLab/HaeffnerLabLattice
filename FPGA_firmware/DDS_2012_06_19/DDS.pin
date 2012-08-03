@@ -192,17 +192,17 @@ GND*                         : 125       :        :                   :         
 bus_in_ram_reset             : 126       : input  : 3.3-V LVTTL       :         : 2         : Y              
 VCCIO2                       : 127       : power  :                   : 3.3V    : 2         :                
 GND                          : 128       : gnd    :                   :         :           :                
-bus_in_step_to_next_value    : 129       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 129       :        :                   :         : 2         :                
 GND                          : 130       : gnd    :                   :         :           :                
 VCCINT                       : 131       : power  :                   : 1.2V    :           :                
 bus_in_reset_dds_chip        : 132       : input  : 3.3-V LVTTL       :         : 2         : Y              
 GND*                         : 133       :        :                   :         : 2         :                
 bus_in_fifo_rd_clk           : 134       : output : 3.3-V LVTTL       :         : 2         : Y              
 GND*                         : 135       :        :                   :         : 2         :                
-GND*                         : 136       :        :                   :         : 2         :                
-bus_in_fifo_empty            : 137       : input  : 3.3-V LVTTL       :         : 2         : Y              
+bus_in_step_to_next_value    : 136       : input  : 3.3-V LVTTL       :         : 2         : Y              
+GND*                         : 137       :        :                   :         : 2         :                
 VCCIO2                       : 138       : power  :                   : 3.3V    : 2         :                
-GND*                         : 139       :        :                   :         : 2         :                
+bus_in_fifo_empty            : 139       : input  : 3.3-V LVTTL       :         : 2         : Y              
 GND                          : 140       : gnd    :                   :         :           :                
 GND*                         : 141       :        :                   :         : 2         :                
 bus_in_address[0]            : 142       : input  : 3.3-V LVTTL       :         : 2         : Y              
