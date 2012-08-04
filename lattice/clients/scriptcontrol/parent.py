@@ -4,11 +4,14 @@ from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 from script import Script
 from script2 import Script2
+from script3 import Script3
+from script4 import Script4
 
 class Parent(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
+        self.blockScript1Flag = False
         self.connect()
         
     @inlineCallbacks
@@ -26,9 +29,21 @@ class Parent(QtGui.QWidget):
         singleButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         singleButton.clicked.connect(self.runScript)
 
+        blockButton = QtGui.QPushButton("Block Script 1", self)
+        blockButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        blockButton.clicked.connect(self.blockScript1)
+
         singleButton2 = QtGui.QPushButton("Run Script2", self)
         singleButton2.setGeometry(QtCore.QRect(0, 0, 30, 30))
         singleButton2.clicked.connect(self.runScript2)
+
+        singleButton3 = QtGui.QPushButton("Run Script3", self)
+        singleButton3.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        singleButton3.clicked.connect(self.runScript3)
+
+        singleButton4 = QtGui.QPushButton("Run Script4", self)
+        singleButton4.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        singleButton4.clicked.connect(self.runScript4)
         
         backgroundButton = QtGui.QPushButton("Start Background Process", self)
         backgroundButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
@@ -40,8 +55,11 @@ class Parent(QtGui.QWidget):
         
         self.grid.addWidget(singleButton, 0, 0, QtCore.Qt.AlignCenter)
         self.grid.addWidget(singleButton2, 1, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(blockButton, 1, 1, QtCore.Qt.AlignCenter)
         self.grid.addWidget(self.spinBox, 0, 1, QtCore.Qt.AlignCenter)
         self.grid.addWidget(backgroundButton, 0, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(singleButton3, 2, 0, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(singleButton4, 2, 1, QtCore.Qt.AlignCenter)
         self.setLayout(self.grid)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
@@ -49,7 +67,10 @@ class Parent(QtGui.QWidget):
     
     def runScript(self):
         script = Script()
-        script.start()        
+        script.start()
+#        except Exception as inst:
+#            if (inst.args[0] == 'Stopped'):
+#                print 'Successfully stopped thread.'        
 
     def runScript2(self):
         self.cxn.semaphore.set_flag(True)      
@@ -57,6 +78,27 @@ class Parent(QtGui.QWidget):
         script2 = Script2()
         script2.start()        
     
+    def runScript3(self):
+        script3 = Script3()
+        script3.start()
+#        except Exception as inst:
+#            if (inst.args[0] == 'Stopped'):
+#                print 'Successfully stopped thread.'        
+
+    def runScript4(self):
+        self.cxn.semaphore.set_flag2(True)      
+        # here you should subscribe to a signal that gets fired when semaphore starts blocking!
+        script4 = Script4()
+        script4.start() 
+    
+    def blockScript1(self):
+        if (self.blockScript1Flag == False):
+            self.cxn.semaphore.set_flag(True)
+            self.blockScript1Flag = True
+        else:
+            self.cxn.semaphore.set_flag(False)
+            self.blockScript1Flag = False
+            
     @inlineCallbacks
     def startBackgroundProcess(self, evt):
         server = self.cxn.external_server

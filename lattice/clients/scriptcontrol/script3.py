@@ -3,13 +3,13 @@ import time
 import sys
 
 
-class Script(threading.Thread):
+class Script3(threading.Thread):
     def __init__(self):
-        print 'Initializing Script 1'
+        print 'Initializing Script 3'
         threading.Thread.__init__(self)
     
     def pause(self):
-        result = self.cxn.semaphore.block()
+        result = self.cxn.semaphore.block2()
         print result
         if (result == True):
             return True
@@ -26,8 +26,8 @@ class Script(threading.Thread):
            if (result == True):
                self.cleanUp()
                break
-           value = self.cxn.semaphore.get_value()
-           print 'Script 1: Drift Value: ', value
+           value = self.cxn.semaphore.get_value2()
+           print 'Script 3: Drift Value: ', value
 
     def cleanUp(self):
         print 'all cleaned up boss'

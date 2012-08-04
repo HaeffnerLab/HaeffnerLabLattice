@@ -2,22 +2,22 @@ import threading
 import time
 
 
-class Script2(threading.Thread):
+class Script4(threading.Thread):
     def __init__(self):
-        print 'Initializing Script 2'
+        print 'Initializing Script 4'
         threading.Thread.__init__(self)
         
     def run(self):
         import labrad
         cxn = labrad.connect()
-        print 'Script 2: doing laborious calculation!'
+        print 'Script 4: doing laborious calculation!'
         time.sleep(3)
-        cxn.semaphore.set_value()
-        cxn.semaphore.set_flag(False)
-        value = cxn.semaphore.get_value()
+        cxn.semaphore.set_value2()
+        cxn.semaphore.set_flag2(False)
+        value = cxn.semaphore.get_value2()
         if (value == 10):
             print 'we drifted way too much, killing main script!'
-            cxn.semaphore.set_kill_switch(True)
+            cxn.semaphore.set_kill_switch2(True)
 
         
         
