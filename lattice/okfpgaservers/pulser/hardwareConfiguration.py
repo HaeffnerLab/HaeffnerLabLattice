@@ -76,10 +76,10 @@ class hardwareConfiguration(object):
                                         boardfreqrange = (60.0,160.0),
                                         off_parameters = (110.0, -63.0)
                                         ),
-               'axial':ddsConfiguration(4, (190.0,250.0), (-63.0,-3.0), 220.0, -33.0,
-                                        boardfreqrange = (170.0,270.0),
-                                        off_parameters = (220.0, -63.0)
-                                         ),
+               #'axial':ddsConfiguration(4, (190.0,250.0), (-63.0,-3.0), 220.0, -33.0,
+               #                         boardfreqrange = (170.0,270.0),
+               #                         off_parameters = (220.0, -63.0)
+               #                          ),
                '854DP':ddsConfiguration(3, (70.0,90.0), (-63.0,-3.0), 80.0, -33.0, 
                                         boardfreqrange = (30.0,130.0),
                                         off_parameters = (80.0, -63.0)                                        

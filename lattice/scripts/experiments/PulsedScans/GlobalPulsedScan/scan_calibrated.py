@@ -47,10 +47,10 @@ class scan():
         self.setupLogic()
         
     def setupLogic(self):
-        self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
+        #self.pulser.switch_auto('axial',  True) #axial needs to be inverted, so that high TTL corresponds to light ON
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_auto('729DP', True)
+        #self.pulser.switch_auto('729DP', True)
         self.pulser.switch_manual('crystallization',  False)
     
     def programPulser(self):
@@ -104,7 +104,8 @@ class scan():
 #        self.dv.add_parameter('plotLive',True)
         
     def finalize(self):
-        for name in ['axial', '110DP']:
+        #for name in ['axial', '110DP']:
+        for name in ['110DP']:
             self.pulser.switch_manual(name)
         #save information to file
         measureList = ['trapdrive','endcaps','compensation','dcoffsetonrf','cavity397','cavity866','multiplexer397','multiplexer866','axialDP', 'pulser']
