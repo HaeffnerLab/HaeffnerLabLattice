@@ -17,12 +17,6 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-#TODO
-#remove comment on yielding
-#reset DDS option setting
-#signal for dds
-#vhdl control for remote dds
-
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
 from twisted.internet.defer import returnValue, DeferredLock, Deferred, inlineCallbacks
@@ -34,10 +28,7 @@ from sequence import Sequence
 from dds import DDS
 from api import api
 
-devicePollingPeriod = 10
-MIN_SEQUENCE = 0
-MAX_SEQUENCE = 85 #seconds
-collectionTimeRange = (0.010, 5.0)
+
 
 class Pulser(LabradServer, DDS):
     name = 'Pulser'
@@ -55,6 +46,9 @@ class Pulser(LabradServer, DDS):
         self.ddsDict = hardwareConfiguration.ddsDict
         self.timeResolvedResolution = hardwareConfiguration.timeResolvedResolution
         self.remoteChannels = hardwareConfiguration.remoteChannels
+        self.devicePollingPeriod = hardwareConfiguration.devicePollingPeriod
+        self.collectionTimeRange = hardwareConfiguration.collectionTimeRange
+        self.sequenceTimeRange = hardwareConfiguration.sequenceTimeRange
         self.inCommunication = DeferredLock()
         self.initializeBoard()
         yield self.initializeRemote()
@@ -65,8 +59,8 @@ class Pulser(LabradServer, DDS):
     def initializeBoard(self):
         connected = self.api.connectOKBoard()
         while not connected:
-            print 'not connected, waiting for 10 seconds to try again'
-            self.wait(10.0)
+            print 'not connected, waiting for {} seconds to try again'.format(self.devicePollingPeriod)
+            self.wait(self.devicePollingPeriod)
             connected = self.api.connectOKBoard()
             
     def initializeSettings(self):
@@ -149,7 +143,7 @@ class Pulser(LabradServer, DDS):
         hardwareAddr = self.channelDict.get(channel).channelnumber
         sequence = c.get('sequence')
         #simple error checking
-        if not (MIN_SEQUENCE <= start,start + duration <= MAX_SEQUENCE): raise Exception ("Time boundaries are out of range")
+        if not (self.sequenceTimeRange[0] <= start,start + duration <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
         if not duration >= self.timeResolution: raise Exception ("Incorrect duration")
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addPulse(hardwareAddr, start, duration)
@@ -171,7 +165,7 @@ class Pulser(LabradServer, DDS):
         Allows to optionally extend the total length of the sequence beyond the last TTL pulse.
         """
         sequence = c.get('sequence')
-        if not (MIN_SEQUENCE <= timeLength <= MAX_SEQUENCE): raise Exception ("Time boundaries are out of range")
+        if not (self.sequenceTimeRange[0] <= timeLength <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.extendSequenceLength(timeLength)
         
@@ -276,10 +270,11 @@ class Pulser(LabradServer, DDS):
         return answer
     
     @setting(15, 'Wait Sequence Done', timeout = 'v', returns = 'b')
-    def waitSequenceDone(self, c, timeout = MAX_SEQUENCE):
+    def waitSequenceDone(self, c, timeout = None):
         """
         Returns true if the sequence has completed within a timeout period
         """
+        if timeout is None: timeout = self.sequenceTimeRange[1]
         requestCalls = int(timeout / 0.050 ) #number of request calls
         for i in range(requestCalls):
             yield self.inCommunication.acquire()
@@ -325,7 +320,7 @@ class Pulser(LabradServer, DDS):
         Sets how long to collect photonslist in either 'Normal' or 'Differential' mode of operation
         """
         new_time = float(new_time)
-        if not collectionTimeRange[0]<=new_time<=collectionTimeRange[1]: raise Exception('incorrect collection time')
+        if not self.collectionTimeRange[0]<=new_time<=self.collectionTimeRange[1]: raise Exception('incorrect collection time')
         if mode not in self.collectionTime.keys(): raise("Incorrect mode")
         if mode == 'Normal':
             prev_time = self.collectionTime[mode]
@@ -342,7 +337,7 @@ class Pulser(LabradServer, DDS):
     
     @setting(23, 'Get Collection Time', returns = '(vv)')
     def getCollectTime(self, c):
-        return collectionTimeRange
+        return self.collectionTimeRange
     
     @setting(24, 'Reset FIFO Normal', returns = '')
     def resetFIFONormal(self,c):

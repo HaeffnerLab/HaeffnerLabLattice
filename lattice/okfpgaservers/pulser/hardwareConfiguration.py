@@ -38,6 +38,9 @@ class hardwareConfiguration(object):
     timeResolution = 40.0e-9 #seconds
     timeResolvedResolution = timeResolution/4.0
     maxSwitches = 1022
+    devicePollingPeriod = 10
+    collectionTimeRange = (0.010, 5.0) #range for normal pmt counting
+    sequenceTimeRange = (0.0, 85.0) #range for duration of pulse sequence    
     isProgrammed = False
     sequenceType = None #none for not programmed, can be 'one' or 'infinite'
     collectionMode = 'Normal' #default PMT mode
@@ -89,7 +92,7 @@ class hardwareConfiguration(object):
                                         off_parameters = (110.0, -63.0)
                                        ),
                #remote channels
-               '729DP':ddsConfiguration(0, (190.0,250.0),  (-63.0,-3.0), 220.0, -33.0, remote = 'pulser_729')
+               '729DP':ddsConfiguration(0, (150.0,250.0),  (-63.0,-3.0), 220.0, -33.0, remote = 'pulser_729')
                }
     
     remoteChannels = {

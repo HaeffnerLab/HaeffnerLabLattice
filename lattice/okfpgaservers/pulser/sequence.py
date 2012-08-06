@@ -57,6 +57,7 @@ class Sequence():
             if self.switchingTimes[timeStep][chan]: raise Exception ('Double switch at time {} for channel {}'.format(timeStep, chan))
             self.switchingTimes[timeStep][chan] = value
         else:
+            print self.switches
             if self.switches == self.MAX_SWITCHES: raise Exception("Exceeded maximum number of switches {}".format(self.switches))
             self.switchingTimes[timeStep] = numpy.zeros(self.channelTotal, dtype = numpy.int8)
             self.switches += 1

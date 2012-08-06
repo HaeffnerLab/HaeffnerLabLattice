@@ -90,6 +90,7 @@ class DDS(LabradServer):
                 num = self._valToInt(channel, freq, ampl)
             else:
                 num = self._valToInt_remote(channel, freq, ampl, phase)
+            if not self.sequenceTimeRange[0] <= start <= self.sequenceTimeRange[1]: raise Exception ("DDS start time out of acceptable input range")
             sequence.addDDS(name, start, num)
     
     @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')

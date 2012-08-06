@@ -3,7 +3,7 @@ from sequence import Sequence
 class scan729(Sequence):
         
     requiredVars = {
-                    'frequencies_729':((list,float), 190.0, 250.0, 220.0),
+                    'frequencies_729':((list,float), 150.0, 250.0, 220.0),
                     'amplitudes_729':((list,float), -63.0, -3.0,   -3.0),
                     'doppler_cooling':(float, 10e-9, 100*10**-3, 1.0*10**-3),
                     'doppler_cooling_freq':(float, 90.0, 130.0, 110.0),
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     params = {
                 'frequencies_729':freqs,
                 'amplitudes_729': ampls,
-                'doppler_cooling':5*10**-3,
+                'doppler_cooling':100*10**-3,
                 'heating_time':100e-9,
                 'rabi_time':5*10**-3,
                 'readout_time':50*10**-3,
