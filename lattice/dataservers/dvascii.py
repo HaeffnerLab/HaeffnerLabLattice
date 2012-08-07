@@ -421,6 +421,7 @@ class Dataset:
     def __init__( self, session, name, dtype = None, title = None, num = None, create = False ):
         self.parent = session.parent
         self.name = name
+        self.session = session ####MK
         file_base = os.path.join( session.dir, dsEncode( name ) )
         self.datafile = file_base + '.csv'
         self.infofile = file_base + '.ini'
@@ -625,7 +626,7 @@ class Dataset:
 
         # notify all listening contexts
         self.parent.onNewParameter( None, self.param_listeners )
-        self.parent.onNewParameterDataset((int(self.name[0:5]), self.parent.path, name), self.listeners)
+        self.parent.onNewParameterDataset((int(self.name[0:5]), self.name[8:len(self.name)], self.session.path, name), self.parent.root.listeners)
         self.param_listeners = set()
         return name
     
@@ -914,7 +915,7 @@ class DataVault( LabradServer ):
 
     # dataset signals
     onDataAvailable = Signal( 543619, 'signal: data available', '' )
-    onNewParameterDataset = Signal( 543620, 'signal: new parameter', '(i, s, s)' ) ####MK
+    onNewParameterDataset = Signal( 543620, 'signal: new parameter dataset', '(i, s, ?, s)' ) ####MK
     onNewParameter = Signal( 543625, 'signal: new parameter', '' )
     onCommentsAvailable = Signal( 543621, 'signal: comments available', '' )
 
