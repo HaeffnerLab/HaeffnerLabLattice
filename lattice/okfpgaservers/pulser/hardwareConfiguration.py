@@ -32,8 +32,6 @@ class remoteChannel(object):
         self.server = server
         self.reset = args.get('reset', 'reset_dds')
         self.program = args.get('program', 'program_dds')
-        self.control = args.get('control', 'control')
-        self.user = args.get('user', 'user')
         
 class hardwareConfiguration(object):
     channelTotal = 32
@@ -49,7 +47,6 @@ class hardwareConfiguration(object):
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     okDeviceID = 'Pulser'
     okDeviceFile = 'photon.bit'
-    remoteUserName = 'lattice'
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {

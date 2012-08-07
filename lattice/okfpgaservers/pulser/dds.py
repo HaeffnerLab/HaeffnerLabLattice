@@ -2,7 +2,6 @@ from labrad.server import LabradServer, setting
 from twisted.internet.defer import returnValue, inlineCallbacks
 from twisted.internet.threads import deferToThread
 import array
-from labrad.types import Error
 
 class DDS(LabradServer):
     
@@ -191,12 +190,6 @@ class DDS(LabradServer):
             yield cxn.servers[server][program]([(channel.channelnumber, buf)])
         except (KeyError,AttributeError):
             print 'Not programing remote channel {}'.format(channel.remote)
-        except Error, e:
-            print 'in dds remote:'
-            print e.code
-            if e.code == 1:
-                print 'Not In Control of Remote Channel'
-            
     
     def _addDDSInitial(self, seq):
         '''

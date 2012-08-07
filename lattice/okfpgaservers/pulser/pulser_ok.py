@@ -27,7 +27,6 @@ from hardwareConfiguration import hardwareConfiguration
 from sequence import Sequence
 from dds import DDS
 from api import api
-from labrad.types import Error
 
 class Pulser(LabradServer, DDS):
     name = 'Pulser'
@@ -48,18 +47,11 @@ class Pulser(LabradServer, DDS):
         self.devicePollingPeriod = hardwareConfiguration.devicePollingPeriod
         self.collectionTimeRange = hardwareConfiguration.collectionTimeRange
         self.sequenceTimeRange = hardwareConfiguration.sequenceTimeRange
-        self.remoteUserName = hardwareConfiguration.remoteUserName
         self.inCommunication = DeferredLock()
         self.initializeBoard()
         yield self.initializeRemote()
         self.initializeSettings()
-        try:
-            yield self.initializeDDS()
-        except Error as e:
-            if e.code == 1:
-                print 'Not in Control of the remote channel'
-            elif e.code == 2:
-                print 'User Name not Set'
+        yield self.initializeDDS()
         self.listeners = set()
 
     def initializeBoard(self):
@@ -86,8 +78,7 @@ class Pulser(LabradServer, DDS):
             for name,rc in self.remoteChannels.iteritems():
                 try:
                     self.remoteConnections[name] = yield connectAsync(rc.ip)
-                    yield self.remoteConnections[name][rc.server][rc.user](self.remoteUserName)
-                    print 'Connected to {} as user {}'.format(name, self.remoteUserName)
+                    print 'Connected to {}'.format(name)
                 except:
                     print 'Not Able to connect to {}'.format(name)
                     self.remoteConnections[name] = None
