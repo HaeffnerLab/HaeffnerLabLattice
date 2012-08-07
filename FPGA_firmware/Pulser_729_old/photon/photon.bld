@@ -6,44 +6,45 @@ Command Line: C:\Xilinx\14.1\ISE_DS\ISE\bin\nt64\unwrapped\ngdbuild.exe
 xc6slx45-fgg484-2 photon.ngc photon.ngd
 
 Reading NGO file
-"C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729/photon/photon.ngc" ...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/dds_fifo.ngc"..
-.
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okWireIn.ngc"..
-.
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okTriggerIn.ngc
-"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okWireOut.ngc".
-..
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeIn.ngc"
+"C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729_old/photon/photon.ngc"
 ...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeOut.ngc
-"...
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/dds_fifo.ng
+c"...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulse_fifo.ngc"
-...
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okWireIn.ng
+c"...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/fifo_photon.ngc
-"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/normal_pmt_fifo
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okTriggerIn
 .ngc"...
-Loading design module "ipcore_dir/readout_count_fifo.ngc"...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulser_ram.ngc"
-...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okCoreHarness.n
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okWireOut.n
 gc"...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/TFIFO64x8a_64x8
-b.ngc"...
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okBTPipeIn.
+ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okBTPipeOut
+.ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/pulse_fifo.
+ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/fifo_photon
+.ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/normal_pmt_
+fifo.ngc"...
+Loading design module "ipcore_dir/readout_count_fifo.ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/pulser_ram.
+ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/okCoreHarne
+ss.ngc"...
+Loading design module
+"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729_old\photon/TFIFO64x8a_
+64x8b.ngc"...
 Gathering constraint information from source properties...
 Done.
 
@@ -61,6 +62,11 @@ INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
    was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
    and period specifications were generated at the DCM_SP output(s): 
    CLK2X: <TIMESPEC TS_pll_clk2x = PERIOD "pll_clk2x" TS_Clk1 / 2 HIGH 50%>
+
+INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
+   was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
+   and period specifications were generated at the DCM_SP output(s): 
+   CLKFX: <TIMESPEC TS_pll_clkfx = PERIOD "pll_clkfx" TS_Clk1 / 0.2 HIGH 50%>
 
 INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
    was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
@@ -94,7 +100,7 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 190492 kilobytes
+Total memory usage is 191004 kilobytes
 
 Writing NGD file "photon.ngd" ...
 Total REAL time to NGDBUILD completion:  11 sec

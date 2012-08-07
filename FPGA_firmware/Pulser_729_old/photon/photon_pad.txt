@@ -1,7 +1,7 @@
 Release 14.1 - par P.15xf (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-Thu Jul 26 11:57:31 2012
+Tue Aug 07 16:01:38 2012
 
 
 INFO: The IO information is provided in three file formats as part of the Place and Route (PAR) process.  These formats are:
@@ -117,7 +117,7 @@ Pinout by Pin Number:
 |C7        |                            |IOBM     |IO_L5P_0                     |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |C8        |dds_logic_ram_reset         |IOB      |IO_L7N_0                     |OUTPUT   |LVCMOS33   |0             |12        |SLOW     |           |         |         |LOCATED   |NO         |NONE            |
 |C9        |                            |IOBM     |IO_L8P_0                     |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
-|C10       |dds_logic_fifo_rd_clk       |IOB      |IO_L33N_0                    |INPUT    |LVCMOS33   |0             |          |         |           |NONE     |         |LOCATED   |NO         |NONE            |
+|C10       |dds_logic_fifo_rd_clk       |IOB      |IO_L33N_0                    |INPUT    |LVCMOS33   |0             |          |         |           |NONE     |         |LOCATED   |YES        |NONE            |
 |C11       |                            |IOBM     |IO_L35P_GCLK17_0             |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |C12       |                            |IOBS     |IO_L36N_GCLK14_0             |UNUSED   |           |0             |          |         |           |         |         |          |           |                |
 |C13       |                            |IOBM     |IO_L38P_0                    |UNUSED   |           |0             |          |         |           |         |         |          |           |                |

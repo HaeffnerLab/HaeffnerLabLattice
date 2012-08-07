@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2012-07-26T11:50:41</DateModified>
+  <DateModified>2012-08-07T15:55:25</DateModified>
   <ModuleName>photon</ModuleName>
   <SummaryTimeStamp>2012-02-23T23:26:25</SummaryTimeStamp>
-  <SavedFilePath>C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729/photon/iseconfig/photon.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729/photon\</ImplementationReportsDirectory>
+  <SavedFilePath>C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729_old/photon/iseconfig/photon.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>C:/Users/lattice/Desktop/LabRAD/FPGA_firmware/Pulser_729_old/photon\</ImplementationReportsDirectory>
   <DateInitialized>2012-02-15T16:27:09</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>

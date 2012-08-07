@@ -13,6 +13,10 @@
 <arg fmt="%s" index="7">CLK2X</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_pll_clk2x = PERIOD &quot;pll_clk2x&quot; TS_Clk1 / 2 HIGH 50%&gt;</arg>
 </msg>
 
+<msg type="info" file="ConstraintSystem" num="178" delta="new" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">clk1</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_Clk1</arg>&apos;, was traced into <arg fmt="%s" index="4">DCM_SP</arg> instance <arg fmt="%s" index="5">pll/dcm_sp_inst</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">DCM_SP</arg> output(s): 
+<arg fmt="%s" index="7">CLKFX</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_pll_clkfx = PERIOD &quot;pll_clkfx&quot; TS_Clk1 / 0.2 HIGH 50%&gt;</arg>
+</msg>
+
 <msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">clk1</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_Clk1</arg>&apos;, was traced into <arg fmt="%s" index="4">DCM_SP</arg> instance <arg fmt="%s" index="5">pll/dcm_sp_inst</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">DCM_SP</arg> output(s): 
 <arg fmt="%s" index="7">CLK0</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_pll_clk0 = PERIOD &quot;pll_clk0&quot; TS_Clk1 HIGH 50%&gt;</arg>
 </msg>
