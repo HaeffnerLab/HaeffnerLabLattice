@@ -17,26 +17,7 @@ Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okTriggerIn.ngc
 "...
 Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okWireOut.ngc".
-..
-Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeIn.ngc"
-...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeOut.ngc
-"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulse_fifo.ngc"
-...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/fifo_photon.ngc
-"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/normal_pmt_fifo
-.ngc"...
-Loading design module "ipcore_dir/readout_count_fifo.ngc"...
-Loading design module
-"C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulser_ram.ngc"
 ...
 Loading design module
 "C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okCoreHarness.n
@@ -57,21 +38,8 @@ INFO:ConstraintSystem:178 - TNM 'okHostClk', used in period specification
    CLK0: <TIMESPEC TS_okHI_dcm_clk0 = PERIOD "okHI_dcm_clk0" TS_okHostClk HIGH
    50%>
 
-INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
-   was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
-   and period specifications were generated at the DCM_SP output(s): 
-   CLK2X: <TIMESPEC TS_pll_clk2x = PERIOD "pll_clk2x" TS_Clk1 / 2 HIGH 50%>
-
-INFO:ConstraintSystem:178 - TNM 'clk1', used in period specification 'TS_Clk1',
-   was traced into DCM_SP instance pll/dcm_sp_inst. The following new TNM groups
-   and period specifications were generated at the DCM_SP output(s): 
-   CLK0: <TIMESPEC TS_pll_clk0 = PERIOD "pll_clk0" TS_Clk1 HIGH 50%>
-
 Done...
 
-INFO:NgdBuild:1222 - Setting CLKIN_PERIOD attribute associated with DCM instance
-   pll/dcm_sp_inst to 10.000000 ns based on the period specification (<TIMESPEC
-   "TS_Clk1" = PERIOD "clk1" 10 ns HIGH 50%;> [xem6010.ucf(64)]).
 INFO:NgdBuild:1222 - Setting CLKIN_PERIOD attribute associated with DCM instance
    okHI/hi_dcm to 20.830000 ns based on the period specification (<TIMESPEC
    "TS_okHostClk" = PERIOD "okHostClk" 20.83 ns HIGH 50%;> [xem6010.ucf(49)]).
@@ -94,10 +62,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 190492 kilobytes
+Total memory usage is 167324 kilobytes
 
 Writing NGD file "photon.ngd" ...
-Total REAL time to NGDBUILD completion:  11 sec
-Total CPU time to NGDBUILD completion:   10 sec
+Total REAL time to NGDBUILD completion:  6 sec
+Total CPU time to NGDBUILD completion:   6 sec
 
 Writing NGDBUILD log file "photon.bld"...

@@ -24,5 +24,6 @@ for i in range(50):
     data = [i, y1[i], y2[i], y3[i]]
     print data
     time.sleep(.01)
-cxn.data_vault.add_parameter('Fit', ['[]', 'Line', '[-0.0029498298822661514, 32.067818432564962]'])
+#cxn.data_vault.add_parameter('Fit', ['[]', 'Line', '[-0.0029498298822661514, 32.067818432564962]'])
 #cxn.data_vault.add_parameter('Fit', ['[1, 2]', 'Parabola', '[1, 1, 1]'])
+cxn.data_vault.add_parameter('Garbage', True)
