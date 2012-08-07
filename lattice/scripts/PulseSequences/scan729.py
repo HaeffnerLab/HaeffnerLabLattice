@@ -61,7 +61,6 @@ class scan729(Sequence):
             readoutOn.append(    (readout_on + i  * cT, p.readout_freq, p.readout_ampl  ))
             repump866On.append(  (readout_on + i  * cT, p.repump_freq_866, p.repump_866_ampl)  )
             readout_count.append( ('ReadoutCount', readout_on + i  * cT, p.readout_time)) 
-        print readout_count
         pulser.add_ttl_pulses(readout_count)
         for channel, pulses in [
                                 ('110DP', coolingOn), ('110DP', coolingOff), ('110DP', readoutOn), ('110DP', readoutOff),

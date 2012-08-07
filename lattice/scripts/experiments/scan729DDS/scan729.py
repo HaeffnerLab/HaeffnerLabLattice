@@ -55,13 +55,11 @@ class scan729():
     def programPulser(self):
         seq = sequence(self.pulser)
         self.pulser.new_sequence()
-        seq.setVariables(**params)
+        seq.setVariables(**self.seqP.toDict())
         seq.defineSequence()
         self.pulser.program_sequence()
     
     def run(self):
-        sP = self.seqP
-        xP = self.expP
         self.initialize()
         self.sequence()
         self.finalize()
@@ -71,19 +69,13 @@ class scan729():
         sP = self.seqP
         xP = self.expP
         for i in range(xP.iterations):
-            print i+1
+            print 'iteration {}'.format(i+1)
             self.pulser.start_number(xP.startNumber)
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
             readouts = self.pulser.get_readout_counts().asarray
-            readouts = numpy.split(readouts,xP.startNumber)
-            # can actually just add up all the readouts and add to dv once
-#            for i in range(len(readouts)):
-#                self.dv.add(numpy.vstack((sP.frequencies_729,readouts[i])).transpose())
-#                self.readouts.append(readouts[i])
-            self.dv.add(numpy.vstack((numpy.array((sP.frequencies)*xP.startNumber)), readouts).transpose())       
-            self.totalReadouts.append(readouts[i])
-        # histogram goes here?    
+            self.dv.add(numpy.vstack(((numpy.array((sP.frequencies_729)*xP.startNumber)), readouts)).transpose())       
+            self.totalReadouts.append(readouts)   
     
     def finalize(self):
         #go back to inital logic
@@ -99,52 +91,32 @@ class scan729():
         self.analyze()
     
     def analyze(self):
-        t1 = time.clock()
         totalAnalyzedReadouts = numpy.zeros(len(self.seqP.frequencies_729))
         threshold = self.anaP.threshold
         totalReadouts = self.totalReadouts
-       
         for readouts in totalReadouts:
-            readouts = numpy.reshape((numpy.array(readouts < threshold, dtype=numpy.int)), (len(self.expP.startNumber), len(self.seqP.frequencies_729)))
-            readouts = numpy.sum(readouts, 1)
+            readouts = numpy.reshape((numpy.array(readouts < threshold, dtype=numpy.int)), (self.expP.startNumber, len(self.seqP.frequencies_729)))
+            readouts = numpy.sum(readouts, axis = 0)
             totalAnalyzedReadouts += readouts
-            
-        totalAnalyzedReadouts /= (self.expP.iterations * self.expP.startNumber)     
-        t2 = time.clock()
-        print 'Analysis took: ', (t2-t1), 'seconds.'
+        #normalize
+        totalAnalyzedReadouts /= (self.expP.iterations * self.expP.startNumber)
+        #save readouts     
         self.dv.new('Spectrum Analyzed',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
         self.dv.add(numpy.vstack((self.seqP.frequencies_729,totalAnalyzedReadouts)).transpose())
         self.dv.add_parameter('plotLive', True)
-
-
         # binning
         totalReadouts = numpy.ravel(numpy.array(totalReadouts))
         hist, bins = numpy.histogram(totalReadouts, 50)
         self.dv.new('Histogram',[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
         self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
-        self.dv.add_parameter('plotLive', True)
-
-
-        
-#        for i in range(len(self.readouts)):
-#            for j in range(len(self.seqP.frequencies_729)):
-#                if (readouts[i][j] >= threshold):
-#                    totalAnalyzedReadouts[j] += 1
-#                else:
-#                    totalAnalyzedReadouts[j] += 0
-#        ones = numpy.ones(len(totalAnalyzedReadouts))            
-#        totalAnalyzedReadouts = numpy.divide(totalAnalyzedReadouts, float(self.expP.iterations * self.expP.startNumber))
-#        totalAnalyzedReadouts = numpy.subtract(ones, totalAnalyzedReadouts)
-
+        self.dv.add_parameter('Histogram', self.anaP.threshold)
         
     def __del__(self):
         self.cxn.disconnect()
     
 if __name__ == '__main__':
     freqs = numpy.arange(190.00, 250.00, 1.0)
-    #ampls = numpy.ones_like(freqs) * -10.0
     ampls = numpy.ones_like(freqs) * -15.0
-    print ampls.size
     freqs = freqs.tolist()
     ampls = ampls.tolist()  
     params = {
@@ -164,7 +136,7 @@ if __name__ == '__main__':
             }
     exprtParams = {
         'startNumber': 10,
-        'iterations': 10
+        'iterations': 1,
         }
     
     analysis = {

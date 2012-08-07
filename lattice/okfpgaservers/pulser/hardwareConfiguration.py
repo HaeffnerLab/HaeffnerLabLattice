@@ -59,7 +59,6 @@ class hardwareConfiguration(object):
                    '110DP':channelConfiguration(3, False, True, True, False),
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
-                   
                    ### 7 is channel 1 on the optical to electric translator
                    'pump':channelConfiguration(7, False, True, True, False),
                    #------------INTERNAL CHANNELS----------------------------------------#

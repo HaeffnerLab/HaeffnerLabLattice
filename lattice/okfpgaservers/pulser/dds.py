@@ -192,6 +192,8 @@ class DDS(LabradServer):
         except (KeyError,AttributeError):
             print 'Not programing remote channel {}'.format(channel.remote)
         except Error, e:
+            print 'in dds remote:'
+            print e.code
             if e.code == 1:
                 print 'Not In Control of Remote Channel'
             
