@@ -1,0 +1,15 @@
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon\photon.ngc 1343323520
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/dds_fifo.ngc 1343081550
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okWireIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okTriggerIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okWireOut.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeIn.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okBTPipeOut.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulse_fifo.ngc 1343081553
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/fifo_photon.ngc 1343081550
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/normal_pmt_fifo.ngc 1343081552
+ipcore_dir/readout_count_fifo.ngc 1343169949
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/pulser_ram.ngc 1343081553
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/okCoreHarness.ngc 1343081552
+C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_729\photon/TFIFO64x8a_64x8b.ngc 1343081550
+OK

@@ -1,0 +1,9 @@
+run
+-ifmt MIXED
+-top clk_pll_100_in_200_out_exdes
+-p xc6slx45-fgg484-2
+-ifn xst.prj
+-ofn clk_pll_100_in_200_out_exdes
+-keep_hierarchy soft 
+-equivalent_register_removal no 
+-max_fanout 65535
