@@ -173,11 +173,11 @@ class CONNECTIONS(QtGui.QGraphicsObject):
 #            i.datavaultwidget.addDatasetItem(itemLabel, directory)
  
     @inlineCallbacks
-    def createHistogram(self, dataset, directory, datasetName, context = None):
-        if (context == None):
-            context = yield self.cxn.context()
-            yield self.server.cd(directory, context=context)
-            yield self.server.open(dataset, context=context)
+    def createHistogram(self, dataset, directory, datasetName):
+        
+        context = yield self.cxn.context()
+        yield self.server.cd(directory, context=context)
+        yield self.server.open(dataset, context=context)
             
         threshold = yield self.server.get_parameter('Histogram', context=context)
         Data = yield self.server.get(context=context)
