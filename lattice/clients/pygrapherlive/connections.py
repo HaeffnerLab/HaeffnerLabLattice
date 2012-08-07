@@ -152,7 +152,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
             try:
                 self.datasetDict[dataset, directory].fit()
             except:
-                print 'Was plotLive set for this datset?'
+                print 'Was plotLive set for this dataset?'
 
     def updateDataset(self, x, y):
         dataset = int(y[0][0:5]) # retrieve dataset number

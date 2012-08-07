@@ -28,15 +28,19 @@ class Semaphore(LabradServer):
             self.paramDict[experiment] = {}
             self.paramDict[experiment]['Block'] = False
             self.paramDict[experiment]['Status'] = 'Stopped'
-            self.paramDict[experiment]['Continue'] = True # If set to False, then the script should know to clean itself up.
+            self.paramDict[experiment]['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
     
-    #####
-    
-    
-    # SET INITIAL VALUES HERE!!! Labrad registry?
-    
-    
-    ####
+    @inlineCallbacks
+    def _getRegistryParameters(self):
+        # global
+        yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
+        parameterList = yield self.client.registry.dir()
+        parameters = parameterList[1]
+        for parameter in parameters:
+            value = yield self.client.registry.get(parameter)
+            self.paramDict['Global'][parameter] = value
+        yield self.client.registry.cd(['','Servers', 'Semaphore'])
+        
     
     def _setGlobalParameters(self, parameters, values):
         for parameter, value in parameters, values:
@@ -106,6 +110,18 @@ class Semaphore(LabradServer):
         result = self._blockExperiment()
         return result
     
+    # spinboxes only made out of data, ok let's get values from reg first
+#    @inlineCallbacks
+#    def stopServer(self):
+#        '''save the latest parameters into registry'''
+#        try:
+#            yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
+#            
+#            for name,channel in self.d.iteritems():
+#                yield self.client.registry.set(name, channel.voltage)
+#        except AttributeError:
+#            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
+#            pass
 
 
 
