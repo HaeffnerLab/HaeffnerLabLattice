@@ -27,11 +27,13 @@ class ddsConfiguration(object):
         self.remote = args.get('remote', False)        
 
 class remoteChannel(object):
-    def __init__(self, ip, server, reset, program):
+    def __init__(self, ip, server, **args):
         self.ip = ip
         self.server = server
-        self.reset = reset
-        self.program = program
+        self.reset = args.get('reset', 'reset_dds')
+        self.program = args.get('program', 'program_dds')
+        self.control = args.get('control', 'control')
+        self.user = args.get('user', 'user')
         
 class hardwareConfiguration(object):
     channelTotal = 32
@@ -47,6 +49,7 @@ class hardwareConfiguration(object):
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     okDeviceID = 'Pulser'
     okDeviceFile = 'photon.bit'
+    remoteUserName = 'lattice'
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
@@ -96,6 +99,6 @@ class hardwareConfiguration(object):
                }
     
     remoteChannels = {
-                        'pulser_729': remoteChannel('192.168.169.49', 'pulser_729','reset_dds','program_dds')
+                        'pulser_729': remoteChannel('192.168.169.49', 'pulser_729')
                       }
     
