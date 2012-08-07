@@ -5,6 +5,7 @@ from twisted.internet.threads import deferToThread
 from twisted.internet.error import ConnectionRefusedError
 from grapherwindow import FirstWindow, GrapherWindow
 from dataset import Dataset
+from histogram import HistWindow
 import sys
 import time
 import gc
@@ -64,6 +65,7 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         self.dwDict = {} # dictionary relating Dataset and ApplicationWindow
         self.datasetDict = {} # dictionary relating a Dataset object with the dataset and directory 
 #        self.winList = []
+        self.histList = []
         self.windowCounter = 0
         self.winDict = {}
         self.attemptLabRadConnect()               
@@ -118,10 +120,12 @@ class CONNECTIONS(QtGui.QGraphicsObject):
     # set up dataset listener    
     @inlineCallbacks
     def setupListeners(self):               
-        yield self.server.signal__new_dataset_dir(99999)#, context = context)
-        yield self.server.addListener(listener = self.updateDataset, source = None, ID = 99999)#, context = context)    
+        yield self.server.signal__new_dataset_dir(88888)#, context = context)
+        yield self.server.addListener(listener = self.updateDataset, source = None, ID = 88888)#, context = context)    
         yield self.server.signal__new_directory(77777)#, context = context)
         yield self.server.addListener(listener = self.addDirItem, source = None, ID = 77777)#, context = context)
+        yield self.server.signal__new_parameter_dataset(99999)#, context = context)
+        yield self.server.addListener(listener = self.updateParameter, source = None, ID = 99999)#, context = context)    
 
     def addDirItem(self,x,y):
         #directory = tuple(eval(str(y))) 
@@ -132,18 +136,34 @@ class CONNECTIONS(QtGui.QGraphicsObject):
 #            i.datavaultwidget.populateList()
            
     # new dataset signal
-    def updateDataset(self,x,y):
+    def updateParameter(self,x,y):
+        dataset = y[0]
+        datasetName = y[1]
+#        print datasetName
+        directory = y[2]
+        itemLabel = (str(dataset) + ' - ' + str(datasetName))
+        # process parameter 
+        if (y[3] == 'plotLive'):
+            manuallyLoaded = False # ensure that this dataset was not loaded manually
+            self.newDataset(dataset, directory, manuallyLoaded, datasetName)
+        elif (y[3] == 'Histogram'):
+            self.createHistogram(dataset, directory, datasetName)
+        elif (y[3] == 'Fit'):
+            try:
+                self.datasetDict[dataset, directory].fit()
+            except:
+                print 'Was plotLive set for this datset?'
+
+    def updateDataset(self, x, y):
         dataset = int(y[0][0:5]) # retrieve dataset number
         datasetName = str(y[0][8:len(y[0])])
-        print datasetName
+#        print datasetName
         directory = y[1] # retrieve directory
-        itemLabel = y[0]
+        itemLabel = y[0] # 'dataset - datasetName' 
         self.addDatasetItem(itemLabel, directory)
-        print directory
-        print dataset
-        print x, y
-        manuallyLoaded = False # ensure that this dataset was not loaded manually
-        self.newDataset(dataset, directory, manuallyLoaded, datasetName)
+#        print directory
+#        print dataset
+#        print x, y
  
     def addDatasetItem(self, itemLabel, directory):
         self.introWindow.datavaultwidget.addDatasetItem(itemLabel, directory)
@@ -152,6 +172,21 @@ class CONNECTIONS(QtGui.QGraphicsObject):
 #        for i in self.winList:
 #            i.datavaultwidget.addDatasetItem(itemLabel, directory)
  
+    @inlineCallbacks
+    def createHistogram(self, dataset, directory, datasetName):
+        
+        context = yield self.cxn.context()
+        yield self.server.cd(directory, context=context)
+        yield self.server.open(dataset, context=context)
+            
+        threshold = yield self.server.get_parameter('Histogram', context=context)
+        Data = yield self.server.get(context=context)
+        data = Data.asarray
+        
+        histWindow = HistWindow(self, data, threshold, datasetName)
+        self.histList.append(histWindow)
+        histWindow.show()        
+    
     # Creates a new Dataset object and checks if it has the 'plotLive' parameter
     @inlineCallbacks
     def newDataset(self, dataset, directory, manuallyLoaded, datasetName):
@@ -159,28 +194,34 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         datasetObject = Dataset(self, self.cxn, context, dataset, directory, datasetName, self.reactor)
         self.datasetDict[dataset, directory] = datasetObject
         yield datasetObject.openDataset(context)
-        yield datasetObject.setupParameterListener(context)
-        yield datasetObject.checkForPlotParameter()
+#        yield datasetObject.setupParameterListener(context)
+#        yield datasetObject.checkForPlotParameter()
         datasetLabels = yield datasetObject.getYLabels()
         windowName = []
         if (len(self.winDict.values()) < MAXWINDOWS):
-            # if the dataset was loaded manually, it does not require the 'plotLive' parameter 
+            # if the dataset was loaded manually, it does not require the 'Window' parameter 
             if (manuallyLoaded == True):
-                self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
-            else:        
-                hasPlotParameter = yield datasetObject.listenForPlotParameter()
-                if (hasPlotParameter == True):
-                    windowParameter = datasetObject.getWindowParameter()
-                    # if windows are specified (via parameter), send that instead
-                    if (windowParameter != None):
-                        self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowParameter)#, context)
-                    else:
-                        self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
-                else:
-                    # This data is not for plotting. Remove it.
-                    # There should be a cleaner way of doing this
+                try:
+                    histValue = yield self.server.get_parameter('Histogram', context = context)
+                    self.createHistogram(dataset, directory, datasetName)
                     datasetObject.endTimer()
                     del datasetObject
+                except:
+                    self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
+            else:        
+ #               hasPlotParameter = yield datasetObject.listenForPlotParameter()
+#                if (hasPlotParameter == True):
+                 windowParameter = yield datasetObject.getWindowParameter()
+                # if windows are specified (via parameter), send that instead
+                 if (windowParameter != None):
+                     self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowParameter)#, context)
+                 else:
+                     self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
+#            else:
+#                    # This data is not for plotting. Remove it.
+#                    # There should be a cleaner way of doing this
+#                    datasetObject.endTimer()
+#                    del datasetObject
         else:
             print 'Too many windows open!'
             datasetObject.endTimer()

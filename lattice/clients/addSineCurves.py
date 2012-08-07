@@ -18,6 +18,7 @@ cxn = labrad.connect()
 cxn.server = cxn.data_vault
 cxn.data_vault.cd('Sine Curves')
 cxn.data_vault.new('Sine Curves', [('x', 'num')], [('y1','866 ON','num'),('y2','866 OFF','num'),('y3','Differential Signal','num')])
+cxn.data_vault.add_parameter('Window', ['sine curve!'])
 cxn.data_vault.add_parameter('plotLive', True)
 for i in range(50):
     cxn.data_vault.add([i, y1[i], y2[i], y3[i]])
@@ -26,4 +27,4 @@ for i in range(50):
     time.sleep(.01)
 #cxn.data_vault.add_parameter('Fit', ['[]', 'Line', '[-0.0029498298822661514, 32.067818432564962]'])
 #cxn.data_vault.add_parameter('Fit', ['[1, 2]', 'Parabola', '[1, 1, 1]'])
-cxn.data_vault.add_parameter('Garbage', True)
+#cxn.data_vault.add_parameter('Garbage', True)
