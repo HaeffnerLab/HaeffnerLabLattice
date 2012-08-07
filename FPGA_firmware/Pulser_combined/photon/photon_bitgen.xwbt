@@ -1,8 +1,0 @@
-INTSTYLE=ise
-INFILE=C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_combined\photon\photon.ncd
-OUTFILE=C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_combined\photon\photon.bit
-FAMILY=Spartan6
-PART=xc6slx45-2fgg484
-WORKINGDIR=C:\Users\lattice\Desktop\LabRAD\FPGA_firmware\Pulser_combined\photon
-LICENSE=WebPack
-USER_INFO=206763184_0_0_154
