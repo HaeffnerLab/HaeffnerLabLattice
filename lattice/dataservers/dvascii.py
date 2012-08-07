@@ -625,6 +625,7 @@ class Dataset:
 
         # notify all listening contexts
         self.parent.onNewParameter( None, self.param_listeners )
+        self.parent.onNewParameterDataset((int(self.name[0:5]), self.parent.path, name), self.listeners)
         self.param_listeners = set()
         return name
     
@@ -913,7 +914,8 @@ class DataVault( LabradServer ):
 
     # dataset signals
     onDataAvailable = Signal( 543619, 'signal: data available', '' )
-    onNewParameter = Signal( 543620, 'signal: new parameter', '' )
+    onNewParameterDataset = Signal( 543620, 'signal: new parameter', '(i, s, s)' ) ####MK
+    onNewParameter = Signal( 543625, 'signal: new parameter', '' )
     onCommentsAvailable = Signal( 543621, 'signal: comments available', '' )
 
     @setting( 6, tagFilters = ['s', '*s'], includeTags = 'b',
