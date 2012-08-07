@@ -1,4 +1,4 @@
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 import time
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.threads import deferToThread
@@ -23,15 +23,17 @@ class Semaphore(LabradServer):
         self.listeners.remove(c.ID)   
     
     def _initializeExperiments(self, experiments):
+        self.experiments = experiments
         self.paramDict['Global'] = {}
         for experiment in experiments:
             self.paramDict[experiment] = {}
             self.paramDict[experiment]['Block'] = False
             self.paramDict[experiment]['Status'] = 'Stopped'
             self.paramDict[experiment]['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
+        self._getRegistryParameters(experiments)
     
     @inlineCallbacks
-    def _getRegistryParameters(self):
+    def _getRegistryParameters(self, experiments):
         # global
         yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
         parameterList = yield self.client.registry.dir()
@@ -39,8 +41,15 @@ class Semaphore(LabradServer):
         for parameter in parameters:
             value = yield self.client.registry.get(parameter)
             self.paramDict['Global'][parameter] = value
-        yield self.client.registry.cd(['','Servers', 'Semaphore'])
-        
+        # experiments
+        for experiment in experiments:        
+            yield self.client.registry.cd(['','Servers', 'Semaphore'])
+            yield self.client.registry.cd(experiment)
+            parameterList = yield self.client.registry.dir()
+            parameters = parameterList[1]
+            for parameter in parameters:
+                value = yield self.client.registry.get(parameter)
+                self.paramDict[experiment][parameter] = value
     
     def _setGlobalParameters(self, parameters, values):
         for parameter, value in parameters, values:
@@ -53,7 +62,7 @@ class Semaphore(LabradServer):
         return values
 
     def _setExperimentParameters(self, experiment, parameters, values):
-        for parameter, value in parameters, values:
+        for parameter, value in zip(parameters, values):
             self.paramDict[experiment][parameter] = value
 
     def _getExperimentParameters(self, experiment, parameters):
@@ -61,6 +70,12 @@ class Semaphore(LabradServer):
         for parameter in parameters:
             values.append(self.paramDict[experiment][parameter])
         return values        
+    
+    def _getGlobalParameterNames(self):
+        return self.paramDict['Global'].keys()
+    
+    def _getExperimentParameterNames(self, experiment):
+        return self.paramDict[experiment].keys()
     
     @inlineCallbacks            
     def _blockExperiment(self, experiment):
@@ -80,7 +95,6 @@ class Semaphore(LabradServer):
     def initializeExperiments(self, c, experiments):
         """Reserve Parameter Space For Each Experiment"""
         self._initializeExperiments(experiments)
-        self._getRegistryValues(experiments)
 
     @setting(1, "Set Global Parameters", parameters = '*s', values = '*v', returns = '')
     def setGlobalParameters(self, c, parameters, values):
@@ -103,6 +117,18 @@ class Semaphore(LabradServer):
         """Get Experiment Parameter Values"""
         values = self._getExperimentParameters(experiment, parameters)
         return values
+
+    @setting(5, "Get Global Parameter Names", returns = '*s')
+    def getGlobalParameterNames(self, c):
+        """Get Global Parameter Names"""
+        parameterNames = self._getGlobalParameterNames(experiment)
+        return parameterNames
+    
+    @setting(6, "Get Experiment Parameter Names", experiment = 's', returns = '*s')
+    def getExperimentParameterNames(self, c, experiment):
+        """Get Experiment Parameter Names"""
+        parameterNames = self._getExperimentParameterNames(experiment)
+        return parameterNames
  
     @setting(10, "Block Experiment", experiment = 's', returns="b")
     def blockExperiment(self, c, experiment):
@@ -111,21 +137,30 @@ class Semaphore(LabradServer):
         return result
     
     # spinboxes only made out of data, ok let's get values from reg first
-#    @inlineCallbacks
-#    def stopServer(self):
-#        '''save the latest parameters into registry'''
-#        try:
-#            yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
-#            
-#            for name,channel in self.d.iteritems():
-#                yield self.client.registry.set(name, channel.voltage)
-#        except AttributeError:
-#            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
-#            pass
-
-
-
-
+    @inlineCallbacks
+    def stopServer(self):
+        '''save the latest parameters into registry'''
+        # global
+        yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
+        parameters = self.paramDict['Global'].keys()
+        for parameter in parameters:
+             yield self.client.registry.set(parameter, self.paramDict['Global'][parameter])
+            
+        # experiments
+        for experiment in self.experiments:        
+            yield self.client.registry.cd(['','Servers', 'Semaphore'])
+            yield self.client.registry.cd(experiment)
+            parameters = self.paramDict[experiment].keys()
+            for parameter in parameters:
+                 yield self.client.registry.set(parameter, self.paramDict[experiment][parameter])
+    
+    @setting(12, "Save", returns="")
+    def save(self, c):
+        """Save"""
+        self.stopServer()
+        print 'It is now safe to turn off your computer.'
+    
+    
 if __name__ == "__main__":
     from labrad import util
     util.runServer(Semaphore())

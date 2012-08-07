@@ -2,61 +2,81 @@ import time
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
+from experimentlist import ExperimentListWidget
 
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
+        self.experiments = ['Test']
         self.connect()
         
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync()
-        self.setupWidget()
+        self.server = self.cxn.semaphore
+        self.setupMainWidget()
         
-    def setupWidget(self):
-        self.setGeometry(300, 300, 250, 150)
-        self.grid = QtGui.QGridLayout()
-        self.grid.setSpacing(5)
+    def setupMainWidget(self):
+        self.mainLayout = QtGui.QHBoxLayout()
+        # mainGrid is in mainLayout that way its size can be controlled.
+        self.mainGrid = QtGui.QGridLayout()
+        self.mainGrid.setSpacing(5)
         
-        singleButton = QtGui.QPushButton("Run Script", self)
-        singleButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        singleButton.clicked.connect(self.runScript)
+        self.mainLayout.addLayout(self.mainGrid)
+        
+        self.experimentListWidget = ExperimentListWidget(self)
+        self.experimentListWidget.show()
+        self.mainGrid.addWidget(self.experimentListWidget, 0, 0, QtCore.Qt.AlignCenter)
+        
+        
+        self.setLayout(self.mainLayout)
+        self.show()
 
-        blockButton = QtGui.QPushButton("Block Script 1", self)
-        blockButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        blockButton.clicked.connect(self.blockScript1)
-
-        singleButton2 = QtGui.QPushButton("Run Script2", self)
-        singleButton2.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        singleButton2.clicked.connect(self.runScript2)
-
-        singleButton3 = QtGui.QPushButton("Run Script3", self)
-        singleButton3.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        singleButton3.clicked.connect(self.runScript3)
-
-        singleButton4 = QtGui.QPushButton("Run Script4", self)
-        singleButton4.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        singleButton4.clicked.connect(self.runScript4)
+    @inlineCallbacks    
+    def setupExperimentGrid(self, experiment):
+        self.experimentGrid = QtGui.QGridLayout()
+        self.experimentGrid.setSpacing(5)
         
-        backgroundButton = QtGui.QPushButton("Start Background Process", self)
-        backgroundButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        backgroundButton.clicked.connect(self.startBackgroundProcess)
+        self.doubleSpinBoxDict = {}
         
-        self.spinBox = QtGui.QSpinBox()
-        self.spinBox.setRange(0, 100000)
-        self.spinBox.setSingleStep(1)
         
-        self.grid.addWidget(singleButton, 0, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(singleButton2, 1, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(blockButton, 1, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.spinBox, 0, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(backgroundButton, 0, 2, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(singleButton3, 2, 0, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(singleButton4, 2, 1, QtCore.Qt.AlignCenter)
-        self.setLayout(self.grid)
+        expParamNames = yield self.server.get_experiment_parameter_names(experiment)
+        expParamValues = yield self.server.get_experiment_parameters(experiment, expParamNames)
+        
+        gridRow = 0
+        gridCol = 0
+        for parameter, value in zip(expParamNames, expParamValues):
+            if ((parameter == 'Block') or (parameter == 'Continue') or (parameter == 'Status')):
+                pass
+            else:
+                # create a label and spin box, add it to the grid
+                label = QtGui.QLabel(parameter)
+                doubleSpinBox = QtGui.QDoubleSpinBox()
+                doubleSpinBox.setRange(-100000, 100000)
+                doubleSpinBox.setSingleStep(.1)
+                
+                self.doubleSpinBoxDict[parameter] = doubleSpinBox
+                
+                self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
+                self.experimentGrid.addWidget(doubleSpinBox, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
+                
+                gridCol += 2
+                if (gridCol == 6):
+                    gridCol = 0
+                    gridRow += 1
+                    
+        self.experimentGrid.show()     
+                
+#            if (i % 2 == 0): #even
+#                grid.addWidget(devPanel, (i / 2) , 0)
+#            else:
+#                grid.addWidget(devPanel, ((i - 1) / 2) , 1)
+        
+        
+
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         self.show()
