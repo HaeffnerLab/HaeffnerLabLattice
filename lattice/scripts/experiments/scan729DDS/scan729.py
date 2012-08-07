@@ -33,7 +33,7 @@ class scan729():
         self.seqP = Bunch(**seqParams)
         self.expP = Bunch(**exprtParams)
         self.anaP = Bunch(**analysisParams)
-        self.readouts = []
+        self.totalReadouts = []
         
     def initialize(self):
         #directory name and initial variables
@@ -77,9 +77,13 @@ class scan729():
             self.pulser.stop_sequence()
             readouts = self.pulser.get_readout_counts().asarray
             readouts = numpy.split(readouts,xP.startNumber)
-            for i in range(len(readouts)):
-                self.dv.add(numpy.vstack((sP.frequencies_729,readouts[i])).transpose())
-                self.readouts.append(readouts[i])
+            # can actually just add up all the readouts and add to dv once
+#            for i in range(len(readouts)):
+#                self.dv.add(numpy.vstack((sP.frequencies_729,readouts[i])).transpose())
+#                self.readouts.append(readouts[i])
+            self.dv.add(numpy.vstack((numpy.array((sP.frequencies)*xP.startNumber)), readouts).transpose())       
+            self.totalReadouts.append(readouts[i])
+        # histogram goes here?    
     
     def finalize(self):
         #go back to inital logic
@@ -96,24 +100,41 @@ class scan729():
     
     def analyze(self):
         t1 = time.clock()
-        threshold = self.anaP.threshold
-        readouts = self.readouts
-        print readouts
         totalAnalyzedReadouts = numpy.zeros(len(self.seqP.frequencies_729))
-        for i in range(len(self.readouts)):
-            for j in range(len(self.seqP.frequencies_729)):
-                if (readouts[i][j] >= threshold):
-                    totalAnalyzedReadouts[j] += 1
-                else:
-                    totalAnalyzedReadouts[j] += 0
-        ones = numpy.ones(len(totalAnalyzedReadouts))            
-        totalAnalyzedReadouts = numpy.divide(totalAnalyzedReadouts, float(self.expP.iterations * self.expP.startNumber))
-        totalAnalyzedReadouts = numpy.subtract(ones, totalAnalyzedReadouts)
+        threshold = self.anaP.threshold
+        totalReadouts = self.totalReadouts
+       
+        for readouts in totalReadouts:
+            readouts = numpy.reshape((numpy.array(readouts < threshold, dtype=numpy.int)), (len(self.expP.startNumber), len(self.seqP.frequencies_729)))
+            readouts = numpy.sum(readouts, 1)
+            totalAnalyzedReadouts += readouts
+            
+        totalAnalyzedReadouts /= (self.expP.iterations * self.expP.startNumber)     
         t2 = time.clock()
         print 'Analysis took: ', (t2-t1), 'seconds.'
         self.dv.new('Spectrum Analyzed',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
         self.dv.add(numpy.vstack((self.seqP.frequencies_729,totalAnalyzedReadouts)).transpose())
         self.dv.add_parameter('plotLive', True)
+
+
+        # binning
+        totalReadouts = numpy.ravel(numpy.array(totalReadouts))
+        hist, bins = numpy.histogram(totalReadouts, 50)
+        self.dv.new('Histogram',[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
+        self.dv.add(numpy.vstack((bins,hist)).transpose())
+        self.dv.add_parameter('plotLive', True)
+
+
+        
+#        for i in range(len(self.readouts)):
+#            for j in range(len(self.seqP.frequencies_729)):
+#                if (readouts[i][j] >= threshold):
+#                    totalAnalyzedReadouts[j] += 1
+#                else:
+#                    totalAnalyzedReadouts[j] += 0
+#        ones = numpy.ones(len(totalAnalyzedReadouts))            
+#        totalAnalyzedReadouts = numpy.divide(totalAnalyzedReadouts, float(self.expP.iterations * self.expP.startNumber))
+#        totalAnalyzedReadouts = numpy.subtract(ones, totalAnalyzedReadouts)
 
         
     def __del__(self):

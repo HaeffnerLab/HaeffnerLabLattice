@@ -2,16 +2,12 @@ import time
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
-from script import Script
-from script2 import Script2
-from script3 import Script3
-from script4 import Script4
 
-class Parent(QtGui.QWidget):
+
+class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-        self.blockScript1Flag = False
         self.connect()
         
     @inlineCallbacks
@@ -64,59 +60,7 @@ class Parent(QtGui.QWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
         self.show()
-    
-    @inlineCallbacks
-    def runScript(self, evt):
-#        with Script() as script:
-        script = Script()
-        yield deferToThread(script.run)
-#        except Exception as inst:
-#            if (inst.args[0] == 'Stopped'):
-#                print 'Successfully stopped thread.'        
 
-    @inlineCallbacks
-    def runScript2(self, evt):
-        self.cxn.semaphore.set_flag(True)      
-        # here you should subscribe to a signal that gets fired when semaphore starts blocking!
-        script2 = Script2()
-        yield deferToThread(script2.run)        
-    
-    @inlineCallbacks
-    def runScript3(self, evt):
-        script3 = Script3()
-        yield deferToThread(script3.run)
-#        except Exception as inst:
-#            if (inst.args[0] == 'Stopped'):
-#                print 'Successfully stopped thread.'        
-
-    @inlineCallbacks
-    def runScript4(self, evt):
-        self.cxn.semaphore.set_flag2(True)      
-        # here you should subscribe to a signal that gets fired when semaphore starts blocking!
-        script4 = Script4()
-        yield deferToThread(script4.run) 
-    
-    def blockScript1(self):
-        if (self.blockScript1Flag == False):
-            self.cxn.semaphore.set_flag(True)
-            self.blockScript1Flag = True
-        else:
-            self.cxn.semaphore.set_flag(False)
-            self.blockScript1Flag = False
-            
-    @inlineCallbacks
-    def startBackgroundProcess(self, evt):
-        server = self.cxn.external_server
-        semaphore = self.cxn.semaphore
-        for i in range(100000):
-            yield deferToThread(time.sleep, 2)
-            number = yield server.get_number()
-            self.spinBox.setValue(number)
-            if (number % 10 == 0):
-                semaphore.set_flag(True)
-            else:
-                semaphore.set_flag(False)
-   
     def closeEvent(self, x):
         self.reactor.stop()
 
@@ -125,5 +69,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    parent = Parent(reactor)
+    scriptControl = ScriptControl(reactor)
     reactor.run()
+

@@ -1,11 +1,12 @@
-import threading
+#import threading
 import time
 
 
-class Script2(threading.Thread):
+#class Script2(threading.Thread):
+class Script2():
     def __init__(self):
         print 'Initializing Script 2'
-        threading.Thread.__init__(self)
+        #threading.Thread.__init__(self)
         
     def run(self):
         import labrad

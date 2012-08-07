@@ -1,12 +1,13 @@
-import threading
+#import threading
 import time
 import sys
 
 
-class Script(threading.Thread):
+#class Script(threading.Thread):
+class Script():
     def __init__(self):
         print 'Initializing Script 1'
-        threading.Thread.__init__(self)
+        #threading.Thread.__init__(self)
     
     def pause(self):
         result = self.cxn.semaphore.block()
@@ -26,6 +27,7 @@ class Script(threading.Thread):
            if (result == True):
                self.cleanUp()
                break
+
            value = self.cxn.semaphore.get_value()
            print 'Script 1: Drift Value: ', value
 

@@ -1,12 +1,13 @@
-import threading
+#import threading
 import time
 import sys
 
 
-class Script3(threading.Thread):
+#class Script3(threading.Thread):
+class Script3():
     def __init__(self):
         print 'Initializing Script 3'
-        threading.Thread.__init__(self)
+        #threading.Thread.__init__(self)
     
     def pause(self):
         result = self.cxn.semaphore.block2()
