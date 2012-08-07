@@ -27,50 +27,53 @@ class Dataset(QtCore.QObject):
         self.directory = directory
         self.reactor = reactor
         self.data = None
-        self.hasPlotParameter = False
+#        self.hasPlotParameter = False
         self.cnt = 0
         self.setupDataListener(self.context)
 #        self.setupFitListener(self.context)
         
+#    @inlineCallbacks
+#    def checkForPlotParameter(self):
+#        self.parameters = yield self.cxn.data_vault.get_parameters(context = self.context)
+#        if (self.parameters != None):
+#            for (parameterName, value) in self.parameters:
+#                if (str(parameterName) == 'plotLive'):
+#                    self.hasPlotParameter = True
+#                elif ((self.hasPlotParameter == True and str(parameterName) == 'Fit')):
+#                      self.updateFit()
+
     @inlineCallbacks
-    def checkForPlotParameter(self):
-        self.parameters = yield self.cxn.data_vault.get_parameters(context = self.context)
-        if (self.parameters != None):
-            for (parameterName, value) in self.parameters:
-                if (str(parameterName) == 'plotLive'):
-                    self.hasPlotParameter = True
-                elif ((self.hasPlotParameter == True and str(parameterName) == 'Fit')):
-                      self.updateFit()
-
     def getWindowParameter(self):
-        for (parameterName, value) in self.parameters:
-            if (str(parameterName) == 'Window'):
-                return value
-
+        try: 
+            value = yield self.cxn.data_vault.get_parameter('Window', context = self.context)
+        except:
+            value = None
+        returnValue(value)
                     
     # open dataset in order to listen for new data signals in current context        
     @inlineCallbacks
     def openDataset(self, context):
         yield self.cxn.data_vault.cd(self.directory, context = context)
         yield self.cxn.data_vault.open(self.dataset, context = context)
+        self.parameters = yield self.cxn.data_vault.parameters(context = context)
     
-    @inlineCallbacks
-    def setupParameterListener(self, context):
-        yield self.cxn.data_vault.signal__new_parameter(66666, context = context)
-        yield self.cxn.data_vault.addListener(listener = self.updateParameter, source = None, ID = 66666, context = context)
+#    @inlineCallbacks
+#    def setupParameterListener(self, context):
+#        yield self.cxn.data_vault.signal__new_parameter(66666, context = context)
+#        yield self.cxn.data_vault.addListener(listener = self.updateParameter, source = None, ID = 66666, context = context)
     
-    # Over 60 seconds, check if the dataset has the appropriate 'plotLive' parameter            
-    @inlineCallbacks
-    def listenForPlotParameter(self):
-        for i in range(20):
-            if (self.hasPlotParameter == True):
-                returnValue(self.hasPlotParameter)
-#            yield deferToThread(time.sleep, .5)
-            yield self.wait(.5)
-        returnValue(self.hasPlotParameter)        
-            
-    def updateParameter(self, x, y):
-        self.checkForPlotParameter()
+#    # Over 60 seconds, check if the dataset has the appropriate 'plotLive' parameter            
+#    @inlineCallbacks
+#    def listenForPlotParameter(self):
+#        for i in range(20):
+#            if (self.hasPlotParameter == True):
+#                returnValue(self.hasPlotParameter)
+##            yield deferToThread(time.sleep, .5)
+#            yield self.wait(.5)
+#        returnValue(self.hasPlotParameter)        
+#            
+#    def updateParameter(self, x, y):
+#        self.checkForPlotParameter()
 
         #append whatever to self.parameters
 
@@ -80,18 +83,16 @@ class Dataset(QtCore.QObject):
 #        yield self.cxn.data_vault.signal__new_parameter(22222, context = context)
 #        yield self.cxn.data_vault.addListener(listener = self.updateFit, source = None, ID = 22222, context = context)
     
-    # new data signal
+#    # new data signal
     @inlineCallbacks
-    def updateFit(self):
-        self.parameters = yield self.cxn.data_vault.get_parameters(context = self.context)
+#    def updateFit(self):
+    def fit(self):        
+        value = yield self.cxn.data_vault.get_parameter('Fit', context = self.context)
         variables = yield self.cxn.data_vault.variables(context = self.context)
         numberDependentVariables = len(variables[1])
-        if (self.parameters != None):
-            for (parameterName, value) in self.parameters:
-                if (str(parameterName) == 'Fit'):
-                    print 'once and twice?'
-                    for window in self.parent.dwDict[self]:
-                        window.fitFromScript(self.dataset, self.directory, numberDependentVariables, value) 
+#       if (self.parameters != None):
+        for window in self.parent.dwDict[self]:
+            window.fitFromScript(self.dataset, self.directory, numberDependentVariables, value) 
             
     # sets up the listener for new data
     @inlineCallbacks
@@ -121,7 +122,7 @@ class Dataset(QtCore.QObject):
     @inlineCallbacks    
     def disconnectDataSignal(self):
         yield self.cxn.data_vault.removeListener(listener = self.updateData, source = None, ID = 11111, context = self.context)
-        yield self.cxn.data_vault.removeListener(listener = self.updateParameter, source = None, ID = 66666, context = self.context)
+#        yield self.cxn.data_vault.removeListener(listener = self.updateParameter, source = None, ID = 66666, context = self.context)
 
     # returns the current data
     @inlineCallbacks

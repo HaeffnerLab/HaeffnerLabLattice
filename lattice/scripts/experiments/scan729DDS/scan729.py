@@ -121,7 +121,7 @@ class scan729():
         totalReadouts = numpy.ravel(numpy.array(totalReadouts))
         hist, bins = numpy.histogram(totalReadouts, 50)
         self.dv.new('Histogram',[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
-        self.dv.add(numpy.vstack((bins,hist)).transpose())
+        self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
         self.dv.add_parameter('plotLive', True)
 
 
