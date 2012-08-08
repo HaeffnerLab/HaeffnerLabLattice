@@ -8,7 +8,7 @@ class ExperimentGrid(QtGui.QWidget):
         self.parent = parent
         self.experiment = experiment
         self.setupExperimentGrid()
- 
+
     @inlineCallbacks
     def setupExperimentGrid(self):
         self.experimentGrid = QtGui.QGridLayout()
@@ -19,6 +19,8 @@ class ExperimentGrid(QtGui.QWidget):
         
         expParamNames = yield self.parent.server.get_experiment_parameter_names(self.experiment)
         expParamValues = yield self.parent.server.get_experiment_parameters(self.experiment, expParamNames)
+        
+        self.setupValueChangedDictionary(self.experiment, expParamNames)
         
         gridRow = 0
         gridCol = 0
@@ -32,6 +34,8 @@ class ExperimentGrid(QtGui.QWidget):
                 doubleSpinBox.setRange(-100000, 100000)
                 doubleSpinBox.setValue(value)
                 doubleSpinBox.setSingleStep(.1)
+                doubleSpinBox.setKeyboardTracking(False)
+                self.connect(doubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.valueChangedDictionary[parameter])
                 
                 self.doubleSpinBoxDict[parameter] = doubleSpinBox
                 
@@ -44,4 +48,12 @@ class ExperimentGrid(QtGui.QWidget):
                     gridRow += 1
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.setLayout(self.experimentGrid)      
+        self.setLayout(self.experimentGrid)    
+    
+    def setupValueChangedDictionary(self, experiment, parameters):
+        self.valueChangedDictionary = {}
+        for parameter in parameters:
+            @inlineCallbacks
+            def func(value):
+                yield self.parent.server.set_experiment_parameters(experiment, [parameter], [value])
+            self.valueChangedDictionary[parameter] = func
