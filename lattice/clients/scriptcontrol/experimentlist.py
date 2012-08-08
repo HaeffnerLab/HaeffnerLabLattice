@@ -13,6 +13,7 @@ class ExperimentListWidget(QtGui.QListWidget):
         for experiment in self.parent.experiments:
             self.addItem(experiment)
         
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
     def mousePressEvent(self, event):
         """
