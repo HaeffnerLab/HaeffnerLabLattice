@@ -19,7 +19,7 @@ class Sequence():
         return self.dur
     
     def pulses(self):
-        return []
+        return self.pulse_list
     
 class RepumpD(Sequence):
     def set(self, args):
@@ -27,9 +27,8 @@ class RepumpD(Sequence):
         self.dur = 100
     
     def pulses(self):
-        self.pulses = [(0, self.freq, -3), (100, self.freq, -63)]
-        
-        return self.pulses
+        pulses = [(0, self.freq, -3), (100, self.freq, -63)]
+        return pulses
 
 class DopplerCooling(Sequence):
             
@@ -38,9 +37,8 @@ class DopplerCooling(Sequence):
         self.dur = 100
         
     def pulses(self):
-        self.pulses = [(0, self.freq, -3), (100, self.freq, -63)]
-        
-        return self.pulses
+        pulses = [(0, self.freq, -3), (100, self.freq, -63)]
+        return pulses
     
     
 class FrequencyScan(Sequence):
@@ -54,7 +52,7 @@ class FrequencyScan(Sequence):
                     RepumpD(),
                     ]
         self.add(operations)
-        return self.pulses()
+        return self.pulse_list
 
 freqs = [220.0,210.0, 22.0]
 sequence = DopplerCooling()
