@@ -1,6 +1,4 @@
 from sequence import Sequence
-import time
-import numpy as np
 
 class TimeResolved(Sequence):
     #dictionary of variable: (type, min, max, default)
@@ -31,5 +29,4 @@ if __name__ == '__main__':
     print 'completed', pulser.repeatitions_completed()
     timetags = pulser.get_timetags().asarray
     print timetags[0:249]
-    counts = []
     print 'measured {0} timetags'.format(timetags.size)
