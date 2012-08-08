@@ -27,9 +27,10 @@ class Semaphore(LabradServer):
         self.paramDict['Global'] = {}
         for experiment in experiments:
             self.paramDict[experiment] = {}
-            self.paramDict[experiment]['Block'] = False
-            self.paramDict[experiment]['Status'] = 'Stopped'
-            self.paramDict[experiment]['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
+            self.paramDict[experiment]['General'] = {}
+            self.paramDict[experiment]['General']['Block'] = False
+            self.paramDict[experiment]['General']['Status'] = 'Stopped'
+            self.paramDict[experiment]['General']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
         self._getRegistryParameters(experiments)
     
     @inlineCallbacks
@@ -72,10 +73,14 @@ class Semaphore(LabradServer):
         return values        
     
     def _getGlobalParameterNames(self):
-        return self.paramDict['Global'].keys()
+        names = self.paramDict['Global'].keys()
+        names.remove('General')
+        return names
     
     def _getExperimentParameterNames(self, experiment):
-        return self.paramDict[experiment].keys()
+        names = self.paramDict[experiment].keys()
+        names.remove('General')
+        return names
     
     @inlineCallbacks            
     def _blockExperiment(self, experiment):
@@ -152,7 +157,10 @@ class Semaphore(LabradServer):
             yield self.client.registry.cd(experiment)
             parameters = self.paramDict[experiment].keys()
             for parameter in parameters:
-                 yield self.client.registry.set(parameter, self.paramDict[experiment][parameter])
+                if (parameter == 'General'):
+                    pass
+                else: 
+                    yield self.client.registry.set(parameter, self.paramDict[experiment][parameter])
     
     @setting(12, "Save", returns="")
     def save(self, c):

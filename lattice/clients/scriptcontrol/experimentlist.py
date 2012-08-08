@@ -22,13 +22,7 @@ class ExperimentListWidget(QtGui.QListWidget):
         item = self.itemAt(event.x(), event.y())
         if item:
             if (button == 1):
-                print item.text()
                 self.parent.setupExperimentGrid(str(item.text()))
-
-    def newHistogram(self, dataset):
-        print 'dataset: ', dataset
-        print 'directory: ', self.currentDirectory
-        self.parent.newHistogram(dataset, self.currentDirectory)
                     
 
 
