@@ -28,5 +28,5 @@ if __name__ == '__main__':
     pulser.stop_sequence()
     print 'completed', pulser.repeatitions_completed()
     timetags = pulser.get_timetags().asarray
-    print timetags[0:249]
+    print timetags
     print 'measured {0} timetags'.format(timetags.size)
