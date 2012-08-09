@@ -22,7 +22,7 @@ class scan729(Sequence):
         
         p = self.parameters
         pulser = self.pulser
-        offset = 40e-9 
+        offset = 100e-6 
         p.repump_freq_854 = 90.0
         p.repump_freq_866 = 70.0
         
@@ -49,7 +49,8 @@ class scan729(Sequence):
         readoutOn = []
         readoutOff = []
         readout_count = []
-        for i in range(len(freqs)):      
+        for i in range(len(freqs)):
+            rabiOff.append(      (offset + i  * cT, 0.0, -63.0) )      
             coolingOn.append(    (start_cooling + i  * cT, p.doppler_cooling_freq, p.doppler_cooling_ampl)  )
             repump866On.append(  (start_cooling + i  * cT, p.repump_freq_866, p.repump_866_ampl)  )
             repump854On.append(  (start_cooling + i  * cT, p.repump_freq_854, p.repump_854_ampl)  )

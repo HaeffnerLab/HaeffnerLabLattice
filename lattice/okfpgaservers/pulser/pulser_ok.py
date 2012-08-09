@@ -18,13 +18,15 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting, Signal
-from twisted.internet.defer import DeferredLock, inlineCallbacks
+from twisted.internet import reactor
+from twisted.internet.defer import DeferredLock, inlineCallbacks, returnValue, Deferred
 from twisted.internet.threads import deferToThread
 import time
 from hardwareConfiguration import hardwareConfiguration
 from sequence import Sequence
 from dds import DDS
 from api import api
+import numpy
 
 class Pulser(LabradServer, DDS):
     name = 'Pulser'
@@ -201,8 +203,7 @@ class Pulser(LabradServer, DDS):
         Returns a readable form of the programmed sequence for debugging
         """
         sequence = c.get('sequence')
-        if not sequeimport time
-import numpy as npnce: raise Exception ("Please create new sequence first")
+        if not sequence: raise Exception ("Please create new sequence first")
         ans = sequence.humanRepresentation()
         return ans.tolist()
     

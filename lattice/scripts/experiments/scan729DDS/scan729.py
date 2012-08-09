@@ -103,6 +103,7 @@ class scan729():
         #save readouts     
         self.dv.new('Spectrum Analyzed',[('Freq', 'MHz')],[('Counts','Arb','Arb')] )
         self.dv.add(numpy.vstack((self.seqP.frequencies_729,totalAnalyzedReadouts)).transpose())
+        self.dv.add_parameter('Window', ['Spectrum'])
         self.dv.add_parameter('plotLive', True)
         # binning
         totalReadouts = numpy.ravel(numpy.array(totalReadouts))
@@ -115,32 +116,32 @@ class scan729():
         self.cxn.disconnect()
     
 if __name__ == '__main__':
-    freqs = numpy.arange(190.00, 250.00, 1.0)
-    ampls = numpy.ones_like(freqs) * -15.0
+    freqs = numpy.arange(213.0, 220, 0.1)
+    ampls = numpy.ones_like(freqs) * -8.0
     freqs = freqs.tolist()
     ampls = ampls.tolist()  
     params = {
                 'frequencies_729':freqs,
                 'amplitudes_729': ampls,
                 'doppler_cooling':10*10**-3,
-                'heating_time':1.0e-3,
-                'rabi_time':0.1e-3,#0.5*10**-3,
+                'heating_time':100.0e-6,
+                'rabi_time':20.0e-6,#0.5*10**-3,
                 'readout_time':5*10**-3,
                 'repump_time':10*10**-3,
                 'repump_854_ampl': -3.0,
                 'repump_866_ampl': -11.0,
-                'doppler_cooling_freq':103.0,
+                'doppler_cooling_freq':100.0,
                 'doppler_cooling_ampl':-11.0,
-                'readout_freq':107.0,
+                'readout_freq':110.0,
                 'readout_ampl':-11.0
             }
     exprtParams = {
         'startNumber': 10,
-        'iterations': 1,
+        'iterations': 5,
         }
     
     analysis = {
-        'threshold':30,
+        'threshold':20,
         }
     exprt = scan729(params,exprtParams, analysis)
     exprt.run()
