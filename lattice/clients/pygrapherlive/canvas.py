@@ -523,7 +523,7 @@ class Qt4MplCanvas(FigureCanvas):
         #self.draw()
 
     def togglePoints(self, dataset, directory, line):
-        pyplot.setp(self.plotDict[dataset, directory][line], linestyle='.', marker='o', markersize=2)
+        pyplot.setp(self.plotDict[dataset, directory][line], linestyle='-', marker='o', markersize=3)
         self.draw()
     
     def toggleLine(self, dataset, directory, line):
