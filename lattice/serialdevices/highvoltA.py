@@ -99,12 +99,9 @@ class HighVoltBoxA( SerialDeviceServer ):
     
     @inlineCallbacks
     def populateDict(self):
-        print 'writing'
         a = yield self.ser.write('r')
-        print a
         reading = yield self.ser.read(5)
         form = int(reading[0:4])
-        print form
         self.dict['voltage'] = self.formatToVoltage(form)
         print self.dict
         
