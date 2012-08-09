@@ -62,6 +62,12 @@ class AnalysisWidget(QtGui.QWidget):
         fitButton.clicked.connect(self.fitCurvesSignal)        
         mainLayout.addWidget(fitButton)
         
+        # button to fit data on screen
+        togglePointsButton = QtGui.QPushButton("Toggle Points", self)
+        togglePointsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        togglePointsButton.clicked.connect(self.togglePointsSignal)        
+        mainLayout.addWidget(togglePointsButton)        
+        
         self.setLayout(mainLayout)        
 
 
@@ -69,6 +75,16 @@ class AnalysisWidget(QtGui.QWidget):
         self.parameterWindow.show()
         # create the parameter window upstairs, spinboxes will be part of it
 
+    def togglePointsSignal(self, evt):
+        for dataset,directory,index in self.parent.datasetAnalysisCheckboxes.keys():
+            # if dataset is intended to be drawn (a checkbox governs this)
+            if self.parent.datasetAnalysisCheckboxes[dataset, directory, index].isChecked():
+                self.parent.qmc.togglePoints(dataset, directory, index)
+            else:
+                self.parent.qmc.toggleLine(dataset, directory, index)
+            
+                
+                    
     def fitCurvesSignal(self, evt):
         self.fitCurves()
 

@@ -162,7 +162,6 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.set_color_cycle(colors)
         lines = ["-"]#,"-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
         self.linecycler = cycle(lines)
-
         self.background = self.copy_from_bbox(self.ax.bbox)
     
     
@@ -523,6 +522,14 @@ class Qt4MplCanvas(FigureCanvas):
         #self.ax.set_xlim(self.initialxmin, self.maxX)
         #self.draw()
 
+    def togglePoints(self, dataset, directory, line):
+        pyplot.setp(self.plotDict[dataset, directory][line], linestyle='.', marker='o', markersize=2)
+        self.draw()
+    
+    def toggleLine(self, dataset, directory, line):
+        pyplot.setp(self.plotDict[dataset, directory][line], linestyle='-', marker='')
+        self.draw()
+        
     # to flatten lists (for some reason not built in)
     def flatten(self,l):
             out = []

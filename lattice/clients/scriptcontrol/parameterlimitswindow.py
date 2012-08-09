@@ -45,8 +45,8 @@ class ParameterLimitsWindow(QtGui.QWidget):
         currentParameter = str(self.expParamLabel.text())
         value = yield self.parent.server.get_experiment_parameter(self.experiment, currentParameter)
         limits = eval(str(self.expParamLimitsEdit.text()))
-        value[0] = limits[0]
-        value[1] = limits[1]
+        value[0] = float(limits[0])
+        value[1] = float(limits[1])
         yield self.parent.server.set_experiment_parameter(self.experiment, currentParameter, value)
         self.parent.experimentGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
         #update the spinBox
@@ -56,8 +56,8 @@ class ParameterLimitsWindow(QtGui.QWidget):
         currentParameter = str(self.globalParamLabel.text())
         value = yield self.parent.server.get_global_parameter(currentParameter)
         limits = eval(str(self.globalParamLimitsEdit.text()))
-        value[0] = limits[0]
-        value[1] = limits[1]
+        value[0] = float(limits[0])
+        value[1] = float(limits[1])
         yield self.parent.server.set_global_parameter(currentParameter, value)
         self.parent.globalGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
    
