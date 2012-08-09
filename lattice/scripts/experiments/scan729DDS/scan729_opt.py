@@ -2,7 +2,7 @@ import labrad
 import numpy
 import time
 from scripts.scriptLibrary import dvParameters 
-from scripts.PulseSequences.scan729 import scan729 as sequence
+from scripts.PulseSequences.scan729_opt import scan729 as sequence
 
 class Bunch:
     def __init__(self, **kwds):
@@ -116,8 +116,8 @@ class scan729():
         self.cxn.disconnect()
     
 if __name__ == '__main__':
-    freqs = numpy.arange(217.7, 218.2, 0.01)
-    ampls = numpy.ones_like(freqs) * -15.0
+    freqs = numpy.arange(214.0, 216, 0.05)
+    ampls = numpy.ones_like(freqs) * -8.0
     freqs = freqs.tolist()
     ampls = ampls.tolist()  
     params = {
@@ -133,7 +133,10 @@ if __name__ == '__main__':
                 'doppler_cooling_freq':100.0,
                 'doppler_cooling_ampl':-11.0,
                 'readout_freq':110.0,
-                'readout_ampl':-11.0
+                'readout_ampl':-11.0,
+                'optical_pump_freq':219.12,#218.47,
+                'optical_pump_ampl':-63.0,#-10.0,
+                'optical_pump_dur':1.0e-3
             }
     exprtParams = {
         'startNumber': 10,
