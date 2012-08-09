@@ -4,6 +4,8 @@ from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 from experimentlist import ExperimentListWidget
 from experimentgrid import ExperimentGrid
+from globalgrid import GlobalGrid
+from parameterlimitswindow import ParameterLimitsWindow
 
 
 class ScriptControl(QtGui.QWidget):
@@ -34,11 +36,32 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListWidget.show()
         self.mainGrid.addWidget(self.experimentListWidget, 0, 0, QtCore.Qt.AlignCenter)
         
-        self.setLayout(self.mainLayout)
-        self.show()
         # not this again!
         yield deferToThread(time.sleep, .05)
         self.setupExperimentGrid(self.experiments[0])
+       
+        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
+        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
+        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignRight)
+        
+        self.setupGlobalGrid()
+
+        self.setLayout(self.mainLayout)
+        self.show()
+
+
+    def parameterLimitsWindowEvent(self, evt):
+        experiment = self.experimentGrid.experiment
+        try:
+            self.parameterLimitsWindow.hide()
+            del self.parameterLimitsWindow
+            self.parameterLimitsWindow = ParameterLimitsWindow(self, experiment)
+            self.parameterLimitsWindow.show()
+        except:
+            # first time
+            self.parameterLimitsWindow = ParameterLimitsWindow(self, experiment)
+            self.parameterLimitsWindow.show()
 
     def setupExperimentGrid(self, experiment):
         try:
@@ -47,12 +70,23 @@ class ScriptControl(QtGui.QWidget):
             # First time
             pass
         self.experimentGrid = ExperimentGrid(self, experiment)           
-        self.mainGrid.addWidget(self.experimentGrid, 0, 1, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(self.experimentGrid, 0, 2, QtCore.Qt.AlignCenter)
         self.experimentGrid.show()  
-        
 
-    def closeEvent(self, x):
+    def setupGlobalGrid(self):
+        self.globalGrid = GlobalGrid(self)           
+        self.mainGrid.addWidget(self.globalGrid, 0, 3, QtCore.Qt.AlignCenter)
+        self.globalGrid.show()          
+
+    @inlineCallbacks
+    def saveParametersToRegistryAndQuit(self):
+        success = yield self.server.save_parameters_to_registry()
+        if (success == True):
+            print 'Current Parameters Saved Successfully.'
         self.reactor.stop()
+                
+    def closeEvent(self, x):
+        self.saveParametersToRegistryAndQuit()
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
