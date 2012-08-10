@@ -70,11 +70,13 @@ class limitsWidget(QtGui.QWidget):
         self.resolution = resolution = QtGui.QLineEdit()
         self.steps = steps = QtGui.QSpinBox()
         steps.setRange(1,1000)
+        resolution.setReadOnly(True)
         for widget in [start, stop, setresolution, steps]:
             widget.setKeyboardTracking(False)
         for widget in [start, stop, setresolution]:
             widget.setDecimals(3)
             widget.setSuffix('MHz')
+            widget.setSingleStep(0.01)
         for widget in [start, stop]:
             widget.setRange(*self.absoluteRange)
         start.setValue(self.absoluteRange[0])
@@ -102,12 +104,20 @@ class limitsWidget(QtGui.QWidget):
         self.show()
     
     def getValues(self):
-        pass
+        start = self.start.value()
+        stop = self.stop.value()
+        steps = self.steps.value()
+        values = numpy.linspace(start, stop, steps, endpoint = True)
+        return values
     
     def onNewStartStop(self, x):
         start = self.start.value()
         stop = self.stop.value()
         steps = self.steps.value()
+        #update the ranges
+        self.start.setRange(self.absoluteRange[0], stop)
+        self.stop.setRange(start, self.absoluteRange[1])
+        #calculate and update the actual resolution
         if steps > 1:
             res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
         else:
@@ -124,15 +134,19 @@ class limitsWidget(QtGui.QWidget):
     def onNewResolution(self, res):
         start = self.start.value()
         stop = self.stop.value()
-        steps = min(1, int(round( start - stop / res))) #make sure at least 1
+        steps = 1 +  max(0, int(round( (stop - start) / res))) #make sure at least 1
+        self.steps.blockSignals(True)
+        self.steps.setValue(steps)
+        self.steps.blockSignals(False)
         if steps > 1:
             finalres = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
-            
-        
-            
+        else:
+            finalres = stop - start
+        self.updateResolution(finalres)
+          
 if __name__=="__main__":
     import sys
     app = QtGui.QApplication([])
-    widget = limitsWidget((150.0,250.0))
-    #widget = durationWdiget(30)
+    #widget = limitsWidget((150.0,250.0))
+    widget = durationWdiget(30)
     sys.exit(app.exec_())
