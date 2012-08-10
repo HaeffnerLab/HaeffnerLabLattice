@@ -61,38 +61,43 @@ class limitsWidget(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         startLabel = QtGui.QLabel('Start')
         stopLabel = QtGui.QLabel('Stop')
-        resolutionLabel =  QtGui.QLabel('Resolution')
-        stepsLabel = QtGui.QLabel('Steps')
+        resolutionLabel =  QtGui.QLabel('Set Resolution')
+        stepsLabel = QtGui.QLabel('Set Steps')
+        finalResolutionLabel = QtGui.QLabel('Resolution')
         self.start = start = QtGui.QDoubleSpinBox()
         self.stop = stop = QtGui.QDoubleSpinBox()
-        self.resolution = resolution = QtGui.QDoubleSpinBox()
+        self.setresolution = setresolution = QtGui.QDoubleSpinBox()
+        self.resolution = resolution = QtGui.QLineEdit()
         self.steps = steps = QtGui.QSpinBox()
         steps.setRange(1,1000)
-        for widget in [start, stop, resolution, steps]:
+        for widget in [start, stop, setresolution, steps]:
             widget.setKeyboardTracking(False)
-        for widget in [start, stop, resolution]:
+        for widget in [start, stop, setresolution]:
             widget.setDecimals(3)
             widget.setSuffix('MHz')
         for widget in [start, stop]:
             widget.setRange(*self.absoluteRange)
         start.setValue(self.absoluteRange[0])
         stop.setValue(self.absoluteRange[1])
-        resolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
-        resolution.setRange(10**-3, self.absoluteRange[1] - self.absoluteRange[0])
+        setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
+        setresolution.setRange(10**-3, self.absoluteRange[1] - self.absoluteRange[0])
+        self.updateResolution(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
         stop.valueChanged.connect(self.onNewStartStop)
-        resolution.valueChanged.connect(self.onNewResolution)
-        steps.valueChanged.connect(self.onNewSteps)
+        setresolution.valueChanged.connect(self.onNewResolution)
+        steps.valueChanged.connect(self.onNewStartStop)
         #add to layout
         layout.addWidget(startLabel, 0, 0, 1, 1)
         layout.addWidget(stopLabel, 0, 1, 1, 1)
         layout.addWidget(resolutionLabel, 0, 2, 1, 1)
         layout.addWidget(stepsLabel, 0, 3, 1, 1)
+        layout.addWidget(finalResolutionLabel, 0, 4, 1, 1)
         layout.addWidget(start, 1, 0, 1, 1)
         layout.addWidget(stop, 1, 1, 1, 1)
-        layout.addWidget(resolution, 1, 2, 1, 1)
+        layout.addWidget(setresolution, 1, 2, 1, 1)
         layout.addWidget(steps, 1, 3, 1, 1)
+        layout.addWidget(resolution, 1, 4, 1, 1)
         self.setLayout(layout)
         self.show()
     
@@ -100,19 +105,30 @@ class limitsWidget(QtGui.QWidget):
         pass
     
     def onNewStartStop(self, x):
-        band = self.conversion(x)
-        self.bandwidth.blockSignals(True)
-        self.bandwidth.setValue(band)
-        self.bandwidth.blockSignals(False)
+        start = self.start.value()
+        stop = self.stop.value()
+        steps = self.steps.value()
+        if steps > 1:
+            res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
+        else:
+            res = stop - start
+        self.setresolution.blockSignals(True)
+        self.setresolution.setValue(res)
+        self.setresolution.blockSignals(False)
+        self.updateResolution(res)
+    
+    def updateResolution(self, val):
+        text = '{:.3f} MHz'.format(val)
+        self.resolution.setText(text)
     
     def onNewResolution(self, res):
-        dur =  self.conversion(res)
-        self.duration.blockSignals(True)
-        self.duration.setValue(dur)
-        self.duration.blockSignals(False)
+        start = self.start.value()
+        stop = self.stop.value()
+        steps = min(1, int(round( start - stop / res))) #make sure at least 1
+        if steps > 1:
+            finalres = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
+            
         
-    def onNewSteps(self, steps):
-        pass
             
 if __name__=="__main__":
     import sys
