@@ -75,6 +75,22 @@ class Semaphore(LabradServer):
         names.remove('General')
         return names
     
+    def _getGeneralExperimentParameter(self, experiment, parameter):
+        value = self.paramDict[experiment]['General'][parameter]
+        return value
+
+    def _setGeneralExperimentParameter(self, experiment, parameter, value):
+        self.paramDict[experiment]['General'][parameter] = value
+    
+    def _scriptRequestExperimentParameters(self, experiment):
+        parameters = []
+        for key, value in zip(self.paramDict[experiment].keys(), self.paramDict[experiment].values()):
+            if (key == 'General'):
+                pass
+            else:
+                parameters.append((key, value[2]))
+        return parameters
+    
     @inlineCallbacks
     def _saveParametersToRegistry(self):
         '''save the latest parameters into registry'''
@@ -99,17 +115,17 @@ class Semaphore(LabradServer):
     
     @inlineCallbacks            
     def _blockExperiment(self, experiment):
-        self.paramDict[experiment]['Status'] = 'Paused'
         self.onStatusChange(experiment, self.listeners)
+#        self.paramDict[experiment]['General']['Status'] = 'Paused'        
         while(1):
             yield deferToThread(time.sleep, .5)
-            if (self.paramDict[experiment]['Block'] == False):
-                if (self.paramDict[experiment]['Continue'] == True):
-                    self.paramDict[experiment]['Status'] = 'Running'
+            if (self.paramDict[experiment]['General']['Block'] == False):
+                if (self.paramDict[experiment]['General']['Continue'] == True):
+                    pass
+#                    self.paramDict[experiment]['General']['Status'] = 'Running'
                 else:
-                    self.paramDict[experiment]['Status'] = 'Stopped'
-            self.onStatusChange(experiment, self.listeners)
-            returnValue(self.paramDict[experiment]['Continue'])                                        
+                    self.paramDict[experiment]['General']['Status'] = 'Stopped'
+                returnValue(self.paramDict[experiment]['General']['Continue'])
 
     @setting(0, "Initialize Experiments", experiments = '*s', returns = '')
     def initializeExperiments(self, c, experiments):
@@ -155,11 +171,25 @@ class Semaphore(LabradServer):
         """Get Experiment Parameter Names"""
         success = yield self._saveParametersToRegistry()
         returnValue(success)
- 
-    @setting(10, "Block Experiment", experiment = 's', returns="b")
+        
+    @setting(8, "Get General Experiment Parameter", experiment = 's', parameter = 's', returns = '?')
+    def getGeneralExperimentParameter(self, c, experiment, parameter):
+        value = self._getGeneralExperimentParameter(experiment, parameter)
+        return value
+
+    @setting(9, "Set General Experiment Parameter", experiment = 's', parameter = 's', value = '?', returns = '')
+    def setGeneralExperimentParameter(self, c, experiment, parameter, value):
+        self._setGeneralExperimentParameter(experiment, parameter, value)
+    
+    @setting(10, "Script Request Experiment Parameters", experiment = 's', returns = '*(sv)')
+    def scriptRequestExperimentParameters(self, c, experiment):
+        parameters = self._scriptRequestExperimentParameters(experiment)
+        return parameters
+        
+    @setting(11, "Block Experiment", experiment = 's', returns="b")
     def blockExperiment(self, c, experiment):
         """Update and get the number."""
-        result = self._blockExperiment()
+        result = self._blockExperiment(experiment)
         return result
     
     

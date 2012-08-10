@@ -10,7 +10,7 @@ class ExperimentListWidget(QtGui.QListWidget):
     def __init__(self, parent):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
-        for experiment in self.parent.experiments:
+        for experiment in self.parent.experiments.keys():
             self.addItem(experiment)
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -24,6 +24,7 @@ class ExperimentListWidget(QtGui.QListWidget):
         if item:
             if (button == 1):
                 self.parent.setupExperimentGrid(str(item.text()))
+                self.parent.setupStatusWidget(str(item.text()))
                     
 
 
