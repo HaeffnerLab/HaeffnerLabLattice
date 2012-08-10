@@ -7,7 +7,7 @@ class Semaphore(LabradServer):
     """Houses the Blocking Function"""
     name = "Semaphore"
     
-    onStatusChange = Signal(111111, 'signal: status parameter change', 's')
+    onStatusChange = Signal(111111, 'signal: status parameter change', '(s,s)')
 #    onParameterChange = Signal(222222, 'signal: parameter change', 's')
        
     def initServer(self):
@@ -81,6 +81,8 @@ class Semaphore(LabradServer):
 
     def _setGeneralExperimentParameter(self, experiment, parameter, value):
         self.paramDict[experiment]['General'][parameter] = value
+        if (parameter == 'Status'):
+            self.onStatusChange((experiment, self.paramDict[experiment]['General']['Status']), self.listeners)
     
     def _scriptRequestExperimentParameters(self, experiment):
         parameters = []
@@ -115,7 +117,6 @@ class Semaphore(LabradServer):
     
     @inlineCallbacks            
     def _blockExperiment(self, experiment):
-        self.onStatusChange(experiment, self.listeners)
 #        self.paramDict[experiment]['General']['Status'] = 'Paused'        
         while(1):
             yield deferToThread(time.sleep, .5)
