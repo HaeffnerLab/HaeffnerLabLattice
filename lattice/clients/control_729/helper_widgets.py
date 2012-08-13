@@ -2,8 +2,9 @@ from PyQt4 import QtGui
 import numpy
 
 class durationWdiget(QtGui.QWidget):
-    def __init__(self, value = 1, init_range = (1,1000), parent=None):
+    def __init__(self, reactor, value = 1, init_range = (1,1000), parent=None):
         super(durationWdiget, self).__init__(parent)
+        self.reactor = reactor
         self.value = value
         self.ran = init_range
         self.initializeGUI()
@@ -51,9 +52,13 @@ class durationWdiget(QtGui.QWidget):
     def conversion(x):
         return 10**3 * (2 * numpy.pi / float(x)) #fourier bandwidth, and unit conversion
     
+    def closeEvent(self, x):
+        self.reactor.stop()
+    
 class limitsWidget(QtGui.QWidget):
-    def __init__(self, abs_range = (150,250), parent=None):
+    def __init__(self, reactor, abs_range = (150,250), parent=None):
         super(limitsWidget, self).__init__(parent)
+        self.reactor = reactor
         self.absoluteRange = abs_range
         self.initializeGUI()
         
@@ -143,10 +148,16 @@ class limitsWidget(QtGui.QWidget):
         else:
             finalres = stop - start
         self.updateResolution(finalres)
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
           
 if __name__=="__main__":
-    import sys
-    app = QtGui.QApplication([])
-    #widget = limitsWidget((150.0,250.0))
-    widget = durationWdiget(30)
-    sys.exit(app.exec_())
+    a = QtGui.QApplication( [] )
+    import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    widget = limitsWidget(reactor)
+    #widget = durationWdiget(reactor)
+    widget.show()
+    reactor.run()
