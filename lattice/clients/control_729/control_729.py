@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 from connection import connection
 from readout_histogram import readout_histgram
-from helper_widgets import durationWdiget, limitsWidget
+from helper_widgets import durationWdiget, limitsWidget, optical_pumping
 
 class control_729(QtGui.QWidget):
     def __init__(self, reactor, parent=None):
@@ -42,11 +42,11 @@ class control_729(QtGui.QWidget):
         return flop
     
     def make_pump_tab(self):
-        pump = QtGui.QWidget()
+        pump = optical_pumping(self.reactor)
         return pump
     
 if __name__=="__main__":
-    a = QtGui.QApplication( [] )
+    a = QtGui.QApplication( ['Control 729'] )
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor

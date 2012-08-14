@@ -3,6 +3,8 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
+from twisted.internet.threads import deferToThread
+import numpy
 
 
 class readout_histgram(QtGui.QWidget):
@@ -24,20 +26,13 @@ class readout_histgram(QtGui.QWidget):
         plot_layout = self.create_plot_layout()
         layout.addLayout(plot_layout, 0, 0, 1, 4)
         thresholdLabel = QtGui.QLabel("Threshold (Photon Counts Per Readout)")
-        binsLabel = QtGui.QLabel("Bins")
-        for l in [thresholdLabel, binsLabel]:
+        for l in [thresholdLabel]:
             l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.threshold = QtGui.QSpinBox()
         self.threshold.setKeyboardTracking(False)
         self.threshold.setValue(self.thresholdVal)
-        self.bins = QtGui.QSpinBox()
-        self.bins.setKeyboardTracking(False)
-        self.bins.setRange(1, 200)
-        self.bins.setValue(50)
         layout.addWidget(thresholdLabel, 1, 0)
         layout.addWidget(self.threshold, 1, 1)
-        layout.addWidget(binsLabel, 1, 2)
-        layout.addWidget(self.bins, 1, 3)
         self.setLayout(layout)
    
     def create_plot_layout(self):
@@ -57,11 +52,6 @@ class readout_histgram(QtGui.QWidget):
     def connect_layout(self):
         self.threshold.valueChanged.connect(self.thresholdChange)
         self.canvas.mpl_connect('button_press_event', self.on_key_press)
-        self.bins.valueChanged.connect(self.on_new_bins)
-    
-    def on_new_bins(self, bins):
-        if self.last_data is not None:
-            self.updade_histogram(self.last_data, bins)
     
     def on_key_press(self, event):
         if event.button == 2:
@@ -70,14 +60,13 @@ class readout_histgram(QtGui.QWidget):
     
     def on_new_data(self, readout):
         self.last_data = readout
-        bins = self.bins.value()
-        self.updade_histogram(readout, bins)
+        self.updade_histogram(readout)
     
-    def updade_histogram(self, data, bins):
+    def updade_histogram(self, data):
         #remove old histogram
         if self.last_hist is not None: 
             for obj in self.last_hist: obj.remove()
-        self.last_hist = self.axes.hist(data, bins = bins, color = 'blue', normed = 'True')[2]    
+        self.last_hist = self.axes.bar(data[:,0], data[:,1], width = numpy.max(data[:,0])/len(data[:,0]))
         self.canvas.draw()
       
     def thresholdChange(self, threshold):
@@ -90,20 +79,29 @@ class readout_histgram(QtGui.QWidget):
         from connection import connection
         self.cxn = connection()
         yield self.cxn.connect()
-        yield self.cxn.dv.signal__new_parameter_dataset(99999)
-        yield self.cxn.dv.addListener(listener = self.on_new_dataset, source = None, ID = 99999)
+#        yield self.subscribe()
+        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
+        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999)
+        self.cxn.on_connect['Data Vault'] = [self.subscribe]
+        
+    @inlineCallbacks
+    def subscribe(self):
+        yield self.cxn.servers['Data Vault'].removeListener(listener = self.on_new_dataset, source = None, ID = 99999)#### necessary for now 
+        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
+        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999)
     
     @inlineCallbacks
     def on_new_dataset(self, x, y):
+
         if y[3] == 'Histogram729':
             dataset = y[0]
-            datasetName = y[1]
             directory = y[2]
-            yield self.cxn.dv.cd(directory)
-            yield self.cxn.dv.open(dataset)
-            data = yield self.cxn.dv.get()
-            print data
-            print dataset, datasetName, directory
+            yield self.cxn.servers['Data Vault'].cd(directory)
+            yield self.cxn.servers['Data Vault'].open(dataset)
+            data = yield self.cxn.servers['Data Vault'].get()
+            data = data.asarray
+            yield deferToThread(self.on_new_data, data)
+            yield self.cxn.servers['Data Vault'].cd([''])
                                           
     def closeEvent(self, x):
         self.reactor.stop()  
@@ -113,6 +111,7 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = readout_histgram(reactor, threshold = 20, init_data = [0,1,2,3,50,51,52]*5)
+    init_data = numpy.array([[0,0],[1,2],[3,50],[51,52]])
+    widget = readout_histgram(reactor, threshold = 20, init_data = init_data)
     widget.show()
     reactor.run()

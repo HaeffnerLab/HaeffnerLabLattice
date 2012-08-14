@@ -151,13 +151,40 @@ class limitsWidget(QtGui.QWidget):
     
     def closeEvent(self, x):
         self.reactor.stop()
+
+class optical_pumping(QtGui.QWidget):
+    def __init__(self, reactor, abs_range = (150,250), parent=None):
+        super(optical_pumping, self).__init__(parent)
+        self.reactor = reactor
+        self.absoluteRange = abs_range
+        self.initializeGUI()
+        
+    def initializeGUI(self):
+        layout = QtGui.QGridLayout()
+        enableLabel = QtGui.QLabel('Enable')
+        frequencyLabel = QtGui.QLabel('Frequency')
+        self.freq = QtGui.QDoubleSpinBox()
+        self.freq.setRange(*self.absoluteRange)
+        self.freq.setSuffix('MHz')
+        self.freq.setDecimals(3)
+        self.freq.setSingleStep(0.01)
+        self.enable = QtGui.QCheckBox()
+        layout.addWidget(enableLabel, 0, 0, 1, 1)
+        layout.addWidget(frequencyLabel, 0, 1, 1, 1)
+        layout.addWidget(self.enable, 1, 0, 1, 1)
+        layout.addWidget(self.freq, 1, 1, 1, 1)
+        self.setLayout(layout)
+        self.show()
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
           
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = limitsWidget(reactor)
+    widget = optical_pumping(reactor)
     #widget = durationWdiget(reactor)
     widget.show()
     reactor.run()
