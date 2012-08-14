@@ -6,7 +6,6 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 import numpy
 
-
 class readout_histgram(QtGui.QWidget):
     def __init__(self, reactor, cxn = None, parent=None, threshold = 1, init_data = None):
         QtGui.QWidget.__init__(self, parent)
@@ -79,20 +78,28 @@ class readout_histgram(QtGui.QWidget):
         from connection import connection
         self.cxn = connection()
         yield self.cxn.connect()
-#        yield self.subscribe()
-        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
-        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999)
-        self.cxn.on_connect['Data Vault'] = [self.subscribe]
+        yield self.subscribe()
+        self.cxn.on_connect['Data Vault'].append( self.reinitialize)
+        self.cxn.on_disconnect['Data Vault'].append( self.disable)
         
     @inlineCallbacks
     def subscribe(self):
-        yield self.cxn.servers['Data Vault'].removeListener(listener = self.on_new_dataset, source = None, ID = 99999)#### necessary for now 
         yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
         yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999)
     
     @inlineCallbacks
+    def reinitialize(self):
+        self.setDisabled(False)
+        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
+    
+    @inlineCallbacks
+    def disable(self):
+        print 'disabling'
+        self.setDisabled(True)
+        yield None
+        
+    @inlineCallbacks
     def on_new_dataset(self, x, y):
-
         if y[3] == 'Histogram729':
             dataset = y[0]
             directory = y[2]

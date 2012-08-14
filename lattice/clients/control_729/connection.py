@@ -8,21 +8,25 @@ class connection(object):
                 'Semaphore':None
                 }
     
-    def __init__(self, cxn = None):
+    def __init__(self):
         self.on_connect = {}.fromkeys(self.servers)
-        self.cxn = cxn
+        self.on_disconnect = {}.fromkeys(self.servers)
+        #initialize these to empty lists
+        for key in self.on_connect:
+            self.on_connect[key] = []
+        for key in self.on_disconnect:
+            self.on_disconnect[key] = []
     
     @inlineCallbacks
     def connect(self):
-        if self.cxn is None:
-            from labrad.wrappers import connectAsync
-            self.cxn = yield connectAsync(self.host)
-            for server_name in self.servers.keys():
-                try:
-                    self.servers[server_name] = yield self.cxn[server_name]
-                except Exception, e:
-                    print '{} Not Connected'.format(e)
-            yield self.setupListeners()
+        from labrad.wrappers import connectAsync
+        self.cxn = yield connectAsync(self.host)
+        for server_name in self.servers.keys():
+            try:
+                self.servers[server_name] = yield self.cxn[server_name]
+            except Exception, e:
+                print '{} Not Connected'.format(e)
+        yield self.setupListeners()
             
     @inlineCallbacks
     def setupListeners(self):
@@ -37,17 +41,21 @@ class connection(object):
         if server_name in self.servers.keys():
             print '{} Connected'.format(server_name)
             self.servers[server_name] = yield self.cxn[server_name]
-            actions = self.on_connect.get(server_name)
-            if actions is not None:
-                for action in actions:
-                    print 'action', action
-                    yield action()
+            actions = self.on_connect[server_name]
+            for action in actions:
+                print 'action', action
+                yield action()
     
+    @inlineCallbacks
     def followServerDisconnect(self, cntx, server_name):
         server_name = server_name[1]
         if server_name in self.servers.keys():
             print '{} Disconnected'.format(server_name)
             self.servers[server_name] = None
+            actions = self.on_disconnect[server_name]
+            for action in actions:
+                print 'action', action
+                yield action()
             
 if __name__ == '__main__':
     from twisted.internet import reactor
