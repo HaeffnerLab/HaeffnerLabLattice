@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 import numpy
 
-class durationWdiget(QtGui.QWidget):
+class durationWdiget(QtGui.QFrame):
     def __init__(self, reactor, value = 1, init_range = (1,1000), parent=None):
         super(durationWdiget, self).__init__(parent)
         self.reactor = reactor
@@ -10,6 +10,7 @@ class durationWdiget(QtGui.QWidget):
         self.initializeGUI()
         
     def initializeGUI(self):
+        self.setFrameShape(QtGui.QFrame.Box)
         layout = QtGui.QGridLayout()
         durationLabel = QtGui.QLabel('Excitation Time')
         bandwidthLabel =  QtGui.QLabel('Fourier Bandwidth')
@@ -50,7 +51,7 @@ class durationWdiget(QtGui.QWidget):
         
     @staticmethod
     def conversion(x):
-        return 10**3 * (2 * numpy.pi / float(x)) #fourier bandwidth, and unit conversion
+        return 10**3 * (1.0 / (2.0 * numpy.pi * float(x) ) ) #fourier bandwidth, and unit conversion
     
     def closeEvent(self, x):
         self.reactor.stop()
@@ -160,6 +161,7 @@ class optical_pumping(QtGui.QWidget):
         self.initializeGUI()
         
     def initializeGUI(self):
+        self.setMaximumSize(100,100)
         layout = QtGui.QGridLayout()
         enableLabel = QtGui.QLabel('Enable')
         frequencyLabel = QtGui.QLabel('Frequency')

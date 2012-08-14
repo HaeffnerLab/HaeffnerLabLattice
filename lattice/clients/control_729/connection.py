@@ -1,4 +1,4 @@
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 class connection(object):
     
@@ -9,6 +9,7 @@ class connection(object):
                 }
     
     def __init__(self):
+        self.cxn = None
         self.on_connect = {}.fromkeys(self.servers)
         self.on_disconnect = {}.fromkeys(self.servers)
         #initialize these to empty lists
@@ -19,14 +20,15 @@ class connection(object):
     
     @inlineCallbacks
     def connect(self):
-        from labrad.wrappers import connectAsync
-        self.cxn = yield connectAsync(self.host)
-        for server_name in self.servers.keys():
-            try:
-                self.servers[server_name] = yield self.cxn[server_name]
-            except Exception, e:
-                print '{} Not Connected'.format(e)
-        yield self.setupListeners()
+        if self.cxn is None:
+            from labrad.wrappers import connectAsync
+            self.cxn = yield connectAsync(self.host)
+            for server_name in self.servers.keys():
+                try:
+                    self.servers[server_name] = yield self.cxn[server_name]
+                except Exception, e:
+                    print '{} Not Connected'.format(e)
+            yield self.setupListeners()
             
     @inlineCallbacks
     def setupListeners(self):
@@ -43,7 +45,6 @@ class connection(object):
             self.servers[server_name] = yield self.cxn[server_name]
             actions = self.on_connect[server_name]
             for action in actions:
-                print 'action', action
                 yield action()
     
     @inlineCallbacks
@@ -54,8 +55,12 @@ class connection(object):
             self.servers[server_name] = None
             actions = self.on_disconnect[server_name]
             for action in actions:
-                print 'action', action
                 yield action()
+    
+    @inlineCallbacks
+    def context(self):
+        cntx = yield self.cxn.context()
+        returnValue(cntx)
             
 if __name__ == '__main__':
     from twisted.internet import reactor

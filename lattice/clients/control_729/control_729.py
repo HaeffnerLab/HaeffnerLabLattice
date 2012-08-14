@@ -1,14 +1,22 @@
 from PyQt4 import QtGui, QtCore
-from connection import connection
 from readout_histogram import readout_histgram
 from helper_widgets import durationWdiget, limitsWidget, optical_pumping
+from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
-    def __init__(self, reactor, parent=None):
+    def __init__(self, reactor, cxn = None, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.reactor = reactor
+        self.cxn = cxn
+        self.connect_labrad()
+
+    @inlineCallbacks
+    def connect_labrad(self):
+        if self.cxn is None:
+            from connection import connection
+            self.cxn = connection()
+            yield self.cxn.connect()
         self.create_layout()
-        self.connection = connection()
         
     def create_layout(self):
         layout = QtGui.QGridLayout()
@@ -20,8 +28,8 @@ class control_729(QtGui.QWidget):
         optical_pump_tab = self.make_pump_tab()
         flop_tab = self.make_flop_tab()
         tab.addTab(histogram_tab, '&Histogram')
-        tab.addTab(spectrum_tab, '&Spectrum')
         opt_index = tab.addTab(optical_pump_tab, '&Optical Pumping')
+        tab.addTab(spectrum_tab, '&Spectrum')
         tab.addTab(flop_tab, '&Rabi Flopping')
         #connect basic signals
         optical_pump_tab.enable.clicked.connect(self.change_color(opt_index))
@@ -38,7 +46,7 @@ class control_729(QtGui.QWidget):
         return func
         
     def make_histogram_tab(self):
-        tab = readout_histgram(self.reactor)
+        tab = readout_histgram(self.reactor, self.cxn)
         return tab
     
     def make_spectrum_tab(self):
@@ -55,6 +63,9 @@ class control_729(QtGui.QWidget):
     def make_pump_tab(self):
         pump = optical_pumping(self.reactor)
         return pump
+
+    def closeEvent(self, x):
+        self.reactor.stop()
     
 if __name__=="__main__":
     a = QtGui.QApplication( ['Control 729'] )

@@ -18,6 +18,7 @@ class readout_histgram(QtGui.QWidget):
         self.last_hist = None
         if init_data is not None:
             self.on_new_data(init_data)
+        self.subscribed = False
         self.connect_labrad()
     
     def create_layout(self):
@@ -75,26 +76,35 @@ class readout_histgram(QtGui.QWidget):
     
     @inlineCallbacks
     def connect_labrad(self):
-        from connection import connection
-        self.cxn = connection()
-        yield self.cxn.connect()
-        yield self.subscribe()
+        if self.cxn is None:
+            from connection import connection
+            self.cxn = connection()
+            yield self.cxn.connect()
+        self.context = yield self.cxn.context()
+        try:
+            yield self.subscribe()
+            self.subscribed = True
+        except Exception, e:
+            print e
+            print 'Not Initially Connected'
+            self.setDisabled(True)
         self.cxn.on_connect['Data Vault'].append( self.reinitialize)
         self.cxn.on_disconnect['Data Vault'].append( self.disable)
         
     @inlineCallbacks
     def subscribe(self):
-        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
-        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999)
+        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999, context = self.context)
+        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999, context = self.context)
     
     @inlineCallbacks
     def reinitialize(self):
         self.setDisabled(False)
-        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999)
+        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(99999, context = self.context)
+        if not self.subscribed:
+            yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = 99999, context = self.context)
     
     @inlineCallbacks
     def disable(self):
-        print 'disabling'
         self.setDisabled(True)
         yield None
         
@@ -103,12 +113,12 @@ class readout_histgram(QtGui.QWidget):
         if y[3] == 'Histogram729':
             dataset = y[0]
             directory = y[2]
-            yield self.cxn.servers['Data Vault'].cd(directory)
-            yield self.cxn.servers['Data Vault'].open(dataset)
-            data = yield self.cxn.servers['Data Vault'].get()
+            yield self.cxn.servers['Data Vault'].cd(directory, context = self.context)
+            yield self.cxn.servers['Data Vault'].open(dataset, context = self.context)
+            data = yield self.cxn.servers['Data Vault'].get( context = self.context)
             data = data.asarray
             yield deferToThread(self.on_new_data, data)
-            yield self.cxn.servers['Data Vault'].cd([''])
+            yield self.cxn.servers['Data Vault'].cd([''], context = self.context)
                                           
     def closeEvent(self, x):
         self.reactor.stop()  
