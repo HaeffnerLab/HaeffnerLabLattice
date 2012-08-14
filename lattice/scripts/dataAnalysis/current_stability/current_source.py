@@ -8,25 +8,17 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 
 #change directory
-
-figure = pyplot.figure()
+#dv.cd(['','QuickMeasurements', 'Power Monitoring'])
 dv.cd(['','QuickMeasurements','Keithly 6487 Current Monitoring','2012Aug10'])
 dv.open(39)
 data = dv.get().asarray
-### two current sources ###
-thorlabs = data[0,7660]
+thor = data[0:76600]
 ilx = data[76701:116194]
-
-##normalize
-
-thorlabs_i = thorlabs[:,1]-np.average(thorlabs[:,1])
-ilx_i = ilx[:,1]-np.average(ilx[:,1])
-
-pyplot.plot(thorlabs_i)
-pyplot.plot(ilx_i)
-
-pyplot.legend()
-pyplot.xlabel( 'Time (s)')
-pyplot.ylabel('Current')
-pyplot.title('Current Sources')
+figure = pyplot.figure()
+figure.clf()
+pyplot.plot(ilx[:,1]-np.average(ilx[:,1]))
+pyplot.plot(10*(thor[:,1]-np.average(thor[:,1])))
+figure.suptitle('Current Sources')
+pyplot.xlabel('Time (s)')
+pyplot.ylabel('Current (A)')
 pyplot.show()

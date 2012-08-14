@@ -8,12 +8,15 @@ class Semaphore(LabradServer):
     name = "Semaphore"
     
     onStatusChange = Signal(111111, 'signal: status parameter change', '(s,s)')
-#    onParameterChange = Signal(222222, 'signal: parameter change', 's')
+    onGlobalParameterChange = Signal(222222, 'signal: global parameter change', '(s, v)')
+    onExperimentParameterChange = Signal(333333, 'signal: experiment parameter change', '(s, s, v)')
        
     def initServer(self):
         
         self.listeners = set()  
-        self.paramDict = {}
+        self.experimentParametersDict = {}
+        self.globalParametersDict = {}
+        self._initializeExperiments()
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -22,38 +25,86 @@ class Semaphore(LabradServer):
     def expireContext(self, c):
         self.listeners.remove(c.ID)   
     
-    def _initializeExperiments(self, experiments):
-        self.experiments = experiments
-        self.paramDict['Global'] = {}
-        for experiment in experiments:
-            self.paramDict[experiment] = {}
-            self.paramDict[experiment]['General'] = {}
-            self.paramDict[experiment]['General']['Block'] = False
-            self.paramDict[experiment]['General']['Status'] = 'Stopped'
-            self.paramDict[experiment]['General']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
-        self._getRegistryParameters(experiments)
-    
-    @inlineCallbacks
-    def _getRegistryParameters(self, experiments):
-        # global
-        yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
-        parameterList = yield self.client.registry.dir()
-        parameters = parameterList[1]
-        for parameter in parameters:
-            value = yield self.client.registry.get(parameter)
-            self.paramDict['Global'][parameter] = value
-        # experiments
-        for experiment in experiments:        
-            yield self.client.registry.cd(['','Servers', 'Semaphore'])
-            yield self.client.registry.cd(experiment)
-            parameterList = yield self.client.registry.dir()
-            parameters = parameterList[1]
-            for parameter in parameters:
-                value = yield self.client.registry.get(parameter)
-                self.paramDict[experiment][parameter] = value
+    def _initializeExperiments(self):
+        topDir = ['','Servers', 'Semaphore']
+        @inlineCallbacks
+        def addParametersToDictionary(directory, globalDict, expDict):
+            print 'alo'
+            yield self.client.registry.cd(directory)
+            dirList = yield self.client.registry.dir()
+            print 'dirlist: ', dirList
+
+            if (len(dirList[0]) != 0):
+                # Global!
+                parameters = dirList[1]
+                for parameter in parameters:
+                    value = yield self.client.registry.get(parameter)
+                    globalDict[parameter] = value
+            else:
+                # Experiment!
+                parameters = dirList[1]
+                for parameter in parameters:
+                    value = yield self.client.registry.get(parameter)
+                    expDict[parameter] = value
+                expDict['Semaphore'] = {}
+                expDict['Semaphore']['Block'] = False
+                expDict['Semaphore']['Status'] = 'Stopped'
+                expDict['Semaphore']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
+                
+#            print 'global dict:, ', globalDict
+#            print 'globalParametersDict: ',self.globalParametersDict
+#            print 'experimentParametersDict', self.experimentParametersDict
+            
+            dirs = dirList[0]
+#            print 'dirs: ', dirs
+            
+            for dir in dirs:
+#                print 'dir: ', dir
+                globalDict[dir] = {}
+                expDict[dir] = {}
+                yield addParametersToDictionary(dir, globalDict[dir], expDict[dir])
+                currentDir = yield self.client.registry.cd()
+                if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
+#                    print 'currentDir: ', currentDir
+#                    print 'cd to one directory back'
+                    print currentDir[0:-1]
+                    yield self.client.registry.cd(currentDir[0:-1])
+        
+        addParametersToDictionary(topDir, self.globalParametersDict, self.experimentParametersDict)
+#        self.globalParametersDict = topGlobalDict
+
+        
+        # 
+        
+#        for experiment in experiments:
+#            self.paramDict[experiment] = {}
+#            self.paramDict[experiment]['General'] = {}
+#            self.paramDict[experiment]['General']['Block'] = False
+#            self.paramDict[experiment]['General']['Status'] = 'Stopped'
+#            self.paramDict[experiment]['General']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
+#        self._getRegistryParameters(experiments)
+#    
+#        # global
+#        yield self.client.registry.cd(['','Servers', 'Semaphore', 'Global'], True)
+#        parameterList = yield self.client.registry.dir()
+#        parameters = parameterList[1]
+#        for parameter in parameters:
+#            value = yield self.client.registry.get(parameter)
+#            self.paramDict['Global'][parameter] = value
+#        # experiments
+#        for experiment in experiments:        
+#            yield self.client.registry.cd(['','Servers', 'Semaphore'])
+#            yield self.client.registry.cd(experiment)
+#            parameterList = yield self.client.registry.dir()
+#            parameters = parameterList[1]
+#            for parameter in parameters:
+#                value = yield self.client.registry.get(parameter)
+#                self.paramDict[experiment][parameter] = value
     
     def _setGlobalParameter(self, parameter, value):
         self.paramDict['Global'][parameter] = value
+        self.onGlobalParameterChange((parameter, value), self.listeners)
+        print 'global signal'
 
     def _getGlobalParameter(self, parameter):
         value = self.paramDict['Global'][parameter]
@@ -61,6 +112,8 @@ class Semaphore(LabradServer):
 
     def _setExperimentParameter(self, experiment, parameter, value):
         self.paramDict[experiment][parameter] = value
+        self.onExperimentParameterChange((experiment, parameter, value), self.listeners)
+        print 'experiment signal'
 
     def _getExperimentParameter(self, experiment, parameter):
         value = self.paramDict[experiment][parameter]

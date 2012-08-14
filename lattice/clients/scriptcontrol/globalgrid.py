@@ -6,6 +6,7 @@ class GlobalGrid(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         self.parent = parent
         self.setupGlobalGrid()
+        self.setupGlobalParameterListener()
 
     @inlineCallbacks
     def setupGlobalGrid(self):
@@ -43,6 +44,16 @@ class GlobalGrid(QtGui.QWidget):
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setLayout(self.globalGrid)    
+
+    @inlineCallbacks
+    def setupGlobalParameterListener(self):
+        yield self.parent.cxn.semaphore.signal__experiment_parameter_change(33333)#, context = context)
+        yield self.parent.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333)#, context = context)    
+
+    def updateGlobalParameter(self, x, y):
+        print 'experiment signal!'
+        print x, y        
+        self.parameterDoubleSpinBoxDict[y[0]].setValue(y[1])
     
     @inlineCallbacks
     def updateValueToSemaphore(self, parameterValue):

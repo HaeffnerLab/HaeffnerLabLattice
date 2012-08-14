@@ -42,10 +42,10 @@ class Keithly6487Client(QtGui.QWidget):
 
         intervalLabel = QtGui.QLabel('Interval (sec): ')
         
-        self.intervalSpinBox = QtGui.QSpinBox()
-        self.intervalSpinBox.setRange(0, 1000)
-        self.intervalSpinBox.setValue(1)
-        self.intervalSpinBox.setSingleStep(1)
+        self.intervalDoubleSpinBox = QtGui.QDoubleSpinBox()
+        self.intervalDoubleSpinBox.setRange(.25, 1000)
+        self.intervalDoubleSpinBox.setValue(1)
+        self.intervalDoubleSpinBox.setSingleStep(1)
 
 
         self.grid.addWidget(measureButton, 0, 0, QtCore.Qt.AlignCenter)
@@ -54,7 +54,7 @@ class Keithly6487Client(QtGui.QWidget):
         self.grid.addWidget(iterationsLabel, 1, 1, QtCore.Qt.AlignCenter)
         self.grid.addWidget(self.iterationsSpinBox, 1, 2, QtCore.Qt.AlignCenter)
         self.grid.addWidget(intervalLabel, 2, 1, QtCore.Qt.AlignCenter)
-        self.grid.addWidget(self.intervalSpinBox, 2, 2, QtCore.Qt.AlignCenter)
+        self.grid.addWidget(self.intervalDoubleSpinBox, 2, 2, QtCore.Qt.AlignCenter)
 
         self.setLayout(self.grid)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -76,7 +76,7 @@ class Keithly6487Client(QtGui.QWidget):
 #            Data2 = [Data[0], Data[1]]
 #            print Data2
             yield self.cxn.data_vault.add(Data)
-            yield deferToThread(time.sleep, self.intervalSpinBox.value())
+            yield deferToThread(time.sleep, self.intervalDoubleSpinBox.value())
     
     def closeEvent(self, x):
         self.reactor.stop()

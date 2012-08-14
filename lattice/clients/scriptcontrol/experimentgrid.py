@@ -8,6 +8,7 @@ class ExperimentGrid(QtGui.QWidget):
         self.experiment = experiment
         self.parent.setWindowTitle(self.experiment)
         self.setupExperimentGrid()
+        self.setupExperimentParameterListener()
 
     @inlineCallbacks
     def setupExperimentGrid(self):
@@ -45,6 +46,18 @@ class ExperimentGrid(QtGui.QWidget):
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setLayout(self.experimentGrid)    
+    
+    @inlineCallbacks
+    def setupExperimentParameterListener(self):
+        yield self.parent.cxn.semaphore.signal__experiment_parameter_change(22222)#, context = context)
+        yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222)#, context = context)    
+
+    def updateExperimentParameter(self, x, y):
+        print 'experiment signal!'
+        print x, y
+        if (y[0] == self.experiment):
+            self.parameterDoubleSpinBoxDict[y[1]].setValue(y[2])
+
     
     @inlineCallbacks
     def updateValueToSemaphore(self, parameterValue):
