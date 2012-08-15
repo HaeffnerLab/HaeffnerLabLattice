@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
-from helper_widgets import durationWdiget, limitsWidget, optical_pumping
+from optical_pumping import optical_pumping_parameters
+from spectrum import spectrum
 from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
@@ -48,19 +49,15 @@ class control_729(QtGui.QWidget):
         return tab
     
     def make_spectrum_tab(self):
-        spectrum = QtGui.QWidget()
-        layout = QtGui.QGridLayout()
-        layout.addWidget(limitsWidget(self.reactor), 0, 0, 1, 1)
-        layout.addWidget(durationWdiget(self.reactor), 1, 0, 1, 1)
-        spectrum.setLayout(layout)
-        return spectrum
+        spec = spectrum(self.reactor)
+        return spec
     
     def make_flop_tab(self):
         flop = QtGui.QWidget()
         return flop
     
     def make_pump_tab(self):
-        pump = optical_pumping(self.reactor)
+        pump = optical_pumping_parameters(self.reactor)
         return pump
 
     def closeEvent(self, x):
