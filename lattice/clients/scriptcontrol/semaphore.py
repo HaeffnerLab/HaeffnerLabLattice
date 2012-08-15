@@ -169,6 +169,14 @@ class Semaphore(LabradServer):
 #            print 'getallnames nest: ', nest 
             names = nest.keys()
         return names    
+
+    def _getDirectoryNames(self, path):
+        allNames = self._getAllNames(path)
+        parameterNames = self._getParameterNames(path)
+        for parameterName in parameterNames:
+            allNames.remove(parameterName)
+        return allNames
+
     
 #    
 #    def _getExperimentParameterNames(self, experiment):
@@ -376,7 +384,12 @@ class Semaphore(LabradServer):
         """ Refreshes the Semaphore """
         yield self._saveParametersToRegistry()
         yield self._initializeExperiments()
-    
+
+    @setting(13, "Get Directory Names", path = '*s', returns = '*s')
+    def getDirectoryNames(self, c, path):
+        """Get Directory Names"""
+        directoryNames = self._getDirectoryNames(path)
+        return directoryNames    
     
 #    @setting(12, "Save", returns="")
 #    def save(self, c):
