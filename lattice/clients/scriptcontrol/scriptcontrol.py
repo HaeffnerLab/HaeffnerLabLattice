@@ -24,10 +24,10 @@ class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-#        self.experiments = {
-#                            'Test.Exp1':  Test(),
-#                            'Test.Exp2': Test2()
-#                           }
+        self.experiments = {
+                            str(['Test', 'Exp1']):  Test(),
+                            str(['Test', 'Exp2']):  Test2()
+                           }
         self.connect()
         
     @inlineCallbacks
@@ -35,7 +35,7 @@ class ScriptControl(QtGui.QWidget):
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync()
         self.server = self.cxn.semaphore
-        self.server.initialize_experiments(self.experiments.keys())
+#        self.server.initialize_experiments(self.experiments.keys())
         self.setupMainWidget()
         
     @inlineCallbacks
@@ -53,16 +53,16 @@ class ScriptControl(QtGui.QWidget):
         
         # not this again!
         yield deferToThread(time.sleep, .05)
-        self.setupExperimentGrid(self.experiments.keys()[0])
-       
-        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
-        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
-        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignCenter)
-        
-        self.setupGlobalGrid()
-        
-        self.setupStatusWidget(self.experiments.keys()[0])
+        self.setupExperimentGrid(['Test', 'Exp1'])
+#       
+#        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
+#        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+#        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
+#        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignCenter)
+#        
+        self.setupGlobalGrid(['Test', 'Exp1'])
+#        
+        self.setupStatusWidget(['Test', 'Exp1'])
         
         self.setLayout(self.mainLayout)
         self.show()
@@ -90,8 +90,13 @@ class ScriptControl(QtGui.QWidget):
         self.mainGrid.addWidget(self.experimentGrid, 0, 1, QtCore.Qt.AlignCenter)
         self.experimentGrid.show()  
 
-    def setupGlobalGrid(self):
-        self.globalGrid = GlobalGrid(self)           
+    def setupGlobalGrid(self, experimentPath):
+        try:
+            self.globalGrid.hide()
+        except:
+            # First time
+            pass
+        self.globalGrid = GlobalGrid(self, experimentPath)           
         self.mainGrid.addWidget(self.globalGrid, 0, 2, QtCore.Qt.AlignCenter)
         self.globalGrid.show()          
 

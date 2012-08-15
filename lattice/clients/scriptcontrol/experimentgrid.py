@@ -2,11 +2,11 @@ from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
 class ExperimentGrid(QtGui.QWidget):
-    def __init__(self, parent, experiment):
+    def __init__(self, parent, experimentPath):
         QtGui.QWidget.__init__(self)
         self.parent = parent
-        self.experiment = experiment
-        self.parent.setWindowTitle(self.experiment)
+        self.experimentPath = experimentPath
+        self.parent.setWindowTitle(experimentPath[-1])
         self.setupExperimentGrid()
         self.setupExperimentParameterListener()
 
@@ -18,13 +18,13 @@ class ExperimentGrid(QtGui.QWidget):
         self.doubleSpinBoxParameterDict = {}
         self.parameterDoubleSpinBoxDict = {}
         
-        expParamNames = yield self.parent.server.get_experiment_parameter_names(self.experiment)
+        expParamNames = yield self.parent.server.get_parameter_names(self.experimentPath)
         
         gridRow = 0
         gridCol = 0
         for parameter in expParamNames:
             # create a label and spin box, add it to the grid
-            value = yield self.parent.server.get_experiment_parameter(self.experiment, parameter)
+            value = yield self.parent.server.get_parameter(self.experimentPath + [parameter])
             label = QtGui.QLabel(parameter)
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
@@ -49,16 +49,16 @@ class ExperimentGrid(QtGui.QWidget):
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
-        yield self.parent.cxn.semaphore.signal__experiment_parameter_change(22222)#, context = context)
+        yield self.parent.cxn.semaphore.signal__parameter_change(22222)#, context = context)
         yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222)#, context = context)    
 
     def updateExperimentParameter(self, x, y):
         print 'experiment signal!'
         print x, y
-        if (y[0] == self.experiment):
-            self.parameterDoubleSpinBoxDict[y[1]].setValue(y[2])
+#        if (y[0] == self.experimentPath):
+#            self.parameterDoubleSpinBoxDict[y[1]].setValue(y[2])
 
     
     @inlineCallbacks
     def updateValueToSemaphore(self, parameterValue):
-        yield self.parent.server.set_experiment_parameter(self.experiment, self.doubleSpinBoxParameterDict[self.sender()], [self.sender().minimum(), self.sender().maximum(), parameterValue])
+        yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), parameterValue])

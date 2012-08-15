@@ -373,7 +373,7 @@ class Semaphore(LabradServer):
 #        parameters = self._scriptRequestExperimentParameters(experiment)
 #        return parameters
         
-    @setting(11, "Block Experiment", experiment = 's', returns="b")
+    @setting(11, "Block Experiment", experiment = '*s', returns="b")
     def blockExperiment(self, c, experiment):
         """Update and get the number."""
         result = self._blockExperiment(experiment)

@@ -6,14 +6,14 @@ import sys
 #class Script(threading.Thread):
 class Test2():
     def __init__(self):
-        self.experimentName = 'Test2'
+        self.experimentPath = ['Test', 'Exp2']
         print 'Initializing Test2'
         #threading.Thread.__init__(self)
     
     def pause(self):
-        Continue = self.cxn.semaphore.block_experiment(self.experimentName)
+        Continue = self.cxn.semaphore.block_experiment(self.experimentPath)
         if (Continue == True):
-            self.parameters = self.cxn.semaphore.script_request_experiment_parameters(self.experimentName)
+            self.parameters = self.cxn.semaphore.get_parameter_names(self.experimentPath)
             return True
         else:
             return False

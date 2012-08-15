@@ -10,11 +10,19 @@ class ExperimentListWidget(QtGui.QListWidget):
     def __init__(self, parent):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
-        
-        for experiment in self.parent.experiments.keys():
-            self.addItem(experiment)
+        self.path = []
+        self.populateList(self.path)
+    
+    @inlineCallbacks
+    def populateList(self, path):
+        self.clear()
+        directories = yield self.parent.server.get_directory_names(path)
+        self.addItem('..')
+        for directory in directories:
+            self.addItem(directory)
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
         
     def mousePressEvent(self, event):
         """
@@ -23,10 +31,29 @@ class ExperimentListWidget(QtGui.QListWidget):
         button = event.button()
         item = self.itemAt(event.x(), event.y())
         if item:
-            if (button == 1):
-                self.parent.setupExperimentGrid(str(item.text()))
-                self.parent.setupStatusWidget(str(item.text()))
-                    
+            if (item == self.item(0)):
+                if (button == 1):
+                    if (self.path == []):
+                        pass
+                    else:
+                        self.path = self.path[:-1]
+                        self.populateList(self.path)
+            else:
+                if (button == 1):
+                    itemText = str(item.text())
+                    self.handleMouseClick(itemText)
+    
+    @inlineCallbacks
+    def handleMouseClick(self, itemText):
+        newDirectories = yield self.parent.server.get_directory_names(self.path + [itemText])
+        if (newDirectories == ['Semaphore']):
+            self.parent.setupExperimentGrid(self.path + [itemText])
+            self.parent.setupGlobalGrid(self.path + [itemText])
+            self.parent.setupStatusWidget(self.path + [itemText])
+        else:
+            self.path = self.path + [itemText]
+            self.populateList(self.path)
+        
 
 
 
