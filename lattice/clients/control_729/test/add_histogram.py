@@ -15,4 +15,4 @@ dv.new('Histogram',[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
 dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
 dv.add_parameter('Histogram729', True)
 
-print 'DONE'
+print 'DONE Adding Histogram'

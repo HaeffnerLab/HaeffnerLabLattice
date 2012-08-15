@@ -20,8 +20,6 @@ class control_729(QtGui.QWidget):
         
     def create_layout(self):
         layout = QtGui.QGridLayout()
-        dw = durationWdiget(self.reactor)
-        layout.addWidget(dw, 0, 0, 1, 1)
         self.tab = tab = QtGui.QTabWidget()
         histogram_tab = self.make_histogram_tab()
         spectrum_tab =  self.make_spectrum_tab()
@@ -53,6 +51,7 @@ class control_729(QtGui.QWidget):
         spectrum = QtGui.QWidget()
         layout = QtGui.QGridLayout()
         layout.addWidget(limitsWidget(self.reactor), 0, 0, 1, 1)
+        layout.addWidget(durationWdiget(self.reactor), 1, 0, 1, 1)
         spectrum.setLayout(layout)
         return spectrum
     
