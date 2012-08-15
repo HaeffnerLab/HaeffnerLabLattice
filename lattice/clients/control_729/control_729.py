@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
-from optical_pumping import optical_pumping_parameters
+from optical_pumping import optical_pumping
 from spectrum import spectrum
 from twisted.internet.defer import inlineCallbacks
 
@@ -57,7 +57,7 @@ class control_729(QtGui.QWidget):
         return flop
     
     def make_pump_tab(self):
-        pump = optical_pumping_parameters(self.reactor)
+        pump = optical_pumping(self.reactor)
         return pump
 
     def closeEvent(self, x):

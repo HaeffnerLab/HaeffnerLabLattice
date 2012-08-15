@@ -1,17 +1,54 @@
 from PyQt4 import QtGui
 from helper_widgets import saved_frequencies_dropdown
+from twisted.internet.defer import inlineCallbacks
+from twisted.internet.threads import deferToThread
+from configuration import config_729_optical_pumping as c
 
-class optical_pumping_parameters(QtGui.QWidget):
-    def __init__(self, reactor, abs_range = (150,250), parent=None):
-        super(optical_pumping_parameters, self).__init__(parent)
+class optical_pumping(QtGui.QWidget):
+    def __init__(self, reactor, cxn = None, abs_range = (150,250), parent=None):
+        super(optical_pumping, self).__init__(parent)
         self.reactor = reactor
+        self.cxn = cxn
+        self.subscribed = False
         self.absoluteRange = abs_range
         self.initializeGUI()
+        self.connect_labrad()
+    
+    @inlineCallbacks
+    def connect_labrad(self):
+        if self.cxn is None:
+            from connection import connection
+            self.cxn = connection()
+            yield self.cxn.connect()
+        self.context = yield self.cxn.context()
+        try:
+            yield self.subscribe_semaphore()
+        except Exception:
+            print 'Not Initially Connected to Semaphore'
+            self.setDisabled(True)
+        self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
+        self.cxn.on_disconnect['Semaphore'].append( self.disable)
+        self.connect_widgets()
+    
+    @inlineCallbacks
+    def reinitialize_semaphore(self):
+        self.setDisabled(False)
+        yield self.cxn.servers['Semaphore'].signal__parameter_change(c.ID, context = self.context)
+        if not self.subscribed:
+            yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID, context = self.context)
+            self.subscribed = True
+        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
+        self.threshold.setRange(init_val[0],init_val[1])
+        self.set_threshold_block_signals(init_val[2])
+        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
+        self.readout_time.setRange(init_val[0],init_val[1])
+        self.set_readout_time_block_signals(init_val[2])    
+    
+    
         
     def initializeGUI(self):
         self.create_widgets()
         self.create_layout()
-        self.connect_widgets()
     
     def create_widgets(self):
         self.freq = QtGui.QDoubleSpinBox()
@@ -72,6 +109,7 @@ class optical_pumping_parameters(QtGui.QWidget):
         #row2
         frame = QtGui.QFrame()
         hbox = QtGui.QHBoxLayout()
+        l = QtGui.QLabel('Amplitude 729')
         layout.addWidget(QtGui.QLabel('Amplitude 729')) 
         layout.addWidget(self.ampl729) 
         layout.addWidget(QtGui.QLabel('Amplitude 854')) 
@@ -118,6 +156,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = optical_pumping_parameters(reactor)
+    widget = optical_pumping(reactor)
     widget.show()
     reactor.run()

@@ -16,7 +16,6 @@ class readout_histgram(QtGui.QWidget):
         self.last_data = None
         self.last_hist = None
         self.subscribed = [False,False]
-
         self.create_layout()
         self.connect_labrad()
     
@@ -25,12 +24,20 @@ class readout_histgram(QtGui.QWidget):
         plot_layout = self.create_plot_layout()
         layout.addLayout(plot_layout, 0, 0, 1, 4)
         thresholdLabel = QtGui.QLabel("Threshold (Photon Counts Per Readout)")
-        for l in [thresholdLabel]:
+        readoutTimeLabel = QtGui.QLabel("Readout Time")
+        for l in [thresholdLabel, readoutTimeLabel]:
             l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.threshold = QtGui.QSpinBox()
         self.threshold.setKeyboardTracking(False)
+        self.readout_time = QtGui.QDoubleSpinBox()
+        self.readout_time.setKeyboardTracking(False)
+        self.readout_time.setSuffix('ms')
+        self.readout_time.setDecimals(1)
+        self.readout_time.setSingleStep(0.1)
         layout.addWidget(thresholdLabel, 1, 0)
         layout.addWidget(self.threshold, 1, 1)
+        layout.addWidget(readoutTimeLabel, 1, 2)
+        layout.addWidget(self.readout_time, 1, 3)
         self.setLayout(layout)
    
     def create_plot_layout(self):
@@ -50,6 +57,7 @@ class readout_histgram(QtGui.QWidget):
     def connect_layout(self):
         self.threshold.valueChanged.connect(self.thresholdChange)
         self.canvas.mpl_connect('button_press_event', self.on_key_press)
+        self.readout_time.valueChanged.connect(self.readoutChange)
     
     def on_key_press(self, event):
         if event.button == 2:
@@ -77,6 +85,15 @@ class readout_histgram(QtGui.QWidget):
         except Exception:
             yield None
     
+    @inlineCallbacks
+    def readoutChange(self, value):
+        value = value / 1000.0
+        try:
+            minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
+            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_time_dir, [minim,maxim,float(value)], context = self.context)
+        except Exception:
+            yield None
+            
     def update_canvas_line(self, threshold):
         self.thresholdLine.remove()
         self.thresholdLine = self.axes.axvline(threshold, ymin=0, ymax= 200, linewidth=3.0, color = 'r', label = 'Threshold')
@@ -119,6 +136,9 @@ class readout_histgram(QtGui.QWidget):
         self.threshold.setRange(init_val[0],init_val[1])
         self.threshold.setValue(init_val[2])
         self.update_canvas_line(init_val[2])
+        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
+        self.readout_time.setRange(1000.0 * init_val[0],1000.0 *init_val[1])
+        self.set_readout_time_block_signals(init_val[2])
         self.subscribed[1] = True
     
     @inlineCallbacks
@@ -137,7 +157,12 @@ class readout_histgram(QtGui.QWidget):
             yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID_B, context = self.context)
             self.subscribed[1] = True
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
+        self.threshold.setRange(init_val[0],init_val[1])
         self.set_threshold_block_signals(init_val[2])
+        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
+        self.readout_time.setRange(init_val[0],init_val[1])
+        self.set_readout_time_block_signals(init_val[2])
+        
         
     @inlineCallbacks
     def disable(self):
@@ -146,16 +171,23 @@ class readout_histgram(QtGui.QWidget):
     
     @inlineCallbacks
     def on_parameter_change(self, x, y):
-        d, val = y
+        d, sett = y
+        val = sett[2]
         if d == c.readout_threshold_dir:
-            threshold = val[2]
-            yield deferToThread(self.set_threshold_block_signals, threshold)
+            yield deferToThread(self.set_threshold_block_signals, val)
+        elif d == c.readout_time_dir:
+            yield deferToThread(self.set_readout_time_block_signals, val)
     
     def set_threshold_block_signals(self, thresh):
         self.threshold.blockSignals(True)
         self.threshold.setValue(thresh)
         self.threshold.blockSignals(False)
         self.update_canvas_line(thresh)
+    
+    def set_readout_time_block_signals(self, val):
+        self.readout_time.blockSignals(True)
+        self.readout_time.setValue(val * 1000.0)
+        self.readout_time.blockSignals(False)
         
     @inlineCallbacks
     def on_new_dataset(self, x, y):

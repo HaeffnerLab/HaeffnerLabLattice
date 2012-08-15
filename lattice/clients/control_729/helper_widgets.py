@@ -209,8 +209,6 @@ class saved_frequencies_dropdown(QtGui.QComboBox):
         super(saved_frequencies_dropdown, self).__init__(parent)
         self.reactor = reactor
         self.initializeGUI()
-        self.selected = None
-        self
         
     def initializeGUI(self):
         self.setInsertPolicy(QtGui.QComboBox.InsertAlphabetically)
