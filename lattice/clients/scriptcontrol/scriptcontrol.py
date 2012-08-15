@@ -24,10 +24,10 @@ class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-        self.experiments = {
-                            'Test':  Test(),
-                            'Test2': Test2()
-                           }
+#        self.experiments = {
+#                            'Test.Exp1':  Test(),
+#                            'Test.Exp2': Test2()
+#                           }
         self.connect()
         
     @inlineCallbacks

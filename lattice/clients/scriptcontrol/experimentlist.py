@@ -10,6 +10,7 @@ class ExperimentListWidget(QtGui.QListWidget):
     def __init__(self, parent):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
+        
         for experiment in self.parent.experiments.keys():
             self.addItem(experiment)
         
