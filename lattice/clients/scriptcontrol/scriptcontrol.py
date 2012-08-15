@@ -45,11 +45,21 @@ class ScriptControl(QtGui.QWidget):
         self.mainGrid = QtGui.QGridLayout()
         self.mainGrid.setSpacing(5)
         
+        experimentListLabel = QtGui.QLabel('Experiment Navigation')
+        experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+        globalParametersLabel = QtGui.QLabel('Global Parameters')
+        controlLabel = QtGui.QLabel('Control')
+                
+        self.mainGrid.addWidget(experimentListLabel, 0, 0, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(experimentParametersLabel, 0, 1, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(globalParametersLabel, 0, 2, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(controlLabel, 0, 3, QtCore.Qt.AlignCenter)        
+        
         self.mainLayout.addLayout(self.mainGrid)
         
         self.experimentListWidget = ExperimentListWidget(self)
         self.experimentListWidget.show()
-        self.mainGrid.addWidget(self.experimentListWidget, 0, 0, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(self.experimentListWidget, 1, 0, QtCore.Qt.AlignCenter)
         
         # not this again!
         yield deferToThread(time.sleep, .05)
@@ -58,7 +68,7 @@ class ScriptControl(QtGui.QWidget):
         parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
         parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
-        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(parameterLimitsButton, 2, 1, QtCore.Qt.AlignCenter)
 #        
         self.setupGlobalGrid(['Test', 'Exp1'])
 #        
@@ -87,7 +97,7 @@ class ScriptControl(QtGui.QWidget):
             # First time
             pass
         self.experimentGrid = ExperimentGrid(self, experimentPath)           
-        self.mainGrid.addWidget(self.experimentGrid, 0, 1, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(self.experimentGrid, 1, 1, QtCore.Qt.AlignCenter)
         self.experimentGrid.show()  
 
     def setupGlobalGrid(self, experimentPath):
@@ -97,7 +107,7 @@ class ScriptControl(QtGui.QWidget):
             # First time
             pass
         self.globalGrid = GlobalGrid(self, experimentPath)           
-        self.mainGrid.addWidget(self.globalGrid, 0, 2, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(self.globalGrid, 1, 2, QtCore.Qt.AlignCenter)
         self.globalGrid.show()          
 
     def setupStatusWidget(self, experiment):
@@ -107,7 +117,7 @@ class ScriptControl(QtGui.QWidget):
             # First time
             pass
         self.statusWidget = StatusWidget(self, experiment)           
-        self.mainGrid.addWidget(self.statusWidget, 0, 3, QtCore.Qt.AlignCenter)
+        self.mainGrid.addWidget(self.statusWidget, 1, 3, QtCore.Qt.AlignCenter)
         self.statusWidget.show() 
         
     @inlineCallbacks

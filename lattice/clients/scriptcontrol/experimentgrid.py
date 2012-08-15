@@ -1,9 +1,9 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 
-class ExperimentGrid(QtGui.QWidget):
+class ExperimentGrid(QtGui.QTableWidget):
     def __init__(self, parent, experimentPath):
-        QtGui.QWidget.__init__(self)
+        QtGui.QTableWidget.__init__(self)
         self.parent = parent
         self.experimentPath = experimentPath
         self.parent.setWindowTitle(experimentPath[-1])
@@ -12,40 +12,69 @@ class ExperimentGrid(QtGui.QWidget):
 
     @inlineCallbacks
     def setupExperimentGrid(self):
-        self.experimentGrid = QtGui.QGridLayout()
-        self.experimentGrid.setSpacing(5)
+#        self.experimentGrid = QtGui.QGridLayout()
+#        self.experimentGrid.setSpacing(5)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setColumnCount(2)
         
         self.doubleSpinBoxParameterDict = {}
         self.parameterDoubleSpinBoxDict = {}
+
+        self.lineEditParameterDict = {}
+        self.parameterLineEditDict = {}        
         
         expParamNames = yield self.parent.server.get_parameter_names(self.experimentPath)
         
-        gridRow = 0
-        gridCol = 0
+        self.setRowCount(len(expParamNames))
+        
+        Row = 0
         for parameter in expParamNames:
             # create a label and spin box, add it to the grid
+            #label = QtGui.QLabel(parameter)
+            item = QtGui.QTableWidgetItem(parameter)
+            self.setItem(Row, 1, item)
             value = yield self.parent.server.get_parameter(self.experimentPath + [parameter])
-            label = QtGui.QLabel(parameter)
-            doubleSpinBox = QtGui.QDoubleSpinBox()
-            doubleSpinBox.setRange(value[0], value[1])
-            doubleSpinBox.setValue(value[2])
-            doubleSpinBox.setSingleStep(.1)
-            doubleSpinBox.setKeyboardTracking(False)
-            self.connect(doubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.updateValueToSemaphore)
+            if (len(value) == 3):
+                doubleSpinBox = QtGui.QDoubleSpinBox()
+                doubleSpinBox.setRange(value[0], value[1])
+                doubleSpinBox.setValue(value[2])
+                doubleSpinBox.setSingleStep(.1)
+                doubleSpinBox.setKeyboardTracking(False)
+                                
+                self.doubleSpinBoxParameterDict[doubleSpinBox] = parameter
+                self.parameterDoubleSpinBoxDict[parameter] = doubleSpinBox 
+                
+                self.connect(doubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.updateSpinBoxValueToSemaphore)
+                self.setCellWidget(Row, 0, doubleSpinBox)
+                
+#                self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
+#                self.experimentGrid.addWidget(doubleSpinBox, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
+            elif (len(value) > 3):
+                lineEdit = QtGui.QLineEdit(readOnly=True)
+                #value = value[2:]
+                for i in range(len(value)):
+                    value[i] = value[i].value
+                lineEdit.setText(str(value))
+                        
+                self.lineEditParameterDict[lineEdit] = parameter
+                self.parameterLineEditDict[parameter] = lineEdit                  
+                
+                self.connect(lineEdit, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
+
+                self.setCellWidget(Row, 0, lineEdit)
+                
+#                self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
+#                self.experimentGrid.addWidget(lineEdit, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
+
             
-            self.doubleSpinBoxParameterDict[doubleSpinBox] = parameter
-            self.parameterDoubleSpinBoxDict[parameter] = doubleSpinBox 
-            
-            self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
-            self.experimentGrid.addWidget(doubleSpinBox, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
-            
-            gridCol += 2
-            if (gridCol == 6):
-                gridCol = 0
-                gridRow += 1
+            Row += 1
+#            gridCol += 2
+#            if (gridCol == 6):
+#                gridCol = 0
+#                gridRow += 1
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.setLayout(self.experimentGrid)    
+#        self.setLayout(self.experimentGrid)    
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
@@ -53,12 +82,16 @@ class ExperimentGrid(QtGui.QWidget):
         yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222)#, context = context)    
 
     def updateExperimentParameter(self, x, y):
-        print 'experiment signal!'
-        print x, y
-#        if (y[0] == self.experimentPath):
-#            self.parameterDoubleSpinBoxDict[y[1]].setValue(y[2])
+        # need type checking here!
+        if (y[0][:-1] == self.experimentPath):
+            if (len(y[1]) == 3):
+                self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(y[1][2])
 
     
     @inlineCallbacks
-    def updateValueToSemaphore(self, parameterValue):
+    def updateSpinBoxValueToSemaphore(self, parameterValue):
         yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), parameterValue])
+        
+    @inlineCallbacks
+    def updateLineEditValueToSemaphore(self):
+        yield self.parent.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], eval(str(self.sender().text())))
