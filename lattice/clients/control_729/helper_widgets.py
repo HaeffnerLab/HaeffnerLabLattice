@@ -65,47 +65,55 @@ class limitsWidget(QtGui.QWidget):
         
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
-        startLabel = QtGui.QLabel('Start')
-        stopLabel = QtGui.QLabel('Stop')
-        resolutionLabel =  QtGui.QLabel('Set Resolution')
-        stepsLabel = QtGui.QLabel('Set Steps')
-        finalResolutionLabel = QtGui.QLabel('Resolution')
         self.start = start = QtGui.QDoubleSpinBox()
         self.stop = stop = QtGui.QDoubleSpinBox()
+        self.center = center = QtGui.QDoubleSpinBox()
+        self.span = span = QtGui.QDoubleSpinBox()
         self.setresolution = setresolution = QtGui.QDoubleSpinBox()
         self.resolution = resolution = QtGui.QLineEdit()
         self.steps = steps = QtGui.QSpinBox()
         steps.setRange(1,1000)
         resolution.setReadOnly(True)
-        for widget in [start, stop, setresolution, steps]:
+        steps.setKeyboardTracking(False)
+        for widget in [start, stop, setresolution, center, span]:
             widget.setKeyboardTracking(False)
-        for widget in [start, stop, setresolution]:
             widget.setDecimals(3)
             widget.setSuffix('MHz')
             widget.setSingleStep(0.01)
         for widget in [start, stop]:
             widget.setRange(*self.absoluteRange)
+        max_diff = self.absoluteRange[1] - self.absoluteRange[0]
         start.setValue(self.absoluteRange[0])
         stop.setValue(self.absoluteRange[1])
+        span.setRange(-max_diff, max_diff)
+        span.setValue(max_diff)
+        center.setRange(self.absoluteRange[0], self.absoluteRange[1])
+        center.setValue(self.absoluteRange[0] + max_diff / 2.0)
+        setresolution.setRange(-max_diff, max_diff)
         setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
-        setresolution.setRange(10**-3, self.absoluteRange[1] - self.absoluteRange[0])
         self.updateResolution(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
         stop.valueChanged.connect(self.onNewStartStop)
         setresolution.valueChanged.connect(self.onNewResolution)
         steps.valueChanged.connect(self.onNewStartStop)
+        span.valueChanged.connect(self.onNewCenterSpan)
+        center.valueChanged.connect(self.onNewCenterSpan)
         #add to layout
-        layout.addWidget(startLabel, 0, 0, 1, 1)
-        layout.addWidget(stopLabel, 0, 1, 1, 1)
-        layout.addWidget(resolutionLabel, 0, 2, 1, 1)
-        layout.addWidget(stepsLabel, 0, 3, 1, 1)
-        layout.addWidget(finalResolutionLabel, 0, 4, 1, 1)
+        layout.addWidget( QtGui.QLabel('Start'), 0, 0, 1, 1)
+        layout.addWidget(QtGui.QLabel('Stop'), 0, 1, 1, 1)
+        layout.addWidget(QtGui.QLabel('Set Resolution'), 0, 2, 1, 1)
+        layout.addWidget(QtGui.QLabel('Set Steps'), 0, 3, 1, 1)
+        layout.addWidget(QtGui.QLabel('Resolution'), 0, 4, 1, 1)
+        layout.addWidget(QtGui.QLabel('Center'), 2, 0, 1, 1)
+        layout.addWidget(QtGui.QLabel('Span'), 2, 1, 1, 1)
         layout.addWidget(start, 1, 0, 1, 1)
         layout.addWidget(stop, 1, 1, 1, 1)
         layout.addWidget(setresolution, 1, 2, 1, 1)
         layout.addWidget(steps, 1, 3, 1, 1)
         layout.addWidget(resolution, 1, 4, 1, 1)
+        layout.addWidget(center, 3, 0, 1, 1)
+        layout.addWidget(span, 3, 1, 1, 1)
         self.setLayout(layout)
         self.show()
     
@@ -116,13 +124,27 @@ class limitsWidget(QtGui.QWidget):
         values = numpy.linspace(start, stop, steps, endpoint = True)
         return values
     
+    def onNewCenterSpan(self, x):
+        center = self.center.value()
+        span = self.span.value()
+        self.start.blockSignals(True)
+        self.stop.blockSignals(True)
+        self.start.setValue(center - span / 2.0)
+        self.stop.setValue(center + span/2.0)
+        self.start.blockSignals(False)
+        self.stop.blockSignals(False)
+    
     def onNewStartStop(self, x):
         start = self.start.value()
         stop = self.stop.value()
         steps = self.steps.value()
-        #update the ranges
-        self.start.setRange(self.absoluteRange[0], stop)
-        self.stop.setRange(start, self.absoluteRange[1])
+        #update center and span
+        self.center.blockSignals(True)
+        self.span.blockSignals(True)
+        self.center.setValue((start + stop)/2.0)
+        self.span.setValue(stop - start)
+        self.center.blockSignals(False)
+        self.span.blockSignals(False)
         #calculate and update the actual resolution
         if steps > 1:
             res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
@@ -251,7 +273,8 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = optical_pumping(reactor)
+    widget = limitsWidget(reactor)
+    #widget = optical_pumping(reactor)
     #widget = durationWdiget(reactor)
     widget.show()
     reactor.run()
