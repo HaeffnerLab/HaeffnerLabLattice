@@ -55,10 +55,10 @@ class ScriptControl(QtGui.QWidget):
         yield deferToThread(time.sleep, .05)
         self.setupExperimentGrid(['Test', 'Exp1'])
 #       
-#        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
-#        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-#        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
-#        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignCenter)
+        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
+        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
+        self.mainGrid.addWidget(parameterLimitsButton, 1, 1, QtCore.Qt.AlignCenter)
 #        
         self.setupGlobalGrid(['Test', 'Exp1'])
 #        
@@ -69,24 +69,24 @@ class ScriptControl(QtGui.QWidget):
 
 
     def parameterLimitsWindowEvent(self, evt):
-        experiment = self.experimentGrid.experiment
+        experimentPath = self.experimentGrid.experimentPath
         try:
             self.parameterLimitsWindow.hide()
             del self.parameterLimitsWindow
-            self.parameterLimitsWindow = ParameterLimitsWindow(self, experiment)
+            self.parameterLimitsWindow = ParameterLimitsWindow(self, experimentPath)
             self.parameterLimitsWindow.show()
         except:
             # first time
-            self.parameterLimitsWindow = ParameterLimitsWindow(self, experiment)
+            self.parameterLimitsWindow = ParameterLimitsWindow(self, experimentPath)
             self.parameterLimitsWindow.show()
 
-    def setupExperimentGrid(self, experiment):
+    def setupExperimentGrid(self, experimentPath):
         try:
             self.experimentGrid.hide()
         except:
             # First time
             pass
-        self.experimentGrid = ExperimentGrid(self, experiment)           
+        self.experimentGrid = ExperimentGrid(self, experimentPath)           
         self.mainGrid.addWidget(self.experimentGrid, 0, 1, QtCore.Qt.AlignCenter)
         self.experimentGrid.show()  
 
