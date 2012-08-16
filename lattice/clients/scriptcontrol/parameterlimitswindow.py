@@ -44,13 +44,17 @@ class ParameterLimitsWindow(QtGui.QWidget):
     def updateExperimentParameterValue(self):
         currentParameter = str(self.expParamLabel.text())
         value = yield self.parent.server.get_parameter(self.experimentPath + [currentParameter])
+    
         limits = eval(str(self.expParamLimitsEdit.text()))
         value[0] = float(limits[0])
         value[1] = float(limits[1])
         yield self.parent.server.set_parameter(self.experimentPath + [currentParameter], value)
-        self.parent.experimentGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
-        #update the spinBox
- 
+        if (len(value) == 3):
+            #update the spinBox
+            self.parent.experimentGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
+        elif (len(value) > 3):
+            # update the line edit
+            self.parent.experimentGrid.parameterLineEditDict[currentParameter].setText(str(value))
  
     # NEED A WAY TO keep track of globals like in globalgrid!!
     @inlineCallbacks
