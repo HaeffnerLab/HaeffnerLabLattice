@@ -1,9 +1,11 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
+import re
 
 class GlobalGrid(QtGui.QTableWidget):
-    def __init__(self, parent, experimentPath):
+    def __init__(self, parent, experimentPath, context):
         QtGui.QTableWidget.__init__(self)
+        self.context = context
         self.parent = parent
         self.experimentPath = experimentPath
         self.setupGlobalGrid()
@@ -14,7 +16,7 @@ class GlobalGrid(QtGui.QTableWidget):
 #        self.globalGrid = QtGui.QGridLayout()
 #        self.globalGrid.setSpacing(5)
         
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+#        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
 
         self.checkBoxParameterDict = {}
@@ -139,19 +141,44 @@ class GlobalGrid(QtGui.QTableWidget):
         yield self.parent.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = context)    
 
     def updateGlobalParameter(self, x, y):
-        # need type checking here!
-        if (y[0][-1] in self.parameterDoubleSpinBoxDict.keys()):
-            if (len(y[1]) == 3):
-                self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(y[1][2])        
-#        self.parameterDoubleSpinBoxDict[y[0]].setValue(y[1])
+        # check to see if parameter is global
+        if (y[0][-1] in self.globalParameterDict.keys()):
+            # begin typechecking
+            if (type(y[1]) == bool):
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(True)
+                self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(False)
+            # it's a list
+            else:
+                value = y[1].aslist
+                if (len(value) == 3):
+                    try:
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(True)
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(False)
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setEnabled(True)
+                    except KeyError:
+                        self.parameterLineEditDict[y[0][-1]].setDisabled(True)
+                else: # lineedit
+                    text = str(value)
+                    text = re.sub('Value', '', text)
+                    try:
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(True)
+                        self.parameterLineEditDict[y[0][-1]].setText(text)
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(False)
+                        self.parameterLineEditDict[y[0][-1]].setEnabled(True)
+                    # list turned into a spinbox!
+                    except KeyError:
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setDisabled(True)
 
     @inlineCallbacks
     def updateCheckBoxStateToSemaphore(self, evt):
-        yield self.parent.server.set_parameter(self.globalParameterDict[self.checkBoxParameterDict[self.sender()]], bool(evt))
+        yield self.parent.server.set_parameter(self.globalParameterDict[self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
     
     @inlineCallbacks
     def updateSpinBoxValueToSemaphore(self, parameterValue):
-        yield self.parent.server.set_parameter(self.globalParameterDict[self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), parameterValue])
+        from labrad import types as T       
+        yield self.parent.server.set_parameter(self.globalParameterDict[self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), T.Value(parameterValue, str(self.sender().suffix()))], context = self.context)
 
     @inlineCallbacks
     def updateLineEditValueToSemaphore(self):
@@ -167,4 +194,4 @@ class GlobalGrid(QtGui.QTableWidget):
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value(value[i][1][0], value[i][1][1]))
-        yield self.parent.server.set_parameter(self.globalParameterDict[self.lineEditParameterDict[self.sender()]], value)
+        yield self.parent.server.set_parameter(self.globalParameterDict[self.lineEditParameterDict[self.sender()]], value, context = self.context)

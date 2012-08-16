@@ -1,10 +1,12 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
+import re
 
 class ExperimentGrid(QtGui.QTableWidget):
-    def __init__(self, parent, experimentPath):
+    def __init__(self, parent, experimentPath, context):
         QtGui.QTableWidget.__init__(self)
         self.parent = parent
+        self.context = context
         self.experimentPath = experimentPath
         self.parent.setWindowTitle(experimentPath[-1])
         self.setupExperimentGrid()
@@ -14,8 +16,9 @@ class ExperimentGrid(QtGui.QTableWidget):
     def setupExperimentGrid(self):
 #        self.experimentGrid = QtGui.QGridLayout()
 #        self.experimentGrid.setSpacing(5)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+#        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
+#        self.setSizePolicy(QtGui.QSizePolicy.)
 
         self.checkBoxParameterDict = {}
         self.parameterCheckBoxDict = {}
@@ -106,28 +109,51 @@ class ExperimentGrid(QtGui.QTableWidget):
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
-        context = self.parent.cxn.context()
-        yield self.parent.cxn.semaphore.signal__parameter_change(22222, context = context)
-        yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = context)    
+        yield self.parent.cxn.semaphore.signal__parameter_change(22222, context = self.context)
+        yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
 
     def updateExperimentParameter(self, x, y):
-        # need type checking here!
+        # check to see if this is an experiment parameter
         if (y[0][:-1] == self.experimentPath):
-            try:
-                if (len(y[1]) == 3):
-                    self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(y[1][2])
-            except:
-                #boolean!
-                pass
+            # begin typechecking
+            
+            if (type(y[1]) == bool):
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(True)
+                self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(False)
+            # it's a list
+            else:
+                value = y[1].aslist
+                if (len(value) == 3):
+                    try:
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(True)
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(False)
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setEnabled(True)
+                    except KeyError:
+                        self.parameterLineEditDict[y[0][-1]].setDisabled(True)
+                # lineEdit        
+                else: 
+                    text = str(value)
+                    text = re.sub('Value', '', text)
+                    try:
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(True)
+                        self.parameterLineEditDict[y[0][-1]].setText(text)
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(False)
+                        self.parameterLineEditDict[y[0][-1]].setEnabled(True)
+                    # list turned into a spinbox!
+                    except KeyError:
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].setDisabled(True)
     
 
     @inlineCallbacks
     def updateCheckBoxStateToSemaphore(self, evt):
-        yield self.parent.server.set_parameter(self.experimentPath + [self.checkBoxParameterDict[self.sender()]], bool(evt))
+        yield self.parent.server.set_parameter(self.experimentPath + [self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
         
     @inlineCallbacks
     def updateSpinBoxValueToSemaphore(self, parameterValue):
-        yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), parameterValue])
+        from labrad import types as T
+        yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), T.Value(parameterValue, str(self.sender().suffix()))], context = self.context)
         
     @inlineCallbacks
     def updateLineEditValueToSemaphore(self):
@@ -140,7 +166,11 @@ class ExperimentGrid(QtGui.QTableWidget):
             # build a list of labrad values
             for i in range(len(value)):
                 value[i] = T.Value(value[i][0], value[i][1])
+        elif (typeSecondElement == type(None)):
+            # build a list of labrad values
+            for i in range(len(value)):
+                value[i] = value[i][0]                
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value[value[i][1][0]], value[i][1][1])
-        yield self.parent.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], value)
+        yield self.parent.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], value, context = self.context)

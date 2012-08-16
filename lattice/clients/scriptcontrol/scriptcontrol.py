@@ -43,15 +43,26 @@ class ScriptControl(QtGui.QWidget):
         
     @inlineCallbacks
     def setupMainWidget(self):
+        
+        # contexts
+        self.experimentContext = yield self.cxn.context()
+        self.globalContext = yield self.cxn.context()
+        self.statusContext = yield self.cxn.context()
+        
         self.mainLayout = QtGui.QHBoxLayout()
         # mainGrid is in mainLayout that way its size can be controlled.
         self.mainGrid = QtGui.QGridLayout()
         self.mainGrid.setSpacing(5)
-        
+        font = QtGui.QFont('MS Shell Dlg 2',pointSize=14)
+        font.setUnderline(True)
         experimentListLabel = QtGui.QLabel('Experiment Navigation')
+        experimentListLabel.setFont(font)
         experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+        experimentParametersLabel.setFont(font)
         globalParametersLabel = QtGui.QLabel('Global Parameters')
+        globalParametersLabel.setFont(font)
         controlLabel = QtGui.QLabel('Control')
+        controlLabel.setFont(font)
                 
         self.mainGrid.addWidget(experimentListLabel, 0, 0, QtCore.Qt.AlignCenter)
         self.mainGrid.addWidget(experimentParametersLabel, 0, 1, QtCore.Qt.AlignCenter)
@@ -99,7 +110,7 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.experimentGrid = ExperimentGrid(self, experimentPath)           
+        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)           
         self.mainGrid.addWidget(self.experimentGrid, 1, 1, QtCore.Qt.AlignCenter)
         self.experimentGrid.show()  
 
@@ -109,7 +120,7 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.globalGrid = GlobalGrid(self, experimentPath)           
+        self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)           
         self.mainGrid.addWidget(self.globalGrid, 1, 2, QtCore.Qt.AlignCenter)
         self.globalGrid.show()          
 
@@ -119,7 +130,7 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.statusWidget = StatusWidget(self, experiment)           
+        self.statusWidget = StatusWidget(self, experiment, self.statusContext)           
         self.mainGrid.addWidget(self.statusWidget, 1, 3, QtCore.Qt.AlignCenter)
         self.statusWidget.show() 
         
@@ -139,9 +150,14 @@ class ScriptControl(QtGui.QWidget):
         if ((type(value) == list) and (len(value) == 3)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
+            number_dec = len(str(value[0]-int(value[0]))[2:])
+            doubleSpinBox.setDecimals(number_dec + 1)
             doubleSpinBox.setValue(value[2])
+            doubleSpinBox.setSuffix(value[2].units)
             doubleSpinBox.setSingleStep(.1)
             doubleSpinBox.setKeyboardTracking(False)
+            doubleSpinBox.setMouseTracking(False)
+            # for decimals...take minimum value, add one more digit
             return doubleSpinBox
         # list with more or less than 3 values
         else:

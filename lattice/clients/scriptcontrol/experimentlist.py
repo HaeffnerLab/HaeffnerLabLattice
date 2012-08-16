@@ -21,6 +21,7 @@ class ExperimentListWidget(QtGui.QListWidget):
         for directory in directories:
             self.addItem(directory)
         
+        self.sortItems()
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         
@@ -42,6 +43,7 @@ class ExperimentListWidget(QtGui.QListWidget):
                 if (button == 1):
                     itemText = str(item.text())
                     self.handleMouseClick(itemText)
+                    item.setSelected(True)
     
     @inlineCallbacks
     def handleMouseClick(self, itemText):
