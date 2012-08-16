@@ -9,7 +9,6 @@ class connection(object):
                 }
     
     def __init__(self):
-        self.cxn = None
         self.on_connect = {}.fromkeys(self.servers)
         self.on_disconnect = {}.fromkeys(self.servers)
         #initialize these to empty lists
@@ -20,15 +19,17 @@ class connection(object):
     
     @inlineCallbacks
     def connect(self):
-        if self.cxn is None:
-            from labrad.wrappers import connectAsync
-            self.cxn = yield connectAsync(self.host)
-            for server_name in self.servers.keys():
-                try:
-                    self.servers[server_name] = yield self.cxn[server_name]
-                except Exception, e:
-                    print '{} Not Connected'.format(e)
-            yield self.setupListeners()
+        print 'Connecting to {}'.format(self.host)
+        from labrad.wrappers import connectAsync
+        self.cxn = yield connectAsync(self.host)
+        for server_name in self.servers.keys():
+            try:
+                self.servers[server_name] = yield self.cxn[server_name]
+            except Exception, e:
+                print '{} Not Available'.format(e)
+        yield self.setupListeners()
+        print 'Connected to {}'.format(self.host)
+        returnValue(self)
             
     @inlineCallbacks
     def setupListeners(self):

@@ -9,11 +9,13 @@ class LATTICE_GUI(QtGui.QMainWindow):
         voltageControlTab = self.makeVoltageWidget(reactor)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor)
         translationStageWidget = self.makeTranslationStageWidget(reactor)
+        control729Widget =  self.makecontrol729Widget(reactor)
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
         self.tabWidget.addTab(tableOpticsWidget,'&Optics')
         self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
+        self.tabWidget.addTab(control729Widget,'&Control 729')
         self.createGrapherTab()
         self.setCentralWidget(self.tabWidget)
     
@@ -35,7 +37,12 @@ class LATTICE_GUI(QtGui.QMainWindow):
             widget.setLayout(vboxlayout)
         yield Connections.communicate.connectionReady.connect(widgetReady)
         returnValue(widget)
-
+    
+    def makecontrol729Widget(self, reactor):
+        from control_729.control_729 import control_729
+        widget = control_729(reactor)
+        return widget
+    
     def makeTranslationStageWidget(self, reactor):
         widget = QtGui.QWidget()
         from APTMotorClient import APTMotorClient

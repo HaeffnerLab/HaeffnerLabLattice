@@ -2,6 +2,9 @@ from PyQt4 import QtGui, QtCore
 import numpy
 
 class durationWdiget(QtGui.QWidget):
+    
+    new_duration = QtCore.pyqtSignal(float)
+    
     def __init__(self, reactor, value = 1, init_range = (1,1000), parent=None):
         super(durationWdiget, self).__init__(parent)
         self.reactor = reactor
@@ -41,12 +44,25 @@ class durationWdiget(QtGui.QWidget):
         self.bandwidth.blockSignals(True)
         self.bandwidth.setValue(band)
         self.bandwidth.blockSignals(False)
+        self.new_duration.emit(dur)
     
     def onNewBandwidth(self, ban):
         dur =  self.conversion(ban)
         self.duration.blockSignals(True)
         self.duration.setValue(dur)
         self.duration.blockSignals(False)
+        self.new_duration.emit(dur)
+    
+    def setNewDuration_blocking(self, dur):
+        '''for external access, setting both duration and bandwidth while emitting no signals'''
+        band = self.conversion(dur)
+        self.duration.blockSignals(True)
+        self.duration.setValue(dur)
+        self.duration.blockSignals(False)
+        self.bandwidth.blockSignals(True)
+        self.bandwidth.setValue(band)
+        self.bandwidth.blockSignals(False)
+        
         
     @staticmethod
     def conversion(x):
@@ -59,11 +75,13 @@ class limitsWidget(QtGui.QWidget):
     
     new_frequencies_signal = QtCore.pyqtSignal()
     
-    def __init__(self, reactor, abs_range = (150,250), parent=None):
+    def __init__(self, reactor, abs_range = None, parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
-        self.absoluteRange = abs_range
+        self.absoluteRange = None
         self.initializeGUI()
+        if abs_range is not None:
+            self.setRange(abs_range)
         
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
@@ -82,17 +100,6 @@ class limitsWidget(QtGui.QWidget):
             widget.setDecimals(3)
             widget.setSuffix('MHz')
             widget.setSingleStep(0.01)
-        for widget in [start, stop]:
-            widget.setRange(*self.absoluteRange)
-        max_diff = self.absoluteRange[1] - self.absoluteRange[0]
-        start.setValue(self.absoluteRange[0])
-        stop.setValue(self.absoluteRange[1])
-        span.setRange(-max_diff, max_diff)
-        span.setValue(max_diff)
-        center.setRange(self.absoluteRange[0], self.absoluteRange[1])
-        center.setValue(self.absoluteRange[0] + max_diff / 2.0)
-        setresolution.setRange(-max_diff, max_diff)
-        setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
         self.updateResolution(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
@@ -118,6 +125,24 @@ class limitsWidget(QtGui.QWidget):
         layout.addWidget(span, 3, 1, 1, 1)
         self.setLayout(layout)
         self.show()
+    
+    def setRange(self, newRange):
+        self.absoluteRange = newRange
+        self.updateRanges()
+    
+    def updateRanges(self):
+        for widget in [self.start, self.stop]:
+            widget.setRange(*self.absoluteRange)
+        max_diff = self.absoluteRange[1] - self.absoluteRange[0]
+        self.start.setValue(self.absoluteRange[0])
+        self.stop.setValue(self.absoluteRange[1])
+        self.span.setRange(-max_diff, max_diff)
+        self.span.setValue(max_diff)
+        self.center.setRange(self.absoluteRange[0], self.absoluteRange[1])
+        self.center.setValue(self.absoluteRange[0] + max_diff / 2.0)
+        self.setresolution.setRange(-max_diff, max_diff)
+        self.setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
+        
     
     def getValues(self):
         start = self.start.value()

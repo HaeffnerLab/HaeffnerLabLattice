@@ -24,3 +24,12 @@ class config_729_optical_pumping(object):
     optical_pumping_pulsed_cycles = ['729Experiments','optical_pumping_pulsed_cycles']
     optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
     optical_pumping_pulsed_duration_854 = ['729Experiments','optical_pumping_pulsed_duration_854']
+    
+class config_729_spectrum(object):
+    #IDs for signaling
+    ID = 99996
+    #semaphore locations
+    excitation_time = ['729Experiments','Spectrum','excitation_time']
+    heating_time = ['729Experiments','Spectrum','heating_time']
+    repeatitions_per_frequency = ['729Experiments','Spectrum','repeatitions_per_frequency']
+    frequencies = ['729Experiments','Spectrum','frequencies']

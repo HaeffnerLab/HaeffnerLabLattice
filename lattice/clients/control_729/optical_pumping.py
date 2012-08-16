@@ -2,6 +2,7 @@ from PyQt4 import QtGui
 from helper_widgets import saved_frequencies_dropdown
 from twisted.internet.defer import inlineCallbacks
 from configuration import config_729_optical_pumping as c
+from async_semaphore import async_semaphore
 
 
 class Parameter(object):
@@ -12,7 +13,7 @@ class Parameter(object):
         self.updateSignal = updateSignal
         self.units = units
 
-class optical_pumping(QtGui.QWidget):
+class optical_pumping(QtGui.QWidget, async_semaphore):
     def __init__(self, reactor, cxn = None, parent=None):
         super(optical_pumping, self).__init__(parent)
         self.reactor = reactor
@@ -20,7 +21,12 @@ class optical_pumping(QtGui.QWidget):
         self.subscribed = False
         self.initializeGUI()
         self.createDict()
+        self.semaphoreID = c.ID
         self.connect_labrad()
+        self.connect_local_widgets()
+        
+    def connect_local_widgets(self):        
+        self.dropdown.selected_signal.connect(self.freq.setValue)
     
     def createDict(self):
         '''dictionary for tracking relevant setters and getters for all the parameters coming in from semaphore'''
@@ -55,73 +61,6 @@ class optical_pumping(QtGui.QWidget):
                 tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.pulsed_cb), updateSignal = self.pulsed_cb.toggled),
                 tuple(c.optical_pumping_enable):Parameter(c.optical_pumping_enable, setValueBlocking_cb(self.enable), updateSignal = self.enable.toggled),
                   }
-    
-    
-    @inlineCallbacks
-    def connect_labrad(self):
-        from labrad import types as T
-        self.T = T
-        if self.cxn is None:
-            from connection import connection
-            self.cxn = connection()
-            yield self.cxn.connect()
-        self.context = yield self.cxn.context()
-        try:
-            yield self.subscribe_semaphore()
-        except Exception, e:
-            print 'Not Initially Connected to Semaphore',e
-            self.setDisabled(True)
-        self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
-        self.cxn.on_disconnect['Semaphore'].append( self.disable)
-        self.connect_widgets()
-
-    
-    @inlineCallbacks
-    def subscribe_semaphore(self): 
-        yield self.cxn.servers['Semaphore'].signal__parameter_change(c.ID, context = self.context)
-        yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID, context = self.context)
-        for path,param in self.d.iteritems():
-            path = list(path)
-            init_val = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
-            self.set_value(param, init_val)
-        self.subscribed = True
-    
-    def on_parameter_change(self, x, y):
-        path, init_val = y 
-        print 'git new param', path, init_val
-        if tuple(path) in self.d.keys():
-            param = self.d[tuple(path)]
-            self.set_value(param, init_val)
-    
-    @inlineCallbacks
-    def reinitialize_semaphore(self):
-        self.setDisabled(False)
-        yield self.cxn.servers['Semaphore'].signal__parameter_change(c.ID, context = self.context)
-        if not self.subscribed:
-            yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID, context = self.context)
-            for path,param in self.d.iteritems():
-                path = list(path)
-                init_val = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
-                self.set_value(param, init_val)
-            self.subscribed = True
-    
-    def set_value(self, param, val):
-        if type(val) == bool:
-            param.setValue(val)
-        else:
-            try:
-                newval = [v.inUnitsOf(param.units) for v in val]
-                val = newval
-            except:
-                #if unitless number
-                pass
-            param.setRange(val[0],val[1])
-            param.setValue(val[2])
-        
-    @inlineCallbacks
-    def disable(self):
-        self.setDisabled(True)
-        yield None
     
     def initializeGUI(self):
         self.create_widgets()
@@ -218,25 +157,6 @@ class optical_pumping(QtGui.QWidget):
         layout.addWidget(frame, 3, 0, 1, 8)
         self.setLayout(layout)
         self.show()
-    
-    def connect_widgets(self):
-        self.dropdown.selected_signal.connect(self.freq.setValue)
-        for params in self.d.itervalues():
-            params.updateSignal.connect(self.set_labrad_parameter(params.path, params.units))
-    
-    def set_labrad_parameter(self, path, units):
-        @inlineCallbacks
-        def func(new_val):
-            try:
-                if type(new_val) == bool:
-                    yield self.cxn.servers['Semaphore'].set_parameter(path, new_val, context = self.context)
-                else:
-                    new_val = self.T.Value(new_val, units)
-                    minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
-                    yield self.cxn.servers['Semaphore'].set_parameter(path, [minim,maxim,new_val], context = self.context)
-            except Exception,e:
-                print e
-        return( func)
         
     def closeEvent(self, x):
         self.reactor.stop()

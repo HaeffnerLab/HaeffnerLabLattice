@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
 from optical_pumping import optical_pumping
-from spectrum import spectrum
+from spectrum import spectrum_connection
 from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
@@ -18,26 +18,24 @@ class control_729(QtGui.QWidget):
             self.cxn = connection()
             yield self.cxn.connect()
         self.create_layout()
+        self.connect_tab_signals()
         
     def create_layout(self):
         layout = QtGui.QGridLayout()
         self.tab = tab = QtGui.QTabWidget()
         histogram_tab = self.make_histogram_tab()
         spectrum_tab =  self.make_spectrum_tab()
-        optical_pump_tab = self.make_pump_tab()
+        self.optical_pump_tab = self.make_pump_tab()
         flop_tab = self.make_flop_tab()
         tab.addTab(histogram_tab, '&Readout and Histogram')
-        opt_index = tab.addTab(optical_pump_tab, '&Optical Pumping')
+        self.opt_index = tab.addTab(self.optical_pump_tab, '&Optical Pumping')
         tab.addTab(spectrum_tab, '&Spectrum')
         tab.addTab(flop_tab, '&Rabi Flopping')
-        #connect basic signals
-        optical_pump_tab.enable.clicked.connect(self.change_color(opt_index))
-        print 'checked?' 
-        if optical_pump_tab.enable.isChecked():
-            print 'checked?'
-            self.change_color(opt_index)()
         layout.addWidget(tab, 1, 0, 1, 4)
         self.setLayout(layout)
+    
+    def connect_tab_signals(self):
+        self.optical_pump_tab.enable.clicked.connect(self.change_color(self.opt_index))
     
     def change_color(self, index):
         def func(selected):
@@ -53,7 +51,7 @@ class control_729(QtGui.QWidget):
         return tab
     
     def make_spectrum_tab(self):
-        spec = spectrum(self.reactor)
+        spec = spectrum_connection(self.reactor, self.cxn)
         return spec
     
     def make_flop_tab(self):
@@ -61,7 +59,7 @@ class control_729(QtGui.QWidget):
         return flop
     
     def make_pump_tab(self):
-        pump = optical_pumping(self.reactor)
+        pump = optical_pumping(self.reactor, self.cxn)
         return pump
 
     def closeEvent(self, x):
