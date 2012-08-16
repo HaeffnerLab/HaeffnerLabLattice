@@ -73,15 +73,16 @@ class durationWdiget(QtGui.QWidget):
     
 class limitsWidget(QtGui.QWidget):
     
-    new_frequencies_signal = QtCore.pyqtSignal()
+    new_list_signal = QtCore.pyqtSignal(list)
     
-    def __init__(self, reactor, abs_range = None, parent=None):
+    def __init__(self, reactor, suffix = '', abs_range = None, parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
         self.absoluteRange = None
+        self.suffix = suffix
         self.initializeGUI()
         if abs_range is not None:
-            self.setRange(abs_range)
+            self.setRange(abs_range[0], abs_range[1])
         
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
@@ -98,7 +99,7 @@ class limitsWidget(QtGui.QWidget):
         for widget in [start, stop, setresolution, center, span]:
             widget.setKeyboardTracking(False)
             widget.setDecimals(3)
-            widget.setSuffix('MHz')
+            widget.setSuffix(self.suffix)
             widget.setSingleStep(0.01)
         self.updateResolution(setresolution.value())
         #connect
@@ -126,8 +127,8 @@ class limitsWidget(QtGui.QWidget):
         self.setLayout(layout)
         self.show()
     
-    def setRange(self, newRange):
-        self.absoluteRange = newRange
+    def setRange(self, minim, maxim):
+        self.absoluteRange = (minim,maxim)
         self.updateRanges()
     
     def updateRanges(self):
@@ -160,7 +161,8 @@ class limitsWidget(QtGui.QWidget):
         self.stop.setValue(center + span/2.0)
         self.start.blockSignals(False)
         self.stop.blockSignals(False)
-        self.new_frequencies_signal.emit()
+        freqs = self.frequencies
+        self.new_list_signal.emit( self.frequencies)
     
     def onNewStartStop(self, x):
         start = self.start.value()
@@ -182,10 +184,10 @@ class limitsWidget(QtGui.QWidget):
         self.setresolution.setValue(res)
         self.setresolution.blockSignals(False)
         self.updateResolution(res)
-        self.new_frequencies_signal.emit()
+        self.new_list_signal.emit( self.frequencies)
     
     def updateResolution(self, val):
-        text = '{:.3f} MHz'.format(val)
+        text = '{:.3f} {}'.format(val, self.suffix)
         self.resolution.setText(text)
     
     def onNewResolution(self, res):
@@ -200,14 +202,15 @@ class limitsWidget(QtGui.QWidget):
         else:
             finalres = stop - start
         self.updateResolution(finalres)
-        self.new_frequencies_signal.emit()
+        freqs = self.frequencies
+        self.new_list_signal.emit( self.frequencies)
     
     @property
     def frequencies(self):
         start = self.start.value()
         stop = self.stop.value()
         steps = self.steps.value()
-        return numpy.linspace(start, stop, steps, endpoint = True)
+        return numpy.linspace(start, stop, steps, endpoint = True).tolist()
     
     def closeEvent(self, x):
         self.reactor.stop()
@@ -267,14 +270,35 @@ class saved_frequencies_dropdown(QtGui.QComboBox):
     def closeEvent(self, x):
         self.reactor.stop()
 
+class frequency_wth_dropdown(QtGui.QWidget):
+    
+    suffix = 'MHz'
+    
+    def __init__(self, reactor, parent=None):
+        super(frequency_wth_dropdown, self).__init__(parent)
+        self.reactor = reactor
+        dropdown = saved_frequencies_dropdown(reactor)
+        self.freq = QtGui.QDoubleSpinBox()
+        self.freq.setKeyboardTracking(False)
+        self.freq.setSuffix(self.suffix)
+        layout = QtGui.QHBoxLayout()
+        label = QtGui.QLabel("Frequency")
+        label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        layout.addWidget(label)
+        layout.addWidget(self.freq)
+        layout.addWidget(dropdown)
+        dropdown.selected_signal.connect(self.freq.setValue)
+        self.setLayout(layout)
+        
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    #widget = limitsWidget(reactor)
+    #widget = limitsWidget(reactor, suffix = 'us')
     #widget = durationWdiget(reactor)
-    widget = saved_frequencies(reactor)
-    widget = saved_frequencies_dropdown(reactor)
+    #widget = saved_frequencies(reactor)
+    #widget = saved_frequencies_dropdown(reactor)
+    widget = frequency_wth_dropdown(reactor)
     widget.show()
     reactor.run()

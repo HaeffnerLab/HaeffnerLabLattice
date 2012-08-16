@@ -1,20 +1,11 @@
 from PyQt4 import QtGui,QtCore
 from helper_widgets import durationWdiget, limitsWidget, saved_frequencies_dropdown
-from twisted.internet.defer import inlineCallbacks
 from configuration import config_729_spectrum as c
-from async_semaphore import async_semaphore
-
-class Parameter(object):
-    def __init__(self, path, setValue, updateSignal, setRange = None, units = ''):
-        self.path = path
-        self.setValue = setValue
-        self.setRange = setRange
-        self.updateSignal = updateSignal
-        self.units = units
+from async_semaphore import async_semaphore, Parameter
 
 class limitWidget_with_dropdown(limitsWidget):
     def __init__(self, reactor):
-        super(limitWidget_with_dropdown, self).__init__(reactor)
+        super(limitWidget_with_dropdown, self).__init__(reactor, 'MHz')
         layout = self.layout()
         self.dropdown = saved_frequencies_dropdown(self.reactor)
         layout.addWidget(self.dropdown)
@@ -67,7 +58,7 @@ class spectrum(QtGui.QWidget):
     def connect_widgets(self):
         self.segments.currentIndexChanged.connect(self.on_new_index)
         for w in self.limitWidgets:
-            w.new_frequencies_signal.connect(self.emit_new)
+            w.new_list_signal.connect(self.emit_new)
     
     def emit_new(self):
         freqs = []
@@ -124,7 +115,7 @@ class spectrum_connection(spectrum, async_semaphore):
     
     def on_new_freq_range(self, minim,maxim):
         for w in self.limitWidgets:
-            w.setRange((minim,maxim))
+            w.setRange(minim,maxim)
         
 if __name__=="__main__":
     a = QtGui.QApplication( [] )

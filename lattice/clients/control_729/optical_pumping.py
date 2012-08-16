@@ -1,6 +1,5 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from helper_widgets import saved_frequencies_dropdown
-from twisted.internet.defer import inlineCallbacks
 from configuration import config_729_optical_pumping as c
 from async_semaphore import async_semaphore
 
@@ -14,6 +13,9 @@ class Parameter(object):
         self.units = units
 
 class optical_pumping(QtGui.QWidget, async_semaphore):
+    
+    on_enabled = QtCore.pyqtSignal(bool)
+    
     def __init__(self, reactor, cxn = None, parent=None):
         super(optical_pumping, self).__init__(parent)
         self.reactor = reactor
@@ -40,9 +42,8 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
         
         def setValueBlocking_cb(w):
             def func(val):
-                w.blockSignals(True)
+                #dont' have to block checkboxes
                 w.setChecked(val)
-                w.blockSignals(False)
             return func
         
         self.d = {

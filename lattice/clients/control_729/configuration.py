@@ -8,7 +8,6 @@ class config_729_hist(object):
     readout_threshold_dir =  ['729Experiments','readout_threshold']
     readout_time_dir = ['729Experiments','readout_time']
 
-    
 class config_729_optical_pumping(object):
     #IDs for signaling
     ID = 99997
@@ -33,3 +32,11 @@ class config_729_spectrum(object):
     heating_time = ['729Experiments','Spectrum','heating_time']
     repeatitions_per_frequency = ['729Experiments','Spectrum','repeatitions_per_frequency']
     frequencies = ['729Experiments','Spectrum','frequencies']
+    
+class config_729_rabi_flop(object):
+    #IDs for signaling
+    ID = 99995
+    #semaphore locations 
+    frequency = ['729Experiments','RabiFlopping','frequency']
+    excitation_times = ['729Experiments','RabiFlopping','excitation_times']
+    repeatitions_per_time = ['729Experiments','RabiFlopping','repeatitions_per_time']

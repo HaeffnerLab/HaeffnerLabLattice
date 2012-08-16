@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
 from optical_pumping import optical_pumping
 from spectrum import spectrum_connection
+from rabi_flops import rabi_flop_connection
 from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
@@ -23,10 +24,10 @@ class control_729(QtGui.QWidget):
     def create_layout(self):
         layout = QtGui.QGridLayout()
         self.tab = tab = QtGui.QTabWidget()
-        histogram_tab = self.make_histogram_tab()
-        spectrum_tab =  self.make_spectrum_tab()
-        self.optical_pump_tab = self.make_pump_tab()
-        flop_tab = self.make_flop_tab()
+        histogram_tab = readout_histgram(self.reactor, self.cxn)
+        spectrum_tab =  spectrum_connection(self.reactor, self.cxn)
+        self.optical_pump_tab = optical_pumping(self.reactor, self.cxn)
+        flop_tab = rabi_flop_connection(self.reactor, self.cxn)
         tab.addTab(histogram_tab, '&Readout and Histogram')
         self.opt_index = tab.addTab(self.optical_pump_tab, '&Optical Pumping')
         tab.addTab(spectrum_tab, '&Spectrum')
@@ -35,7 +36,9 @@ class control_729(QtGui.QWidget):
         self.setLayout(layout)
     
     def connect_tab_signals(self):
-        self.optical_pump_tab.enable.clicked.connect(self.change_color(self.opt_index))
+        self.optical_pump_tab.enable.stateChanged.connect(self.change_color(self.opt_index))
+        self.change_color(self.opt_index)(self.optical_pump_tab.enable.isChecked())
+            
     
     def change_color(self, index):
         def func(selected):
@@ -45,22 +48,6 @@ class control_729(QtGui.QWidget):
                 color = QtCore.Qt.black
             self.tab.tabBar().setTabTextColor(index, color)    
         return func
-        
-    def make_histogram_tab(self):
-        tab = readout_histgram(self.reactor, self.cxn)
-        return tab
-    
-    def make_spectrum_tab(self):
-        spec = spectrum_connection(self.reactor, self.cxn)
-        return spec
-    
-    def make_flop_tab(self):
-        flop = QtGui.QWidget()
-        return flop
-    
-    def make_pump_tab(self):
-        pump = optical_pumping(self.reactor, self.cxn)
-        return pump
 
     def closeEvent(self, x):
         self.reactor.stop()

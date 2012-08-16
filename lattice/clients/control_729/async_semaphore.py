@@ -1,5 +1,13 @@
 from twisted.internet.defer import inlineCallbacks
 
+class Parameter(object):
+    def __init__(self, path, setValue, updateSignal, setRange = None, units = ''):
+        self.path = path
+        self.setValue = setValue
+        self.setRange = setRange
+        self.updateSignal = updateSignal
+        self.units = units
+
 class async_semaphore(object):
     '''class containig useful methods for asynchornous iteraction with the semaphore'''
     
@@ -33,13 +41,11 @@ class async_semaphore(object):
         for path,param in self.d.iteritems():
             path = list(path)
             init_val = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
-            print init_val
             self.set_value(param, init_val)
         self.subscribed = True
     
     def on_parameter_change(self, x, y):
-        path, init_val = y 
-        print 'new param'
+        path, init_val = y
         print path, init_val
         if tuple(path) in self.d.keys():
             param = self.d[tuple(path)]
@@ -77,7 +83,6 @@ class async_semaphore(object):
     def set_labrad_parameter(self, path, units):
         @inlineCallbacks
         def func(new_val):
-            print 'set', new_val
             try:
                 if type(new_val) == bool:
                     yield self.cxn.servers['Semaphore'].set_parameter(path, new_val, context = self.context)

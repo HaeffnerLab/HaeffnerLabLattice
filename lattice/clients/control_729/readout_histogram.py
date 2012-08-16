@@ -172,9 +172,7 @@ class readout_histgram(QtGui.QWidget):
     
     @inlineCallbacks
     def on_parameter_change(self, x, y):
-        print 'on par change', x , y
         d, sett = y
-        print d, sett
         if d == c.readout_threshold_dir:
             val = sett[2]
             yield deferToThread(self.set_threshold_block_signals, val)
