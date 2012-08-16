@@ -1,7 +1,6 @@
 from PyQt4 import QtGui
 from helper_widgets import saved_frequencies_dropdown
-from twisted.internet.defer import inlineCallbacks, returnValue
-from twisted.internet.threads import deferToThread
+from twisted.internet.defer import inlineCallbacks
 from configuration import config_729_optical_pumping as c
 
 

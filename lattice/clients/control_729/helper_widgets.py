@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore
 import numpy
 
-class durationWdiget(QtGui.QFrame):
+class durationWdiget(QtGui.QWidget):
     def __init__(self, reactor, value = 1, init_range = (1,1000), parent=None):
         super(durationWdiget, self).__init__(parent)
         self.reactor = reactor
@@ -10,7 +10,6 @@ class durationWdiget(QtGui.QFrame):
         self.initializeGUI()
         
     def initializeGUI(self):
-        self.setFrameShape(QtGui.QFrame.Box)
         layout = QtGui.QGridLayout()
         durationLabel = QtGui.QLabel('Excitation Time')
         bandwidthLabel =  QtGui.QLabel('Fourier Bandwidth')
@@ -57,6 +56,9 @@ class durationWdiget(QtGui.QFrame):
         self.reactor.stop()
     
 class limitsWidget(QtGui.QWidget):
+    
+    new_frequencies_signal = QtCore.pyqtSignal()
+    
     def __init__(self, reactor, abs_range = (150,250), parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
@@ -133,6 +135,7 @@ class limitsWidget(QtGui.QWidget):
         self.stop.setValue(center + span/2.0)
         self.start.blockSignals(False)
         self.stop.blockSignals(False)
+        self.new_frequencies_signal.emit()
     
     def onNewStartStop(self, x):
         start = self.start.value()
@@ -154,6 +157,7 @@ class limitsWidget(QtGui.QWidget):
         self.setresolution.setValue(res)
         self.setresolution.blockSignals(False)
         self.updateResolution(res)
+        self.new_frequencies_signal.emit()
     
     def updateResolution(self, val):
         text = '{:.3f} MHz'.format(val)
@@ -171,6 +175,14 @@ class limitsWidget(QtGui.QWidget):
         else:
             finalres = stop - start
         self.updateResolution(finalres)
+        self.new_frequencies_signal.emit()
+    
+    @property
+    def frequencies(self):
+        start = self.start.value()
+        stop = self.stop.value()
+        steps = self.steps.value()
+        return numpy.linspace(start, stop, steps, endpoint = True)
     
     def closeEvent(self, x):
         self.reactor.stop()
