@@ -53,11 +53,16 @@ class ScriptControl(QtGui.QWidget):
         # mainGrid is in mainLayout that way its size can be controlled.
         self.mainGrid = QtGui.QGridLayout()
         self.mainGrid.setSpacing(5)
-        
+        font = QtGui.QFont('MS Shell Dlg 2',pointSize=14)
+        font.setUnderline(True)
         experimentListLabel = QtGui.QLabel('Experiment Navigation')
+        experimentListLabel.setFont(font)
         experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+        experimentParametersLabel.setFont(font)
         globalParametersLabel = QtGui.QLabel('Global Parameters')
+        globalParametersLabel.setFont(font)
         controlLabel = QtGui.QLabel('Control')
+        controlLabel.setFont(font)
                 
         self.mainGrid.addWidget(experimentListLabel, 0, 0, QtCore.Qt.AlignCenter)
         self.mainGrid.addWidget(experimentParametersLabel, 0, 1, QtCore.Qt.AlignCenter)
@@ -146,7 +151,6 @@ class ScriptControl(QtGui.QWidget):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
             number_dec = len(str(value[0]-int(value[0]))[2:])
-            print number_dec
             doubleSpinBox.setDecimals(number_dec + 1)
             doubleSpinBox.setValue(value[2])
             doubleSpinBox.setSuffix(value[2].units)

@@ -40,6 +40,7 @@ class StatusWidget(QtGui.QWidget):
     def createStatusLabel(self):
         status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
         self.statusLabel = QtGui.QLabel(status)
+        self.statusLabel.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
         self.mainLayout.addWidget(self.statusLabel)
         if (self.statusLabel.text() == 'Paused'):
             self.startButton.setDisabled(True)

@@ -16,8 +16,9 @@ class ExperimentGrid(QtGui.QTableWidget):
     def setupExperimentGrid(self):
 #        self.experimentGrid = QtGui.QGridLayout()
 #        self.experimentGrid.setSpacing(5)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+#        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
+#        self.setSizePolicy(QtGui.QSizePolicy.)
 
         self.checkBoxParameterDict = {}
         self.parameterCheckBoxDict = {}
@@ -117,13 +118,17 @@ class ExperimentGrid(QtGui.QTableWidget):
             # begin typechecking
             
             if (type(y[1]) == bool):
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(True)
                 self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])
+                self.parameterCheckBoxDict[y[0][-1]].blockSignals(False)
             # it's a list
             else:
                 value = y[1].aslist
                 if (len(value) == 3):
                     try:
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(True)
                         self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
+                        self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(False)
                         self.parameterDoubleSpinBoxDict[y[0][-1]].setEnabled(True)
                     except KeyError:
                         self.parameterLineEditDict[y[0][-1]].setDisabled(True)
@@ -132,7 +137,9 @@ class ExperimentGrid(QtGui.QTableWidget):
                     text = str(value)
                     text = re.sub('Value', '', text)
                     try:
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(True)
                         self.parameterLineEditDict[y[0][-1]].setText(text)
+                        self.parameterLineEditDict[y[0][-1]].blockSignals(False)
                         self.parameterLineEditDict[y[0][-1]].setEnabled(True)
                     # list turned into a spinbox!
                     except KeyError:
