@@ -32,6 +32,10 @@ class control_729(QtGui.QWidget):
         tab.addTab(flop_tab, '&Rabi Flopping')
         #connect basic signals
         optical_pump_tab.enable.clicked.connect(self.change_color(opt_index))
+        print 'checked?' 
+        if optical_pump_tab.enable.isChecked():
+            print 'checked?'
+            self.change_color(opt_index)()
         layout.addWidget(tab, 1, 0, 1, 4)
         self.setLayout(layout)
     
