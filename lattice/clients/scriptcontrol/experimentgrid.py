@@ -134,10 +134,7 @@ class ExperimentGrid(QtGui.QTableWidget):
         from labrad import types as T
         # two types....tuples [(value, unit)] or tuples of strings and values [(string, (value, unit))]
         value = eval(str(self.sender().text()))
-        print value
         typeSecondElement = type(value[0][1])
-        print value[0][1]
-        print typeSecondElement
         # normal list of labrad values
         if (typeSecondElement == str):
             # build a list of labrad values
@@ -146,5 +143,4 @@ class ExperimentGrid(QtGui.QTableWidget):
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value[value[i][1][0]], value[i][1][1])
-            print value
         yield self.parent.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], value)
