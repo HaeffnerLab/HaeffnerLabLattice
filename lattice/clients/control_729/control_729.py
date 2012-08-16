@@ -26,7 +26,7 @@ class control_729(QtGui.QWidget):
         spectrum_tab =  self.make_spectrum_tab()
         optical_pump_tab = self.make_pump_tab()
         flop_tab = self.make_flop_tab()
-        tab.addTab(histogram_tab, '&Histogram')
+        tab.addTab(histogram_tab, '&Readout and Histogram')
         opt_index = tab.addTab(optical_pump_tab, '&Optical Pumping')
         tab.addTab(spectrum_tab, '&Spectrum')
         tab.addTab(flop_tab, '&Rabi Flopping')

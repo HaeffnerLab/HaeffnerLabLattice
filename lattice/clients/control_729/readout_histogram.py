@@ -87,11 +87,11 @@ class readout_histgram(QtGui.QWidget):
     
     @inlineCallbacks
     def readoutChange(self, value):
-        value = value / 1000.0
+        value = self.T.Value(value, 'ms')
         try:
             minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_time_dir, [minim,maxim,float(value)], context = self.context)
-        except Exception:
+            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_time_dir, [minim,maxim, value], context = self.context)
+        except Exception, e:
             yield None
             
     def update_canvas_line(self, threshold):
@@ -101,6 +101,8 @@ class readout_histgram(QtGui.QWidget):
     
     @inlineCallbacks
     def connect_labrad(self):
+        from labrad import types as T
+        self.T = T
         if self.cxn is None:
             from connection import connection
             self.cxn = connection()
@@ -113,8 +115,8 @@ class readout_histgram(QtGui.QWidget):
             self.setDisabled(True)
         try:
             yield self.subscribe_semaphore()
-        except Exception:
-            print 'Not Initially Connected to Semaphore'
+        except Exception, e:
+            print 'Not Initially Connected to Semaphore', e
             self.setDisabled(True)
         self.cxn.on_connect['Data Vault'].append( self.reinitialize_data_vault)
         self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
@@ -137,8 +139,8 @@ class readout_histgram(QtGui.QWidget):
         self.threshold.setValue(init_val[2])
         self.update_canvas_line(init_val[2])
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-        self.readout_time.setRange(1000.0 * init_val[0],1000.0 *init_val[1])
-        self.set_readout_time_block_signals(init_val[2])
+        self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
+        self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
         self.subscribed[1] = True
     
     @inlineCallbacks
@@ -160,8 +162,8 @@ class readout_histgram(QtGui.QWidget):
         self.threshold.setRange(init_val[0],init_val[1])
         self.set_threshold_block_signals(init_val[2])
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-        self.readout_time.setRange(init_val[0],init_val[1])
-        self.set_readout_time_block_signals(init_val[2])
+        self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
+        self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
         
         
     @inlineCallbacks
@@ -172,11 +174,12 @@ class readout_histgram(QtGui.QWidget):
     @inlineCallbacks
     def on_parameter_change(self, x, y):
         d, sett = y
-        val = sett[2]
         if d == c.readout_threshold_dir:
+            val = sett[2]
             yield deferToThread(self.set_threshold_block_signals, val)
         elif d == c.readout_time_dir:
-            yield deferToThread(self.set_readout_time_block_signals, val)
+            val = sett[2]
+            yield deferToThread(self.set_readout_time_block_signals, val.inUnitsOf('ms'))
     
     def set_threshold_block_signals(self, thresh):
         self.threshold.blockSignals(True)
@@ -186,7 +189,7 @@ class readout_histgram(QtGui.QWidget):
     
     def set_readout_time_block_signals(self, val):
         self.readout_time.blockSignals(True)
-        self.readout_time.setValue(val * 1000.0)
+        self.readout_time.setValue(val)
         self.readout_time.blockSignals(False)
         
     @inlineCallbacks
