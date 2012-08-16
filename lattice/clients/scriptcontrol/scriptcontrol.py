@@ -140,6 +140,7 @@ class ScriptControl(QtGui.QWidget):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
             doubleSpinBox.setValue(value[2])
+            doubleSpinBox.setSuffix(value[2].units)
             doubleSpinBox.setSingleStep(.1)
             doubleSpinBox.setKeyboardTracking(False)
             return doubleSpinBox
