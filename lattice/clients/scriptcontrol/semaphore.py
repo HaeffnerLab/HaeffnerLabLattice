@@ -8,7 +8,7 @@ class Semaphore(LabradServer):
     name = "Semaphore"
     
 #    onStatusChange = Signal(111111, 'signal: status parameter change', '(*s,s)')
-    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)'])
+    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)'])
 
        
     @inlineCallbacks
@@ -234,15 +234,17 @@ class Semaphore(LabradServer):
             for directory in dirList:
 #                print 'dirList, from dirList for Loop: ', dirList
 #                print 'directory, from dirList for Loop: ', directory
-                yield saveParametersToRegistry(path + [directory], parametersDict[directory])
-                currentDir = yield self.client.registry.cd()
-#                print 'current directory: ', directory
-                if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
-#                    print 'currentDir: ', currentDir
-#                    print 'cd to one directory back'
-#                    print currentDir[0:-1]
-#                    print 'should switch to this directory: ', currentDir[0:-1]
-                    yield self.client.registry.cd(currentDir[0:-1])
+                if (directory != 'Semaphore'):
+                    #don't save Semaphore values to registry
+                    yield saveParametersToRegistry(path + [directory], parametersDict[directory])
+                    currentDir = yield self.client.registry.cd()
+    #                print 'current directory: ', directory
+                    if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
+    #                    print 'currentDir: ', currentDir
+    #                    print 'cd to one directory back'
+    #                    print currentDir[0:-1]
+    #                    print 'should switch to this directory: ', currentDir[0:-1]
+                        yield self.client.registry.cd(currentDir[0:-1])
             
         yield saveParametersToRegistry([], self.parametersDict)
 
@@ -317,19 +319,20 @@ class Semaphore(LabradServer):
         """Reserve Parameter Space For Each Experiment"""
         self._initializeExperiments(experiments)
 
-    @setting(1, "Set Parameter", path = '*s', value = ['*v', 'b', 's', '*(sv)'], returns = '')
+    @setting(1, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)'], returns = '')
     def setParameter(self, c, path, value):
         """Set Parameter"""
         self._setParameter(path, value)
         notified = self.getOtherListeners(c)
         self.onParameterChange((path, value), notified)
+#        print (path, value)        
 
 #    @setting(2, "Set Experiment Parameter", experiment = 's', parameter = 's', value = '*v', returns = '')
 #    def setExperimentParameter(self, c, experiment, parameter, value):
 #        """Set Experiment Parameter"""
 #        self._setExperimentParameter(experiment, parameter, value)
 
-    @setting(3, "Get Parameter", path = '*s', returns = ['*v', 'b', 's', '*(sv)'])
+    @setting(3, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)'])
     def getParameter(self, c, path):
         """Get Parameter Value"""
         value = self._getParameter(path)
@@ -374,8 +377,11 @@ class Semaphore(LabradServer):
 #        return parameters
         
     @setting(11, "Block Experiment", experiment = '*s', returns="b")
-    def blockExperiment(self, c, experiment):
+    def blockExperiment(self, c, experiment, progress=None):
         """Update and get the number."""
+        if (progress != None):
+            self._setParameter(experiment + ['Semaphore', 'Progress'], progress)
+            self.onParameterChange((experiment + ['Semaphore', 'Progress'], progress), self.listeners)
         result = self._blockExperiment(experiment)
         return result
     

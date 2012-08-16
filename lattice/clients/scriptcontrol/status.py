@@ -29,6 +29,9 @@ class StatusWidget(QtGui.QWidget):
         self.stopButton.clicked.connect(self.stopButtonSignal)
         self.mainLayout.addWidget(self.stopButton)
         
+        self.pbar = QtGui.QProgressBar()
+        self.mainLayout.addWidget(self.pbar)
+        
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setLayout(self.mainLayout)
     
@@ -54,12 +57,18 @@ class StatusWidget(QtGui.QWidget):
                 
     @inlineCallbacks
     def setupStatusListener(self):
-        yield self.parent.cxn.semaphore.signal__parameter_change(11111)#, context = context)
-        yield self.parent.cxn.semaphore.addListener(listener = self.updateStatus, source = None, ID = 11111)#, context = context)    
+        context = self.parent.cxn.context()
+        yield self.parent.cxn.semaphore.signal__parameter_change(11111, context = context)
+        yield self.parent.cxn.semaphore.addListener(listener = self.updateStatus, source = None, ID = 11111, context = context)    
     
     def updateStatus(self, x, y):
-        print x, y
-#        self.statusLabel.setText(y[1])
+        if (y[0][:-2] == self.experimentPath):
+            if (y[0][-1] == 'Status'):
+                self.statusLabel.setText(y[1])
+            elif (y[0][-1] == 'Progress'):
+                self.pbar.setValue(y[1])
+            
+
 
     @inlineCallbacks
     def startButtonSignal(self, evt):
@@ -70,6 +79,7 @@ class StatusWidget(QtGui.QWidget):
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False)
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running')
         self.statusLabel.setText('Running')
+        self.pbar.setValue(0.0)
         yield deferToThread(self.parent.experiments[str(self.experimentPath)].run)
 
         
