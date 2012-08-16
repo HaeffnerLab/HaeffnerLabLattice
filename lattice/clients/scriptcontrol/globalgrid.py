@@ -151,7 +151,12 @@ class GlobalGrid(QtGui.QTableWidget):
             # it's a list
             else:
                 value = y[1].aslist
-                if (len(value) == 3):
+                if (type(value[0]) == str):
+                    self.parameterLineEditDict[y[0][-1]].blockSignals(True)
+                    self.parameterLineEditDict[y[0][-1]].setText(str(y[1]))
+                    self.parameterLineEditDict[y[0][-1]].blockSignals(False)
+                                      
+                elif (len(value) == 3):
                     try:
                         self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(True)
                         self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])

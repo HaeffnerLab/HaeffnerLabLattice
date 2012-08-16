@@ -13,15 +13,15 @@ from experiments.Test2 import Test2
 
 
 
-class Bunch:
-    def __init__(self, **kwds):
-        self.__dict__.update(kwds)
-    
-    def __setitem__(self, key, val):
-        self.__dict__[key] = val
-    
-    def toDict(self):
-        return self.__dict__
+#class Bunch:
+#    def __init__(self, **kwds):
+#        self.__dict__.update(kwds)
+#    
+#    def __setitem__(self, key, val):
+#        self.__dict__[key] = val
+#    
+#    def toDict(self):
+#        return self.__dict__
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
@@ -147,7 +147,8 @@ class ScriptControl(QtGui.QWidget):
         
         
         # [min, max, value] gets a spinbox
-        if ((type(value) == list) and (len(value) == 3)):
+        from labrad.units import Value as labradValue
+        if ((type(value) == list) and (len(value) == 3) and (type(value[0]) == labradValue)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
             number_dec = len(str(value[0]-int(value[0]))[2:])

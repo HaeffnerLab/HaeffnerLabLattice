@@ -8,7 +8,7 @@ class Semaphore(LabradServer):
     name = "Semaphore"
     
 #    onStatusChange = Signal(111111, 'signal: status parameter change', '(*s,s)')
-    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)'])
+    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)', '(*s, *s)'])
 
        
     @inlineCallbacks
@@ -302,16 +302,16 @@ class Semaphore(LabradServer):
 #        self.paramDict[experiment]['General']['Status'] = 'Paused'
         blockPath = path + ['Semaphore', 'Block']
         continuePath = path + ['Semaphore', 'Continue'] 
-        statusPath = path + ['Semaphore', 'Status']       
+#        statusPath = path + ['Semaphore', 'Status']       
         while(1):
             yield deferToThread(time.sleep, .5)
             if (self._getParameter(blockPath) == False):
                 continueFactor = self._getParameter(continuePath) 
-                if (continueFactor == True):
-                    pass
-#                    self.paramDict[experiment]['General']['Status'] = 'Running'
-                else:
-                    self._setParameter(statusPath, 'Stopped')
+#                if (continueFactor == True):
+#                    pass
+##                    self.paramDict[experiment]['General']['Status'] = 'Running'
+#                else:
+#                    self._setParameter(statusPath, 'Stopped')
                 returnValue(continueFactor)
 
     @setting(0, "Initialize Experiments", experiments = '*s', returns = '')
@@ -319,7 +319,7 @@ class Semaphore(LabradServer):
         """Reserve Parameter Space For Each Experiment"""
         self._initializeExperiments(experiments)
 
-    @setting(1, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)'], returns = '')
+    @setting(1, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
     def setParameter(self, c, path, value):
         """Set Parameter"""
         self._setParameter(path, value)
@@ -332,7 +332,7 @@ class Semaphore(LabradServer):
 #        """Set Experiment Parameter"""
 #        self._setExperimentParameter(experiment, parameter, value)
 
-    @setting(3, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)'])
+    @setting(3, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s'])
     def getParameter(self, c, path):
         """Get Parameter Value"""
         value = self._getParameter(path)
@@ -397,6 +397,11 @@ class Semaphore(LabradServer):
         directoryNames = self._getDirectoryNames(path)
         return directoryNames    
     
+    @setting(14, "Finish Experiment", path = '*s', returns = '')
+    def finishExperiment(self, c, path):
+        self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
+        self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)
+        
 #    @setting(12, "Save", returns="")
 #    def save(self, c):
 #        """Save"""

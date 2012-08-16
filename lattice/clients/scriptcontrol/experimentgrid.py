@@ -124,7 +124,11 @@ class ExperimentGrid(QtGui.QTableWidget):
             # it's a list
             else:
                 value = y[1].aslist
-                if (len(value) == 3):
+                if (type(value[0]) == str):
+                    self.parameterLineEditDict[y[0][-1]].blockSignals(True)
+                    self.parameterLineEditDict[y[0][-1]].setText(str(y[1]))
+                    self.parameterLineEditDict[y[0][-1]].blockSignals(False)                    
+                elif (len(value) == 3):
                     try:
                         self.parameterDoubleSpinBoxDict[y[0][-1]].blockSignals(True)
                         self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
@@ -160,9 +164,12 @@ class ExperimentGrid(QtGui.QTableWidget):
         from labrad import types as T
         # two types....tuples [(value, unit)] or tuples of strings and values [(string, (value, unit))]
         value = eval(str(self.sender().text()))
+        typeFirstElement = type(value[0])
         typeSecondElement = type(value[0][1])
         # normal list of labrad values
-        if (typeSecondElement == str):
+        if (typeFirstElement == str):
+            pass        
+        elif (typeSecondElement == str):
             # build a list of labrad values
             for i in range(len(value)):
                 value[i] = T.Value(value[i][0], value[i][1])

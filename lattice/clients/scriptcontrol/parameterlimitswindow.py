@@ -99,7 +99,8 @@ class ExperimentParameterListWidget(QtGui.QListWidget):
             if (type(value) != bool):
                 # must be a list
                 if (type(value[0]) != tuple):
-                    self.addItem(parameter)
+                    if(type(value[0]) != str):
+                        self.addItem(parameter)
         
         self.loadExperimentParameterLimits(expParamNames[0])
         
@@ -143,7 +144,8 @@ class GlobalParameterListWidget(QtGui.QListWidget):
             if (type(value) != bool):
                 # must be a list
                 if (type(value[0]) != tuple):
-                    self.addItem(parameter)            
+                    if(type(value[0]) != str):
+                        self.addItem(parameter)           
         
 #        self.parent.loadGlobalParameterLimits(globalParamNames[1])
         for i in range(len(globalParamNames)):
