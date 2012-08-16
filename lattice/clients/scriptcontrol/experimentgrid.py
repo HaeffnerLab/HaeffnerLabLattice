@@ -1,5 +1,6 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
+import re
 
 class ExperimentGrid(QtGui.QTableWidget):
     def __init__(self, parent, experimentPath):
@@ -111,14 +112,21 @@ class ExperimentGrid(QtGui.QTableWidget):
         yield self.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = context)    
 
     def updateExperimentParameter(self, x, y):
-        # need type checking here!
+        # check to see if this is an experiment parameter
         if (y[0][:-1] == self.experimentPath):
-            try:
-                if (len(y[1]) == 3):
-                    self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(y[1][2])
-            except:
-                #boolean!
-                pass
+            # begin typechecking
+            
+            if (type(y[1]) == bool):
+                self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])
+            # it's a list
+            else:
+                value = y[1].aslist
+                if (len(value) == 3):
+                    self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
+                else: # lineedit
+                    text = str(value)
+                    text = re.sub('Value', '', text)
+                    self.parameterLineEditDict[y[0][-1]].setText(text)
     
 
     @inlineCallbacks
@@ -141,6 +149,10 @@ class ExperimentGrid(QtGui.QTableWidget):
             # build a list of labrad values
             for i in range(len(value)):
                 value[i] = T.Value(value[i][0], value[i][1])
+        elif (typeSecondElement == type(None)):
+            # build a list of labrad values
+            for i in range(len(value)):
+                value[i] = value[i][0]                
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value[value[i][1][0]], value[i][1][1])

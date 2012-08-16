@@ -1,5 +1,6 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
+import re
 
 class GlobalGrid(QtGui.QTableWidget):
     def __init__(self, parent, experimentPath):
@@ -139,11 +140,20 @@ class GlobalGrid(QtGui.QTableWidget):
         yield self.parent.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = context)    
 
     def updateGlobalParameter(self, x, y):
-        # need type checking here!
-        if (y[0][-1] in self.parameterDoubleSpinBoxDict.keys()):
-            if (len(y[1]) == 3):
-                self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(y[1][2])        
-#        self.parameterDoubleSpinBoxDict[y[0]].setValue(y[1])
+        # check to see if parameter is global
+        if (y[0][-1] in self.globalParameterDict.keys()):
+            # begin typechecking
+            if (type(y[1]) == bool):
+                self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])
+            # it's a list
+            else:
+                value = y[1].aslist
+                if (len(value) == 3):
+                    self.parameterDoubleSpinBoxDict[y[0][-1]].setValue(value[2])
+                else: # lineedit
+                    text = str(value)
+                    text = re.sub('Value', '', text)
+                    self.parameterLineEditDict[y[0][-1]].setText(text)
 
     @inlineCallbacks
     def updateCheckBoxStateToSemaphore(self, evt):
