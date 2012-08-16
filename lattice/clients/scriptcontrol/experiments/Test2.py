@@ -8,10 +8,11 @@ class Test2():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp2']
         print 'Initializing Test2'
+        self.iterations = 100
         #threading.Thread.__init__(self)
     
-    def pause(self):
-        Continue = self.cxn.semaphore.block_experiment(self.experimentPath)
+    def pause(self, progress):
+        Continue = self.cxn.semaphore.block_experiment(self.experimentPath, progress)
         if (Continue == True):
             self.parameters = self.cxn.semaphore.get_parameter_names(self.experimentPath)
             return True
@@ -21,9 +22,9 @@ class Test2():
     def run(self):
         import labrad
         self.cxn = labrad.connect()
-        for i in range(1000):
+        for i in range(self.iterations):
             # blocking function goes here
-            Continue = self.pause()
+            Continue = self.pause(((i+1)/float(self.iterations))*100)
             if (Continue == False):
                 self.cleanUp()
                 break

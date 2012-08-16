@@ -2,6 +2,7 @@ import time
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
+import re
 from experimentlist import ExperimentListWidget
 from experimentgrid import ExperimentGrid
 from globalgrid import GlobalGrid
@@ -9,6 +10,8 @@ from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
 from experiments.Test import Test
 from experiments.Test2 import Test2
+
+
 
 class Bunch:
     def __init__(self, **kwds):
@@ -119,6 +122,46 @@ class ScriptControl(QtGui.QWidget):
         self.statusWidget = StatusWidget(self, experiment)           
         self.mainGrid.addWidget(self.statusWidget, 1, 3, QtCore.Qt.AlignCenter)
         self.statusWidget.show() 
+        
+    def typeCheckerWidget(self, Value):
+        
+        # boolean
+        if (type(Value) == bool):
+            checkbox = QtGui.QCheckBox()
+            if (Value == True):
+                checkbox.toggle()
+            return checkbox
+        else:
+            value = Value.aslist
+        
+        
+        # [min, max, value] gets a spinbox
+        if ((type(value) == list) and (len(value) == 3)):
+            doubleSpinBox = QtGui.QDoubleSpinBox()
+            doubleSpinBox.setRange(value[0], value[1])
+            doubleSpinBox.setValue(value[2])
+            doubleSpinBox.setSingleStep(.1)
+            doubleSpinBox.setKeyboardTracking(False)
+            return doubleSpinBox
+        # list with more or less than 3 values
+        else:
+            lineEdit = QtGui.QLineEdit()
+        
+#            # list of floats
+#            listElementType = type(value[0]) # enough to just check the first time, these should be homogenous. 
+#            from labrad.units import Value as labradValue
+#            if (listElementType == labradValue):
+#                for i in range(len(value)):
+#                    value[i] = value[i].value
+#            # list of tuples
+#            elif (listElementType == tuple):
+#                # not sure what to do here yet
+#                pass
+            text = str(value)
+            text = re.sub('Value', '', text)
+            lineEdit.setText(text)
+            return lineEdit
+                    
         
     @inlineCallbacks
     def saveParametersToRegistryAndQuit(self):

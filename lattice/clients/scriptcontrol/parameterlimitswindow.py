@@ -44,15 +44,16 @@ class ParameterLimitsWindow(QtGui.QWidget):
     def updateExperimentParameterValue(self):
         currentParameter = str(self.expParamLabel.text())
         value = yield self.parent.server.get_parameter(self.experimentPath + [currentParameter])
-    
         limits = eval(str(self.expParamLimitsEdit.text()))
+        for i in range(len(value)):
+            value[i] = value[i].value
         value[0] = float(limits[0])
         value[1] = float(limits[1])
         yield self.parent.server.set_parameter(self.experimentPath + [currentParameter], value)
         if (len(value) == 3):
             #update the spinBox
             self.parent.experimentGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
-        elif (len(value) > 3):
+        elif (len(value) != 3):
             # update the line edit
             self.parent.experimentGrid.parameterLineEditDict[currentParameter].setText(str(value))
  
@@ -66,20 +67,7 @@ class ParameterLimitsWindow(QtGui.QWidget):
         value[1] = float(limits[1])
         yield self.parent.server.set_parameter(self.parent.globalGrid.globalParameterDict[currentParameter], value)
         self.parent.globalGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
-   
-    @inlineCallbacks
-    def loadExperimentParameterLimits(self, parameter):
-        value = yield self.parent.server.get_parameter(self.experimentPath + [parameter])
-        self.expParamLabel.setText(parameter)
-        self.expParamLimitsEdit.setText('['+str(value[0])+','+str(value[1])+']')
-
-    @inlineCallbacks
-    def loadGlobalParameterLimits(self, parameter):
-        value = yield self.parent.server.get_parameter(self.parent.globalGrid.globalParameterDict[parameter])
-        self.globalParamLabel.setText(parameter)
-        self.globalParamLimitsEdit.setText('['+str(value[0])+','+str(value[1])+']')
-
-    
+     
     def closeEvent(self, evt):
         self.hide()
  
@@ -96,11 +84,25 @@ class ExperimentParameterListWidget(QtGui.QListWidget):
     def setupWidget(self):
         expParamNames = yield self.parent.parent.server.get_parameter_names(self.experimentPath)
         for parameter in expParamNames:
-            self.addItem(parameter)
+            value = yield self.parent.parent.server.get_parameter(self.experimentPath + [parameter])
+            if (type(value) != bool):
+                # must be a list
+                if (type(value[0]) != tuple):
+                    self.addItem(parameter)
         
-        self.parent.loadExperimentParameterLimits(expParamNames[0])
+        self.loadExperimentParameterLimits(expParamNames[0])
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
+    @inlineCallbacks
+    def loadExperimentParameterLimits(self, parameter):
+        value = yield self.parent.parent.server.get_parameter(self.parent.experimentPath + [parameter])
+        self.parent.expParamLabel.setText(parameter)
+        try:
+            self.parent.expParamLimitsEdit.setText('['+str(value[0])+','+str(value[1])+']')
+        except TypeError:
+            pass # boolean
+        
         
     def mousePressEvent(self, event):
         """
@@ -110,7 +112,7 @@ class ExperimentParameterListWidget(QtGui.QListWidget):
         item = self.itemAt(event.x(), event.y())
         if item:
             if (button == 1):
-                self.parent.loadExperimentParameterLimits(str(item.text()))
+                self.loadExperimentParameterLimits(str(item.text()))
                 
 class GlobalParameterListWidget(QtGui.QListWidget):
 
@@ -120,14 +122,35 @@ class GlobalParameterListWidget(QtGui.QListWidget):
         self.experimentPath = experimentPath
         self.setupWidget()
         
+    @inlineCallbacks
     def setupWidget(self):
         globalParamNames = self.parent.parent.globalGrid.globalParameterDict.keys()
         for parameter in globalParamNames:
-            self.addItem(parameter)
+            value = yield self.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
+            if (type(value) != bool):
+                # must be a list
+                if (type(value[0]) != tuple):
+                    self.addItem(parameter)            
         
-        self.parent.loadGlobalParameterLimits(globalParamNames[0])
+#        self.parent.loadGlobalParameterLimits(globalParamNames[1])
+        for i in range(len(globalParamNames)):
+            try:
+                self.loadGlobalParameterLimits(globalParamNames[i])
+                break
+            except:
+                self.loadGlobalParameterLimits(globalParamNames[i])
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
+    @inlineCallbacks
+    def loadGlobalParameterLimits(self, parameter):
+        value = yield self.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
+        self.parent.globalParamLabel.setText(parameter)
+        try:
+            self.parent.globalParamLimitsEdit.setText('['+str(value[0])+','+str(value[1])+']')
+        except TypeError:
+            pass #boolean
+            
         
     def mousePressEvent(self, event):
         """
@@ -137,4 +160,4 @@ class GlobalParameterListWidget(QtGui.QListWidget):
         item = self.itemAt(event.x(), event.y())
         if item:
             if (button == 1):
-                self.parent.loadGlobalParameterLimits(str(item.text()))
+                self.loadGlobalParameterLimits(str(item.text()))
