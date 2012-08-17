@@ -1,65 +1,35 @@
-class Sequence():
-    def __init__(self, **args):
-        self.pos = 0
-        self.dur = 0
-        self.pulse_list = []
-        self.set(args)
+from configuration import DopplerCoolingConfig as c
+from SemaphoreSequence import SemaphoreSequence
+
+class DopplerCooling(SemaphoreSequence):
+    
+    def configuration(self):
+        return c.params
         
-    def set(self, **args):
-        pass
-    
-    def add(self, sequences):
-        for seq in sequences:
-            pulses = seq.pulses()
-            duration = seq.duration()
-            self.pos += duration
-            self.pulse_list.extend(pulses)
-    
-    def duration(self):
-        return self.dur
-    
-    def pulses(self):
-        return self.pulse_list
-    
-class RepumpD(Sequence):
-    def set(self, args):
-        self.freq = args.get('freq', 80)
-        self.dur = 100
-    
-    def pulses(self):
-        pulses = [(0, self.freq, -3), (100, self.freq, -63)]
-        return pulses
+    def sequence(self):
+        blue_dds_pulses = []
+        red_dds_pulses = []
+        blue_dds_pulses.append( (self.start, self.p.doppler_cooling_frequency_397, self.p.doppler_cooling_amplitude_397) )
+        blue_dds_pulses.append( (self.start + self.p.doppler_cooling_duration, self.p.doppler_cooling_frequency_397, -63.0) )
+        red_dds_pulses.append(  (self.start, self.p.doppler_cooling_frequency_866, self.p.doppler_cooling_amplitude_866) )
+        red_dds_pulses.append(  (self.start + self.p.doppler_cooling_duration, self.p.doppler_cooling_frequency_866, -63.0) )
+        self.end = self.start + self.p.doppler_cooling_duration
+        for pulses in [('110DP', blue_dds_pulses), ('866DP', red_dds_pulses)]:
+            self.dds_pulses.append(pulses)
 
-class DopplerCooling(Sequence):
-            
-    def set(self, args):
-        self.freq = args.get('freq', 110)
-        self.dur = 100
-        
-    def pulses(self):
-        pulses = [(0, self.freq, -3), (100, self.freq, -63)]
-        return pulses
+class CompositeSequence(SemaphoreSequence):
     
+    def coniguration(self):
+        return {}
     
-class FrequencyScan(Sequence):
-    
-    def set(self, args):
-        pass
-    
-    def pulses(self):
-        operations = [
-                    DopplerCooling(),
-                    RepumpD(),
-                    ]
-        self.add(operations)
-        return self.pulse_list
+    def sequence(self):
+        self.addSequence(DopplerCooling)
+        print self.dds_pulses
 
-freqs = [220.0,210.0, 22.0]
-sequence = DopplerCooling()
-print sequence.pulses()
-sequence = RepumpD()
-print sequence.pulses()
-sequence = FrequencyScan()
-print sequence.pulses()
-
-
+if __name__ == '__main__':
+    import labrad
+    cxn = labrad.connect()
+    from labrad import types as T
+    replace = {'doppler_cooling_duration':T.Value(1.0,'ms')}
+    #dc = DopplerCooling(cxn.semaphore, **replace)
+    cs = CompositeSequence(cxn.semaphore, **replace)

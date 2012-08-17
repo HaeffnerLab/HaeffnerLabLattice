@@ -26,7 +26,6 @@ class scan729(Sequence):
                     'optical_pump_dur':(float, 10e-9, 100*10**-3, 1.0*10**-3),
                     'optical_pump_freq_729':(float, 150.0, 250.0, 220.0),
                     'optical_pump_ampl_729': (float, -63.0, -3.0,   -6.0),
-                    
                     }
     
     def defineSequence(self):  
@@ -92,18 +91,13 @@ class scan729(Sequence):
 if __name__ == '__main__':
     import labrad
     import numpy
-    freqs = numpy.arange(210.0, 220.0, 0.5)
-    ampls = numpy.ones_like(freqs) * -11.0
-    print ampls.size
-    freqs = freqs.tolist()
-    ampls = ampls.tolist()
     cxn = labrad.connect()
     pulser = cxn.pulser
     seq = scan729(pulser)
     pulser.new_sequence()
     params = {
-                'frequencies_729':freqs,
-                'amplitudes_729': ampls,
+                'freq729':220.0,
+                'ampl729': -10.0,
                 'doppler_cooling':100*10**-3,
                 'heating_time':100e-9,
                 'rabi_time':5*10**-3,
@@ -121,8 +115,6 @@ if __name__ == '__main__':
     pulser.program_sequence()
     pulser.reset_timetags()
     pulser.start_number(1)
-    #pulser.start_single()
-    #pulser.start_looped()
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     readouts = pulser.get_readout_counts().asarray
