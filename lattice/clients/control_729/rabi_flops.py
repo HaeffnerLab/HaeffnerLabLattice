@@ -50,7 +50,7 @@ class rabi_flop_connection(rabi_flop, async_semaphore):
                 #spin boxes
                 tuple(c.frequency): Parameter(c.frequency, setValueBlocking(self.freq.freq), self.freq.freq.valueChanged, self.freq.freq.setRange, 'MHz'),
                 #integer
-                tuple(c.repeatitions_per_time):Parameter(c.repeatitions_per_time, setValueBlocking(self.repeat), self.repeat.valueChanged, self.repeat.setRange, ''),
+                tuple(c.repeatitions_per_time):Parameter(c.repeatitions_per_time, setValueBlocking(self.repeat), self.repeat.valueChanged, self.repeat.setRange, None),
                 #list
                 tuple(c.excitation_times):Parameter(c.excitation_times, do_nothing, self.lim.new_list_signal, self.lim.setRange, 'us'),
                   }

@@ -40,6 +40,7 @@ class ExperimentGrid(QtGui.QTableWidget):
             item = QtGui.QTableWidgetItem(parameter)
             self.setItem(Row, 1, item)
             value = yield self.parent.server.get_parameter(self.experimentPath + [parameter])
+            print 'in exprt grid', value
             widget = self.parent.typeCheckerWidget(value)
             widgetType = type(widget)
             if (widgetType == QtGui.QCheckBox):

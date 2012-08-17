@@ -56,7 +56,7 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
                 tuple(c.optical_pumping_pulsed_duration_729):Parameter(c.optical_pumping_pulsed_duration_729, setValueBlocking(self.pulse_729), self.pulse_729.valueChanged, self.pulse_729.setRange, 'us'),
                 tuple(c.optical_pumping_pulsed_duration_854):Parameter(c.optical_pumping_pulsed_duration_854, setValueBlocking(self.pulse_854), self.pulse_854.valueChanged, self.pulse_854.setRange, 'us'),
                 #integer
-                tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.pulses), self.pulses.valueChanged, self.pulses.setRange, ''),
+                tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.pulses), self.pulses.valueChanged, self.pulses.setRange, None),
                 #bool
                 tuple(c.optical_pumping_continuous):Parameter(c.optical_pumping_continuous, setValueBlocking_cb(self.cont_cb), updateSignal = self.cont_cb.toggled),
                 tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.pulsed_cb), updateSignal = self.pulsed_cb.toggled),
@@ -89,6 +89,7 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
             w.setSingleStep(0.1)
             
         self.pulses = QtGui.QSpinBox()
+        self.pulses.setKeyboardTracking(False)
         self.pulse_729 = QtGui.QDoubleSpinBox()
         self.pulse_854 = QtGui.QDoubleSpinBox()
         for w in [self.pulse_729, self.pulse_854]:

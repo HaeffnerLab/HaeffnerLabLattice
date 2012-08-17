@@ -10,8 +10,7 @@ from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
 from experiments.Test import Test
 from experiments.Test2 import Test2
-
-
+from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
 
 #class Bunch:
 #    def __init__(self, **kwds):
@@ -29,7 +28,8 @@ class ScriptControl(QtGui.QWidget):
         self.reactor = reactor
         self.experiments = {
                             str(['Test', 'Exp1']):  Test(),
-                            str(['Test', 'Exp2']):  Test2()
+                            str(['Test', 'Exp2']):  Test2(),
+                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor()
                            }
         self.connect()
         
@@ -144,8 +144,9 @@ class ScriptControl(QtGui.QWidget):
             return checkbox
         else:
             value = Value.aslist
-        
-        
+        print 'in type check widget'
+        print value
+        print type(value)
         # [min, max, value] gets a spinbox
         from labrad.units import Value as labradValue
         if ((type(value) == list) and (len(value) == 3) and (type(value[0]) == labradValue)):
