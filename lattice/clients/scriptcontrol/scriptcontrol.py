@@ -11,16 +11,8 @@ from status import StatusWidget
 from experiments.Test import Test
 from experiments.Test2 import Test2
 from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
-
-#class Bunch:
-#    def __init__(self, **kwds):
-#        self.__dict__.update(kwds)
-#    
-#    def __setitem__(self, key, val):
-#        self.__dict__[key] = val
-#    
-#    def toDict(self):
-#        return self.__dict__
+from scripts.experiments.Experiments729.spectrum import spectrum
+from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
@@ -29,7 +21,9 @@ class ScriptControl(QtGui.QWidget):
         self.experiments = {
                             str(['Test', 'Exp1']):  Test(),
                             str(['Test', 'Exp2']):  Test2(),
-                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor()
+                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor(),
+                            str(['729Experiments','Spectrum']):  spectrum(),
+                            str(['729Experiments','RabiFlopping']):  rabi_flopping()
                            }
         self.connect()
         

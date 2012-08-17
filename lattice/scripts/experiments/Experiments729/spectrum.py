@@ -1,5 +1,5 @@
 from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
-#from scripts.PulseSequences.scan729 import scan729 as sequence
+from scripts.PulseSequences.scan729 import scan729 as sequence
 from scripts.scriptLibrary import dvParameters
 import time
 import numpy
@@ -47,7 +47,7 @@ class spectrum(SemaphoreExperiment):
         self.dv.cd(directory ,True )
         self.dv.new('Spectrum {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
         self.dv.add_parameter('Window', self.expP.window_name)
-        self.dv.add_parameter('plotLive',self.expP.plotLive)
+        self.dv.add_parameter('plotLive',self.expP.plot_live_parameter)
         self.dv.cd(directory , context = self.readout_save_context)
         self.dv.new('Readout {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Readout Counts','Arb','Arb')], context = self.readout_save_context )
     
@@ -57,7 +57,8 @@ class spectrum(SemaphoreExperiment):
         self.pulser.switch_manual('crystallization',  False)
     
     def program_pulser(self, frequency_729, amplitude_729 = None):
-        
+        if amplitude_729 is None:
+            amplitude_729 = self.check_parameter(self.globalP.amplitude_729, 'dBm')
         pass
 #        seq = sequence(self.pulser)
 #        self.pulser.new_sequence()
@@ -68,9 +69,10 @@ class spectrum(SemaphoreExperiment):
 
     def sequence(self):
         scan = self.check_parameters(self.expP.frequencies, 'MHz')
-        repeatitions_per_frequency = int(self.check_parameter(self.expP.repeatitions_per_frequency, None))
+        repeatitions = int(self.check_parameter(self.globalP.repeat_each_measurement, None))
         threshold = int(self.check_parameter(self.globalP.readout_threshold, None))
         for index, freq in enumerate(scan):
+            print 'Frequency {} MHz'.format(freq)
             percentDone = 100.0 * index / len(scan)
             should_continue = self.sem.block_experiment(self.experimentPath, percentDone)
             if not should_continue:
@@ -78,11 +80,12 @@ class spectrum(SemaphoreExperiment):
                 break
             else:
                 #program pulser, run sequence, and get readouts
-                self.program_pulser(freq)
-                self.pulser.start_number(repeatitions_per_frequency)
-                self.pulser.wait_sequence_done()
-                self.pulser.stop_sequence()
-                readouts = self.pulser.get_readout_counts().asarray
+#                self.program_pulser(freq)
+#                self.pulser.start_number(repeatitions)
+#                self.pulser.wait_sequence_done()
+#                self.pulser.stop_sequence()
+#                readouts = self.pulser.get_readout_counts().asarray
+                readouts = numpy.array([1,100])
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 self.dv.add(freq, perc_excited)
