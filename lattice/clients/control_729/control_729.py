@@ -3,6 +3,7 @@ from readout_histogram import readout_histgram
 from optical_pumping import optical_pumping
 from spectrum import spectrum_connection
 from rabi_flops import rabi_flop_connection
+from general_parameters import general_parameters_connection
 from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
@@ -25,10 +26,12 @@ class control_729(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         self.tab = tab = QtGui.QTabWidget()
         histogram_tab = readout_histgram(self.reactor, self.cxn)
+        general_tab = general_parameters_connection(self.reactor, self.cxn)
         spectrum_tab =  spectrum_connection(self.reactor, self.cxn)
         self.optical_pump_tab = optical_pumping(self.reactor, self.cxn)
         flop_tab = rabi_flop_connection(self.reactor, self.cxn)
         tab.addTab(histogram_tab, '&Readout and Histogram')
+        tab.addTab(general_tab, '&General Parameters')
         self.opt_index = tab.addTab(self.optical_pump_tab, '&Optical Pumping')
         tab.addTab(spectrum_tab, '&Spectrum')
         tab.addTab(flop_tab, '&Rabi Flopping')

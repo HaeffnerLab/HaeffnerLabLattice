@@ -1,4 +1,5 @@
 from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
+#from scripts.PulseSequences.scan729 import scan729 as sequence
 from scripts.scriptLibrary import dvParameters
 import time
 import numpy
@@ -56,12 +57,14 @@ class spectrum(SemaphoreExperiment):
         self.pulser.switch_manual('crystallization',  False)
     
     def program_pulser(self, frequency_729, amplitude_729 = None):
-        seq = sequence(self.pulser)
-        self.pulser.new_sequence()
-        seq.setVariables(**self.seqP.toDict())
-        seq.defineSequence()
-        self.pulser.program_sequence()
-        print freq
+        
+        pass
+#        seq = sequence(self.pulser)
+#        self.pulser.new_sequence()
+#        seq.setVariables(**self.seqP.toDict())
+#        seq.defineSequence()
+#        self.pulser.program_sequence()
+#        print freq
 
     def sequence(self):
         scan = self.check_parameters(self.expP.frequencies, 'MHz')
@@ -75,12 +78,11 @@ class spectrum(SemaphoreExperiment):
                 break
             else:
                 #program pulser, run sequence, and get readouts
-#                self.program_pulser(freq)
-#                self.pulser.start_number(repeatitions_per_frequency)
-#                self.pulser.wait_sequence_done()
-#                self.pulser.stop_sequence()
-#                readouts = self.pulser.get_readout_counts().asarray
-                readouts = numpy.array([1])
+                self.program_pulser(freq)
+                self.pulser.start_number(repeatitions_per_frequency)
+                self.pulser.wait_sequence_done()
+                self.pulser.stop_sequence()
+                readouts = self.pulser.get_readout_counts().asarray
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 self.dv.add(freq, perc_excited)

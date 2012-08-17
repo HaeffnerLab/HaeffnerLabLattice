@@ -32,19 +32,6 @@ class spectrum(QtGui.QWidget):
         self.segments.addItems([str(i + 1) for i in range(self.max_segments)])
         self.duration = durationWdiget(self.reactor)
         layout.addWidget(self.duration, 0, 0, 2, 2)
-        self.heating = QtGui.QDoubleSpinBox()
-        self.heating.setKeyboardTracking(False)
-        self.heating.setSuffix('ms')
-        self.repeats = QtGui.QSpinBox()
-        self.repeats.setKeyboardTracking(False)
-        label = QtGui.QLabel("Repeat each frequency")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)      
-        layout.addWidget(label, 2, 0, 1, 1)
-        layout.addWidget(self.repeats, 2, 1, 1, 1)
-        label = QtGui.QLabel("Heating")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)      
-        layout.addWidget(label, 2, 2, 1, 1)
-        layout.addWidget(self.heating, 2, 3, 1, 1)
         label = QtGui.QLabel("Segments")
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         layout.addWidget(label, 0, 2, 1, 1)
@@ -106,9 +93,6 @@ class spectrum_connection(spectrum, async_semaphore):
         self.d = {
                 #spin boxes
                 tuple(c.excitation_time): Parameter(c.excitation_time, self.duration.setNewDuration_blocking, self.duration.new_duration, self.duration.duration.setRange, 'us'),
-                tuple(c.heating_time): Parameter(c.heating_time, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
-                #integer
-                tuple(c.repeatitions_per_frequency):Parameter(c.repeatitions_per_frequency, setValueBlocking(self.repeats), self.repeats.valueChanged, self.repeats.setRange, ''),
                 #list
                 tuple(c.frequencies):Parameter(c.frequencies, do_nothing, self.new_frequencies_signal, self.on_new_freq_range, 'MHz'),
                   }

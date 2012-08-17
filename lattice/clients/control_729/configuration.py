@@ -29,8 +29,6 @@ class config_729_spectrum(object):
     ID = 99996
     #semaphore locations
     excitation_time = ['729Experiments','Spectrum','excitation_time']
-    heating_time = ['729Experiments','Spectrum','heating_time']
-    repeatitions_per_frequency = ['729Experiments','Spectrum','repeatitions_per_frequency']
     frequencies = ['729Experiments','Spectrum','frequencies']
     
 class config_729_rabi_flop(object):
@@ -39,4 +37,17 @@ class config_729_rabi_flop(object):
     #semaphore locations 
     frequency = ['729Experiments','RabiFlopping','frequency']
     excitation_times = ['729Experiments','RabiFlopping','excitation_times']
-    repeatitions_per_time = ['729Experiments','RabiFlopping','repeatitions_per_time']
+
+class config_729_general_parameters(object):
+    #IDs for signaling
+    ID = 99994
+    #semaphore locations 
+    heating_duration = ['729Experiments','heating_duration']
+    amplitude_854 = ['729Experiments','amplitude_854']
+    amplitude_729 = ['729Experiments','amplitude_729']
+    enable_calibration = ['729Experiments','enable_calibration_double_pass_729']
+    calibration_reduction = ['729Experiments','calibration_double_pass_729_reduction']
+    repeat_each_measurement = ['729Experiments','repeat_each_measurement']
+    
+    
+    

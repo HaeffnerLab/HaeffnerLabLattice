@@ -125,9 +125,9 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
         #row2
         frame = QtGui.QFrame()
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(QtGui.QLabel('Amplitude 729')) 
+        hbox.addWidget(QtGui.QLabel('Optical Pumping Amplitude 729')) 
         hbox.addWidget(self.ampl729) 
-        hbox.addWidget(QtGui.QLabel('Amplitude 854')) 
+        hbox.addWidget(QtGui.QLabel('Optical Pumping Amplitude 854')) 
         hbox.addWidget(self.ampl854) 
         frame.setLayout(hbox)
         layout.addWidget(frame, 1, 0, 1, 6)
