@@ -47,8 +47,8 @@ class ADCPowerMonitor():
         for i in range(self.iterations):
             # blocking function goes here
             percentDone = 100.0 * i / self.iterations
-            conitnue = self.sem.block_experiment(self.experimentPath, percentDone)
-            if not conitnue:
+            cont = self.sem.block_experiment(self.experimentPath, percentDone)
+            if not cont:
                 break
             else:
                 reading = []

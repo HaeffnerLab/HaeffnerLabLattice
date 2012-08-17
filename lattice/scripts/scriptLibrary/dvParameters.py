@@ -1,41 +1,64 @@
-def saveParameters(dv, dict):
+def saveParameters(dv, d):
     """Save the parameters from the dictionary dict into datavault"""
-    for name in dict.keys():
-        dv.add_parameter(name, dict[name])
+    for name in d.keys():
+        dv.add_parameter(name, d[name])
         
-def measureParameters(cxn, cxnlab, list):
+def measureParameters(cxn, cxnlab, specified = None):
     """Measures parameters in the list and returns the dictionary containing these"""
-    dict = {}
-    for item in list:
-        if item == 'trapdrive':
-            server = cxn.trap_drive
-            dict['rffreq'] = server.frequency()
-            dict['rfpower'] = server.amplitude()
-        elif item == 'endcaps':
-            server = cxn.dac
-            dict['endcap1'] = server.get_voltage('endcap1')
-            dict['endcap2'] = server.get_voltage('endcap2')
-        elif item == 'compensation':
-            server = cxn.compensation_box
-            [comp1, comp2] = [server.getcomp(1), server.getcomp(2)]
-            dict['comp1'] = comp1
-            dict['comp2'] = comp2
-        elif item == 'dcoffsetonrf':
-            server = cxn.dac
-            dict['dconrf1'] = server.get_voltage('dconrf1')
-            dict['dconrf2'] = server.get_voltage('dconrf2')
-        elif item == 'cavity397':
-            server = cxnlab.laserdac
-            dict['cavity397'] = server.getvoltage('397')
-        elif item == 'cavity866':
-            server = cxnlab.laserdac
-            dict['cavity866'] = server.getvoltage('866')
-        elif item == 'multiplexer397':
-            server = cxnlab.multiplexer_server
-            dict['frequency397'] = server.get_frequency('397')
-        elif item == 'multiplexer866':
-            server = cxnlab.multiplexer_server
-            dict['frequency866'] = server.get_frequency('866')
-        elif item == 'pulser':
-            dict['timetag_resolution'] = cxn.pulser.get_timetag_resolution()
-    return dict
+    d = {}
+    local = {
+            'trapdrive':measure_trapdrive,
+            'endcaps':measure_endcaps,
+            'compensation':measure_compensation,
+            'dcoffsetonrf':measure_dcoffsetonrf,
+            }
+    lab = {
+            'cavity397':measure_cavity('397'),
+            'cavity866':measure_cavity('866'),
+            'multiplexer397':measure_multiplexer('397'),
+            'multiplexer397':measure_multiplexer('866'),
+           }
+    for setting,connection in [(local, cxn),(lab,cxnlab)]:
+        if specified is None:
+            for name in setting.keys():
+                measure = setting[name]
+                try:
+                    measure(connection, d)
+                except Exception, e:
+                    print 'Unable to Measure {0}'.format(name), e
+        else:
+            raise NotImplementedError
+    return d
+
+def measure_trapdrive(cxn, d):
+    server = cxn.trap_drive
+    d['rffreq'] = server.frequency()
+    d['rfpower'] = server.amplitude()
+
+def measure_endcaps(cxn , d):
+    server = cxn.dac
+    d['endcap1'] = server.get_voltage('endcap1')
+    d['endcap2'] = server.get_voltage('endcap2')
+    
+def measure_compensation(cxn , d):
+    server = cxn.compensation_box
+    [comp1, comp2] = [server.getcomp(1), server.getcomp(2)]
+    d['comp1'] = comp1
+    d['comp2'] = comp2
+
+def measure_dcoffsetonrf(cxn , d):
+    server = cxn.dac
+    d['dconrf1'] = server.get_voltage('dconrf1')
+    d['dconrf2'] = server.get_voltage('dconrf2')
+
+def measure_cavity(wavelegnth):
+    def func(cxnlab ,d):
+        server = cxnlab.laserdac
+        d['cavity{}'.format(wavelegnth)] = server.getvoltage(wavelegnth)
+    return func
+
+def measure_multiplexer(wavelegnth):
+    def func(cxnlab ,d):
+        server = cxnlab.multiplexer_server
+        d['multiplexer{}'.format(wavelegnth)] = server.get_frequency(wavelegnth)
+    return func

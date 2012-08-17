@@ -110,7 +110,7 @@ class scan729():
         hist, bins = numpy.histogram(totalReadouts, 50)
         self.dv.new('Histogram',[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
         self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
-        self.dv.add_parameter('Histogram', self.anaP.threshold)
+        self.dv.add_parameter('Histogram729', self.anaP.threshold)
         
     def __del__(self):
         self.cxn.disconnect()
