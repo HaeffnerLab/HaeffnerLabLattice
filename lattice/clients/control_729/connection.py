@@ -2,7 +2,6 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 
 class connection(object):
     
-    host='localhost'
     servers = {
                 'Data Vault':None,
                 'Semaphore':None
@@ -19,16 +18,16 @@ class connection(object):
     
     @inlineCallbacks
     def connect(self):
-        print 'Connecting to {}'.format(self.host)
+        print 'Connecting'
         from labrad.wrappers import connectAsync
-        self.cxn = yield connectAsync(self.host)
+        self.cxn = yield connectAsync()
         for server_name in self.servers.keys():
             try:
                 self.servers[server_name] = yield self.cxn[server_name]
             except Exception, e:
                 print '{} Not Available'.format(e)
         yield self.setupListeners()
-        print 'Connected to {}'.format(self.host)
+        print 'Connected'
         returnValue(self)
             
     @inlineCallbacks

@@ -81,8 +81,10 @@ class readout_histgram(QtGui.QWidget):
         self.update_canvas_line(threshold)
         try:
             minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
-            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_threshold_dir, [minim,maxim,float(threshold)], context = self.context)
-        except Exception:
+            val = self.T.Value(threshold, None)
+            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_threshold_dir, [minim,maxim, val], context = self.context)
+        except Exception, e:
+            print e
             yield None
     
     @inlineCallbacks
@@ -92,6 +94,7 @@ class readout_histgram(QtGui.QWidget):
             minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
             yield self.cxn.servers['Semaphore'].set_parameter(c.readout_time_dir, [minim,maxim, value], context = self.context)
         except Exception, e:
+            print e
             yield None
             
     def update_canvas_line(self, threshold):
