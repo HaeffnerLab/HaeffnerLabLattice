@@ -1,22 +1,15 @@
-from scripts.PulseSequences.PulseSequence import PulseSequence
+from scripts.PulseSequences.SemaphoreSequence import SemaphoreSequence
 from labrad import types as T
 
-
-##get limits from pulser!, which can already DO, so maybe no need to check, is checking done there?
-
-class doppler_cooling(PulseSequence):
+class RabiExcitation(SemaphoreSequence):
     
-    def configuration(self):
+    def semaphore_configuration(self):
         
-        config = [
-                'doppler_cooling_frequency_397', 
-                'doppler_cooling_amplitude_397', 
-                'doppler_cooling_frequency_866', 
-                'doppler_cooling_amplitude_866', 
-                'doppler_cooling_duration',
-                ]
-        return config
     
+    
+
+        
+        
     def sequence(self):
         blue_dds_pulses = []
         red_dds_pulses = []

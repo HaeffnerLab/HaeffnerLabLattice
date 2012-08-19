@@ -1,12 +1,11 @@
-from scripts.PulseSequences.SemaphoreSequence import SemaphoreSequence
-from labrad import types as T
+from scripts.PulseSequences.PulseSequence import PulseSequence
 
-class EmptySequence(SemaphoreSequence):
+class EmptySequence(PulseSequence):
       
-    def user_configuration(self):
-        config = {
-                  'duration':[T.Value(0.0, 's'), T.Value(50.0, 's'), T.Value(0.0, 's')]
-                  }
+    def configuration(self):
+        config = [
+                  'duration'
+                  ]
         return config
         
     def sequence(self):
