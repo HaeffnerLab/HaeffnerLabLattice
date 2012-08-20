@@ -42,7 +42,7 @@ class config_729_general_parameters(object):
     #IDs for signaling
     ID = 99994
     #semaphore locations 
-    heating_duration = ['729Experiments','heating_duration']
+    heating_duration = ['729Experiments','heating_time']
     amplitude_854 = ['729Experiments','amplitude_854']
     amplitude_729 = ['729Experiments','amplitude_729']
     enable_calibration = ['729Experiments','enable_calibration_double_pass_729']
@@ -51,6 +51,4 @@ class config_729_general_parameters(object):
     repump_d_duration = ['729Experiments','repump_d_duration']
     state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
     state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
-    
-    
     

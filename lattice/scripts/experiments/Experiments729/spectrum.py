@@ -66,7 +66,6 @@ class spectrum(SemaphoreExperiment):
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
         sequence_parameters.update(common_values)
-        
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
@@ -82,6 +81,7 @@ class spectrum(SemaphoreExperiment):
         
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.amplitude_729)
         sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
+
         return sequence_parameters
         
     def program_pulser(self, frequency_729, amplitude_729 = None):
@@ -118,12 +118,15 @@ class spectrum(SemaphoreExperiment):
                 freqs = numpy.ones_like(readouts) * freq
                 self.dv.add(numpy.vstack((freqs, readouts)).transpose(), context = self.readout_save_context)       
                 self.total_readouts.extend(readouts)
+                self.save_histogram()
                 
     def save_histogram(self):
-        hist, bins = numpy.histogram(self.total_readouts, 50)
-        self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
-        self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
-        self.dv.add_parameter('Histogram729', True)
+        if len(self.total_readouts) >= 500:
+            hist, bins = numpy.histogram(self.total_readouts, 50)
+            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
+            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
+            self.dv.add_parameter('Histogram729', True)
+            self.total_readouts = []
     
     def save_parameters(self):
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
@@ -131,7 +134,6 @@ class spectrum(SemaphoreExperiment):
         dvParameters.saveParameters(self.dv, self.p.toDict())
     
     def finalize(self):
-        self.save_histogram()
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath)
         self.cxn.disconnect()
