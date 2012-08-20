@@ -14,7 +14,7 @@ class PulseSequence(object):
 		
 	def configuration(self):
 		'''implemented by subclass'''	
-		return {}		
+		return []
 	
 	def sequence(self):
 		'''implemented by subclass'''
@@ -25,7 +25,7 @@ class PulseSequence(object):
 			try:
 				d[param] = replace[param]
 			except KeyError:
-				raise Exception( '{} value not provided'.format(param))
+				raise Exception('{0} value not provided for the {1} Pulse Sequence'.format(param, self.__class__.__name__))
 		return d
 	
 	def addSequence(self, sequence, position = None, **kwargs):

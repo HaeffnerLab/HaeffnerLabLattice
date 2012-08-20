@@ -36,6 +36,8 @@ class spectrum(SemaphoreExperiment):
         self.dv = cxn.data_vault
         self.expP = self.populate_experimental_parameters(self.sem, self.experimentPath)
         self.globalP = self.populate_global_parameters(self.sem, self.experimentPath)
+        print self.expP.toDict().keys()
+        print self.globalP.toDict().keys()
         
     def setup_data_vault(self):
         localtime = time.localtime()

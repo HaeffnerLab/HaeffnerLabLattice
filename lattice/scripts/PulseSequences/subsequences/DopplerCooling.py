@@ -1,8 +1,4 @@
 from scripts.PulseSequences.PulseSequence import PulseSequence
-from labrad import types as T
-
-
-##get limits from pulser!, which can already DO, so maybe no need to check, is checking done there?
 
 class doppler_cooling(PulseSequence):
     

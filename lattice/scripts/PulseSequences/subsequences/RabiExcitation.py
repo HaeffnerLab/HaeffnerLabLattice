@@ -1,23 +1,20 @@
-from scripts.PulseSequences.SemaphoreSequence import SemaphoreSequence
-from labrad import types as T
+from scripts.PulseSequences.PulseSequence import PulseSequence
 
-class RabiExcitation(SemaphoreSequence):
+class rabi_excitation(PulseSequence):
     
-    def semaphore_configuration(self):
-        
+    def configuration(self):
+        config = [
+                  'rabi_excitation_frequency',
+                  'rabi_excitation_amplitude',
+                  'rabi_excitation_duration',
+                  ]
+        return config
     
     
-
-        
-        
     def sequence(self):
-        blue_dds_pulses = []
-        red_dds_pulses = []
-        dur = self.p.doppler_cooling_duration
-        blue_dds_pulses.append( (self.start, self.p.doppler_cooling_frequency_397, self.p.doppler_cooling_amplitude_397) )
-        blue_dds_pulses.append( (self.start + dur, self.p.doppler_cooling_frequency_397, -63.0) )
-        red_dds_pulses.append(  (self.start, self.p.doppler_cooling_frequency_866, self.p.doppler_cooling_amplitude_866) )
-        red_dds_pulses.append(  (self.start + dur, self.p.doppler_cooling_frequency_866, -63.0) )
-        self.end = self.start + dur
-        for pulses in [('110DP', blue_dds_pulses), ('866DP', red_dds_pulses)]:
+        pulses = []
+        self.end = self.start + self.p.rabi_excitation_duration
+        pulses.append((self.start, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
+        pulses.append((self.end, 0.0, -63.0))
+        for pulses in [('729DP', pulses)]:
             self.dds_pulses.append(pulses)

@@ -67,8 +67,12 @@ class scan729(Sequence):
             repump854Off.append( (repump_854_off + i  * cT, p.repump_freq_854, -63.0)  )
             coolingOff.append(   (cooling_off + i  * cT, p.doppler_cooling_freq, -63.0)  )
             repump866Off.append( (cooling_off + i  * cT, p.repump_freq_866, -63.0)  )
+            
+            
             rabiOn.append(       (rabi_on + i  * cT, freqs[i], ampls[i]) )
             rabiOff.append(      (rabi_off + i  * cT, 0.0, -63.0) )
+            
+            
             readoutOn.append(    (readout_on + i  * cT, p.readout_freq, p.readout_ampl  ))
             repump866On.append(  (readout_on + i  * cT, p.repump_freq_866, p.repump_866_ampl)  )
             readout_count.append( ('ReadoutCount', readout_on + i  * cT, p.readout_time)) 
