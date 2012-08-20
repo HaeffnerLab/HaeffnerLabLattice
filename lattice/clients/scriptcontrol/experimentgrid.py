@@ -167,7 +167,7 @@ class ExperimentGrid(QtGui.QTableWidget):
     @inlineCallbacks
     def updateSpinBoxValueToSemaphore(self, parameterValue):
         from labrad import types as T
-        yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [self.sender().minimum(), self.sender().maximum(), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
+        yield self.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [T.Value(self.sender().minimum(), str(self.sender().suffix()[1:])), T.Value(self.sender().maximum(), str(self.sender().suffix()[1:])), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
         
     @inlineCallbacks
     def updateLineEditValueToSemaphore(self):
