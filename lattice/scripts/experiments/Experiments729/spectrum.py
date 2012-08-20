@@ -103,7 +103,7 @@ class spectrum(SemaphoreExperiment):
             should_continue = self.sem.block_experiment(self.experimentPath, percentDone)
             if not should_continue:
                 print 'Not Continuing'
-                break
+                return
             else:
                 #program pulser, run sequence, and get readouts
                 self.program_pulser(freq)
