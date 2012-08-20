@@ -137,7 +137,6 @@ class spectrum(SemaphoreExperiment):
     def finalize(self):
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath)
-        
         self.cxn.disconnect()
         self.cxnlab.disconnect()
         print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)
