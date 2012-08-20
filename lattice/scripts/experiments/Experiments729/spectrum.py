@@ -119,6 +119,7 @@ class spectrum(SemaphoreExperiment):
                 self.dv.add(numpy.vstack((freqs, readouts)).transpose(), context = self.readout_save_context)       
                 self.total_readouts.extend(readouts)
                 self.save_histogram()
+        self.sem.block_experiment(self.experimentPath, 100.0)
                 
     def save_histogram(self):
         if len(self.total_readouts) >= 500:
@@ -136,6 +137,7 @@ class spectrum(SemaphoreExperiment):
     def finalize(self):
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath)
+        
         self.cxn.disconnect()
         self.cxnlab.disconnect()
         print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)

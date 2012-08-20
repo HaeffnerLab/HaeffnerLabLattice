@@ -16,10 +16,6 @@ class PulseSequence(object):
 		'''implemented by subclass'''	
 		return []
 	
-	def needs_subsequences(self):
-		'''implement by subclass'''
-		return []
-	
 	def sequence(self):
 		'''implemented by subclass'''
 	
