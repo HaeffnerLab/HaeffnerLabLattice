@@ -1,9 +1,9 @@
 from scripts.PulseSequences.PulseSequence import PulseSequence
+from labrad import types as T
 
 class rabi_excitation(PulseSequence):
     
-    @staticmethod
-    def configuration():
+    def configuration(self):
         config = [
                   'rabi_excitation_frequency',
                   'rabi_excitation_amplitude',
@@ -16,6 +16,6 @@ class rabi_excitation(PulseSequence):
         pulses = []
         self.end = self.start + self.p.rabi_excitation_duration
         pulses.append((self.start, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
-        pulses.append((self.end, 0.0, -63.0))
+        pulses.append((self.end, T.Value(0.0, 'MHz'), T.Value(-63.0, 'dBm')))
         for pulses in [('729DP', pulses)]:
             self.dds_pulses.append(pulses)

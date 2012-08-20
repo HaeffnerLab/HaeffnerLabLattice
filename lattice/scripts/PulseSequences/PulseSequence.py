@@ -7,19 +7,16 @@ class PulseSequence(object):
 		self.end = start
 		self.dds_pulses = []
 		self.ttl_pulses = []
-		self.added_sequences = []
 		self.replace = kwargs
 		config = self.set_params(self.configuration() , **kwargs)
 		self.p = Bunch(**config) 
 		self.sequence()
 	
-	@staticmethod
-	def configuration():
+	def configuration(self):
 		'''implemented by subclass'''	
 		return []
 	
-	@staticmethod
-	def needs_subsequences():
+	def needs_subsequences(self):
 		'''implement by subclass'''
 		return []
 	
@@ -38,7 +35,6 @@ class PulseSequence(object):
 	def addSequence(self, sequence, position = None, **kwargs):
 		'''insert a subsequence, position is either time or None to insert at the end'''
 		#position where sequence is inserted
-		if sequence not in self.needs_subsequences(): raise Exception ("Adding sequence that is not listed in the 'needs_subsequences' method")
 		if type(position) == dict: raise Exception ("Don't forget ** in front of replacement dictionary")
 		if position is None:
 			position = self.end
@@ -50,17 +46,14 @@ class PulseSequence(object):
 		self.dds_pulses.extend( seq.dds_pulses )
 		self.ttl_pulses.extend( seq.ttl_pulses )
 		self.end = max(self.end, seq.end)
-		self.added_sequences.append(sequence)
 	
-	@classmethod
-	def requiredParameters(cls, returnDict = False):
-		'''returns a set (or optically a dictionary) of the required parameters'''
-		required = set(cls.configuration())
-		for seq in cls.needs_subsequences():
-			required = required.union(seq.requiredParameters())
-		if returnDict:
-			required = {}.fromkeys(required)
-		return required
+	def programSequence(self, pulser):
+		pulser.new_sequence()
+		pulser.add_ttl_pulses(self.ttl_pulses)
+		for channel, pulses in self.dds_pulses:
+			pulser.add_dds_pulses(channel, pulses)
+		pulser.program_sequence()
+
 		
 class Bunch:
 	def __init__(self, **kwds):

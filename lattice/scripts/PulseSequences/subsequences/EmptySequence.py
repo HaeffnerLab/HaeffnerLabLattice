@@ -2,8 +2,7 @@ from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class empty_sequence(PulseSequence):
     
-    @staticmethod
-    def configuration():
+    def configuration(self):
         config = [
                   'empty_sequence_duration'
                   ]

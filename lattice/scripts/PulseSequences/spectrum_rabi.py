@@ -7,37 +7,23 @@ from subsequences.StateReadout import state_readout
 
 class spectrum_rabi(PulseSequence):
     
-    @staticmethod
-    def configuration():
+    def configuration(self):
         config = [
-                  'heating_time'
+                  'heating_time','optical_pumping_enable'
                   ]
         return config
     
-    @staticmethod
-    def needs_subsequences():
-        seqs = [
-                doppler_cooling_after_repump_d,
-                optical_pumping_continuous,
-                empty_sequence,
-                rabi_excitation,
-                state_readout,
-                ]
-        return seqs
-    
     def sequence(self):
         self.addSequence(doppler_cooling_after_repump_d)
-        self.addSequence(optical_pumping_continuous)
+        if self.p.optical_pumping_enable:
+            self.addSequence(optical_pumping_continuous)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
-        print self.dds_pulses
 
-if __name__ == '__main__':
+class sample_parameters(object):
     from labrad import types as T
-    required = spectrum_rabi.requiredParameters(returnDict = True)
-    print 'required', required
-    values = {
+    parameters = {
               'repump_d_duration':T.Value(500, 'us'),
               'repump_d_frequency_854':T.Value(80.0, 'MHz'),
               'repump_d_amplitude_854':T.Value(-11.0, 'dBm'),
@@ -47,6 +33,8 @@ if __name__ == '__main__':
               'doppler_cooling_frequency_866':T.Value(80.0, 'MHz'),
               'doppler_cooling_amplitude_866':T.Value(-11.0, 'dBm'),
               'doppler_cooling_duration':T.Value(1.0,'ms'),
+              
+              'optical_pumping_enable':True,
               
               'optical_pumping_continuous_duration':T.Value(1, 'ms'),
               'optical_pumping_continuous_repump_additional':T.Value(500, 'us'),
@@ -67,7 +55,10 @@ if __name__ == '__main__':
               'state_readout_amplitude_866':T.Value(-11.0, 'dBm'),
               'state_readout_duration':T.Value(1.0,'ms'),
               }
-    
-    cs = spectrum_rabi(**values)
-    
-    
+
+if __name__ == '__main__':
+    params = sample_parameters.parameters
+    cs = spectrum_rabi(**params)
+    import labrad
+    cxn = labrad.connect()
+    cs.programSequence(cxn.pulser)

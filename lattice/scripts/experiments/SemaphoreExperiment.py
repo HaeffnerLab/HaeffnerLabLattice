@@ -6,6 +6,9 @@ class Bunch:
     
     def __setitem__(self, key, val):
         self.__dict__[key] = val
+        
+    def iteritems(self):
+        return self.__dict__.iteritems()
     
     def toDict(self):
         return self.__dict__
@@ -33,29 +36,38 @@ class SemaphoreExperiment():
             except IndexError:
                 return Bunch(**d)
 
-    def check_parameters(self, entry, units = None, keep_units = False):
+    def check_parameters(self, entry, keep_units = True, in_units = None):
         '''checks the ranges of parameters'''
         assert len(entry) >= 3, "Trying to check parameters that do not have enough entries"
         entry= list(entry)        
-        minim,maxim =[entry.pop(0).inUnitsOf(units).value for i in range(2)]
-        if not keep_units:
-            values =[val.inUnitsOf(units).value for val in entry]
-        else:
-            values = [val.inUnitsOf(units) for val in entry]
+        minim,maxim =[entry.pop(0).value for i in range(2)]
+        values =[val for val in entry]
+        #assumes the units are the same for the min,max,and values
         values_np = numpy.array(values) #automatically gets rid of units
         withinRange = (minim <= values_np) * (values_np <= maxim)
         if not (withinRange.all()):
             raise Exception ("Some entries are out of range in {}".format(entry))
-        return values
+        if not keep_units:
+            #discard units
+            if in_units is None:
+                in_units = minim.units
+            return [val.inUnitsOf(in_units).value for val in values]
+        else:
+            return values
 
-    def check_parameter(self, entry, units = None, keep_units = False):
+    def check_parameter(self, entry, keep_units = True, in_units = None):
         '''checks the ranges of parameters'''
+        if type(entry) == bool: return bool #nothing to check
         assert len(entry) == 3, "Trying to check parameter that does not have enough entries"
         entry= list(entry)
-        minim,maxim,value =[entry.pop(0).inUnitsOf(units) for i in range(3)]
+        minim,maxim,value =[entry.pop(0) for i in range(3)]
+        #assumes the units are the same for the min,max,and value
         if not ((minim.value <= value.value) and (value.value <= maxim.value)):
             raise Exception ("Some entries are out of range in {}".format(entry))
         if not keep_units:
-            return value.value
+            #discard units
+            if in_units is None:
+                in_units = minim.units
+            return value.inUnitsOf(in_units).value
         else:
             return value

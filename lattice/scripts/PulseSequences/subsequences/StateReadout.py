@@ -3,8 +3,7 @@ from scripts.PulseSequences.subsequences.DopplerCooling import doppler_cooling
 
 class state_readout(PulseSequence):
     
-    @staticmethod
-    def configuration():
+    def configuration(self):
         config = [
                 'state_readout_frequency_397', 
                 'state_readout_amplitude_397', 
@@ -13,10 +12,6 @@ class state_readout(PulseSequence):
                 'state_readout_duration',
                 ]
         return config
-    
-    @staticmethod
-    def needs_subsequences():
-        return [doppler_cooling]
     
     def sequence(self):
         

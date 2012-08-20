@@ -1,5 +1,6 @@
 from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
 from scripts.PulseSequences.spectrum_rabi import spectrum_rabi as sequence
+from scripts.PulseSequences.spectrum_rabi import sample_parameters
 from scripts.scriptLibrary import dvParameters
 import time
 import numpy
@@ -22,7 +23,8 @@ class spectrum(SemaphoreExperiment):
         print 'Started: {}'.format(self.experimentPath)
         self.import_labrad()
         self.setup_data_vault()
-        self.setup_pulser_logic()
+        self.sequence_parameters = self.setup_sequence_parameters()
+        self.setup_pulser()
         self.total_readouts = []
     
     def import_labrad(self):
@@ -50,66 +52,59 @@ class spectrum(SemaphoreExperiment):
         self.dv.cd(directory , context = self.readout_save_context)
         self.dv.new('Readout {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Readout Counts','Arb','Arb')], context = self.readout_save_context )
     
-    def setup_pulser_logic(self):
+    def setup_pulser(self):
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
         self.pulser.switch_manual('crystallization',  False)
+        #switch off 729 at the beginning
+        self.pulser.select_dds_channel('729DP')
+        self.pulser.output(False)
     
-    def program_pulser(self, frequency_729, amplitude_729 = None):
-        if amplitude_729 is None:
-            amplitude_729 = self.check_parameter(self.p.amplitude_729, 'dBm', keep_units = True)
-        print frequency_729
-        print amplitude_729
-#        print self.p.toDict().keys()
+    def setup_sequence_parameters(self):
+        #update the sequence parameters with our values
+        sequence_parameters = {}.fromkeys(sample_parameters.parameters)
+        check = self.check_parameter
+        common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
+        sequence_parameters.update(common_values)
+        print self.p.toDict().keys()
+        return sequence_parameters
         
-        from labrad import types as T
-        replace = {
-                   'rabi_excitation_frequency':frequency_729,
-                   'rabi_excitation_amplitude':amplitude_729,
-                   #missing!
-                   'repump_d_duration':T.Value(500, 'us'),
-                   'repump_d_frequency_854':T.Value(80.0, 'MHz'),
-                   'repump_d_amplitude_854':T.Value(-11.0, 'dBm'),
-                   }
-        parameters = self.p.toDict()
-        parameters.update(replace)
-        print parameters
-        #seq = sequence(**parameters)
-        values = {
-            'repump_d_duration':T.Value(500, 'us'),
-            'repump_d_frequency_854':T.Value(80.0, 'MHz'),
-            'repump_d_amplitude_854':T.Value(-11.0, 'dBm'),
-              
-            'rabi_excitation_frequency':frequency_729,
-                'rabi_excitation_amplitude':amplitude_729,
-            
-            
-              
-              'doppler_cooling_frequency_397':T.Value(110.0, 'MHz'),
-              'doppler_cooling_amplitude_397':T.Value(-11.0, 'dBm'),
-              'doppler_cooling_frequency_866':T.Value(80.0, 'MHz'),
-              'doppler_cooling_amplitude_866':T.Value(-11.0, 'dBm'),
-              'doppler_cooling_duration':T.Value(1.0,'ms'),
-              
-              'optical_pumping_continuous_duration':T.Value(1, 'ms'),
-              'optical_pumping_continuous_repump_additional':T.Value(500, 'us'),
-              'optical_pumping_continuous_frequency_854':T.Value(80.0, 'MHz'),
-              'optical_pumping_continuous_amplitude_854':T.Value(-11.0, 'dBm'),
-              'optical_pumping_continuous_frequency_729':T.Value(220.0, 'MHz'),
-              'optical_pumping_continuous_amplitude_729':T.Value(-11.0, 'dBm'),
-              
-              'heating_time':T.Value(0.0, 'ms'),
-              
-
-              'rabi_excitation_duration':T.Value(20.0, 'us'),
-              
-              'state_readout_frequency_397':T.Value(110.0, 'MHz'),
-              'state_readout_amplitude_397':T.Value(-11.0, 'dBm'),
-              'state_readout_frequency_866':T.Value(80.0, 'MHz'),
-              'state_readout_amplitude_866':T.Value(-11.0, 'dBm'),
-              'state_readout_duration':T.Value(1.0,'ms'),
-              }
-        seq = sequence(**values)
+    def program_pulser(self, frequency_729, amplitude_729 = None):
+        if amplitude_729 is not None:
+            self.sequence_parameters['rabi_excitation_amplitude'] = amplitude_729
+        self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
+        print type(self.sequence_parameters)
+        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]
+        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]
+        print 'filled', numpy.array(filled)
+        ['rabi_excitation_frequency' 'doppler_cooling_frequency_397'
+         'optical_pumping_continuous_duration' 'doppler_cooling_amplitude_397'
+         'doppler_cooling_amplitude_866' 'doppler_cooling_frequency_866'
+         'optical_pumping_enable' 'doppler_cooling_duration' 'heating_time']
+        print 'unfilled',  numpy.array(unfilled)
+        ['optical_pumping_continuous_frequency_854' 
+         'optical_pumping_continuous_amplitude_729'
+         'optical_pumping_continuous_repump_additional'
+         'optical_pumping_continuous_amplitude_854'
+         'optical_pumping_continuous_frequency_729'
+         
+         'rabi_excitation_amplitude'
+         'rabi_excitation_duration'
+         
+         'state_readout_amplitude_397' 
+          'state_readout_amplitude_866'
+         'state_readout_duration'
+         'state_readout_frequency_866'
+         'state_readout_frequency_397'
+         
+         'repump_d_duration'
+         'repump_d_amplitude_854'
+         
+          'repump_d_frequency_854'
+         
+          ]
+        raise()
+#        seq = sequence(**values)
 #        self.pulser.new_sequence()
 #        seq.setVariables(**self.seqP.toDict())
 #        seq.defineSequence()
@@ -117,9 +112,9 @@ class spectrum(SemaphoreExperiment):
 #        print freq
 
     def sequence(self):
-        scan = self.check_parameters(self.p.frequencies, 'MHz', keep_units = True)
-        repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, None))
-        threshold = int(self.check_parameter(self.p.readout_threshold, None))
+        scan = self.check_parameters(self.p.frequencies)
+        repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
+        threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, freq in enumerate(scan):
             print 'Frequency {}'.format(freq)
             percentDone = 100.0 * index / len(scan)
