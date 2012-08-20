@@ -26,7 +26,13 @@ class ScriptControl(QtGui.QWidget):
                             str(['729Experiments','Spectrum']):  spectrum(),
                             str(['729Experiments','RabiFlopping']):  rabi_flopping()
                            }
+        self.setupExperimentProgressDict()
         self.connect()
+        
+    def setupExperimentProgressDict(self):
+        self.experimentProgressDict = self.experiments.copy()
+        for key in self.experimentProgressDict.keys():
+            self.experimentProgressDict[key] = 0.0
         
     @inlineCallbacks
     def connect(self):
@@ -139,18 +145,18 @@ class ScriptControl(QtGui.QWidget):
             return checkbox
         else:
             value = Value.aslist
-        print 'in type check widget'
-        print value
-        print type(value)
+#        print 'in type check widget'
+#        print value
+#        print type(value)
         # [min, max, value] gets a spinbox
         from labrad.units import Value as labradValue
         if ((type(value) == list) and (len(value) == 3) and (type(value[0]) == labradValue)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
-            number_dec = len(str(value[0]-int(value[0]))[2:])
+            number_dec = len(str(value[0].value-int(value[0].value))[2:])
             doubleSpinBox.setDecimals(number_dec + 1)
             doubleSpinBox.setValue(value[2])
-            doubleSpinBox.setSuffix(value[2].units)
+            doubleSpinBox.setSuffix(' ' + value[2].units)
             doubleSpinBox.setSingleStep(.1)
             doubleSpinBox.setKeyboardTracking(False)
             doubleSpinBox.setMouseTracking(False)
@@ -182,9 +188,17 @@ class ScriptControl(QtGui.QWidget):
         if (success == True):
             print 'Current Parameters Saved Successfully.'
         self.reactor.stop()
-                
+    
+    @inlineCallbacks
+    def stopAllExperiments(self):
+        for experiment in self.experiments.keys():
+            yield self.cxn.semaphore.set_parameter(eval(experiment) + ['Semaphore', 'Status'], 'Stopped')
+            
+    @inlineCallbacks
     def closeEvent(self, x):
-        self.saveParametersToRegistryAndQuit()
+        # stop all scripts! status wise
+        yield self.stopAllExperiments()        
+        yield self.saveParametersToRegistryAndQuit()
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )

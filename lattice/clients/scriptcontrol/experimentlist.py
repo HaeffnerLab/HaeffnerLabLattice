@@ -2,8 +2,8 @@
 Experiment List Widget
 '''
 from twisted.internet.defer import inlineCallbacks
-from PyQt4 import QtCore, QtGui
-import numpy as np
+from PyQt4 import QtGui
+
 
 class ExperimentListWidget(QtGui.QListWidget):
 

@@ -13,50 +13,59 @@ class StatusWidget(QtGui.QWidget):
         
         self.createStatusLabel()
         
-        self.setupStatusListener()
-        
-        self.startButton = QtGui.QPushButton("New", self)
-        self.startButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        self.startButton.clicked.connect(self.startButtonSignal)
-        self.mainLayout.addWidget(self.startButton)
-                
-        self.pauseContinueButton = QtGui.QPushButton("Pause", self)
-        self.pauseContinueButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        self.pauseContinueButton.clicked.connect(self.pauseContinueButtonSignal)
-        self.mainLayout.addWidget(self.pauseContinueButton)
-        
-        self.stopButton = QtGui.QPushButton("Stop", self)
-        self.stopButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
-        self.stopButton.clicked.connect(self.stopButtonSignal)
-        self.mainLayout.addWidget(self.stopButton)
-        
-        self.pbar = QtGui.QProgressBar()
-        self.mainLayout.addWidget(self.pbar)
-        
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setLayout(self.mainLayout)
     
     @inlineCallbacks
     def createStatusLabel(self):
-        status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
-        self.statusLabel = QtGui.QLabel(status)
-        self.statusLabel.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
-        self.mainLayout.addWidget(self.statusLabel)
-        if (self.statusLabel.text() == 'Paused'):
-            self.startButton.setDisabled(True)
-            self.pauseContinueButton.setEnabled(True)
-            self.stopButton.setEnabled(True)
-            self.pauseContinueButton.setText('Continue')
-        elif (self.statusLabel.text() == 'Running'):            
-            self.startButton.setDisabled(True)
-            self.stopButton.setEnabled(True)
-            self.pauseContinueButton.setEnabled(True)
-            self.pauseContinueButton.setText('Pause')
+        if (str(self.experimentPath) in self.parent.experiments.keys()):
+            
+            status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
+            
+            self.startButton = QtGui.QPushButton("New", self)
+            self.startButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+            self.startButton.clicked.connect(self.startButtonSignal)
+            self.mainLayout.addWidget(self.startButton)
+                    
+            self.pauseContinueButton = QtGui.QPushButton("Pause", self)
+            self.pauseContinueButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+            self.pauseContinueButton.clicked.connect(self.pauseContinueButtonSignal)
+            self.mainLayout.addWidget(self.pauseContinueButton)
+            
+            self.stopButton = QtGui.QPushButton("Stop", self)
+            self.stopButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+            self.stopButton.clicked.connect(self.stopButtonSignal)
+            self.mainLayout.addWidget(self.stopButton)
+            
+            self.statusLabel = QtGui.QLabel(status)
+            self.statusLabel.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+            self.mainLayout.addWidget(self.statusLabel)
+            if (self.statusLabel.text() == 'Paused'):
+                self.startButton.setDisabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setText('Continue')
+            elif (self.statusLabel.text() == 'Running'):            
+                self.startButton.setDisabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.pauseContinueButton.setText('Pause')
+            else:
+                self.pauseContinueButton.setDisabled(True)    
+                self.stopButton.setDisabled(True)
+                self.startButton.setEnabled(True)
+
+            self.pbar = QtGui.QProgressBar()
+            self.pbar.setValue(self.parent.experimentProgressDict[str(self.experimentPath)])
+            self.mainLayout.addWidget(self.pbar)   
+            
+            self.setupStatusListener()               
+
         else:
-            self.pauseContinueButton.setDisabled(True)    
-            self.stopButton.setDisabled(True)
-            self.startButton.setEnabled(True)
-                
+            self.statusLabel = QtGui.QLabel('No Script Loaded For This Experiment')
+#            self.statusLabel.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+            self.mainLayout.addWidget(self.statusLabel)
+                            
     @inlineCallbacks
     def setupStatusListener(self):
         yield self.parent.cxn.semaphore.signal__parameter_change(11111, context = self.context)
@@ -66,7 +75,11 @@ class StatusWidget(QtGui.QWidget):
         if (y[0][:-2] == self.experimentPath):
             if (y[0][-1] == 'Status'):
                 self.statusLabel.setText(y[1])
+                self.stopButton.setDisabled(True)
+                self.startButton.setEnabled(True)    
+                self.pauseContinueButton.setDisabled(True)                   
             elif (y[0][-1] == 'Progress'):
+                self.parent.experimentProgressDict[str(self.experimentPath)] = y[1]
                 self.pbar.setValue(y[1])
             
 
@@ -80,7 +93,6 @@ class StatusWidget(QtGui.QWidget):
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
         self.statusLabel.setText('Running')
-        self.pbar.setValue(0.0)
         yield deferToThread(self.parent.experiments[str(self.experimentPath)].run)
 
         

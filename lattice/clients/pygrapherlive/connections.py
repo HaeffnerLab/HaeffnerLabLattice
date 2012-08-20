@@ -209,14 +209,14 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 except:
                     self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
             else:        
- #               hasPlotParameter = yield datasetObject.listenForPlotParameter()
-#                if (hasPlotParameter == True):
-                 windowParameter = yield datasetObject.getWindowParameter()
+#               hasPlotParameter = yield datasetObject.listenForPlotParameter()
+#               if (hasPlotParameter == True):
+                windowParameter = yield datasetObject.getWindowParameter()
                 # if windows are specified (via parameter), send that instead
-                 if (windowParameter != None):
-                     self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowParameter)#, context)
-                 else:
-                     self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
+                if (windowParameter != None):
+                    self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowParameter)#, context)
+                else:
+                    self.prepareDataset(datasetObject, dataset, directory, datasetLabels, windowName)#, context)
 #            else:
 #                    # This data is not for plotting. Remove it.
 #                    # There should be a cleaner way of doing this
@@ -317,8 +317,13 @@ class CONNECTIONS(QtGui.QGraphicsObject):
         return self.overlaidWindows
     
     def getParameters(self, dataset, directory):
+        parametersValues = []
         parameters = self.datasetDict[dataset, directory].parameters
-        return parameters
+        values = self.datasetDict[dataset, directory].parameterValues
+        for parameter, value in zip(parameters, values):
+            parametersValues.append((parameter, value))
+        
+        return parametersValues
     
     def changeWindowName(self, oldWindowName, newWindowName):
         self.winDict[newWindowName] = self.winDict[oldWindowName]

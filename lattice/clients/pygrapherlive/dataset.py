@@ -56,6 +56,10 @@ class Dataset(QtCore.QObject):
         yield self.cxn.data_vault.cd(self.directory, context = context)
         yield self.cxn.data_vault.open(self.dataset, context = context)
         self.parameters = yield self.cxn.data_vault.parameters(context = context)
+        self.parameterValues = []
+        for parameter in self.parameters:
+            parameterValue = yield self.cxn.data_vault.get_parameter(parameter, context = context)
+            self.parameterValues.append(parameterValue)
     
 #    @inlineCallbacks
 #    def setupParameterListener(self, context):

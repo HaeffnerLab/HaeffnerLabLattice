@@ -18,6 +18,7 @@ class GlobalGrid(QtGui.QTableWidget):
         
 #        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
+#        self.setColumnWidth(100)
 
         self.checkBoxParameterDict = {}
         self.parameterCheckBoxDict = {}
@@ -45,8 +46,12 @@ class GlobalGrid(QtGui.QTableWidget):
 #            gridRow = 0
 #            gridCol = 0
 
+        globalParamNames = self.globalParameterDict.keys()
+        
+        globalParamNames.sort()
+
         Row = 0
-        for parameter in self.globalParameterDict.keys():
+        for parameter in globalParamNames:
             item = QtGui.QTableWidgetItem(parameter)
             self.setItem(Row, 1, item)
             # create a label and spin box, add it to the grid
@@ -129,7 +134,11 @@ class GlobalGrid(QtGui.QTableWidget):
 #            if (gridCol == 6):
 #                gridCol = 0
 #                gridRow += 1
-        
+        self.resizeColumnsToContents()
+        self.setColumnWidth(0, self.columnWidth(0) + 10)
+        self.setColumnWidth(1, self.columnWidth(1) + 20)
+        width = self.columnWidth(0) + self.columnWidth(1)      
+        self.setMinimumWidth(width*1.5)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 #        self.setLayout(self.globalGrid)    
 
