@@ -67,7 +67,7 @@ class DDS(LabradServer):
         frequency = channel.frequency
         returnValue(frequency)
     
-    @setting(45, 'Add DDS Pulses', name = 's', values = ['*(vvv)','*(vvvv)'])
+    @setting(45, 'Add DDS Pulses', name = 's', values = ['*(v[s]v[MHz]v[dBm])','*(v[s]v[MHz]v[dBm]v)'])
     def addDDSPulse(self, c, name, values):
         """Takes the name of the DDS channel, and the list of values in the form [(start, frequency, amplitude, phase)] or 
         [(start, frequency, amplitude)]
@@ -83,9 +83,13 @@ class DDS(LabradServer):
         for value in values:
             try:
                 start,freq,ampl = value
+                start = start.value
+                print start
                 phase  = 0.0
             except ValueError:
                 start,freq,ampl,phase = value
+                start = start.value
+                print start
             if not channel.remote:
                 num = self._valToInt(channel, freq, ampl)
             else:

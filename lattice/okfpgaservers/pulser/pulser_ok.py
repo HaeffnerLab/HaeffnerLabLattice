@@ -132,7 +132,7 @@ class Pulser(LabradServer, DDS):
         self.sequenceType = 'One'
         self.inCommunication.release()
     
-    @setting(5, 'Add TTL Pulse', channel = 's', start = 'v', duration = 'v')
+    @setting(5, 'Add TTL Pulse', channel = 's', start = 'v[s]', duration = 'v[s]')
     def addTTLPulse(self, c, channel, start, duration):
         """
         Add a TTL Pulse to the sequence, times are in seconds
@@ -146,7 +146,7 @@ class Pulser(LabradServer, DDS):
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addPulse(hardwareAddr, start, duration)
     
-    @setting(6, 'Add TTL Pulses', pulses = '*(svv)')
+    @setting(6, 'Add TTL Pulses', pulses = '*(sv[s]v[s])')
     def addTTLPulses(self, c, pulses):
         """
         Add multiple TTL Pulses to the sequence, times are in seconds. The pulses are a list in the same format as 'add ttl pulse'.

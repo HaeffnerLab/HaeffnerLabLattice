@@ -10,14 +10,15 @@ from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
 from experiments.Test import Test
 from experiments.Test2 import Test2
-from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
-from scripts.experiments.Experiments729.spectrum import spectrum
-from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
+
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
+        from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
+        from scripts.experiments.Experiments729.spectrum import spectrum
+        from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
         self.experiments = {
                             str(['Test', 'Exp1']):  Test(),
                             str(['Test', 'Exp2']):  Test2(),

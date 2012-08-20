@@ -42,7 +42,7 @@ class LatentHeat():
         self.rf = self.cxn.trap_drive
         self.pulser = self.cxn.pulser
         self.pmt = self.cxn.normalpmtflow
-        self.laserdac = self.cxn.laserdac
+        self.laserdac = self.cxnlab.laserdac
         self.seqP = Bunch(**seqParams)
         self.expP = Bunch(**exprtParams)
         self.xtal = Crystallizer(self.pulser, self.pmt, self.rf)

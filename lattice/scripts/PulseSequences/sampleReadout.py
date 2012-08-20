@@ -22,7 +22,7 @@ if __name__ == '__main__':
     pulser.program_sequence()
     pulser.reset_readout_counts()
     #pulser.start_single()
-    pulser.start_number(5)
+    pulser.start_number(1)
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     counts = pulser.get_readout_counts().asarray

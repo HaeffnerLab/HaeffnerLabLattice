@@ -66,50 +66,32 @@ class spectrum(SemaphoreExperiment):
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
         sequence_parameters.update(common_values)
-        print self.p.toDict().keys()
+        
+        sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
+        
+        sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
+        sequence_parameters['state_readout_amplitude_866'] = self.check_parameter(self.p.doppler_cooling_amplitude_866)
+        
+        sequence_parameters['optical_pumping_continuous_frequency_854'] = self.check_parameter(self.p.frequency_854)
+        sequence_parameters['optical_pumping_continuous_amplitude_854'] = self.check_parameter(self.p.optical_pumping_amplitude_854)
+        sequence_parameters['optical_pumping_continuous_frequency_729'] = self.check_parameter(self.p.optical_pumping_frequency)
+        sequence_parameters['optical_pumping_continuous_amplitude_729'] = self.check_parameter(self.p.optical_pumping_amplitude_729)
+        
+        sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
+        sequence_parameters['repump_d_amplitude_854'] = self.check_parameter(self.p.amplitude_854)
+        
+        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.amplitude_729)
+        sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
         return sequence_parameters
         
     def program_pulser(self, frequency_729, amplitude_729 = None):
         if amplitude_729 is not None:
             self.sequence_parameters['rabi_excitation_amplitude'] = amplitude_729
         self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
-        print type(self.sequence_parameters)
-        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]
-        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]
-        print 'filled', numpy.array(filled)
-        ['rabi_excitation_frequency' 'doppler_cooling_frequency_397'
-         'optical_pumping_continuous_duration' 'doppler_cooling_amplitude_397'
-         'doppler_cooling_amplitude_866' 'doppler_cooling_frequency_866'
-         'optical_pumping_enable' 'doppler_cooling_duration' 'heating_time']
-        print 'unfilled',  numpy.array(unfilled)
-        ['optical_pumping_continuous_frequency_854' 
-         'optical_pumping_continuous_amplitude_729'
-         'optical_pumping_continuous_repump_additional'
-         'optical_pumping_continuous_amplitude_854'
-         'optical_pumping_continuous_frequency_729'
-         
-         'rabi_excitation_amplitude'
-         'rabi_excitation_duration'
-         
-         'state_readout_amplitude_397' 
-          'state_readout_amplitude_866'
-         'state_readout_duration'
-         'state_readout_frequency_866'
-         'state_readout_frequency_397'
-         
-         'repump_d_duration'
-         'repump_d_amplitude_854'
-         
-          'repump_d_frequency_854'
-         
-          ]
-        raise()
-#        seq = sequence(**values)
-#        self.pulser.new_sequence()
-#        seq.setVariables(**self.seqP.toDict())
-#        seq.defineSequence()
-#        self.pulser.program_sequence()
-#        print freq
+        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]
+        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]
+        seq = sequence(**self.sequence_parameters)
+        seq.programSequence(self.pulser)
 
     def sequence(self):
         scan = self.check_parameters(self.p.frequencies)
@@ -125,11 +107,10 @@ class spectrum(SemaphoreExperiment):
             else:
                 #program pulser, run sequence, and get readouts
                 self.program_pulser(freq)
-#                self.pulser.start_number(repeatitions)
-#                self.pulser.wait_sequence_done()
-#                self.pulser.stop_sequence()
-#                readouts = self.pulser.get_readout_counts().asarray
-                readouts = numpy.array([1,2,3,100])
+                self.pulser.start_number(repeatitions)
+                self.pulser.wait_sequence_done()
+                self.pulser.stop_sequence()
+                readouts = self.pulser.get_readout_counts().asarray
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 self.dv.add(freq, perc_excited)

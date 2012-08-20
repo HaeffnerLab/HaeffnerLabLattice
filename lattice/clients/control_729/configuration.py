@@ -6,7 +6,7 @@ class config_729_hist(object):
     dv_parameter = 'Histogram729'
     #semaphore locations
     readout_threshold_dir =  ['729Experiments','readout_threshold']
-    readout_time_dir = ['729Experiments','readout_time']
+    readout_time_dir = ['729Experiments','state_readout_duration']
 
 class config_729_optical_pumping(object):
     #IDs for signaling
@@ -16,7 +16,7 @@ class config_729_optical_pumping(object):
     optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
     optical_pumping_continuous = ['729Experiments','optical_pumping_continuous']
     optical_pumping_continuous_duration = ['729Experiments','optical_pumping_continuous_duration']
-    optical_pumping_continuous_pump_additional = ['729Experiments','optical_pumping_continuous_pump_additional']
+    optical_pumping_continuous_pump_additional = ['729Experiments','optical_pumping_continuous_repump_additional']
     optical_pumping_pulsed = ['729Experiments','optical_pumping_pulsed']
     optical_pumping_enable = ['729Experiments','optical_pumping_enable']
     optical_pumping_frequency = ['729Experiments','optical_pumping_frequency']
@@ -48,6 +48,9 @@ class config_729_general_parameters(object):
     enable_calibration = ['729Experiments','enable_calibration_double_pass_729']
     calibration_reduction = ['729Experiments','calibration_double_pass_729_reduction']
     repeat_each_measurement = ['729Experiments','repeat_each_measurement']
+    repump_d_duration = ['729Experiments','repump_d_duration']
+    state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
+    state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
     
     
     
