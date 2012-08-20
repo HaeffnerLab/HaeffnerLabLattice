@@ -2,7 +2,8 @@ from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class rabi_excitation(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         config = [
                   'rabi_excitation_frequency',
                   'rabi_excitation_amplitude',

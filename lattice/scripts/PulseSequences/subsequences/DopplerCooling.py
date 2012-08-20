@@ -2,7 +2,8 @@ from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class doppler_cooling(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         
         config = [
                 'doppler_cooling_frequency_397', 

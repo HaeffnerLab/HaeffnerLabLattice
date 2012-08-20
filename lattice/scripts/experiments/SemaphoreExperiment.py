@@ -13,51 +13,49 @@ class Bunch:
 class SemaphoreExperiment():
     '''class with useful methods while running a semaphore experiment'''
     
-    
-    def populate_experimental_parameters(self, sem, path):
-        '''return a bunch with all of the parameters in the given path'''
+    def populate_parameters(self, sem, path):
+        '''
+        Returns a bunch with all of the parameters
+        Repeated names are overwritten, with directories further down in the tree given priority
+        '''
         d = {}
-        path = list(path)
-        params = sem.get_parameter_names(path)
-        for param in params:
-            path.append(param)
-            d[param] = sem.get_parameter(path)
-            path.pop()
-        return Bunch(**d)
-    
-    def populate_global_parameters(self, sem, path):
-        '''returns a bunch with all of the parameters higher in the tree than the given path'''
-        d = {}
-        path = list(path[:-1]) #exclude top directory
+        path = list(path) #exclude top directory
         current_path = []
         while True:
+            available_parameters = sem.get_parameter_names(current_path)
+            for p in available_parameters:
+                current_path.append(p)
+                if p in d: print "Warning, overwriting parameter {}".format(p)
+                d[p] = sem.get_parameter(current_path)
+                current_path.pop()          
             try:
                 current_path.append( path.pop(0) )
             except IndexError:
                 return Bunch(**d)
-            else:
-                available_parameters = sem.get_parameter_names(current_path)
-                for p in available_parameters:
-                    current_path.append(p)
-                    d[p] = sem.get_parameter(current_path)
-                    current_path.pop()
-    
-    def check_parameters(self, entry, units = None):
+
+    def check_parameters(self, entry, units = None, keep_units = False):
         '''checks the ranges of parameters'''
         assert len(entry) >= 3, "Trying to check parameters that do not have enough entries"
         entry= list(entry)        
         minim,maxim =[entry.pop(0).inUnitsOf(units).value for i in range(2)]
-        values = numpy.array([val.inUnitsOf(units).value for val in entry])
-        withinRange = (minim <= values) * (values <= maxim)
+        if not keep_units:
+            values =[val.inUnitsOf(units).value for val in entry]
+        else:
+            values = [val.inUnitsOf(units) for val in entry]
+        values_np = numpy.array(values) #automatically gets rid of units
+        withinRange = (minim <= values_np) * (values_np <= maxim)
         if not (withinRange.all()):
             raise Exception ("Some entries are out of range in {}".format(entry))
         return values
 
-    def check_parameter(self, entry, units = None):
+    def check_parameter(self, entry, units = None, keep_units = False):
         '''checks the ranges of parameters'''
         assert len(entry) == 3, "Trying to check parameter that does not have enough entries"
-        entry= list(entry)        
-        minim,maxim,value =[entry.pop(0).inUnitsOf(units).value for i in range(3)]
-        if not ((minim <= value) and (value <= maxim)):
+        entry= list(entry)
+        minim,maxim,value =[entry.pop(0).inUnitsOf(units) for i in range(3)]
+        if not ((minim.value <= value.value) and (value.value <= maxim.value)):
             raise Exception ("Some entries are out of range in {}".format(entry))
-        return value
+        if not keep_units:
+            return value.value
+        else:
+            return value

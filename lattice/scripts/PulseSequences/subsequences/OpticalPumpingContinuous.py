@@ -2,7 +2,8 @@ from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class optical_pumping_continuous(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         config = [
                   'optical_pumping_continuous_duration',
                   'optical_pumping_continuous_repump_additional',

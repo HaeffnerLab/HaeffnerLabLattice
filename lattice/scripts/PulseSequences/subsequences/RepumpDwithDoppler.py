@@ -1,14 +1,19 @@
 from scripts.PulseSequences.PulseSequence import PulseSequence
-from subsequences.RepumpD import repump_d
-from subsequences.DopplerCooling import doppler_cooling 
+from RepumpD import repump_d
+from DopplerCooling import doppler_cooling 
 
 class doppler_cooling_after_repump_d(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         config = [
                   'doppler_cooling_duration',
                   ]
         return config
+    
+    @staticmethod
+    def needs_subsequences():
+        return [repump_d, doppler_cooling]
     
     def sequence(self):
         self.addSequence(repump_d)

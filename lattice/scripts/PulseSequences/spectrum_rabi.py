@@ -1,19 +1,29 @@
+from PulseSequence import PulseSequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumpingContinuous import optical_pumping_continuous
 from subsequences.RabiExcitation import rabi_excitation
 from subsequences.StateReadout import state_readout
 
-from PulseSequence import PulseSequence
-from labrad import types as T
-
 class spectrum_rabi(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         config = [
                   'heating_time'
                   ]
         return config
+    
+    @staticmethod
+    def needs_subsequences():
+        seqs = [
+                doppler_cooling_after_repump_d,
+                optical_pumping_continuous,
+                empty_sequence,
+                rabi_excitation,
+                state_readout,
+                ]
+        return seqs
     
     def sequence(self):
         self.addSequence(doppler_cooling_after_repump_d)
@@ -24,6 +34,9 @@ class spectrum_rabi(PulseSequence):
         print self.dds_pulses
 
 if __name__ == '__main__':
+    from labrad import types as T
+    required = spectrum_rabi.requiredParameters(returnDict = True)
+    print 'required', required
     values = {
               'repump_d_duration':T.Value(500, 'us'),
               'repump_d_frequency_854':T.Value(80.0, 'MHz'),
@@ -53,6 +66,8 @@ if __name__ == '__main__':
               'state_readout_frequency_866':T.Value(80.0, 'MHz'),
               'state_readout_amplitude_866':T.Value(-11.0, 'dBm'),
               'state_readout_duration':T.Value(1.0,'ms'),
-              
               }
+    
     cs = spectrum_rabi(**values)
+    
+    

@@ -1,8 +1,9 @@
 from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class empty_sequence(PulseSequence):
-      
-    def configuration(self):
+    
+    @staticmethod
+    def configuration():
         config = [
                   'empty_sequence_duration'
                   ]

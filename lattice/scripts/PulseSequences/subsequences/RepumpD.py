@@ -2,7 +2,8 @@ from scripts.PulseSequences.PulseSequence import PulseSequence
 
 class repump_d(PulseSequence):
     
-    def configuration(self):
+    @staticmethod
+    def configuration():
         config = [
                   'repump_d_duration',
                   'repump_d_frequency_854',
