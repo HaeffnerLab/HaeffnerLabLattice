@@ -105,7 +105,16 @@ class AnalysisWidget(QtGui.QWidget):
 
     def fitGaussian(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
-        
+        dataX = np.array(dataX)
+        xmin, xmax = self.parent.qmc.ax.get_xlim()
+        selectedXValues = np.where((dataX >= xmin) & (dataX <= xmax))[0]
+        dataX = dataX[(dataX >= xmin) & (dataX <= xmax)]
+        newYData = np.zeros(len(dataX))
+        j = 0
+        for i in selectedXValues:
+            newYData[j] = dataY[i]
+            j += 1
+               
 #        xValues = np.arange(len(dataY))
 #        center = np.sum(xValues*dataY)/np.sum(dataY)
 #        sigma = np.abs(np.sum((xValues - center)**2*dataY/np.sum(dataY)))
@@ -124,7 +133,7 @@ class AnalysisWidget(QtGui.QWidget):
             offset = parameters[3]
             
                
-        height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], dataY, dataX)
+        height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]'] = [height, center, sigma, offset]
                
@@ -153,6 +162,15 @@ class AnalysisWidget(QtGui.QWidget):
 
     def fitLorentzian(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+        dataX = np.array(dataX)
+        xmin, xmax = self.parent.qmc.ax.get_xlim()
+        selectedXValues = np.where((dataX >= xmin) & (dataX <= xmax))[0]
+        dataX = dataX[(dataX >= xmin) & (dataX <= xmax)]
+        newYData = np.zeros(len(dataX))
+        j = 0
+        for i in selectedXValues:
+            newYData[j] = dataY[i]
+            j += 1        
         
 #        xValues = np.arange(len(dataY))
 #        print len(dataY)
@@ -173,7 +191,7 @@ class AnalysisWidget(QtGui.QWidget):
             offset = parameters[3]
            
         
-        gamma, center, I, offset = self.fit(self.fitFuncLorentzian, [gamma, center, I, offset], dataY, dataX)
+        gamma, center, I, offset = self.fit(self.fitFuncLorentzian, [gamma, center, I, offset], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]'] = [gamma, center, I, offset] 
                
@@ -202,6 +220,15 @@ class AnalysisWidget(QtGui.QWidget):
 
     def fitLine(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+        dataX = np.array(dataX)
+        xmin, xmax = self.parent.qmc.ax.get_xlim()
+        selectedXValues = np.where((dataX >= xmin) & (dataX <= xmax))[0]
+        dataX = dataX[(dataX >= xmin) & (dataX <= xmax)]
+        newYData = np.zeros(len(dataX))
+        j = 0
+        for i in selectedXValues:
+            newYData[j] = dataY[i]
+            j += 1        
 #        slope = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
 #        offset = np.min(dataY)
         
@@ -212,7 +239,7 @@ class AnalysisWidget(QtGui.QWidget):
             slope = parameters[0]
             offset = parameters[1]
             
-        slope, offset = self.fit(self.fitFuncLine, [slope, offset], dataY, dataX)
+        slope, offset = self.fit(self.fitFuncLine, [slope, offset], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]'] = [slope, offset] 
         
@@ -240,6 +267,15 @@ class AnalysisWidget(QtGui.QWidget):
     
     def fitParabola(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
+        dataX = np.array(dataX)
+        xmin, xmax = self.parent.qmc.ax.get_xlim()
+        selectedXValues = np.where((dataX >= xmin) & (dataX <= xmax))[0]
+        dataX = dataX[(dataX >= xmin) & (dataX <= xmax)]
+        newYData = np.zeros(len(dataX))
+        j = 0
+        for i in selectedXValues:
+            newYData[j] = dataY[i]
+            j += 1        
 #        A = 5
 #        B = (np.max(dataY) - np.min(dataY))/(np.max(dataX) - np.min(dataX))
 #        C = np.min(dataY)
@@ -253,7 +289,7 @@ class AnalysisWidget(QtGui.QWidget):
             B = parameters[1]
             C = parameters[2]
 
-        A, B, C = self.fit(self.fitFuncParabola, [A, B, C], dataY, dataX)
+        A, B, C = self.fit(self.fitFuncParabola, [A, B, C], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]'] = [A, B, C] 
         
