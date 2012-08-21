@@ -120,7 +120,7 @@ from itertools import cycle
 
 TIMERREFRESH = .01 #s
 MAXDATASETSIZE = 100000
-SCALEFACTOR = 1.5
+#SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
 INDEPENDENT = 0
 DEPENDENT = 1
@@ -156,8 +156,8 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.grid()
         colormap = pyplot.cm.gist_ncar
 #        self.ax.set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, 15)])
-        colors = ['b', 'g', 'r', 'm', 'k']
-        colors.extend([colormap(i) for i in np.linspace(.2, 0.9, 7)])
+        colors = ['b', 'g', 'r', 'm', 'k', colormap(.2), colormap(.9), colormap(.3166), colormap(.7833), colormap(.4333), colormap(.666)]
+        #colors.extend([colormap(i) for i in np.linspace(.2, 0.9, 7)])
         colors.pop(8)
         self.ax.set_color_cycle(colors)
         lines = ["-"]#,"-","-","-","-","-.","-.","-.","-.","-.","--","--","--","--","--",":",":",":",":",":"]
@@ -279,6 +279,7 @@ class Qt4MplCanvas(FigureCanvas):
         for i in range(numberOfDependentVariables):
             label = self.datasetLabelsDict[dataset, directory][i]
             self.plotDict[dataset, directory][i] = self.ax.plot(self.dataDict[dataset, directory][FIRST][INDEPENDENT],self.dataDict[dataset, directory][FIRST][DEPENDENT][i], label = label,animated=True, linestyle = next(self.linecycler))#'ko', markersize=2
+            self.togglePoints(dataset, directory, i)
         self.plotDict[dataset, directory] = self.flatten(self.plotDict[dataset, directory])
         
     
@@ -442,6 +443,27 @@ class Qt4MplCanvas(FigureCanvas):
             elif (currentYmin < (1 - SCROLLFRACTION) * ywidth + ymin):
                 self.autofitDataY(currentYmin, MIN)
         
+#    def getDataXLimits(self):
+#        xmin = None
+#        xmax = None
+#        for dataset, directory in self.parent.datasetCheckboxes.keys():
+#            if (self.plotParametersDict[dataset, directory][ARRAYTOPLOT] == 0):
+#                drawRange = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
+#            else:
+#                drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
+#            if self.parent.datasetCheckboxes[dataset, directory].isChecked():             
+#                for j in range(drawRange):
+#                    i = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][j]
+#                    if (xmin == None):
+#                        xmin = i
+#                        xmax = i
+#                    else:
+#                        if i < xmin:
+#                            xmin = i
+#                        elif i > xmax:
+#                            xmax = i        
+#        return xmin, xmax
+
     def getDataXLimits(self):
         xmin = None
         xmax = None
@@ -451,16 +473,16 @@ class Qt4MplCanvas(FigureCanvas):
             else:
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
             if self.parent.datasetCheckboxes[dataset, directory].isChecked():             
-                for j in range(drawRange):
-                    i = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][j]
-                    if (xmin == None):
-                        xmin = i
-                        xmax = i
-                    else:
-                        if i < xmin:
-                            xmin = i
-                        elif i > xmax:
-                            xmax = i        
+                datasetXmax = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange].max()
+                datasetXmin = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange].min()
+                if (xmin == None):
+                    xmin = datasetXmin
+                    xmax = datasetXmax
+                else:
+                    if datasetXmin < xmin:
+                        xmin = datasetXmin
+                    if datasetXmax > xmax:
+                        xmax = datasetXmax
         return xmin, xmax
            
     def getDataYLimits(self):
@@ -473,26 +495,27 @@ class Qt4MplCanvas(FigureCanvas):
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE           
             if self.parent.datasetCheckboxes[dataset, directory].isChecked():
                 for i in range(len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT])):
-                    for k in range(drawRange):
-                        if (ymin == None):
-                            ymin = i
-                            ymax = i
-                        else:
-                            j = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][k]
-                            if j < ymin:
-                                ymin = j
-                            elif j > ymax:
-                                ymax = j
+                    datasetYmax = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange].max()
+                    datasetYmin = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange].min()
+                    if (ymin == None):
+                        ymin = datasetYmin
+                        ymax = datasetYmax
+                    else:
+                        if datasetYmin < ymin:
+                            ymin = datasetYmin
+                        if datasetYmax > ymax:
+                            ymax = datasetYmax
+        print ymin, ymax
         return ymin, ymax
 
     def autofitDataY(self, currentY, minmax):
         ymin, ymax = self.ax.get_ylim()
         dataymin, dataymax = self.getDataYLimits()
         if (minmax == MAX):
-            newmaxY = (SCALEFACTOR*(dataymax - dataymin) + dataymin)
+            newmaxY = ((1.0/SCROLLFRACTION)*(dataymax - ymin) + ymin)
             self.ax.set_ylim(ymin, newmaxY)
         elif (minmax == MIN):
-            newminY = (dataymax - SCALEFACTOR*(dataymax - dataymin))
+            newminY = (ymax - (1.0/SCROLLFRACTION)*(ymax - dataymin))
             self.ax.set_ylim(newminY, ymax) 
         self.draw()
     
@@ -501,10 +524,10 @@ class Qt4MplCanvas(FigureCanvas):
         xmin, xmax = self.ax.get_xlim()
         dataxmin, dataxmax = self.getDataXLimits()
         if (minmax == MAX):
-            newmaxX = (SCALEFACTOR*(dataxmax - dataxmin) + dataxmin)
+            newmaxX = ((1.0/SCROLLFRACTION)*(dataxmax - xmin) + xmin)
             self.ax.set_xlim(xmin, newmaxX)
         elif (minmax == MIN):
-            newminX = (dataxmax - SCALEFACTOR*(dataxmax - dataxmin))
+            newminX = (xmax - (1.0/SCROLLFRACTION)*(xmax - dataxmin))
             self.ax.set_xlim(newminX, xmax)
         self.draw()
         
