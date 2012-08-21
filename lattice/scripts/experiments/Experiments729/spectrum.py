@@ -125,6 +125,7 @@ class spectrum(SemaphoreExperiment):
                 self.dv.add(numpy.vstack((freqs, readouts)).transpose(), context = self.readout_save_context)       
                 self.total_readouts.extend(readouts)
                 self.save_histogram()
+        self.percentDone = 100.0
                 
     def save_histogram(self, force = False):
         if (len(self.total_readouts) >= 500) or force:
