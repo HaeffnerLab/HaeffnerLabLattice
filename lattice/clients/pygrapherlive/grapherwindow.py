@@ -46,7 +46,7 @@ class GrapherWindow(QtGui.QWidget):
         mainLayout.addLayout(grapherLayout)
         
         # Layout for keeping track of datasets on a graph and analysis
-        self.datasetCheckboxListWidget = QtGui.QListWidget()
+        self.datasetCheckboxListWidget = DatasetCheckBoxListWidget(self)#QtGui.QListWidget()
         self.datasetCheckboxListWidget.setMaximumWidth(180)
         self.datasetCheckboxListWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         datasetLayout.addWidget(self.datasetCheckboxListWidget)
@@ -280,3 +280,19 @@ class ParameterWindow(QtGui.QWidget):
         if (self.parameters):
             for i in self.parameters:
                 self.parameterListWidget.addItem(str(i))
+
+class DatasetCheckBoxListWidget(QtGui.QListWidget):
+    def __init__(self, parent):
+        QtGui.QListWidget.__init__(self)
+        self.parent = parent
+        
+    def mousePressEvent(self, event):
+        """
+        mouse clicks events
+        """
+        button = event.button()
+        item = self.itemAt(event.x(), event.y())
+        if item:
+            item.setSelected(True)
+    
+    

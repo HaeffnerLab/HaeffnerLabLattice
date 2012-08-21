@@ -8,23 +8,25 @@ from experimentgrid import ExperimentGrid
 from globalgrid import GlobalGrid
 from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
-from experiments.Test import Test
-from experiments.Test2 import Test2
+#from experiments.Test import Test
+#from experiments.Test2 import Test2
+import experiments.Test
 
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-        from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
-        from scripts.experiments.Experiments729.spectrum import spectrum
-        from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
+#        from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
+#        from scripts.experiments.Experiments729.spectrum import spectrum
+#        from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
+        
         self.experiments = {
-                            str(['Test', 'Exp1']):  Test(),
-                            str(['Test', 'Exp2']):  Test2(),
-                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor(),
-                            str(['729Experiments','Spectrum']):  spectrum(),
-                            str(['729Experiments','RabiFlopping']):  rabi_flopping()
+                            ('Test', 'Exp1'):  (experiments.Test, 'Test'),
+#                            str(['Test', 'Exp2']):  Test2(),
+#                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor(),
+#                            str(['729Experiments','Spectrum']):  spectrum(),
+#                            str(['729Experiments','RabiFlopping']):  rabi_flopping()
                            }
         self.setupExperimentProgressDict()
         self.connect()
@@ -180,6 +182,14 @@ class ScriptControl(QtGui.QWidget):
             text = re.sub('Value', '', text)
             lineEdit.setText(text)
             return lineEdit
+    
+    @inlineCallbacks
+    def startExperiment(self, experiment):
+        # dict that relates imported modules to classes
+        reload(self.experiments[experiment][0])
+        class_ = getattr(self.experiments[experiment][0], self.experiments[experiment][1])
+        instance = class_()
+        yield deferToThread(instance.run)
                     
         
     @inlineCallbacks
@@ -192,7 +202,7 @@ class ScriptControl(QtGui.QWidget):
     @inlineCallbacks
     def stopAllExperiments(self):
         for experiment in self.experiments.keys():
-            yield self.cxn.semaphore.set_parameter(eval(experiment) + ['Semaphore', 'Status'], 'Stopped')
+            yield self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped')
             
     @inlineCallbacks
     def closeEvent(self, x):
