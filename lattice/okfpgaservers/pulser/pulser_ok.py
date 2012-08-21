@@ -157,15 +157,15 @@ class Pulser(LabradServer, DDS):
             duration = pulse[2]
             yield self.addTTLPulse(c, channel, start, duration)
     
-    @setting(7, "Extend Sequence Length", timeLength = 'v')
+    @setting(7, "Extend Sequence Length", timeLength = 'v[s]')
     def extendSequenceLength(self, c, timeLength):
         """
         Allows to optionally extend the total length of the sequence beyond the last TTL pulse.
         """
         sequence = c.get('sequence')
-        if not (self.sequenceTimeRange[0] <= timeLength <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
+        if not (self.sequenceTimeRange[0] <= timeLength.value <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
         if not sequence: raise Exception ("Please create new sequence first")
-        sequence.extendSequenceLength(timeLength)
+        sequence.extendSequenceLength(timeLength.value)
         
     @setting(8, "Stop Sequence")
     def stopSequence(self, c):
