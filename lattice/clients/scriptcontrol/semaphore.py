@@ -382,8 +382,12 @@ class Semaphore(LabradServer):
         if (progress != None):
             self._setParameter(experiment + ['Semaphore', 'Progress'], progress)
             self.onParameterChange((experiment + ['Semaphore', 'Progress'], progress), self.listeners)
-        result = self._blockExperiment(experiment)
-        return result
+        status = self._getParameter(experiment + ['Semaphore', 'Status'])
+        if (status == 'Pausing'):
+            self._setParameter(experiment + ['Semaphore', 'Status'], 'Paused')
+            self.onParameterChange((experiment + ['Semaphore', 'Status'], 'Paused'), self.listeners)
+        result = yield self._blockExperiment(experiment)
+        returnValue(result)
     
     @setting(12, "Refresh Semaphore", returns = '')
     def refreshSemaphore(self, c):

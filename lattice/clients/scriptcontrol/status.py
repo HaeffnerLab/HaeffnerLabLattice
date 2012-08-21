@@ -51,6 +51,11 @@ class StatusWidget(QtGui.QWidget):
                 self.stopButton.setEnabled(True)
                 self.pauseContinueButton.setEnabled(True)
                 self.pauseContinueButton.setText('Pause')
+            elif(self.statusLabel.text() == 'Pausing'):
+                self.startButton.setDisabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setText('Continue')              
             elif (status == 'Stopping'):
                 self.startButton.setDisabled(True)                
                 self.pauseContinueButton.setDisabled(True)    
@@ -87,8 +92,10 @@ class StatusWidget(QtGui.QWidget):
                     self.startButton.setEnabled(True)    
                     self.pauseContinueButton.setDisabled(True)
                     yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], True, context = self.context)
+                elif (parameter == 'Paused'):
+                    self.statusLabel.setText(parameter)
             elif (y[0][-1] == 'Progress'):
-                self.parent.experimentProgressDict[str(self.experimentPath)] = y[1]
+                self.parent.experimentProgressDict[tuple(self.experimentPath)] = y[1]
                 self.pbar.setValue(y[1])
         yield None
             
@@ -112,14 +119,19 @@ class StatusWidget(QtGui.QWidget):
         status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
         if (status == 'Running'):
             yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], True, context = self.context)
-            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Paused', context = self.context)
+            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Pausing', context = self.context)
             self.pauseContinueButton.setText('Continue')
-            self.statusLabel.setText('Paused')
-        elif (status == 'Paused'):
+            self.statusLabel.setText('Pausing')
+        elif (status == 'Paused' or status == 'Pausing'):
             yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
             yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
             self.pauseContinueButton.setText('Pause')
             self.statusLabel.setText('Running')
+#        elif (status == 'Pausing'):
+#            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
+#            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
+#            self.pauseContinueButton.setText('Pause')
+#            self.statusLabel.setText('Running')
 
     @inlineCallbacks
     def stopButtonSignal(self, evt):
@@ -127,7 +139,7 @@ class StatusWidget(QtGui.QWidget):
         self.startButton.setDisabled(True)    
         self.pauseContinueButton.setDisabled(True)    
         status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
-        if (status == 'Paused'):
+        if (status == 'Paused' or status == 'Pausing'):
             yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
         yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], False, context = self.context)
         yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Stopping', context = self.context)
