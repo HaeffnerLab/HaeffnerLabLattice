@@ -101,7 +101,7 @@ class limitsWidget(QtGui.QWidget):
             widget.setDecimals(3)
             widget.setSuffix(self.suffix)
             widget.setSingleStep(0.01)
-        self.updateResolution(setresolution.value())
+        self.updateResolutionLabel(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
         stop.valueChanged.connect(self.onNewStartStop)
@@ -143,25 +143,20 @@ class limitsWidget(QtGui.QWidget):
         self.center.setValue(self.absoluteRange[0] + max_diff / 2.0)
         self.setresolution.setRange(-max_diff, max_diff)
         self.setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
-        
-    
-    def getValues(self):
-        start = self.start.value()
-        stop = self.stop.value()
-        steps = self.steps.value()
-        values = numpy.linspace(start, stop, steps, endpoint = True)
-        return values
     
     def onNewCenterSpan(self, x):
         center = self.center.value()
         span = self.span.value()
+        start = center - span / 2.0
+        stop = center + span/2.0
         self.start.blockSignals(True)
         self.stop.blockSignals(True)
-        self.start.setValue(center - span / 2.0)
-        self.stop.setValue(center + span/2.0)
+        self.start.setValue(start)
+        self.stop.setValue(stop)
         self.start.blockSignals(False)
         self.stop.blockSignals(False)
-        freqs = self.frequencies
+        steps = self.steps.value()
+        self.updateResolution(start, stop, steps)
         self.new_list_signal.emit( self.frequencies)
     
     def onNewStartStop(self, x):
@@ -175,7 +170,11 @@ class limitsWidget(QtGui.QWidget):
         self.span.setValue(stop - start)
         self.center.blockSignals(False)
         self.span.blockSignals(False)
-        #calculate and update the actual resolution
+        self.updateResolution(start, stop, steps)
+        self.new_list_signal.emit( self.frequencies)
+    
+    def updateResolution(self, start, stop, steps):
+        #calculate and update the resolution
         if steps > 1:
             res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
         else:
@@ -183,10 +182,9 @@ class limitsWidget(QtGui.QWidget):
         self.setresolution.blockSignals(True)
         self.setresolution.setValue(res)
         self.setresolution.blockSignals(False)
-        self.updateResolution(res)
-        self.new_list_signal.emit( self.frequencies)
-    
-    def updateResolution(self, val):
+        self.updateResolutionLabel(res)
+        
+    def updateResolutionLabel(self, val):
         text = '{:.3f} {}'.format(val, self.suffix)
         self.resolution.setText(text)
     
@@ -201,8 +199,7 @@ class limitsWidget(QtGui.QWidget):
             finalres = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
         else:
             finalres = stop - start
-        self.updateResolution(finalres)
-        freqs = self.frequencies
+        self.updateResolutionLabel(finalres)
         self.new_list_signal.emit( self.frequencies)
     
     @property
@@ -295,10 +292,10 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    #widget = limitsWidget(reactor, suffix = 'us')
+    widget = limitsWidget(reactor, suffix = 'us')
     #widget = durationWdiget(reactor)
     #widget = saved_frequencies(reactor)
     #widget = saved_frequencies_dropdown(reactor)
-    widget = frequency_wth_dropdown(reactor)
+    #widget = frequency_wth_dropdown(reactor)
     widget.show()
     reactor.run()
