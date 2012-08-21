@@ -21,6 +21,7 @@ class spectrum(SemaphoreExperiment):
 
     def initialize(self):
         print 'Started: {}'.format(self.experimentPath)
+        self.percentDone = 0.0
         self.import_labrad()
         self.setup_data_vault()
         self.sequence_parameters = self.setup_sequence_parameters()
@@ -104,8 +105,8 @@ class spectrum(SemaphoreExperiment):
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, freq in enumerate(scan):
             print 'Frequency {}'.format(freq)
-            percentDone = 100.0 * index / len(scan)
-            should_continue = self.sem.block_experiment(self.experimentPath, percentDone)
+            self.percentDone = 100.0 * index / len(scan)
+            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
             if not should_continue:
                 print 'Not Continuing'
                 return
@@ -124,7 +125,6 @@ class spectrum(SemaphoreExperiment):
                 self.dv.add(numpy.vstack((freqs, readouts)).transpose(), context = self.readout_save_context)       
                 self.total_readouts.extend(readouts)
                 self.save_histogram()
-        self.sem.block_experiment(self.experimentPath, 100.0)
                 
     def save_histogram(self, force = False):
         if (len(self.total_readouts) >= 500) or force:
@@ -142,10 +142,10 @@ class spectrum(SemaphoreExperiment):
     def finalize(self):
         self.save_histogram(force = True)
         self.save_parameters()
-        self.sem.finish_experiment(self.experimentPath)
+        self.sem.finish_experiment(self.experimentPath, self.percentDone)
         self.cxn.disconnect()
         self.cxnlab.disconnect()
-        print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)
+        print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)        
 
 if __name__ == '__main__':
     exprt = spectrum()
