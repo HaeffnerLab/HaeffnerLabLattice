@@ -57,7 +57,7 @@ class SemaphoreExperiment():
 
     def check_parameter(self, entry, keep_units = True, in_units = None):
         '''checks the ranges of parameters'''
-        if type(entry) == bool: return bool #nothing to check
+        if type(entry) == bool: return entry #nothing to check
         assert len(entry) == 3, "Trying to check parameter that does not have enough entries"
         entry= list(entry)
         minim,maxim,value =[entry.pop(0) for i in range(3)]

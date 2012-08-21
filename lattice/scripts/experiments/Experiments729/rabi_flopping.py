@@ -33,6 +33,7 @@ class rabi_flopping(SemaphoreExperiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = self.cxn.data_vault
         self.readout_save_context = self.cxn.context()
+        self.histogram_save_context = self.cxn.context()
         self.pulser = self.cxn.pulser
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
@@ -119,12 +120,12 @@ class rabi_flopping(SemaphoreExperiment):
                 self.save_histogram()
         self.sem.block_experiment(self.experimentPath, 100.0)
                 
-    def save_histogram(self):
-        if len(self.total_readouts) >= 500:
+    def save_histogram(self, force = False):
+        if (len(self.total_readouts) >= 500) or force:
             hist, bins = numpy.histogram(self.total_readouts, 50)
-            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
-            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
-            self.dv.add_parameter('Histogram729', True)
+            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')], context = self.histogram_save_context )
+            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
+            self.dv.add_parameter('Histogram729', True, context = self.histogram_save_context )
             self.total_readouts = []
     
     def save_parameters(self):

@@ -33,6 +33,7 @@ class spectrum(SemaphoreExperiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = self.cxn.data_vault
         self.readout_save_context = self.cxn.context()
+        self.histogram_save_context = self.cxn.context()
         self.pulser = self.cxn.pulser
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
@@ -81,11 +82,15 @@ class spectrum(SemaphoreExperiment):
         
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.amplitude_729)
         sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
+        
+        print 'in sequnece parameters'
+        print sequence_parameters['rabi_excitation_amplitude']
 
         return sequence_parameters
         
     def program_pulser(self, frequency_729, amplitude_729 = None):
         if amplitude_729 is not None:
+            print 'overwriting', amplitude_729
             self.sequence_parameters['rabi_excitation_amplitude'] = amplitude_729
         self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
         #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]
@@ -113,7 +118,7 @@ class spectrum(SemaphoreExperiment):
                 readouts = self.pulser.get_readout_counts().asarray
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-                self.dv.add(freq, perc_excited)
+                self.dv.add(freq.value, perc_excited)
                 #save readout counts
                 freqs = numpy.ones_like(readouts) * freq
                 self.dv.add(numpy.vstack((freqs, readouts)).transpose(), context = self.readout_save_context)       
@@ -121,12 +126,12 @@ class spectrum(SemaphoreExperiment):
                 self.save_histogram()
         self.sem.block_experiment(self.experimentPath, 100.0)
                 
-    def save_histogram(self):
-        if len(self.total_readouts) >= 500:
+    def save_histogram(self, force = False):
+        if (len(self.total_readouts) >= 500) or force:
             hist, bins = numpy.histogram(self.total_readouts, 50)
-            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')] )
-            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose())
-            self.dv.add_parameter('Histogram729', True)
+            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')], context = self.histogram_save_context )
+            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
+            self.dv.add_parameter('Histogram729', True, context = self.histogram_save_context )
             self.total_readouts = []
     
     def save_parameters(self):
@@ -135,6 +140,7 @@ class spectrum(SemaphoreExperiment):
         dvParameters.saveParameters(self.dv, self.p.toDict())
     
     def finalize(self):
+        self.save_histogram(force = True)
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath)
         self.cxn.disconnect()
