@@ -48,7 +48,7 @@ class Semaphore(LabradServer):
                 # Experiment!
                 parametersDict['Semaphore'] = {}
                 parametersDict['Semaphore']['Block'] = False
-                parametersDict['Semaphore']['Status'] = 'Stopped'
+                parametersDict['Semaphore']['Status'] = 'Finished'
                 parametersDict['Semaphore']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
                 
 #            print 'global dict:, ', globalDict
@@ -398,9 +398,14 @@ class Semaphore(LabradServer):
         return directoryNames    
     
     @setting(14, "Finish Experiment", path = '*s', returns = '')
-    def finishExperiment(self, c, path):
-        self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
-        self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)
+    def finishExperiment(self, c, path, progress=None):
+        if (progress == 100.0):
+            self._setParameter(path + ['Semaphore', 'Status'], 'Finished')
+            self.onParameterChange((path + ['Semaphore', 'Status'], 'Finished'), self.listeners)
+            self.onParameterChange((path + ['Semaphore', 'Progress'], progress), self.listeners)
+        else:
+            self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
+            self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)
         
 #    @setting(12, "Save", returns="")
 #    def save(self, c):

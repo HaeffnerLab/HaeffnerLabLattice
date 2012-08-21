@@ -8,7 +8,8 @@ class Test():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp1']
         print 'Initializing Test'
-        self.iterations = 100
+        self.iterations = 3
+        self.progress = 0.0
         #threading.Thread.__init__(self)
     
     def pause(self, progress):
@@ -25,18 +26,21 @@ class Test():
         for i in range(self.iterations):
             
             # blocking function goes here
-            Continue = self.pause(((i+1)/float(self.iterations))*100)
+            self.progress = ((i)/float(self.iterations))*100
+            Continue = self.pause(self.progress)
             if (Continue == False):
-                break
+                self.cxn.semaphore.finish_experiment(self.experimentPath, self.progress)
+                return
             
+            time.sleep(3)
             #print 'Test parameters: ', self.parameters
             print 'hello'
 
-            
+        self.progress = 100.0   
         self.cleanUp()
         
     def cleanUp(self):
-        self.cxn.semaphore.finish_experiment(self.experimentPath)
+        self.cxn.semaphore.finish_experiment(self.experimentPath, self.progress)
         print 'all cleaned up boss'
 
 if __name__ == '__main__':

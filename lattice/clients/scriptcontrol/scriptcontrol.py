@@ -10,23 +10,24 @@ from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
 #from experiments.Test import Test
 #from experiments.Test2 import Test2
-import experiments.Test
 
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self,reactor, parent=None):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-#        from scripts.simpleMeasurements.ADCpowerMonitor import ADCPowerMonitor
-#        from scripts.experiments.Experiments729.spectrum import spectrum
-#        from scripts.experiments.Experiments729.rabi_flopping import rabi_flopping
+        import experiments.Test
+        import experiments.Test2
+        import scripts.simpleMeasurements.ADCpowerMonitor
+        import scripts.experiments.Experiments729.spectrum
+        import scripts.experiments.Experiments729.rabi_flopping        
         
         self.experiments = {
                             ('Test', 'Exp1'):  (experiments.Test, 'Test'),
-#                            str(['Test', 'Exp2']):  Test2(),
-#                            str(['SimpleMeasurements', 'ADCPowerMonitor']):  ADCPowerMonitor(),
-#                            str(['729Experiments','Spectrum']):  spectrum(),
-#                            str(['729Experiments','RabiFlopping']):  rabi_flopping()
+                            ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
+                            ('SimpleMeasurements', 'ADCPowerMonitor'):  (scripts.simpleMeasurements.ADCpowerMonitor, 'ADCPowerMonitor'),
+                            ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
+                            ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
                            }
         self.setupExperimentProgressDict()
         self.connect()
@@ -202,7 +203,7 @@ class ScriptControl(QtGui.QWidget):
     @inlineCallbacks
     def stopAllExperiments(self):
         for experiment in self.experiments.keys():
-            yield self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped')
+            yield self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext)
             
     @inlineCallbacks
     def closeEvent(self, x):
