@@ -18,7 +18,7 @@ class StatusWidget(QtGui.QWidget):
     
     @inlineCallbacks
     def createStatusLabel(self):
-        if (str(self.experimentPath) in self.parent.experiments.keys()):
+        if (tuple(self.experimentPath) in self.parent.experiments.keys()):
             
             status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
             
@@ -56,7 +56,7 @@ class StatusWidget(QtGui.QWidget):
                 self.startButton.setEnabled(True)
 
             self.pbar = QtGui.QProgressBar()
-            self.pbar.setValue(self.parent.experimentProgressDict[str(self.experimentPath)])
+            self.pbar.setValue(self.parent.experimentProgressDict[tuple(self.experimentPath)])
             self.mainLayout.addWidget(self.pbar)   
             
             self.setupStatusListener()               
@@ -93,7 +93,8 @@ class StatusWidget(QtGui.QWidget):
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
         yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
         self.statusLabel.setText('Running')
-        yield deferToThread(self.parent.experiments[str(self.experimentPath)].run)
+        self.parent.startExperiment(tuple(self.experimentPath))
+        #yield deferToThread(self.parent.experiments[str(self.experimentPath)].run)
 
         
     @inlineCallbacks

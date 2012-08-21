@@ -8,7 +8,7 @@ class Test():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp1']
         print 'Initializing Test'
-        self.iterations = 10
+        self.iterations = 100
         #threading.Thread.__init__(self)
     
     def pause(self, progress):
@@ -29,7 +29,8 @@ class Test():
             if (Continue == False):
                 break
             
-            print 'Test parameters: ', self.parameters
+            #print 'Test parameters: ', self.parameters
+            print 'hello'
 
             
         self.cleanUp()
