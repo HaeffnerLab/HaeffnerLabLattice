@@ -79,7 +79,9 @@ class ADCServer( SerialDeviceServer ):
         self.checkConnection()
         toSend = self.mapQuery( channel  )
         yield self.ser.write( toSend )
-        rawVoltage = yield self.ser.read(RESPLENGTH) 
+        rawVoltage = yield self.ser.read(RESPLENGTH)
+        if not len(rawVoltage):
+            raise Exception ("No Response Received from ADC for channel {}".format(channel))
         voltage = self.mapVoltage(rawVoltage)
         returnValue(voltage)
 
@@ -90,7 +92,7 @@ class ADCServer( SerialDeviceServer ):
         voltage = int(VOLTAGE_MAX * ( float(rawVoltage) ) /  DAC_MAX) 
         return voltage
     
-    @setting( 0 , channel = 's: channel', returns = 'v: voltage' )
+    @setting( 0 , channel = 's: channel', returns = 'v[mV]: voltage')
     def measureChannel( self, c, channel):
         """
         Measures the voltage on the given channel
@@ -98,6 +100,7 @@ class ADCServer( SerialDeviceServer ):
         if channel not in self.d.keys(): raise Exception("Incorrect Channel")
         chanNumber = self.d[channel]
         voltage = yield self.getVoltage(chanNumber)
+        voltage = T.Value(voltage, 'mV')
         returnValue(voltage)
 
 if __name__ == "__main__":
