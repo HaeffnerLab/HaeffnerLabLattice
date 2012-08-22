@@ -505,7 +505,6 @@ class Qt4MplCanvas(FigureCanvas):
                             ymin = datasetYmin
                         if datasetYmax > ymax:
                             ymax = datasetYmax
-        print ymin, ymax
         return ymin, ymax
 
     def autofitDataY(self, currentY, minmax):

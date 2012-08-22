@@ -137,7 +137,7 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]'] = [height, center, sigma, offset]
                
-        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncGaussian(modelX, [height, center, sigma, offset])
         plotData = np.vstack((modelX, modelY)).transpose()
         
@@ -195,7 +195,7 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]'] = [gamma, center, I, offset] 
                
-        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncLorentzian(modelX, [gamma, center, I, offset])
         plotData = np.vstack((modelX, modelY)).transpose()
         
@@ -243,7 +243,7 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]'] = [slope, offset] 
         
-        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncLine(modelX, [slope, offset])
         plotData = np.vstack((modelX, modelY)).transpose()
         
@@ -293,7 +293,7 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]'] = [A, B, C] 
         
-        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*2)
+        modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncParabola(modelX, [A, B, C])
         plotData = np.vstack((modelX, modelY)).transpose()
         
