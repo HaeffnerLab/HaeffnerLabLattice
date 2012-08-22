@@ -1,5 +1,5 @@
 import time
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, DeferredList
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 import re
@@ -193,23 +193,17 @@ class ScriptControl(QtGui.QWidget):
         yield deferToThread(instance.run)
                     
         
-    @inlineCallbacks
-    def saveParametersToRegistryAndQuit(self):
-        success = yield self.server.save_parameters_to_registry()
-        if (success == True):
-            print 'Current Parameters Saved Successfully.'
+    def save_parameters_to_registry(self, res):
+        return self.server.save_parameters_to_registry()
+    
+    def stop_reactor(self, res):
         self.reactor.stop()
     
-    @inlineCallbacks
-    def stopAllExperiments(self):
-        for experiment in self.experiments.keys():
-            yield self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext)
-            
-    @inlineCallbacks
     def closeEvent(self, x):
-        # stop all scripts! status wise
-        yield self.stopAllExperiments()        
-        yield self.saveParametersToRegistryAndQuit()
+        dl = [self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext) for experiment in self.experiments.keys()]
+        dl = DeferredList(dl)
+        dl.addCallback(self.save_parameters_to_registry)
+        dl.addCallback(self.stop_reactor)
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
