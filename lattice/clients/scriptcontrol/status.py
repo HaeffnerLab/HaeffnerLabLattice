@@ -89,6 +89,7 @@ class StatusWidget(QtGui.QWidget):
                     self.stopButton.setDisabled(True)
                     self.startButton.setEnabled(True)    
                     self.pauseContinueButton.setDisabled(True)
+                    self.pauseContinueButton.setText('Pause')
                     yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], True, context = self.context)
                 elif (parameter == 'Paused'):
                     self.statusLabel.setText(parameter)
@@ -112,8 +113,8 @@ class StatusWidget(QtGui.QWidget):
     def pauseContinueButtonSignal(self, evt):
         status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
         if (status == 'Running'):
-            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], True, context = self.context)
             yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Pausing', context = self.context)
+#            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], True, context = self.context)
             self.pauseContinueButton.setText('Continue')
             self.statusLabel.setText('Pausing')
         elif (status == 'Paused' or status == 'Pausing'):

@@ -202,6 +202,7 @@ class Semaphore(LabradServer):
             self.onParameterChange((experiment + ['Semaphore', 'Progress'], progress), self.listeners)
         status = self._getParameter(experiment + ['Semaphore', 'Status'])
         if (status == 'Pausing'):
+            self._setParameter(experiment + ['Semaphore', 'Block'], True)
             self._setParameter(experiment + ['Semaphore', 'Status'], 'Paused')
             self.onParameterChange((experiment + ['Semaphore', 'Status'], 'Paused'), self.listeners)
         result = yield self._blockExperiment(experiment)
