@@ -14,12 +14,7 @@ class ExperimentGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def setupExperimentGrid(self):
-#        self.experimentGrid = QtGui.QGridLayout()
-#        self.experimentGrid.setSpacing(5)
-#        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
-#        self.setColumnWidth(100)
-#        self.setSizePolicy(QtGui.QSizePolicy.)
 
         self.checkBoxParameterDict = {}
         self.parameterCheckBoxDict = {}
@@ -30,22 +25,17 @@ class ExperimentGrid(QtGui.QTableWidget):
         self.lineEditParameterDict = {}
         self.parameterLineEditDict = {}        
         
-        expParams = yield self.parent.server.get_parameter_names(self.experimentPath)
-        
-        expParamNames = expParams.aslist
-        
+        expParams = yield self.parent.server.get_parameter_names(self.experimentPath)      
+        expParamNames = expParams.aslist        
         expParamNames.sort()
         
         self.setRowCount(len(expParamNames))
         
         Row = 0
         for parameter in expParamNames:
-            # create a label and spin box, add it to the grid
-            #label = QtGui.QLabel(parameter)
             item = QtGui.QTableWidgetItem(parameter)
             self.setItem(Row, 1, item)
             value = yield self.parent.server.get_parameter(self.experimentPath + [parameter])
-#            print 'in exprt grid', value
             widget = self.parent.typeCheckerWidget(value)
             widgetType = type(widget)
             if (widgetType == QtGui.QCheckBox):
@@ -57,65 +47,21 @@ class ExperimentGrid(QtGui.QTableWidget):
                 self.doubleSpinBoxParameterDict[widget] = parameter
                 self.parameterDoubleSpinBoxDict[parameter] = widget 
                 widget.valueChanged.connect(self.updateSpinBoxValueToSemaphore)
-#                self.connect(widget, QtCore.SIGNAL('valueChanged(double)'), self.updateSpinBoxValueToSemaphore)
                 self.setCellWidget(Row, 0, widget)
             elif(widgetType == QtGui.QLineEdit):
                 self.lineEditParameterDict[widget] = parameter
                 self.parameterLineEditDict[parameter] = widget
                 widget.editingFinished.connect(self.updateLineEditValueToSemaphore)                  
-#                self.connect(widget, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
                 self.setCellWidget(Row, 0, widget)
-#            try:
-#                if (len(value) == 3):
-#                    doubleSpinBox = QtGui.QDoubleSpinBox()
-#                    doubleSpinBox.setRange(value[0], value[1])
-#                    doubleSpinBox.setValue(value[2])
-#                    doubleSpinBox.setSingleStep(.1)
-#                    doubleSpinBox.setKeyboardTracking(False)
-#                                    
-#                    self.doubleSpinBoxParameterDict[doubleSpinBox] = parameter
-#                    self.parameterDoubleSpinBoxDict[parameter] = doubleSpinBox 
-#                    
-#                    self.connect(doubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.updateSpinBoxValueToSemaphore)
-#                    self.setCellWidget(Row, 0, doubleSpinBox)
-#                else:
-#                    raise                    
-#                    
-#    #                self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
-#    #                self.experimentGrid.addWidget(doubleSpinBox, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
-#            except:
-#                lineEdit = QtGui.QLineEdit(readOnly=True)
-#                #value = value[2:]
-#                try:
-#                    for i in range(len(value)):
-#                        value[i] = value[i].value
-#                except:
-#                    pass #boolean!
-#                lineEdit.setText(str(value))
-#                        
-#                self.lineEditParameterDict[lineEdit] = parameter
-#                self.parameterLineEditDict[parameter] = lineEdit                  
-#                
-#                self.connect(lineEdit, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
-#
-#                self.setCellWidget(Row, 0, lineEdit)
-                
-#                self.experimentGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
-#                self.experimentGrid.addWidget(lineEdit, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
-
             
             Row += 1
-#            gridCol += 2
-#            if (gridCol == 6):
-#                gridCol = 0
-#                gridRow += 1
+
         self.resizeColumnsToContents()  
         self.setColumnWidth(0, self.columnWidth(0) + 10)
         self.setColumnWidth(1, self.columnWidth(1) + 20)
         width = self.columnWidth(0) + self.columnWidth(1)      
         self.setMinimumWidth(width*1.5)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-#        self.setLayout(self.experimentGrid)    
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
@@ -126,7 +72,6 @@ class ExperimentGrid(QtGui.QTableWidget):
         # check to see if this is an experiment parameter
         if (y[0][:-1] == self.experimentPath):
             # begin typechecking
-            
             if (type(y[1]) == bool):
                 self.parameterCheckBoxDict[y[0][-1]].blockSignals(True)
                 self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])

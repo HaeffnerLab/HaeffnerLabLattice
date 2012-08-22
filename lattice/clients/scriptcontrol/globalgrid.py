@@ -13,12 +13,7 @@ class GlobalGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def setupGlobalGrid(self):
-#        self.globalGrid = QtGui.QGridLayout()
-#        self.globalGrid.setSpacing(5)
-        
-#        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(2)
-#        self.setColumnWidth(100)
 
         self.checkBoxParameterDict = {}
         self.parameterCheckBoxDict = {}
@@ -30,8 +25,7 @@ class GlobalGrid(QtGui.QTableWidget):
         
         self.lineEditParameterDict = {}
         self.parameterLineEditDict = {}                  
-        
-        
+           
         numParams = 0
         path = self.experimentPath
         for i in range(len(self.experimentPath)):
@@ -43,11 +37,7 @@ class GlobalGrid(QtGui.QTableWidget):
         
         self.setRowCount(numParams)
         
-#            gridRow = 0
-#            gridCol = 0
-
-        globalParamNames = self.globalParameterDict.keys()
-        
+        globalParamNames = self.globalParameterDict.keys()      
         globalParamNames.sort()
 
         Row = 0
@@ -67,81 +57,20 @@ class GlobalGrid(QtGui.QTableWidget):
                 self.doubleSpinBoxParameterDict[widget] = parameter
                 self.parameterDoubleSpinBoxDict[parameter] = widget 
                 widget.valueChanged.connect(self.updateSpinBoxValueToSemaphore)
-#                self.connect(widget, QtCore.SIGNAL('valueChanged(double)'), self.updateSpinBoxValueToSemaphore)
                 self.setCellWidget(Row, 0, widget)
             elif(widgetType == QtGui.QLineEdit):
                 self.lineEditParameterDict[widget] = parameter
                 self.parameterLineEditDict[parameter] = widget
                 widget.editingFinished.connect(self.updateLineEditValueToSemaphore)                  
-#                self.connect(widget, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
                 self.setCellWidget(Row, 0, widget)            
-#            if (type(widget) == QtGui.QDoubleSpinBox):
-#                self.doubleSpinBoxParameterDict[widget] = parameter
-#                self.parameterDoubleSpinBoxDict[parameter] = widget 
-#                
-#                self.connect(widget, QtCore.SIGNAL('valueChanged(double)'), self.updateSpinBoxValueToSemaphore)
-#                self.setCellWidget(Row, 0, widget)
-#            elif(type(widget) == QtGui.QLineEdit):
-#                self.lineEditParameterDict[widget] = parameter
-#                self.parameterLineEditDict[parameter] = widget                  
-#                
-#                self.connect(widget, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
-#
-#                self.setCellWidget(Row, 0, widget)
-
-
-#            try:
-#                if (len(value) == 3):
-#                    doubleSpinBox = QtGui.QDoubleSpinBox()
-#                    doubleSpinBox.setRange(value[0], value[1])
-#                    doubleSpinBox.setValue(value[2])
-#                    doubleSpinBox.setSingleStep(.1)
-#                    doubleSpinBox.setKeyboardTracking(False)
-#                    self.connect(doubleSpinBox, QtCore.SIGNAL('valueChanged(double)'), self.updateValueToSemaphore)
-#                    
-#                    self.doubleSpinBoxParameterDict[doubleSpinBox] = parameter
-#                    self.parameterDoubleSpinBoxDict[parameter] = doubleSpinBox
-#                    
-#                    self.setCellWidget(Row, 0, doubleSpinBox)
-#                else:
-#                    raise
-#            
-##            self.globalGrid.addWidget(label, gridRow, gridCol, QtCore.Qt.AlignCenter)
-##            self.globalGrid.addWidget(doubleSpinBox, gridRow, gridCol + 1, QtCore.Qt.AlignCenter)
-#
-#            except:
-#                lineEdit = QtGui.QLineEdit(readOnly=True)
-#                #value = value[2:]
-#                try:
-#                    for i in range(len(value)):
-#                        value[i] = value[i].value
-#                except:
-#                    pass # boolean!
-#                lineEdit.setText(str(value))
-#                        
-#                self.lineEditParameterDict[lineEdit] = parameter
-#                self.parameterLineEditDict[parameter] = lineEdit                  
-#                
-#                self.connect(lineEdit, QtCore.SIGNAL('editingFinished()'), self.updateLineEditValueToSemaphore)
-#
-#                self.setCellWidget(Row, 0, lineEdit)
-
-
-            
             Row += 1
             
-#            gridCol += 2
-#            if (gridCol == 6):
-#                gridCol = 0
-#                gridRow += 1
         self.resizeColumnsToContents()
         self.setColumnWidth(0, self.columnWidth(0) + 10)
         self.setColumnWidth(1, self.columnWidth(1) + 20)
         width = self.columnWidth(0) + self.columnWidth(1)      
         self.setMinimumWidth(width*1.5)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-#        self.setLayout(self.globalGrid)    
-
 
     @inlineCallbacks
     def setupGlobalParameterListener(self):
