@@ -78,11 +78,11 @@ class limitsWidget(QtGui.QWidget):
     def __init__(self, reactor, suffix = '', abs_range = None, parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
-        self.absoluteRange = None
         self.suffix = suffix
         self.initializeGUI()
         if abs_range is not None:
-            self.setRange(abs_range[0], abs_range[1])
+            self.setRange(*abs_range)
+            self.setInitialValuesFromRange(*abs_range)
         
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
@@ -128,21 +128,20 @@ class limitsWidget(QtGui.QWidget):
         self.show()
     
     def setRange(self, minim, maxim):
-        self.absoluteRange = (minim,maxim)
-        self.updateRanges()
-    
-    def updateRanges(self):
+        ran = (minim,maxim)
         for widget in [self.start, self.stop]:
-            widget.setRange(*self.absoluteRange)
-        max_diff = self.absoluteRange[1] - self.absoluteRange[0]
-        self.start.setValue(self.absoluteRange[0])
-        self.stop.setValue(self.absoluteRange[1])
+            widget.setRange(*ran)
+        max_diff = ran[1] - ran[0]
         self.span.setRange(-max_diff, max_diff)
-        self.span.setValue(max_diff)
-        self.center.setRange(self.absoluteRange[0], self.absoluteRange[1])
-        self.center.setValue(self.absoluteRange[0] + max_diff / 2.0)
+        self.center.setRange(ran[0], ran[1])
         self.setresolution.setRange(-max_diff, max_diff)
-        self.setresolution.setValue(self.absoluteRange[1] - self.absoluteRange[0])
+    
+    def setInitialValuesFromRange(self, minim, maxim):
+        self.start.setValue(minim)
+        self.stop.setValue(maxim)
+        self.span.setValue(maxim - minim)
+        self.center.setValue( (minim + maxim)/ 2.0)
+        self.setresolution.setValue( maxim - minim)
     
     def onNewCenterSpan(self, x):
         center = self.center.value()
@@ -292,7 +291,7 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = limitsWidget(reactor, suffix = 'us')
+    widget = limitsWidget(reactor, suffix = 'us', abs_range = (0,10))
     #widget = durationWdiget(reactor)
     #widget = saved_frequencies(reactor)
     #widget = saved_frequencies_dropdown(reactor)
