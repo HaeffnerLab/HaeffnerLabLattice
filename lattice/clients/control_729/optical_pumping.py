@@ -70,8 +70,8 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
     def create_widgets(self):
         self.freq = QtGui.QDoubleSpinBox()
         self.freq.setSuffix('MHz')
-        self.freq.setDecimals(3)
-        self.freq.setSingleStep(0.01)
+        self.freq.setDecimals(4)
+        self.freq.setSingleStep(10**-3)
         self.freq.setKeyboardTracking(False)
         self.ampl729 = QtGui.QDoubleSpinBox()
         self.ampl854 = QtGui.QDoubleSpinBox()

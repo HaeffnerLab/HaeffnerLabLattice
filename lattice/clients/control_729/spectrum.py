@@ -5,13 +5,12 @@ from async_semaphore import async_semaphore, Parameter
 
 class limitWidget_with_dropdown(limitsWidget):
     def __init__(self, reactor):
-        super(limitWidget_with_dropdown, self).__init__(reactor, 'MHz')
+        super(limitWidget_with_dropdown, self).__init__(reactor, 'MHz', sigfigs = 4)
         layout = self.layout()
         self.dropdown = saved_frequencies_dropdown(self.reactor)
         layout.addWidget(self.dropdown)
         self.dropdown.selected_signal.connect(self.center.setValue)
     
-
 class spectrum(QtGui.QWidget):
     
     max_segments = 3

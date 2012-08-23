@@ -75,10 +75,11 @@ class limitsWidget(QtGui.QWidget):
     
     new_list_signal = QtCore.pyqtSignal(list)
     
-    def __init__(self, reactor, suffix = '', abs_range = None, parent=None):
+    def __init__(self, reactor, suffix = '', abs_range = None, sigfigs = 3,  parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
         self.suffix = suffix
+        self.sigfigs = sigfigs
         self.initializeGUI()
         if abs_range is not None:
             self.setRange(*abs_range)
@@ -98,9 +99,9 @@ class limitsWidget(QtGui.QWidget):
         steps.setKeyboardTracking(False)
         for widget in [start, stop, setresolution, center, span]:
             widget.setKeyboardTracking(False)
-            widget.setDecimals(3)
+            widget.setDecimals(self.sigfigs)
             widget.setSuffix(self.suffix)
-            widget.setSingleStep(0.01)
+            widget.setSingleStep(10**-self.sigfigs)
         self.updateResolutionLabel(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
@@ -190,7 +191,11 @@ class limitsWidget(QtGui.QWidget):
     def onNewResolution(self, res):
         start = self.start.value()
         stop = self.stop.value()
-        steps = 1 +  max(0, int(round( (stop - start) / res))) #make sure at least 1
+        try:
+            computed_steps = int(round( (stop - start) / res))
+        except ZeroDivisionError:
+            computed_steps = 0                                
+        steps = 1 +  max(0, computed_steps) #make sure at least 1
         self.steps.blockSignals(True)
         self.steps.setValue(steps)
         self.steps.blockSignals(False)
@@ -210,7 +215,6 @@ class limitsWidget(QtGui.QWidget):
     
     def closeEvent(self, x):
         self.reactor.stop()
-
 
 class saved_frequencies(QtGui.QTableWidget):
     def __init__(self, reactor, parent=None):
@@ -269,6 +273,7 @@ class saved_frequencies_dropdown(QtGui.QComboBox):
 class frequency_wth_dropdown(QtGui.QWidget):
     
     suffix = 'MHz'
+    sigfig = 4
     
     def __init__(self, reactor, parent=None):
         super(frequency_wth_dropdown, self).__init__(parent)
@@ -277,6 +282,8 @@ class frequency_wth_dropdown(QtGui.QWidget):
         self.freq = QtGui.QDoubleSpinBox()
         self.freq.setKeyboardTracking(False)
         self.freq.setSuffix(self.suffix)
+        self.freq.setDecimals(self.sigfig)
+        self.freq.setSingleStep(10**-self.sigfig)
         layout = QtGui.QHBoxLayout()
         label = QtGui.QLabel("Frequency")
         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
