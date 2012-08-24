@@ -1,6 +1,5 @@
 import labrad
-import numpy
-import time
+
 cxn = labrad.connect()
 pulser = cxn.pulser
 #demo pulse sequence
