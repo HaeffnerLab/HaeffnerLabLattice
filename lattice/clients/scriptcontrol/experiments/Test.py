@@ -8,7 +8,7 @@ class Test():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp1']
         print 'Initializing Test'
-        self.iterations = 3
+        self.iterations = 15
         self.progress = 0.0
         #threading.Thread.__init__(self)
     
@@ -32,7 +32,7 @@ class Test():
                 self.cxn.semaphore.finish_experiment(self.experimentPath, self.progress)
                 return
             
-            time.sleep(3)
+            time.sleep(1)
             #print 'Test parameters: ', self.parameters
             print 'hello'
 

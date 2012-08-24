@@ -134,4 +134,12 @@ class StatusWidget(QtGui.QWidget):
         yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], False, context = self.context)
         yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Stopping', context = self.context)
         self.pauseContinueButton.setText('Pause')
-        self.statusLabel.setText('Stopping')            
+        self.statusLabel.setText('Stopping')  
+    
+    def handleScriptError(self, e):
+        self.stopButton.setDisabled(True)
+        self.startButton.setEnabled(True)    
+        self.pauseContinueButton.setDisabled(True)    
+        self.pauseContinueButton.setText('Pause')
+        self.statusLabel.setText('Error')
+        print 'Error in script: ', self.experimentPath[-1], ' - ', e

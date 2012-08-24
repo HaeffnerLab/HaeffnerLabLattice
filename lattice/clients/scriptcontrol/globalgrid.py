@@ -70,7 +70,8 @@ class GlobalGrid(QtGui.QTableWidget):
         self.setColumnWidth(1, self.columnWidth(1) + 20)
         width = self.columnWidth(0) + self.columnWidth(1)      
         self.setMinimumWidth(width*1.5)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.horizontalHeader().setStretchLastSection(True)
+#        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
     @inlineCallbacks
     def setupGlobalParameterListener(self):

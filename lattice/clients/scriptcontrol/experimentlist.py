@@ -12,6 +12,7 @@ class ExperimentListWidget(QtGui.QListWidget):
         self.parent = parent
         self.path = []
         self.populateList(self.path)
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
     
     @inlineCallbacks
     def populateList(self, path):
@@ -22,7 +23,6 @@ class ExperimentListWidget(QtGui.QListWidget):
             self.addItem(directory)
         
         self.sortItems()
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         
     def mousePressEvent(self, event):

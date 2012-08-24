@@ -53,6 +53,7 @@ class ExperimentGrid(QtGui.QTableWidget):
                 self.parameterLineEditDict[parameter] = widget
                 widget.editingFinished.connect(self.updateLineEditValueToSemaphore)                  
                 self.setCellWidget(Row, 0, widget)
+
             
             Row += 1
 
@@ -61,7 +62,7 @@ class ExperimentGrid(QtGui.QTableWidget):
         self.setColumnWidth(1, self.columnWidth(1) + 20)
         width = self.columnWidth(0) + self.columnWidth(1)      
         self.setMinimumWidth(width*1.5)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.horizontalHeader().setStretchLastSection(True)
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
@@ -71,7 +72,7 @@ class ExperimentGrid(QtGui.QTableWidget):
     def updateExperimentParameter(self, x, y):
         # check to see if this is an experiment parameter
         if (y[0][:-1] == self.experimentPath):
-            # begin typechecking
+            # begin typecheckin 
             if (type(y[1]) == bool):
                 self.parameterCheckBoxDict[y[0][-1]].blockSignals(True)
                 self.parameterCheckBoxDict[y[0][-1]].setChecked(y[1])

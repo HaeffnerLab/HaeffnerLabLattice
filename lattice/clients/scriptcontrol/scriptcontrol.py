@@ -54,8 +54,10 @@ class ScriptControl(QtGui.QWidget):
         self.globalContext = yield self.cxn.context()
         self.statusContext = yield self.cxn.context()
         
-        self.mainLayout = QtGui.QHBoxLayout()
+        self.mainLayout = QtGui.QVBoxLayout()
         
+        self.widgetLayout = QtGui.QHBoxLayout()
+               
         # mainGrid is in mainLayout that way its size can be controlled.
         self.mainGrid = QtGui.QGridLayout()
         self.mainGrid.setSpacing(5)
@@ -63,41 +65,52 @@ class ScriptControl(QtGui.QWidget):
         # Labels
         font = QtGui.QFont('MS Shell Dlg 2',pointSize=14)
         font.setUnderline(True)
-        experimentListLabel = QtGui.QLabel('Experiment Navigation')
-        experimentListLabel.setFont(font)
-        experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
-        experimentParametersLabel.setFont(font)
-        globalParametersLabel = QtGui.QLabel('Global Parameters')
-        globalParametersLabel.setFont(font)
-        controlLabel = QtGui.QLabel('Control')
-        controlLabel.setFont(font)
-                
-        self.mainGrid.addWidget(experimentListLabel, 0, 0, QtCore.Qt.AlignCenter)
-        self.mainGrid.addWidget(experimentParametersLabel, 0, 1, QtCore.Qt.AlignCenter)
-        self.mainGrid.addWidget(globalParametersLabel, 0, 2, QtCore.Qt.AlignCenter)
-        self.mainGrid.addWidget(controlLabel, 0, 3, QtCore.Qt.AlignCenter)        
-        
+        self.experimentListLabel = QtGui.QLabel('Experiment Navigation')
+        self.experimentListLabel.setFont(font)
+        self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+        self.experimentParametersLabel.setFont(font)
+        self.globalParametersLabel = QtGui.QLabel('Global Parameters')
+        self.globalParametersLabel.setFont(font)
+        self.controlLabel = QtGui.QLabel('Control')
+        self.controlLabel.setFont(font)
+                     
+        self.experimentListLayout = QtGui.QVBoxLayout()
+               
         # Setup Experiment List Widget
         self.experimentListWidget = ExperimentListWidget(self)
         self.experimentListWidget.show()
-        self.mainGrid.addWidget(self.experimentListWidget, 1, 0, QtCore.Qt.AlignCenter)
+        
+        self.experimentListLayout.addWidget(self.experimentListLabel)
+        self.experimentListLayout.setAlignment(self.experimentListLabel, QtCore.Qt.AlignCenter)
+        self.experimentListLayout.setStretchFactor(self.experimentListLabel, 0)
+        self.experimentListLayout.addWidget(self.experimentListWidget)
         
         # Setup Experiment Parameter Widget
         yield deferToThread(time.sleep, .05) # necessary delay. Qt issue.
+        self.experimentGridLayout = QtGui.QVBoxLayout()
         self.setupExperimentGrid(['Test', 'Exp1']) # the experiment to start with
+        # Setup Global Parameter Widget
+        self.globalGridLayout = QtGui.QVBoxLayout()      
+        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with
+        # Setup Status Widget
+        self.statusLayout = QtGui.QVBoxLayout()      
+        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+
+        self.widgetLayout.addLayout(self.experimentListLayout)
+        self.widgetLayout.addLayout(self.experimentGridLayout)
+        self.widgetLayout.addLayout(self.globalGridLayout)
+        self.widgetLayout.addLayout(self.statusLayout)
+        self.miscLayout = QtGui.QHBoxLayout()
+
         parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
         parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
-        self.mainGrid.addWidget(parameterLimitsButton, 2, 1, QtCore.Qt.AlignCenter)
-        # Setup Global Parameter Widget
-        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with
-        # Setup Status Widget
-        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+        self.miscLayout.addWidget(parameterLimitsButton)
         
-        self.mainLayout.addLayout(self.mainGrid)
+        self.mainLayout.addLayout(self.widgetLayout)
+        self.mainLayout.addLayout(self.miscLayout)
         self.setLayout(self.mainLayout)
         self.show()
-
 
     def parameterLimitsWindowEvent(self, evt):
         experimentPath = self.experimentGrid.experimentPath
@@ -117,8 +130,11 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)           
-        self.mainGrid.addWidget(self.experimentGrid, 1, 1, QtCore.Qt.AlignCenter)
+        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
+        self.experimentGridLayout.addWidget(self.experimentParametersLabel)
+        self.experimentGridLayout.setAlignment(self.experimentParametersLabel, QtCore.Qt.AlignCenter)
+        self.experimentGridLayout.setStretchFactor(self.experimentParametersLabel, 0)
+        self.experimentGridLayout.addWidget(self.experimentGrid)
         self.experimentGrid.show()  
 
     def setupGlobalGrid(self, experimentPath):
@@ -127,8 +143,11 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)           
-        self.mainGrid.addWidget(self.globalGrid, 1, 2, QtCore.Qt.AlignCenter)
+        self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)
+        self.globalGridLayout.addWidget(self.globalParametersLabel)
+        self.globalGridLayout.setAlignment(self.globalParametersLabel, QtCore.Qt.AlignCenter)
+        self.globalGridLayout.setStretchFactor(self.globalParametersLabel, 0)
+        self.globalGridLayout.addWidget(self.globalGrid)
         self.globalGrid.show()          
 
     def setupStatusWidget(self, experiment):
@@ -137,8 +156,8 @@ class ScriptControl(QtGui.QWidget):
         except:
             # First time
             pass
-        self.statusWidget = StatusWidget(self, experiment, self.statusContext)           
-        self.mainGrid.addWidget(self.statusWidget, 1, 3, QtCore.Qt.AlignCenter)
+        self.statusWidget = StatusWidget(self, experiment, self.statusContext)
+        self.statusLayout.addWidget(self.statusWidget)
         self.statusWidget.show() 
         
     # Returns a different widget depending on the type of value provided by the semaphore 
@@ -174,10 +193,13 @@ class ScriptControl(QtGui.QWidget):
     
     @inlineCallbacks
     def startExperiment(self, experiment):
-        reload(self.experiments[experiment][0])
-        class_ = getattr(self.experiments[experiment][0], self.experiments[experiment][1])
-        instance = class_()
-        yield deferToThread(instance.run)
+        try:
+            reload(self.experiments[experiment][0])
+            class_ = getattr(self.experiments[experiment][0], self.experiments[experiment][1])
+            instance = class_()
+            yield deferToThread(instance.run)
+        except Exception as e:
+            self.statusWidget.handleScriptError(e)
         
     def saveParametersToRegistry(self, res):
         return self.server.save_parameters_to_registry()
