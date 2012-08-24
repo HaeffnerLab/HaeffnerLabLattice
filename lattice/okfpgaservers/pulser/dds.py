@@ -67,7 +67,7 @@ class DDS(LabradServer):
         frequency = channel.frequency
         returnValue(frequency)
     
-    @setting(46, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm])','*(sv[s]v[s]v[MHz]v[dBm]v)'])
+    @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm])','*(sv[s]v[s]v[MHz]v[dBm]v)'])
     def addDDSPulses(self, c, values):
         '''
         [(name, start, duration, frequency, amplitude)] where duration is duration of the pulse in seconds and high/low is a boolean
@@ -109,19 +109,19 @@ class DDS(LabradServer):
             sequence.addDDS(name, start, num, 'start')
             sequence.addDDS(name, start, num_off, 'stop')
         
-    @setting(47, 'Get DDS Amplitude Range', returns = '(vv)')
+    @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
     def getDDSAmplRange(self, c):
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         return self.ddsDict[name].allowedamplrange
         
-    @setting(48, 'Get DDS Frequency Range', returns = '(vv)')
+    @setting(47, 'Get DDS Frequency Range', returns = '(vv)')
     def getDDSFreqRange(self, c):
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         return self.ddsDict[name].allowedfreqrange
     
-    @setting(49, 'Output', state = 'b', returns =' b')
+    @setting(48, 'Output', state = 'b', returns =' b')
     def output(self, c, state = None):
         """To turn off and on the dds. Turning off the DDS sets the frequency and amplitude 
         to the off_parameters provided in the configuration.
