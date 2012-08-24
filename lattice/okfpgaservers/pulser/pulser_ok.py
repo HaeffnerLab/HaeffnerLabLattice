@@ -58,7 +58,8 @@ class Pulser(LabradServer, DDS):
         connected = self.api.connectOKBoard()
         while not connected:
             print 'not connected, waiting for {} seconds to try again'.format(self.devicePollingPeriod)
-            self.wait(self.devicePollingPeriod)
+            #self.wait(self.devicePollingPeriod)
+            time.sleep(10)
             connected = self.api.connectOKBoard()
             
     def initializeSettings(self):
