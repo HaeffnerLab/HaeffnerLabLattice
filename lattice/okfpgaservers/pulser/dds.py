@@ -39,10 +39,10 @@ class DDS(LabradServer):
         channel = self.ddsDict[name]
         if amplitude is not None:
             #set the amplitude
-            amplitude = amplitude.inUnitsOf('dBm').value
+            amplitude = amplitude.inUnitsOf('dBm')
+            amplitude = float( amplitude )
             self._checkRange('amplitude', channel, amplitude)
-            if channel.state: #if on, update parameters
-                yield self._setAmplitude(channel, amplitude)
+            yield self._setAmplitude(channel, amplitude)
             channel.amplitude = amplitude
         amplitude = channel.amplitude
         returnValue(amplitude)
@@ -58,52 +58,16 @@ class DDS(LabradServer):
         if name is None: raise Exception ("Channel not provided and not selected")
         channel = self.ddsDict[name]
         if frequency is not None:
-            #set the frequency
-            frequency = frequency.inUnitsOf('MHz').value
+            #set the amplitude
+            frequency = frequency.inUnitsOf('MHz')
+            frequency = float( frequency )
             self._checkRange('frequency', channel, frequency)
-            if channel.state: #if on, update parameters
-                yield self._setFrequency(channel, frequency)
-            channel.frequency = frequency
+            yield self._setFrequency(channel, frequency)
+            channel.frequency = float(frequency)
         frequency = channel.frequency
         returnValue(frequency)
     
-    @setting(45, 'Add DDS States', values = ['*(sv[s]v[MHz]v[dBm])','*(sv[s]v[MHz]v[dBm]v)'])
-    def addDDSStates(self, c, values):
-        """
-        Adds a DDS state to the pulse sequence. The input is in the form 
-        [(name, start, frequency, amplitude, phase)] 
-        [(name, start, frequency, amplitude)] 
-        [(name, start, 0, 0)] 
-        where name is in Seconds, frequency is in MHz, and amplitude is in dBm
-        and 0 Mhz, 0 dBm, switches the state to the 'off' setting of the hardware configratuion
-        """
-        sequence = c.get('sequence')
-        if not sequence: raise Exception ("Please create new sequence first")
-        for value in values:
-            try:
-                name,start,freq,ampl = value
-                phase  = 0.0
-            except ValueError:
-                name,start,freq,ampl,phase = value
-            try:
-                channel = self.ddsDict[name]
-            except KeyError:
-                raise Exception("Unknown DDS channel {}".format(name))
-            start = start.inUnitsOf('s').value
-            freq = freq.inUnitsOf('MHz').value
-            ampl = ampl.inUnitsOf('dBm').value
-            self._checkRange('frequency', channel, freq)
-            self._checkRange('amplitude', channel, ampl)
-            if freq == 0 or ampl == 0: #off state
-                freq, ampl = channel.off_parameters
-            if not channel.remote:
-                num = self._valToInt(channel, freq, ampl)
-            else:
-                num = self._valToInt_remote(channel, freq, ampl, phase)
-            if not self.sequenceTimeRange[0] <= start <= self.sequenceTimeRange[1]: raise Exception ("DDS start time out of acceptable input range")
-            sequence.addDDS(name, start, num)
-            
-    @setting(46, 'Add DDS Pulses', name = 's', values = ['*(v[s]v[MHz]v[dBm])','*(v[s]v[MHz]v[dBm]v)'])
+    @setting(45, 'Add DDS Pulses', name = 's', values = ['*(v[s]v[MHz]v[dBm])','*(v[s]v[MHz]v[dBm]v)'])
     def addDDSPulse(self, c, name, values):
         """Takes the name of the DDS channel, and the list of values in the form [(start, frequency, amplitude, phase)] or 
         [(start, frequency, amplitude)]
@@ -120,10 +84,12 @@ class DDS(LabradServer):
             try:
                 start,freq,ampl = value
                 start = start.value
+                print start
                 phase  = 0.0
             except ValueError:
                 start,freq,ampl,phase = value
                 start = start.value
+                print start
             if not channel.remote:
                 num = self._valToInt(channel, freq, ampl)
             else:
@@ -131,19 +97,19 @@ class DDS(LabradServer):
             if not self.sequenceTimeRange[0] <= start <= self.sequenceTimeRange[1]: raise Exception ("DDS start time out of acceptable input range")
             sequence.addDDS(name, start, num)
     
-    @setting(47, 'Get DDS Amplitude Range', returns = '(vv)')
+    @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
     def getDDSAmplRange(self, c):
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         return self.ddsDict[name].allowedamplrange
         
-    @setting(48, 'Get DDS Frequency Range', returns = '(vv)')
+    @setting(47, 'Get DDS Frequency Range', returns = '(vv)')
     def getDDSFreqRange(self, c):
         name = c.get('ddschan')
         if name is None: raise Exception ("Channel not provided and not selected")
         return self.ddsDict[name].allowedfreqrange
     
-    @setting(49, 'Output', state = 'b', returns =' b')
+    @setting(48, 'Output', state = 'b', returns =' b')
     def output(self, c, state = None):
         """To turn off and on the dds. Turning off the DDS sets the frequency and amplitude 
         to the off_parameters provided in the configuration.
