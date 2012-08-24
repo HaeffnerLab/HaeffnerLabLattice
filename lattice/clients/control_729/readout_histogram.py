@@ -47,6 +47,7 @@ class readout_histgram(QtGui.QWidget):
         self.canvas.setParent(self)
         self.axes = self.fig.add_subplot(111)
         self.axes.set_xlim([0,100])
+        self.axes.autoscale()
         self.thresholdLine = self.axes.axvline(self.thresholdVal, linewidth=3.0, color = 'r', label = 'Threshold')
         self.axes.legend(loc = 'best')
         self.mpl_toolbar = NavigationToolbar(self.canvas, self)

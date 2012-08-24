@@ -10,19 +10,30 @@ class LATTICE_GUI(QtGui.QMainWindow):
         tableOpticsWidget = self.makeTableOpticsWidget(reactor)
         translationStageWidget = self.makeTranslationStageWidget(reactor)
         control729Widget =  self.makecontrol729Widget(reactor)
-        self.tabWidget = QtGui.QTabWidget()
-        self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
-        self.tabWidget.addTab(lightControlTab,'&LaserRoom')
-        self.tabWidget.addTab(tableOpticsWidget,'&Optics')
-        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
-        self.tabWidget.addTab(control729Widget,'&Control 729')
-        self.createGrapherTab()
-        self.setCentralWidget(self.tabWidget)
+        centralWidget = QtGui.QWidget()
+        grid = QtGui.QGridLayout()
+        scriptControl = self.makeScriptControl(reactor)
+        tabWidget = QtGui.QTabWidget()
+        tabWidget.addTab(voltageControlTab,'&Trap Voltages')
+        tabWidget.addTab(lightControlTab,'&LaserRoom')
+        tabWidget.addTab(tableOpticsWidget,'&Optics')
+        tabWidget.addTab(translationStageWidget,'&Translation Stages')
+        tabWidget.addTab(control729Widget,'&Control 729')
+        self.createGrapherTab(tabWidget)
+        grid.addWidget(scriptControl, 0, 0, 1, 1)
+        grid.addWidget(tabWidget, 1, 0, 1, 3)
+        centralWidget.setLayout(grid)
+        self.setCentralWidget(centralWidget)
+    
+    def makeScriptControl(self, reactor):
+        from scriptcontrol.scriptcontrol import ScriptControl
+        sc = ScriptControl(reactor)
+        return sc
     
     @inlineCallbacks
-    def createGrapherTab(self):
+    def createGrapherTab(self, tabWidget):
         grapher = yield self.makeGrapherWidget(reactor)
-        self.tabWidget.addTab(grapher, '&Grapher')
+        tabWidget.addTab(grapher, '&Grapher')
     
     @inlineCallbacks
     def makeGrapherWidget(self, reactor):

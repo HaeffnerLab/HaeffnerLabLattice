@@ -21,6 +21,7 @@ class ScriptControl(QtGui.QWidget):
         import scripts.experiments.Experiments729.spectrum
         import scripts.experiments.Experiments729.rabi_flopping        
         # main dictionary organized by path in the Registry
+
         self.experiments = {
                             ('Test', 'Exp1'):  (experiments.Test, 'Test'),
                             ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
@@ -29,7 +30,6 @@ class ScriptControl(QtGui.QWidget):
                             ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
                            }
         self.setupExperimentProgressDict()
-        
         self.connect()
         
     # A dictionary to keep track of the progress of each experiment

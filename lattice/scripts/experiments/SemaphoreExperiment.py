@@ -46,7 +46,7 @@ class SemaphoreExperiment():
         values_np = numpy.array(values) #automatically gets rid of units
         withinRange = (minim <= values_np) * (values_np <= maxim)
         if not (withinRange.all()):
-            raise Exception ("Some entries are out of range in {}".format(entry))
+            raise Exception ("Some entries are out of range in the list {}".format(values_np))
         if not keep_units:
             #discard units
             if in_units is None:
@@ -63,7 +63,7 @@ class SemaphoreExperiment():
         minim,maxim,value =[entry.pop(0) for i in range(3)]
         #assumes the units are the same for the min,max,and value
         if not ((minim.value <= value.value) and (value.value <= maxim.value)):
-            raise Exception ("Some entries are out of range in {}".format(entry))
+            raise Exception ("Entry {2} must be in between {0} and {1}".format(minim, maxim, value))
         if not keep_units:
             #discard units
             if in_units is None:
