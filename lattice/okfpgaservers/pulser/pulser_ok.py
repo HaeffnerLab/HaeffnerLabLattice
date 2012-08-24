@@ -98,8 +98,6 @@ class Pulser(LabradServer, DDS):
         """
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
-        if sequence.userAddedDDS():
-            self._addDDSInitial(sequence)
         dds,ttl = sequence.progRepresentation()
         yield self.inCommunication.acquire()
         yield deferToThread(self.api.programBoard, ttl)

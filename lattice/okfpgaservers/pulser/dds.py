@@ -104,10 +104,12 @@ class DDS(LabradServer):
                 num_off = self._valToInt_remote(channel, freq_off, ampl_off, phase)
             #note < sign, because start can not be 0. 
             #this would overwrite the 0 position of the ram, and cause the dds to change before pulse sequence is launched
-            if not self.sequenceTimeRange[0] < start <= self.sequenceTimeRange[1]: raise Exception ("DDS start time out of acceptable input range")
-            if not self.sequenceTimeRange[0] < start + dur <= self.sequenceTimeRange[1]: raise Exception ("DDS start time out of acceptable input range")
+            if not self.sequenceTimeRange[0] < start <= self.sequenceTimeRange[1]: 
+                raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start))
+            if not self.sequenceTimeRange[0] < start + dur <= self.sequenceTimeRange[1]: 
+                raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start + dur))
             sequence.addDDS(name, start, num, 'start')
-            sequence.addDDS(name, start, num_off, 'stop')
+            sequence.addDDS(name, start + dur, num_off, 'stop')
         
     @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
     def getDDSAmplRange(self, c):
@@ -206,24 +208,6 @@ class DDS(LabradServer):
             yield cxn.servers[server][program]([(channel.channelnumber, buf)])
         except (KeyError,AttributeError):
             print 'Not programing remote channel {}'.format(channel.remote)
-    
-#    def _addDDSInitial(self, seq):
-#        '''
-#        Writes the current values to the 0 time position of the pulse sequence.
-#        '''
-#        for name,channel in self.ddsDict.iteritems():
-#            if channel.output:
-#                #if on, use current values. else, use off values
-#                freq,ampl = (channel.frequency, channel.amplitude)
-#                self._checkRange('amplitude', channel, ampl)
-#                self._checkRange('frequency', channel, freq)
-#            else:
-#                freq,ampl = channel.off_parameters
-#            if not channel.remote:
-#                num = self._valToInt(channel, freq, ampl)
-#            else:
-#                num = self._valToInt_remote(channel, freq, ampl)
-#            seq.addDDS(name, 0, num)
     
     def _getCurrentDDS(self):
         '''

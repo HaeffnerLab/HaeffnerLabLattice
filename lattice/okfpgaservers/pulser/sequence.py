@@ -15,25 +15,13 @@ class Sequence():
         self.switches = 1 #keeps track of how many switches are to be performed (same as the number of keys in the switching Times dictionary"
         #dictionary for storing information about dds switches, in the format:
         #timestep: {channel_name: integer representing the state}
-#        self.ddsSettings = {}
-        self.ddsSettingsList = []
+        self.ddsSettingList = []
         self.advanceDDS = hardwareConfiguration.channelDict['AdvanceDDS'].channelnumber
         self.resetDDS = hardwareConfiguration.channelDict['ResetDDS'].channelnumber
     
     def addDDS(self, name, start, num, typ):
         timeStep = self.secToStep(start)
-        self.ddsSettingsList.append(name, timeStep, num, type)
-    
-#    def addDDS(self, name, start, setting):
-#        '''add DDS setting'''
-#        timeStep = self.secToStep(start)
-#        if self.ddsSettings.has_key(timeStep):
-#            #check for duplicate entry
-#            if self.ddsSettings[timeStep].has_key(name): raise Exception ('Double setting at time {} for DDS channel {}'.format(timeStep, name))
-#        else:
-#            #else, create it
-#            self.ddsSettings[timeStep] = {}
-#        self.ddsSettings[timeStep][name] = setting
+        self.ddsSettingList.append((name, timeStep, num, typ))
             
     def addPulse(self, channel, start, duration):
         """adding TTL pulse, times are in seconds"""
@@ -71,59 +59,23 @@ class Sequence():
         ddsSettings = self.parseDDS()
         ttlProgram = self.parseTTL()
         return ddsSettings, ttlProgram
-    
-#    def userAddedDDS(self):
-#        return bool(len(self.ddsSettings.keys()))
-    
+        
     def userAddedDDS(self):
         return bool(len(self.ddsSettingList))
-    
-#    def parseDDS(self):
-#        '''uses the ddsSettings dictionary to create an easily programmable list in the form
-#        {channel_name : buf}
-#        The length of each bufstring is equal because all the ttl settings are advanced together:
-#        If a setting doesn't change, it's repeated.
-#        During the parsing the necessary ttls to advance dds settings are added automatically.
-#        At the end of the pulse sequence, the ram position of dds is set again to the initial value of 0.
-#        '''
-#        if not self.userAddedDDS(): return None
-#        dds_program = {}
-#        state = {}
-#        for timeStep,new_setting in sorted(self.ddsSettings.iteritems()):
-#            state.update(new_setting)
-#            for name,num in state.iteritems():
-#                if not hardwareConfiguration.ddsDict[name].remote:
-#                    buf = self.parent._intToBuf(num)
-#                else:  
-#                    buf = self.parent._intToBuf_remote(num)
-#                try:
-#                    dds_program[name] += buf
-#                except KeyError: #first addition
-#                    dds_program[name] = buf
-#            #advance the state of the dds by settings the advance channel high for one timestep
-#            if not timeStep == 0:
-#                self._addNewSwitch(timeStep,self.advanceDDS,1)
-#                self._addNewSwitch(timeStep + 1,self.advanceDDS,-1)
-#        #at the end of the sequence, reset dds
-#        lastTTL = max(self.switchingTimes.keys())
-#        self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
-#        self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
-#        #add termination
-#        for name in dds_program.iterkeys():
-#            dds_program[name] +=  '\x00\x00'
-#        return dds_program
     
     def parseDDS(self):
         if not self.userAddedDDS(): return None
         state = self.parent._getCurrentDDS()
-        pulses_end = {}.fromkeys((0, False)) #time / boolean whether in a middle of a pulse 
-        dds_program = {}.fromkeys('')
+        pulses_end = {}.fromkeys(state, (0, 'stop')) #time / boolean whether in a middle of a pulse 
+        dds_program = {}.fromkeys(state, '')
         lastTime = 0
         entries = sorted(self.ddsSettingList, key = lambda t: t[1] ) #sort by starting time
+        print entries
         while True:
             try:
                 name,start,num,typ = entries.pop(0)
-            except ValueError:
+                print name,start,num,typ
+            except IndexError:
                 if start  == lastTime:
                     #still have unprogrammed entries
                     self.addToProgram(dds_program, state)
@@ -134,22 +86,15 @@ class Sequence():
                 lastTTL = max(self.switchingTimes.keys())
                 self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
                 self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
-                break
+                return dds_program
             end_time, end_typ =  pulses_end[name]
-            if end_time == start:
-                #overwriting considerations
-                if end_typ == 'stop' and typ =='start':
-                    #merging two pulses into one
-                    state[name] = num
-                    pulses_end[name] = (start, typ)
-                elif end_typ == 'start' and typ =='stop':
-                    #0-length pulse get overwritten with the stop value
-                    state[name] = num
-                    pulses_end[name] = (start, typ)
-                else:
-                    raise Exception ("Two Pulses at the same time for channel {}".format(name))
-            elif end_typ == typ:
+            print 'ending', end_typ
+            print 'mins is ', typ
+            if end_typ == typ:
                 raise Exception ("Overlapping DDS Pulses Found for channel {}".format(name))
+            else:
+                state[name] = num
+                pulses_end[name] = (start, typ)
             if start > lastTime:
                 #the time has advanced, so need to program the previous state
                 self.addToProgram(dds_program, state)
