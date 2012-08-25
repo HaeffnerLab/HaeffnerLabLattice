@@ -157,8 +157,8 @@ class Sequence():
                     program.append((freq,ampl)) 
             else:
                 for a,b,c,d,e,f,g,h in chunks(arr, 8):
-                    freq_num = 256**2*(256*d + c) + (256*b + a)
-                    ampl_num = 256*f + e
+                    freq_num = 256**2*(256*f + e) + (256*h + g)
+                    ampl_num = 256*d + c
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
                     program.append((freq,ampl)) 
