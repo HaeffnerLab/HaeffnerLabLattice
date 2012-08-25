@@ -197,17 +197,27 @@ class Pulser(LabradServer, DDS):
         self.sequenceType = 'Number'
         self.inCommunication.release()
 
-    @setting(10, "Human Readable", returns = '*2s')
-    def humanReadable(self, c):
+    @setting(10, "Human Readable TTL", returns = '*2s')
+    def humanReadableTTL(self, c):
         """
         Returns a readable form of the programmed sequence for debugging
         """
         sequence = c.get('sequence')
         if not sequence: raise Exception ("Please create new sequence first")
-        ans = sequence.humanRepresentation()
-        return ans.tolist()
+        ttl,dds = sequence.humanRepresentation()
+        return ttl.tolist()
     
-    @setting(11, 'Get Channels', returns = '*(sw)')
+    @setting(11, "Human Readable DDS", returns = '*(svv)')
+    def humanReadableDDS(self, c):
+        """
+        Returns a readable form of the programmed sequence for debugging
+        """
+        sequence = c.get('sequence')
+        if not sequence: raise Exception ("Please create new sequence first")
+        ttl,dds = sequence.humanRepresentation()
+        return dds
+    
+    @setting(12, 'Get Channels', returns = '*(sw)')
     def getChannels(self, c):
         """
         Returns all available channels, and the corresponding hardware numbers
@@ -217,7 +227,7 @@ class Pulser(LabradServer, DDS):
         numbers = [d[key].channelnumber for key in keys]
         return zip(keys,numbers)
     
-    @setting(12, 'Switch Manual', channelName = 's', state= 'b')
+    @setting(13, 'Switch Manual', channelName = 's', state= 'b')
     def switchManual(self, c, channelName, state = None):
         """
         Switches the given channel into the manual mode, by default will go into the last remembered state but can also
@@ -239,7 +249,7 @@ class Pulser(LabradServer, DDS):
         else:
             self.notifyOtherListeners(c,(channelName,'ManualOff'), self.onSwitch)
     
-    @setting(13, 'Switch Auto', channelName = 's', invert= 'b')
+    @setting(14, 'Switch Auto', channelName = 's', invert= 'b')
     def switchAuto(self, c, channelName, invert = None):
         """
         Switches the given channel into the automatic mode, with an optional inversion.
@@ -257,7 +267,7 @@ class Pulser(LabradServer, DDS):
         self.inCommunication.release()
         self.notifyOtherListeners(c,(channelName,'Auto'), self.onSwitch)
 
-    @setting(14, 'Get State', channelName = 's', returns = '(bbbb)')
+    @setting(15, 'Get State', channelName = 's', returns = '(bbbb)')
     def getState(self, c, channelName):
         """
         Returns the current state of the switch: in the form (Manual/Auto, ManualOn/Off, ManualInversionOn/Off, AutoInversionOn/Off)
@@ -267,7 +277,7 @@ class Pulser(LabradServer, DDS):
         answer = (channel.ismanual,channel.manualstate,channel.manualinv,channel.autoinv)
         return answer
     
-    @setting(15, 'Wait Sequence Done', timeout = 'v', returns = 'b')
+    @setting(16, 'Wait Sequence Done', timeout = 'v', returns = 'b')
     def waitSequenceDone(self, c, timeout = None):
         """
         Returns true if the sequence has completed within a timeout period
@@ -282,7 +292,7 @@ class Pulser(LabradServer, DDS):
             yield self.wait(0.050)
         returnValue(False)
     
-    @setting(16, 'Repeatitions Completed', returns = 'w')
+    @setting(17, 'Repeatitions Completed', returns = 'w')
     def repeatitionsCompleted(self, c):
         """Check how many repeatitions have been completed in for the infinite or number modes"""
         yield self.inCommunication.acquire()

@@ -129,13 +129,11 @@ class Sequence():
         dds,ttl = self.progRepresentation(parse = False)
         ttl = self.ttlHumanRepresentation(ttl)
         dds = self.ddsHumanRepresentation(dds)
-        print dds
-        return ttl#, dds
+        return ttl, dds
     
     def ddsHumanRepresentation(self, dds):
-        dic = {}
+        program = []
         for name,buf in dds.iteritems():
-            program = []
             arr = array.array('B', buf)
             arr = arr[:-2] #remove termination
             channel = hardwareConfiguration.ddsDict[name]
@@ -154,16 +152,15 @@ class Sequence():
                     print freq_min, freq_num, freq_max
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**4 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
-                    program.append((freq,ampl)) 
+                    program.append((name, freq,ampl)) 
             else:
                 for a,b,c,d,e,f,g,h in chunks(arr, 8):
                     freq_num = 256**2*(256*h + g) + (256*f + e)
                     ampl_num = 256*d + c
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
-                    program.append((freq,ampl)) 
-            dic[name] = program
-        return dic
+                    program.append((name, freq,ampl)) 
+        return program
     
     def ttlHumanRepresentation(self, rep):
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
