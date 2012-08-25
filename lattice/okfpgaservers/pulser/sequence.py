@@ -63,10 +63,11 @@ class Sequence():
             self.switches += 1
             self.switchingTimes[timeStep][chan] = value
     
-    def progRepresentation(self):
-        ddsSettings = self.parseDDS()
-        ttlProgram = self.parseTTL()
-        return ddsSettings, ttlProgram
+    def progRepresentation(self, parse = True):
+        if parse:
+            self.ddsSettings = self.parseDDS()
+            self.ttlProgram = self.parseTTL()
+        return self.ddsSettings, self.ttlProgram
     
     def userAddedDDS(self):
         return bool(len(self.ddsSettings.keys()))
@@ -124,7 +125,7 @@ class Sequence():
     
     def humanRepresentation(self):
         """Returns the human readable version of the sequence for FPGA for debugging"""
-        dds,rep = self.progRepresentation()
+        dds,rep = self.progRepresentation(parse = False)
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)

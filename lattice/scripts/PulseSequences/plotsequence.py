@@ -65,13 +65,12 @@ if __name__ == '__main__':
     import time
     cxn = labrad.connect()
     from spectrum_rabi import sample_parameters, spectrum_rabi
+    pulser = cxn.pulser
     params = sample_parameters.parameters
-    tinit = time.time()
+    print params
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
-    print 'to program', time.time() - tinit
-    cxn.pulser.start_number(1)
-    cxn.pulser.wait_sequence_done()
-    cxn.pulser.stop_sequence()
-    readout = cxn.pulser.get_readout_counts().asarray
-    print readout
+    hr = pulser.human_readable().asarray
+    channels = pulser.get_channels().asarray
+    sp = SequencePlotter(hr, channels)
+    sp.makePlot()
