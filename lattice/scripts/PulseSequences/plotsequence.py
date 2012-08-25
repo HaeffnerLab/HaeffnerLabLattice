@@ -60,38 +60,18 @@ class SequencePlotter():
         pyplot.xlabel('Time (sec)')
         pyplot.show()
 
-
 if __name__ == '__main__':
     import labrad
-    from latentHeat import LatentHeatGlobalHeat as sequence
+    import time
     cxn = labrad.connect()
-    pulser = cxn.pulser
-    seq = sequence(pulser)
-    pulser.new_sequence()
-    params = {
-              'initial_cooling': 1000e-3,
-              'heat_delay':1000e-3,
-              'axial_heat':1000e-3,
-              'readout_delay':1000e-3,
-              'readout_time':1000e-3,
-              'xtal_record':1000e-3,
-              'cooling_ampl_866':-11.0,
-              'heating_ampl_866':-11.0,
-              'readout_ampl_866':-11.0,
-              'xtal_ampl_866':-11.0,
-              'cooling_freq_397':103.0,
-              'cooling_ampl_397':-13.0,
-              'readout_freq_397':115.0,
-              'readout_ampl_397':-13.0,
-              'xtal_freq_397':103.0,
-              'xtal_ampl_397':-11.0,
-              'heating_freq_397':130.0,
-              'heating_ampl_397':-11.0,
-              }
-    seq.setVariables(**params)
-    seq.defineSequence()
-    #pulser.program_sequence() 
-    hr = pulser.human_readable().asarray
-    channels = pulser.get_channels().asarray
-    sp = SequencePlotter(hr, channels)
-    sp.makePlot()
+    from spectrum_rabi import sample_parameters, spectrum_rabi
+    params = sample_parameters.parameters
+    tinit = time.time()
+    cs = spectrum_rabi(**params)
+    cs.programSequence(cxn.pulser)
+    print 'to program', time.time() - tinit
+    cxn.pulser.start_number(1)
+    cxn.pulser.wait_sequence_done()
+    cxn.pulser.stop_sequence()
+    readout = cxn.pulser.get_readout_counts().asarray
+    print readout
