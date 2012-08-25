@@ -218,7 +218,7 @@ class DDS(LabradServer):
     
     def _channel_to_num(self, channel):
         '''returns the current state of the channel in the num represenation'''
-        if channel.output:
+        if channel.state:
             #if on, use current values. else, use off values
             freq,ampl = (channel.frequency, channel.amplitude)
             self._checkRange('amplitude', channel, ampl)

@@ -19,7 +19,7 @@ class ddsConfiguration(object):
         self.allowedamplrange = allowedamplrange
         self.frequency = frequency
         self.amplitude = amplitude
-        self.output = True
+        self.state = False
         self.boardfreqrange = args.get('boardfreqrange', (0.0, 800.0))
         self.boardamplrange = args.get('boardamplrange', (-63.0, -3.0))
         self.boardphaserange = args.get('boardphaserange', (0.0, 360.0))
