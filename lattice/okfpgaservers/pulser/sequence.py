@@ -147,8 +147,8 @@ class Sequence():
                     yield l[i:i+n]
             if not remote:
                 for a,b,c,d in chunks(arr, 4):
-                    freq_num = (256*a + b)
-                    ampl_num = (256 *c + d)
+                    freq_num = (256*b + a)
+                    ampl_num = (256*d + c)
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**4 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
                     program.append((freq,ampl)) 
