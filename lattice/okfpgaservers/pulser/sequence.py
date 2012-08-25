@@ -140,7 +140,7 @@ class Sequence():
             channel = hardwareConfiguration.ddsDict[name]
             remote = channel.remote
             freq_min,freq_max = channel.boardfreqrange
-            ampl_min,ampl_max = channel.amplrange
+            ampl_min,ampl_max = channel.boardamplrange
             def chunks(l, n):
                 """ Yield successive n-sized chunks from l."""
                 for i in xrange(0, len(l), n):
