@@ -1,5 +1,5 @@
 from PyQt4 import QtGui
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -112,9 +112,17 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget.setLayout(gridLayout)
         return widget
 
-    def closeEvent(self, x):
-        self.sc.exitProcedure(1)
+    def stopReactor(self, res):
         self.reactor.stop()
+
+#    def exitScriptControl(self, res):
+#        self.sc.exitProcedure(1)
+        
+    def closeEvent(self, x):
+        dl = Deferred()
+        dl.addCallback(self.sc.exitProcedure)
+        dl.addCallback(self.stopReactor)
+        dl.callback(True)
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )

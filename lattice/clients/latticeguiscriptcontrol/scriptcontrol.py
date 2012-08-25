@@ -174,16 +174,16 @@ class ScriptControl(QtGui.QWidget):
         
     def saveParametersToRegistry(self, res):
         return self.server.save_parameters_to_registry()
-    
-    def stopReactor(self, res):
-        self.reactor.stop()
-    
+       
     def exitProcedure(self, x):
-        print 'but what about me?'
         dl = [self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext) for experiment in self.experiments.keys()]
         dl = DeferredList(dl)
         dl.addCallback(self.saveParametersToRegistry)
-        dl.addCallback(self.stopReactor)
+        return dl
+
+    def closeEvent(self, res):
+        self.reactor.stop()
+
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
