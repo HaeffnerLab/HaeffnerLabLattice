@@ -70,15 +70,16 @@ class Sequence():
         dds_program = {}.fromkeys(state, '')
         lastTime = 0
         entries = sorted(self.ddsSettingList, key = lambda t: t[1] ) #sort by starting time
-        print entries
+        possibleError = (0,'')
         while True:
             try:
                 name,start,num,typ = entries.pop(0)
-                print name,start,num,typ
             except IndexError:
                 if start  == lastTime:
                     #still have unprogrammed entries
                     self.addToProgram(dds_program, state)
+                    self._addNewSwitch(lastTime,self.advanceDDS,1)
+                    self._addNewSwitch(lastTime + 1,self.advanceDDS,-1)
                 #add termination
                 for name in dds_program.iterkeys():
                     dds_program[name] +=  '\x00\x00'
@@ -88,15 +89,24 @@ class Sequence():
                 self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
                 return dds_program
             end_time, end_typ =  pulses_end[name]
-            print 'ending', end_typ
-            print 'mins is ', typ
-            if end_typ == typ:
-                raise Exception ("Overlapping DDS Pulses Found for channel {}".format(name))
+            if start == end_time:
+                #overwite only when extending pulse
+                if end_typ == 'stop' and typ == 'start':
+                    possibleError = (0,'')
+                    state[name] = num
+                    pulses_end[name] = (start, typ)
+                elif end_typ == 'start' and typ == 'stop':
+                    possibleError = (0,'')
+            elif end_typ == typ:
+                possibleError = (start,'Found Overlap Of Two Pules for channel {}'.format(name))
+                state[name] = num
+                pulses_end[name] = (start, typ)
             else:
                 state[name] = num
                 pulses_end[name] = (start, typ)
             if start > lastTime:
                 #the time has advanced, so need to program the previous state
+                if possibleError[0] == lastTime and len(possibleError[1]): raise Exception(possibleError[1]) #if error exists and belongs to that time
                 self.addToProgram(dds_program, state)
                 if not lastTime == 0:
                     self._addNewSwitch(lastTime,self.advanceDDS,1)
