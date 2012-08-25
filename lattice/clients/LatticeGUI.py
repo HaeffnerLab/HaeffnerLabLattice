@@ -1,5 +1,5 @@
 from PyQt4 import QtGui
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -13,27 +13,27 @@ class LATTICE_GUI(QtGui.QMainWindow):
         centralWidget = QtGui.QWidget()
         grid = QtGui.QGridLayout()
         scriptControl = self.makeScriptControl(reactor)
-        tabWidget = QtGui.QTabWidget()
-        tabWidget.addTab(voltageControlTab,'&Trap Voltages')
-        tabWidget.addTab(lightControlTab,'&LaserRoom')
-        tabWidget.addTab(tableOpticsWidget,'&Optics')
-        tabWidget.addTab(translationStageWidget,'&Translation Stages')
-        tabWidget.addTab(control729Widget,'&Control 729')
-        self.createGrapherTab(tabWidget)
+        self.tabWidget = QtGui.QTabWidget()
+        self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
+        self.tabWidget.addTab(lightControlTab,'&LaserRoom')
+        self.tabWidget.addTab(tableOpticsWidget,'&Optics')
+        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
+        self.tabWidget.addTab(control729Widget,'&Control 729')
+        self.createGrapherTab()
         grid.addWidget(scriptControl, 0, 0, 1, 1)
-        grid.addWidget(tabWidget, 1, 0, 1, 3)
+        grid.addWidget(self.tabWidget, 0, 1, 1, 3)
         centralWidget.setLayout(grid)
         self.setCentralWidget(centralWidget)
     
     def makeScriptControl(self, reactor):
-        from scriptcontrol.scriptcontrol import ScriptControl
-        sc = ScriptControl(reactor)
-        return sc
+        from latticeguiscriptcontrol.scriptcontrol import ScriptControl
+        self.sc = ScriptControl(reactor, self)
+        return self.sc
     
     @inlineCallbacks
-    def createGrapherTab(self, tabWidget):
+    def createGrapherTab(self):
         grapher = yield self.makeGrapherWidget(reactor)
-        tabWidget.addTab(grapher, '&Grapher')
+        self.tabWidget.addTab(grapher, '&Grapher')
     
     @inlineCallbacks
     def makeGrapherWidget(self, reactor):
@@ -48,6 +48,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
             widget.setLayout(vboxlayout)
         yield Connections.communicate.connectionReady.connect(widgetReady)
         returnValue(widget)
+
+    def createExperimentParametersTab(self, expContext, globalContext):
+        from latticeguiscriptcontrol.parameterswidget import ParametersWidget
+        self.experimentParametersWidget = ParametersWidget(self, expContext, globalContext)
+        self.tabWidget.addTab(self.experimentParametersWidget, '&Experiment Parameters')
     
     def makecontrol729Widget(self, reactor):
         from control_729.control_729 import control_729
@@ -107,8 +112,17 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget.setLayout(gridLayout)
         return widget
 
-    def closeEvent(self, x):
+    def stopReactor(self, res):
         self.reactor.stop()
+
+#    def exitScriptControl(self, res):
+#        self.sc.exitProcedure(1)
+        
+    def closeEvent(self, x):
+        dl = Deferred()
+        dl.addCallback(self.sc.exitProcedure)
+        dl.addCallback(self.stopReactor)
+        dl.callback(True)
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
