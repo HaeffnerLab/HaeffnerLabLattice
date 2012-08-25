@@ -6,8 +6,9 @@ import numpy as np
 
 class SequencePlotter():
     """Can be used to plot the human readable form of a pulse sequence"""
-    def __init__(self, sequence, channels):
+    def __init__(self, sequence, dds, channels):
         self.seq = sequence
+        self.dds = dds
         self.channels = channels
         self.plot = pyplot.figure()
     
@@ -68,7 +69,8 @@ if __name__ == '__main__':
     params = sample_parameters.parameters
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
-    hr = pulser.human_readable().asarray
+    ttl = pulser.human_readable_ttl().asarray
+    dds = pulser.human_readable_dds()
     channels = pulser.get_channels().asarray
-    sp = SequencePlotter(hr, channels)
+    sp = SequencePlotter(ttl, dds, channels)
     sp.makePlot()
