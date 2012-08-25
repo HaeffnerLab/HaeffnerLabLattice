@@ -1,4 +1,5 @@
 import numpy
+import array
 from hardwareConfiguration import hardwareConfiguration
 
 class Sequence():
@@ -108,7 +109,7 @@ class Sequence():
         for name in dds_program.iterkeys():
             dds_program[name] +=  '\x00\x00'
         return dds_program
-        
+    
     def parseTTL(self):
         """Returns the representation of the sequence for programming the FPGA"""
         rep = ''
@@ -128,11 +129,39 @@ class Sequence():
         dds,ttl = self.progRepresentation(parse = False)
         ttl = self.ttlHumanRepresentation(ttl)
         dds = self.ddsHumanRepresentation(dds)
-        return ttl, dds
+        return ttl#, dds
     
     def ddsHumanRepresentation(self, dds):
+        d = {}
+        for name,buf in dds.iteritems():
+            program = []
+            arr = array.array('B', buf)
+            arr = arr[:-2] #remove termination
+            channel = hardwareConfiguration.ddsDict[name]
+            remote = channel.remote
+            freq_min,freq_max = channel.boardfreqrange
+            ampl_min,ampl_max = channel.amplrange
+            def chunks(l, n):
+                """ Yield successive n-sized chunks from l."""
+                for i in xrange(0, len(l), n):
+                    yield l[i:i+n]
+            if not remote:
+                for a,b,c,d in chunks(arr, 4):
+                    freq_num = (256*a + b)
+                    ampl_num = (256 *c + d)
+                    freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**4 - 1)
+                    ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
+                    program.append((freq,ampl)) 
+            else:
+                for a,b,c,d,e,f,g,h in chunks(arr, 8):
+                    freq_num = 256**2*(256*a + b) + (256*c + d)
+                    ampl_num = 256*e + f
+                    freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
+                    ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
+                    program.append((freq,ampl)) 
+            d[name] = program
         print dds
-        return 
+        return dds
     
     def ttlHumanRepresentation(self, rep):
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
