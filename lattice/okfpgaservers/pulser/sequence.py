@@ -125,7 +125,16 @@ class Sequence():
     
     def humanRepresentation(self):
         """Returns the human readable version of the sequence for FPGA for debugging"""
-        dds,rep = self.progRepresentation(parse = False)
+        dds,ttl = self.progRepresentation(parse = False)
+        ttl = self.ttlHumanRepresentation(ttl)
+        dds = self.ddsHumanRepresentation(dds)
+        return ttl, dds
+    
+    def ddsHumanRepresentation(self, dds):
+        print dds
+        return 
+    
+    def ttlHumanRepresentation(self, rep):
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)

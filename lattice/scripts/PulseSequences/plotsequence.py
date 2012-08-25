@@ -29,7 +29,7 @@ class SequencePlotter():
         return times,switches
     
     def getCoords(self, times, switches):
-        '''takes the switching times and converts it a list of coordiantes for plotting'''
+        '''takes the switching times and converts it to a list of coordiantes for plotting'''
         x = [times[0]]
         y = [switches[0]]   
         prev = switches[0]
@@ -55,19 +55,17 @@ class SequencePlotter():
                 y = 3 * y + offset #offset the y coordinates
                 offset = offset + 4
                 label = nameDict[str(number)]
-                pyplot.plot(x, y, label = label)
+                pyplot.plot(x, y, label = 'TTL ' + label)
         pyplot.legend()
         pyplot.xlabel('Time (sec)')
         pyplot.show()
 
 if __name__ == '__main__':
     import labrad
-    import time
     cxn = labrad.connect()
     from spectrum_rabi import sample_parameters, spectrum_rabi
     pulser = cxn.pulser
     params = sample_parameters.parameters
-    print params
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
     hr = pulser.human_readable().asarray
