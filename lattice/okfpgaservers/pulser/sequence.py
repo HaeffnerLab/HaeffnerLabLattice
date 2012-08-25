@@ -129,6 +129,7 @@ class Sequence():
         dds,ttl = self.progRepresentation(parse = False)
         ttl = self.ttlHumanRepresentation(ttl)
         dds = self.ddsHumanRepresentation(dds)
+        print dds
         return ttl#, dds
     
     def ddsHumanRepresentation(self, dds):
@@ -156,13 +157,12 @@ class Sequence():
                     program.append((freq,ampl)) 
             else:
                 for a,b,c,d,e,f,g,h in chunks(arr, 8):
-                    freq_num = 256**2*(256*a + b) + (256*c + d)
-                    ampl_num = 256*e + f
+                    freq_num = 256**2*(256*d + c) + (256*b + a)
+                    ampl_num = 256*f + e
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
                     program.append((freq,ampl)) 
             dic[name] = program
-        print dic
         return dic
     
     def ttlHumanRepresentation(self, rep):
