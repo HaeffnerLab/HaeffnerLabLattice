@@ -132,7 +132,7 @@ class Sequence():
         return ttl#, dds
     
     def ddsHumanRepresentation(self, dds):
-        d = {}
+        dic = {}
         for name,buf in dds.iteritems():
             program = []
             arr = array.array('B', buf)
@@ -159,9 +159,9 @@ class Sequence():
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
                     program.append((freq,ampl)) 
-            d[name] = program
-        print dds
-        return dds
+            dic[name] = program
+        print dic
+        return dic
     
     def ttlHumanRepresentation(self, rep):
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
