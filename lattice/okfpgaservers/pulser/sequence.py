@@ -91,6 +91,14 @@ class Sequence():
                 self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
                 return dds_program
             end_time, end_typ =  pulses_end[name]
+            if start > lastTime:
+                #the time has advanced, so need to program the previous state
+                if possibleError[0] == lastTime and len(possibleError[1]): raise Exception(possibleError[1]) #if error exists and belongs to that time
+                self.addToProgram(dds_program, state)
+                if not lastTime == 0:
+                    self._addNewSwitch(lastTime,self.advanceDDS,1)
+                    self._addNewSwitch(lastTime + 1,self.advanceDDS,-1)
+                lastTime = start
             if start == end_time:
                 #overwite only when extending pulse
                 if end_typ == 'stop' and typ == 'start':
@@ -106,14 +114,6 @@ class Sequence():
             else:
                 state[name] = num
                 pulses_end[name] = (start, typ)
-            if start > lastTime:
-                #the time has advanced, so need to program the previous state
-                if possibleError[0] == lastTime and len(possibleError[1]): raise Exception(possibleError[1]) #if error exists and belongs to that time
-                self.addToProgram(dds_program, state)
-                if not lastTime == 0:
-                    self._addNewSwitch(lastTime,self.advanceDDS,1)
-                    self._addNewSwitch(lastTime + 1,self.advanceDDS,-1)
-                lastTime = start
 
     def addToProgram(self, prog, state):
         for name,num in state.iteritems():

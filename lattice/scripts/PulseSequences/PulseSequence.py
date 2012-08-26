@@ -46,10 +46,8 @@ class PulseSequence(object):
 	def programSequence(self, pulser):
 		pulser.new_sequence()
 		pulser.add_ttl_pulses(self.ttl_pulses)
-		for channel, pulses in self.dds_pulses:
-			pulser.add_dds_pulses(channel, pulses)
+		pulser.add_dds_pulses(self.dds_pulses)
 		pulser.program_sequence()
-
 		
 class Bunch:
 	def __init__(self, **kwds):
