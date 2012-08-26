@@ -38,6 +38,7 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
+        print 'second' sec, int( sec / self.timeResolution) 
         return int( sec / self.timeResolution) 
     
     def numToHex(self, number):
