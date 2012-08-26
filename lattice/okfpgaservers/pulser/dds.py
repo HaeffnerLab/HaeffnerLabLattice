@@ -39,10 +39,10 @@ class DDS(LabradServer):
         channel = self.ddsDict[name]
         if amplitude is not None:
             #set the amplitude
-            amplitude = amplitude.inUnitsOf('dBm').value
+            amplitude = amplitude.inUnitsOf('dBm')
+            amplitude = float( amplitude )
             self._checkRange('amplitude', channel, amplitude)
-            if channel.state: #if on, update parameters
-                yield self._setAmplitude(channel, amplitude)
+            yield self._setAmplitude(channel, amplitude)
             channel.amplitude = amplitude
         amplitude = channel.amplitude
         returnValue(amplitude)
@@ -58,12 +58,12 @@ class DDS(LabradServer):
         if name is None: raise Exception ("Channel not provided and not selected")
         channel = self.ddsDict[name]
         if frequency is not None:
-            #set the frequency
-            frequency = frequency.inUnitsOf('MHz').value
+            #set the amplitude
+            frequency = frequency.inUnitsOf('MHz')
+            frequency = float( frequency )
             self._checkRange('frequency', channel, frequency)
-            if channel.state: #if on, update parameters
-                yield self._setFrequency(channel, frequency)
-            channel.frequency = frequency
+            yield self._setFrequency(channel, frequency)
+            channel.frequency = float(frequency)
         frequency = channel.frequency
         returnValue(frequency)
     

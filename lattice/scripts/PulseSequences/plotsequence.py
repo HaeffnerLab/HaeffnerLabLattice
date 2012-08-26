@@ -3,13 +3,14 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 import numpy as np
 
-
 class SequencePlotter():
     """Can be used to plot the human readable form of a pulse sequence"""
-    def __init__(self, sequence, channels):
+    def __init__(self, sequence, dds, channels):
         self.seq = sequence
+        self.dds = dds
         self.channels = channels
         self.plot = pyplot.figure()
+        self.offset = 0 #control the y coordinate where the lines are drawn
     
     def makeNameDict(self):
         #swapping names of channels first
@@ -29,7 +30,7 @@ class SequencePlotter():
         return times,switches
     
     def getCoords(self, times, switches):
-        '''takes the switching times and converts it a list of coordiantes for plotting'''
+        '''takes the switching times and converts it to a list of coordiantes for plotting'''
         x = [times[0]]
         y = [switches[0]]   
         prev = switches[0]
@@ -46,52 +47,91 @@ class SequencePlotter():
         return np.array(x),np.array(y)
                  
     def makePlot(self):
-        times,switches = self.extractInfo()
-        nameDict = self.makeNameDict()
-        offset = 0
-        for number,channel in enumerate(switches):
-            if channel.any(): #ignore empty channels
-                x,y = self.getCoords(times, channel)
-                y = 3 * y + offset #offset the y coordinates
-                offset = offset + 4
-                label = nameDict[str(number)]
-                pyplot.plot(x, y, label = label)
+        advance,reset = self.drawTTL()
+        self.drawDDS(advance,reset)
         pyplot.legend()
         pyplot.xlabel('Time (sec)')
         pyplot.show()
-
+        
+    def drawTTL(self):
+        advanceDDS = []
+        resetDDS = []
+        times,switches = self.extractInfo()
+        nameDict = self.makeNameDict()
+        for number,channel in enumerate(switches):
+            if channel.any(): #ignore empty channels
+                x,y = self.getCoords(times, channel)
+                y = 3 * y + self.offset #offset the y coordinates
+                self.offset += 4
+                label = nameDict[str(number)]
+                if label == 'AdvanceDDS':
+                    advanceDDS = x,y
+                if label == 'ResetDDS':
+                    resetDDS = x,y
+                pyplot.plot(x, y, label = 'TTL ' + label)
+        return advanceDDS,resetDDS
+    
+    def drawDDS(self, advance, reset):
+        advance =  list(self.getRisingEdges(*advance))
+        stop = self.getRisingEdges(*reset)
+        advance.extend(stop)
+        try:
+            lastChannel = self.dds[0][0]
+        except IndexError:
+            return
+        freqs = []
+        ampls = []
+        while True:
+            try:
+                channel, freq, ampl = self.dds.pop(0)
+            except IndexError:
+                self.addDDSPlot(lastChannel, freqs, ampls, advance)
+                break
+            if channel == lastChannel:
+                freqs.append(freq)
+                ampls.append(ampl)
+            else:
+                self.addDDSPlot(lastChannel, freqs, ampls, advance)
+                lastChannel = channel
+                freqs = [freq]
+                ampls = [ampl]
+        self.drawVerticals(advance)
+    
+    def getRisingEdges(self, x, y):
+        '''looks at rising edges of y and returns the corresponding values of x'''
+        rising = np.ediff1d(y, to_begin = 0) > 0
+        return x[rising]
+    
+    def addDDSPlot(self, channel, freqs, ampls, advance):
+        #each x coordiante appears twice except for the first one and last one
+        x, y = self.getDDSCoordinates(advance, ampls)
+        y = (np.array(y)  + 63.0) / 20.0 + self.offset #normalizes the amplitude -63 to -3 to height between 0 and 3
+        self.offset += 4
+        pyplot.plot(x, y, label = 'DDS ' + channel )
+    
+    def getDDSCoordinates(self, advance, ampls):
+        x = [0]
+        y = []
+        for pt_x,pt_y in zip(advance,ampls):
+            x.extend([pt_x,pt_x])
+            y.extend([pt_y,pt_y])
+        x = x[:-1]
+        return x,y
+    
+    def drawVerticals(self, advances):
+        for x in advances:
+            pyplot.axvline(x, alpha = '0.3', color = '0.25', linestyle = '--')
 
 if __name__ == '__main__':
     import labrad
-    from latentHeat import LatentHeatGlobalHeat as sequence
     cxn = labrad.connect()
+    from spectrum_rabi import sample_parameters, spectrum_rabi
     pulser = cxn.pulser
-    seq = sequence(pulser)
-    pulser.new_sequence()
-    params = {
-              'initial_cooling': 1000e-3,
-              'heat_delay':1000e-3,
-              'axial_heat':1000e-3,
-              'readout_delay':1000e-3,
-              'readout_time':1000e-3,
-              'xtal_record':1000e-3,
-              'cooling_ampl_866':-11.0,
-              'heating_ampl_866':-11.0,
-              'readout_ampl_866':-11.0,
-              'xtal_ampl_866':-11.0,
-              'cooling_freq_397':103.0,
-              'cooling_ampl_397':-13.0,
-              'readout_freq_397':115.0,
-              'readout_ampl_397':-13.0,
-              'xtal_freq_397':103.0,
-              'xtal_ampl_397':-11.0,
-              'heating_freq_397':130.0,
-              'heating_ampl_397':-11.0,
-              }
-    seq.setVariables(**params)
-    seq.defineSequence()
-    #pulser.program_sequence() 
-    hr = pulser.human_readable().asarray
+    params = sample_parameters.parameters
+    cs = spectrum_rabi(**params)
+    cs.programSequence(cxn.pulser)
+    ttl = pulser.human_readable_ttl().asarray
+    dds = pulser.human_readable_dds()
     channels = pulser.get_channels().asarray
-    sp = SequencePlotter(hr, channels)
+    sp = SequencePlotter(ttl, dds, channels)
     sp.makePlot()

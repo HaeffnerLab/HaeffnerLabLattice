@@ -1,4 +1,5 @@
 import numpy
+import array
 from hardwareConfiguration import hardwareConfiguration
 
 class Sequence():
@@ -55,11 +56,12 @@ class Sequence():
             self.switches += 1
             self.switchingTimes[timeStep][chan] = value
     
-    def progRepresentation(self):
-        ddsSettings = self.parseDDS()
-        ttlProgram = self.parseTTL()
-        return ddsSettings, ttlProgram
-        
+    def progRepresentation(self, parse = True):
+        if parse:
+            self.ddsSettings = self.parseDDS()
+            self.ttlProgram = self.parseTTL()
+        return self.ddsSettings, self.ttlProgram
+    
     def userAddedDDS(self):
         return bool(len(self.ddsSettingList))
     
@@ -137,7 +139,43 @@ class Sequence():
     
     def humanRepresentation(self):
         """Returns the human readable version of the sequence for FPGA for debugging"""
-        dds,rep = self.progRepresentation()
+        dds,ttl = self.progRepresentation(parse = False)
+        ttl = self.ttlHumanRepresentation(ttl)
+        dds = self.ddsHumanRepresentation(dds)
+        return ttl, dds
+    
+    def ddsHumanRepresentation(self, dds):
+        program = []
+        for name,buf in dds.iteritems():
+            arr = array.array('B', buf)
+            arr = arr[:-2] #remove termination
+            channel = hardwareConfiguration.ddsDict[name]
+            remote = channel.remote
+            freq_min,freq_max = channel.boardfreqrange
+            ampl_min,ampl_max = channel.boardamplrange
+            def chunks(l, n):
+                """ Yield successive n-sized chunks from l."""
+                for i in xrange(0, len(l), n):
+                    yield l[i:i+n]
+            if not remote:
+                for a,b,c,d in chunks(arr, 4):
+                    freq_num = (256*b + a)
+                    ampl_num = (256*d + c)
+                    print name
+                    print freq_min, freq_num, freq_max
+                    freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**4 - 1)
+                    ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
+                    program.append((name, freq,ampl)) 
+            else:
+                for a,b,c,d,e,f,g,h in chunks(arr, 8):
+                    freq_num = 256**2*(256*h + g) + (256*f + e)
+                    ampl_num = 256*d + c
+                    freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
+                    ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
+                    program.append((name, freq,ampl)) 
+        return program
+    
+    def ttlHumanRepresentation(self, rep):
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)
