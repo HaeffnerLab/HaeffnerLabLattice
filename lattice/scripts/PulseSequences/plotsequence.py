@@ -107,7 +107,11 @@ class SequencePlotter():
         x, y = self.getDDSCoordinates(advance, ampls)
         y = (np.array(y)  + 63.0) / 20.0 + self.offset #normalizes the amplitude -63 to -3 to height between 0 and 3
         self.offset += 4
-        pyplot.plot(x, y, label = 'DDS ' + channel )
+        pyplot.plot(x, y, label = 'DDS Ampl' + channel )
+#        x, y = self.getDDSCoordinates(advance, freqs)
+#        y = np.array(y) / 220.0 + self.offset #normalizes the amplitude 0 to 220 to height between 0 and 3
+#        self.offset += 4
+#        pyplot.plot(x, y, label = 'DDS Freq' + channel )
     
     def getDDSCoordinates(self, advance, ampls):
         x = [0]
@@ -120,18 +124,18 @@ class SequencePlotter():
     
     def drawVerticals(self, advances):
         for x in advances:
-            pyplot.axvline(x, alpha = '0.3', color = '0.25', linestyle = '--')
+            pyplot.axvline(x, alpha = '0.3', color = '0.35', linestyle = '--')
 
 if __name__ == '__main__':
     import labrad
-    cxn = labrad.connect()
     from spectrum_rabi import sample_parameters, spectrum_rabi
-    pulser = cxn.pulser
-    params = sample_parameters.parameters
-    cs = spectrum_rabi(**params)
-    cs.programSequence(cxn.pulser)
-    ttl = pulser.human_readable_ttl().asarray
-    dds = pulser.human_readable_dds()
-    channels = pulser.get_channels().asarray
-    sp = SequencePlotter(ttl, dds, channels)
-    sp.makePlot()
+    with labrad.connect() as cxn:
+        pulser = cxn.pulser
+        params = sample_parameters.parameters
+        cs = spectrum_rabi(**params)
+        cs.programSequence(cxn.pulser)
+        ttl = pulser.human_readable_ttl().asarray
+        dds = pulser.human_readable_dds()
+        channels = pulser.get_channels().asarray
+        sp = SequencePlotter(ttl, dds, channels)
+        sp.makePlot()
