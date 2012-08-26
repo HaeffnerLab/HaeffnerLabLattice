@@ -13,4 +13,6 @@ class rabi_excitation(PulseSequence):
     
     def sequence(self):
         self.end = self.start + self.p.rabi_excitation_duration
-        self.dds_pulses.append(('729DP', self.start, self.p.rabi_excitation_duration, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
+        from labrad import types as T
+        self.p.rabi_excitation_duration = T.Value(100,'s')
+        #self.dds_pulses.append(('729DP', self.start, self.p.rabi_excitation_duration, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))

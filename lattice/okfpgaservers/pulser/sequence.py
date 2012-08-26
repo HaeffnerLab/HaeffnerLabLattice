@@ -76,6 +76,7 @@ class Sequence():
         while True:
             try:
                 name,start,num,typ = entries.pop(0)
+                print name,start,num,typ
             except IndexError:
                 if start  == lastTime:
                     #still have unprogrammed entries

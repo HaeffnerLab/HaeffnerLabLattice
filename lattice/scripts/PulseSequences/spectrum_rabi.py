@@ -21,7 +21,7 @@ class spectrum_rabi(PulseSequence):
         if self.p.optical_pumping_enable:
             self.addSequence(optical_pumping_continuous)
         print self.end
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
+#        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
         print self.end
         self.addSequence(rabi_excitation)
         print self.end
