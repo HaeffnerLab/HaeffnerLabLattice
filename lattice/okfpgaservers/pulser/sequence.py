@@ -39,13 +39,9 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
-        print 'second', int( sec / self.timeResolution) 
-        s = decimal.Decimal(sec)
-        print 'second', s
-        r = decimal.Decimal( self.timeResolution);
-        print 'resolution', r
-        print 'result', s / r
-        return int( sec / self.timeResolution) 
+        if not (sec / self.timeResolution) % 1 == 0.0: 
+            raise Exception ("Time Specified To Better Precision that time resolution {}".format(self.timeResolution))
+        return int( round ( sec / self.timeResolution)) 
     
     def numToHex(self, number):
         '''converts the number to the hex representation for a total of 32 bits
