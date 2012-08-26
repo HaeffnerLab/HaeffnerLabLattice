@@ -39,14 +39,6 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
-        print sec
-        print (sec / self.timeResolution)
-        print (sec / self.timeResolution) % 1
-        rnd = (sec / self.timeResolution) % 1
-        print rnd
-        print (sec / self.timeResolution) % 1 < 1e-3
-        if not (sec / self.timeResolution) % 1 < 1e-3: #this avoids rounding issues
-            raise Exception ("Time Specified To Better Precision that time resolution {}".format(self.timeResolution))
         return int( round ( sec / self.timeResolution)) 
     
     def numToHex(self, number):
