@@ -80,11 +80,9 @@ class Sequence():
         while True:
             try:
                 name,start,num,typ = entries.pop(0)
-                print name,start,num,typ
             except IndexError:
                 if start  == lastTime:
                     #still have unprogrammed entries
-                    print 'finishing unprogrammed entries', lastTime
                     self.addToProgram(dds_program, state)
                     self._addNewSwitch(lastTime,self.advanceDDS,1)
                     self._addNewSwitch(lastTime + 1,self.advanceDDS,-1)
@@ -95,7 +93,6 @@ class Sequence():
                 lastTTL = max(self.switchingTimes.keys())
                 self._addNewSwitch(lastTTL ,self.resetDDS, 1 )
                 self._addNewSwitch(lastTTL + 1 ,self.resetDDS,-1)
-                print 'exiting'
                 return dds_program
             end_time, end_typ =  pulses_end[name]
             if start > lastTime:
@@ -103,7 +100,6 @@ class Sequence():
                 if possibleError[0] == lastTime and len(possibleError[1]): raise Exception(possibleError[1]) #if error exists and belongs to that time
                 self.addToProgram(dds_program, state)
                 if not lastTime == 0:
-                    print 'programming entries', lastTime
                     self._addNewSwitch(lastTime,self.advanceDDS,1)
                     self._addNewSwitch(lastTime + 1,self.advanceDDS,-1)
                 lastTime = start
