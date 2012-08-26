@@ -1,5 +1,6 @@
 import numpy
 import array
+import decimal
 from hardwareConfiguration import hardwareConfiguration
 
 class Sequence():
@@ -39,6 +40,9 @@ class Sequence():
     def secToStep(self, sec):
         '''converts seconds to time steps'''
         print 'second', sec, int( sec / self.timeResolution) 
+        print 'second'; s = decimal.Decimal(sec); print s
+        print 'resolution'; r = decimal.Decimal( self.timeResolution); print 'r'
+        print 'result', s / r
         return int( sec / self.timeResolution) 
     
     def numToHex(self, number):
