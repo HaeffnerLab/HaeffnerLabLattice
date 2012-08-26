@@ -39,6 +39,7 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
+        print sec
         rnd = (sec / self.timeResolution) % 1
         print rnd
         print rnd == 0.0
