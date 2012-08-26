@@ -108,6 +108,7 @@ class DDS(LabradServer):
                 raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start))
             if not self.sequenceTimeRange[0] < start + dur <= self.sequenceTimeRange[1]: 
                 raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start + dur))
+            if dur == 0: return #0 length pulses are ignored
             sequence.addDDS(name, start, num, 'start')
             sequence.addDDS(name, start + dur, num_off, 'stop')
         

@@ -16,10 +16,10 @@ class spectrum_rabi(PulseSequence):
     
     def sequence(self):
         self.addSequence(doppler_cooling_after_repump_d, position = T.Value(10, 'us'))
-#        if self.p.optical_pumping_enable:
-#            self.addSequence(optical_pumping_continuous)
-#        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
-#        self.addSequence(rabi_excitation)
+        if self.p.optical_pumping_enable:
+            self.addSequence(optical_pumping_continuous)
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
+        self.addSequence(rabi_excitation)
 #        self.addSequence(state_readout)
 
 class sample_parameters(object):

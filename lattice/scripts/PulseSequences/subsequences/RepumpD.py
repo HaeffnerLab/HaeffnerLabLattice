@@ -12,7 +12,5 @@ class repump_d(PulseSequence):
     
     def sequence(self):
         self.end = self.start + self.p.repump_d_duration
-        print self.start
-        print self.p.repump_d_duration
         pulse = ('854DP', self.start, self.p.repump_d_duration, self.p.repump_d_frequency_854, self.p.repump_d_amplitude_854)
         self.dds_pulses.append(pulse)

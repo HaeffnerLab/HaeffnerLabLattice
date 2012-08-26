@@ -1,5 +1,4 @@
 from scripts.PulseSequences.PulseSequence import PulseSequence
-from labrad import types as T
 
 class optical_pumping_continuous(PulseSequence):
     
@@ -16,18 +15,9 @@ class optical_pumping_continuous(PulseSequence):
     
     
     def sequence(self):
-        pulses729 = []
-        pulses854 = []
-        pulses866 = []
+        repump_dur = self.p.optical_pumping_continuous_duration + self.p.optical_pumping_continuous_repump_additional
+        pulses = self.dds_pulses
         self.end = self.start + self.p.optical_pumping_continuous_duration + self.p.optical_pumping_continuous_repump_additional
-        self.end729 = self.start + self.p.optical_pumping_continuous_duration
-        pulses729.append((self.start, self.p.optical_pumping_continuous_frequency_729, self.p.optical_pumping_continuous_amplitude_729))
-        pulses729.append((self.end729, T.Value(0.0, 'MHz'), T.Value(-63.0, 'dBm')))
-        pulses854.append((self.start, self.p.optical_pumping_continuous_frequency_854, self.p.optical_pumping_continuous_amplitude_854))
-        pulses854.append((self.end, self.p.optical_pumping_continuous_frequency_854, T.Value(-63.0, 'dBm')))
-        pulses866.append((self.start + T.Value(100, 'us'), self.p.optical_pumping_continuous_frequency_854, self.p.optical_pumping_continuous_amplitude_854))
-        pulses866.append((self.end, self.p.optical_pumping_continuous_frequency_854, T.Value(-63.0, 'dBm')))
-        
-        
-        for pulses in [('854DP', pulses854),('729DP', pulses729), ('866DP', pulses866)]:
-            self.dds_pulses.append(pulses)
+        pulses.append(('729DP', self.start, self.p.optical_pumping_continuous_duration, self.p.optical_pumping_continuous_frequency_729, self.p.optical_pumping_continuous_amplitude_729))
+        pulses.append(('854DP', self.start, repump_dur, self.p.optical_pumping_continuous_frequency_854, self.p.optical_pumping_continuous_amplitude_854))
+        pulses.append(('866DP', self.start, repump_dur, self.p.optical_pumping_continuous_frequency_854, self.p.optical_pumping_continuous_amplitude_854))
