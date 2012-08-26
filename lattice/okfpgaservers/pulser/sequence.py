@@ -40,8 +40,10 @@ class Sequence():
     def secToStep(self, sec):
         '''converts seconds to time steps'''
         print 'second', int( sec / self.timeResolution) 
-        print 'second'; s = decimal.Decimal(sec); print s
-        print 'resolution'; r = decimal.Decimal( self.timeResolution); print r
+        s = decimal.Decimal(sec)
+        print 'second', s
+        r = decimal.Decimal( self.timeResolution);
+        print 'resolution', r
         print 'result', s / r
         return int( sec / self.timeResolution) 
     
