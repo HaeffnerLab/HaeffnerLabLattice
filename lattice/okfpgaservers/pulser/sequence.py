@@ -39,6 +39,9 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
+        #note that there is a potential problem with how well this works when sec / self.timeResolution
+        #is close to some integer + .5. Then the rounding is not guaranteed to be consistent because of numerical nouse
+        #this can cause potential problems with overlapping pulses
         return int( round ( sec / self.timeResolution)) 
     
     def numToHex(self, number):

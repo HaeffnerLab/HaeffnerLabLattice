@@ -4,6 +4,7 @@ from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumpingContinuous import optical_pumping_continuous
 from subsequences.RabiExcitation import rabi_excitation
 from subsequences.StateReadout import state_readout
+from subsequences.TurnOffAll import turn_off_all
 from labrad import types as T
 
 class spectrum_rabi(PulseSequence):
@@ -15,20 +16,17 @@ class spectrum_rabi(PulseSequence):
         return config
     
     def sequence(self):
-        print self.end
-        self.addSequence(doppler_cooling_after_repump_d, position = T.Value(10, 'us'))
-        print self.end
+        self.end = T.Value(10, 'us')
+        self.addSequence(turn_off_all)
+        self.addSequence(doppler_cooling_after_repump_d)
         if self.p.optical_pumping_enable:
             self.addSequence(optical_pumping_continuous)
-        print self.end
-#        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
-        print self.end
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
         self.addSequence(rabi_excitation)
-        print self.end
-#        self.addSequence(state_readout)
+        self.addSequence(state_readout)
 
 class sample_parameters(object):
-    from labrad import types as T
+    
     parameters = {
               'repump_d_duration':T.Value(500, 'us'),
               'repump_d_frequency_854':T.Value(80.0, 'MHz'),
