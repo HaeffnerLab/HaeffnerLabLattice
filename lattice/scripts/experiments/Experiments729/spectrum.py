@@ -12,12 +12,12 @@ class spectrum(SemaphoreExperiment):
 
     def run(self):
         self.initialize()
-#        try:
-        self.sequence()
-#        except Exception,e:
-#            print 'Had to stop Sequence with error:', e
-#        finally:
-#            self.finalize()
+        try:
+            self.sequence()
+        except Exception,e:
+            print 'Had to stop Sequence with error:', e
+        finally:
+            self.finalize()
 
     def initialize(self):
         print 'Started: {}'.format(self.experimentPath)
