@@ -111,9 +111,9 @@ class ScriptControl(QtGui.QWidget):
 #        parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
 #        parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
 #        parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
-#        self.miscLayout.addWidget(parameterLimitsButton)
-        
-        self.mainLayout.addLayout(self.widgetLayout)
+#        self.miscLayout.addWidget(parameterLimitsButton)       
+
+        self.mainLayout.addLayout(self.widgetLayout)       
 #        self.mainLayout.addLayout(self.miscLayout)
         self.setLayout(self.mainLayout)
         self.show()

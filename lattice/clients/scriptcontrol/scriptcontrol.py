@@ -8,6 +8,7 @@ from experimentgrid import ExperimentGrid
 from globalgrid import GlobalGrid
 from parameterlimitswindow import ParameterLimitsWindow
 from status import StatusWidget
+from scheduler import Scheduler
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self, reactor, parent=None):
@@ -110,6 +111,8 @@ class ScriptControl(QtGui.QWidget):
         self.mainLayout.addLayout(self.widgetLayout)
         self.mainLayout.addLayout(self.miscLayout)
         self.setLayout(self.mainLayout)
+        self.scheduler = Scheduler(self)
+        self.scheduler.show()
         self.show()
 
     def parameterLimitsWindowEvent(self, evt):
