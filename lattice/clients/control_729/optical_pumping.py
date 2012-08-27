@@ -53,13 +53,13 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
                 tuple(c.optical_pumping_continuous_duration):Parameter(c.optical_pumping_continuous_duration, setValueBlocking(self.cont_729_dur), self.cont_729_dur.valueChanged, self.cont_729_dur.setRange, 'ms'),
                 tuple(c.optical_pumping_continuous_pump_additional):Parameter(c.optical_pumping_continuous_pump_additional, setValueBlocking(self.pump_ratio), self.pump_ratio.valueChanged, self.pump_ratio.setRange, 'ms'),
                 tuple(c.optical_pumping_frequency):Parameter(c.optical_pumping_frequency, setValueBlocking(self.freq), self.freq.valueChanged, self.freq.setRange, 'MHz'),
-                tuple(c.optical_pumping_pulsed_duration_729):Parameter(c.optical_pumping_pulsed_duration_729, setValueBlocking(self.pulse_729), self.pulse_729.valueChanged, self.pulse_729.setRange, 'us'),
-                tuple(c.optical_pumping_pulsed_duration_854):Parameter(c.optical_pumping_pulsed_duration_854, setValueBlocking(self.pulse_854), self.pulse_854.valueChanged, self.pulse_854.setRange, 'us'),
+#                tuple(c.optical_pumping_pulsed_duration_729):Parameter(c.optical_pumping_pulsed_duration_729, setValueBlocking(self.pulse_729), self.pulse_729.valueChanged, self.pulse_729.setRange, 'us'),
+#                tuple(c.optical_pumping_pulsed_duration_854):Parameter(c.optical_pumping_pulsed_duration_854, setValueBlocking(self.pulse_854), self.pulse_854.valueChanged, self.pulse_854.setRange, 'us'),
                 #integer
-                tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.pulses), self.pulses.valueChanged, self.pulses.setRange, None),
+#                tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.pulses), self.pulses.valueChanged, self.pulses.setRange, None),
                 #bool
-                tuple(c.optical_pumping_continuous):Parameter(c.optical_pumping_continuous, setValueBlocking_cb(self.cont_cb), updateSignal = self.cont_cb.toggled),
-                tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.pulsed_cb), updateSignal = self.pulsed_cb.toggled),
+                #tuple(c.optical_pumping_continuous):Parameter(c.optical_pumping_continuous, setValueBlocking_cb(self.cont_cb), updateSignal = self.cont_cb.toggled),
+#                tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.pulsed_cb), updateSignal = self.pulsed_cb.toggled),
                 tuple(c.optical_pumping_enable):Parameter(c.optical_pumping_enable, setValueBlocking_cb(self.enable), updateSignal = self.enable.toggled),
                   }
     
@@ -100,14 +100,13 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
             w.setKeyboardTracking(False)
         #make checkboxes
         self.enable = QtGui.QCheckBox()
-        self.button_group  = bg = QtGui.QButtonGroup()
-        self.cont_cb = QtGui.QRadioButton()
-        self.pulsed_cb = QtGui.QRadioButton()
+#        self.button_group  = bg = QtGui.QButtonGroup()
+#        self.cont_cb = QtGui.QRadioButton()
+#        self.pulsed_cb = QtGui.QRadioButton()
         #make them exclusive
-        bg.addButton(self.cont_cb)
-        bg.addButton(self.pulsed_cb)
-        bg.setExclusive(True)
-        self.cont_cb.setChecked(True)
+#        bg.addButton(self.cont_cb)
+#        bg.addButton(self.pulsed_cb)
+#        bg.setExclusive(True)
         #make dropdown
         self.dropdown = saved_frequencies_dropdown(self.reactor)
     
@@ -136,8 +135,8 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
         frame = QtGui.QFrame()
         frame.setFrameShape(QtGui.QFrame.Box)
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(QtGui.QLabel('Continous'))
-        hbox.addWidget(self.cont_cb)
+#        hbox.addWidget(QtGui.QLabel('Continous'))
+#        hbox.addWidget(self.cont_cb)
         hbox.addWidget(QtGui.QLabel('Duration'))
         hbox.addWidget(self.cont_729_dur)
         hbox.addWidget(QtGui.QLabel('Additional Repump'))
@@ -145,19 +144,19 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
         frame.setLayout(hbox)
         layout.addWidget(frame, 2, 0, 1, 6)
         #row4
-        frame = QtGui.QFrame()
-        frame.setFrameShape(QtGui.QFrame.Box)
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(QtGui.QLabel('Pulsed'))
-        hbox.addWidget(self.pulsed_cb)
-        hbox.addWidget(QtGui.QLabel('Cycles'))
-        hbox.addWidget(self.pulses)
-        hbox.addWidget(QtGui.QLabel('Duration 729'))
-        hbox.addWidget(self.pulse_729)
-        hbox.addWidget(QtGui.QLabel('Duration 854'))
-        hbox.addWidget(self.pulse_854)
-        frame.setLayout(hbox)
-        layout.addWidget(frame, 3, 0, 1, 8)
+#        frame = QtGui.QFrame()
+#        frame.setFrameShape(QtGui.QFrame.Box)
+#        hbox = QtGui.QHBoxLayout()
+#        hbox.addWidget(QtGui.QLabel('Pulsed'))
+#        hbox.addWidget(self.pulsed_cb)
+#        hbox.addWidget(QtGui.QLabel('Cycles'))
+#        hbox.addWidget(self.pulses)
+#        hbox.addWidget(QtGui.QLabel('Duration 729'))
+#        hbox.addWidget(self.pulse_729)
+#        hbox.addWidget(QtGui.QLabel('Duration 854'))
+#        hbox.addWidget(self.pulse_854)
+#        frame.setLayout(hbox)
+#        layout.addWidget(frame, 3, 0, 1, 8)
         self.setLayout(layout)
         self.show()
         

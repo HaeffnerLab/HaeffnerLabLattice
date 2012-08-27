@@ -14,15 +14,15 @@ class config_729_optical_pumping(object):
     #semaphore locations
     optical_pumping_amplitude_729 = ['729Experiments','optical_pumping_amplitude_729']
     optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
-    optical_pumping_continuous = ['729Experiments','optical_pumping_continuous']
+#    optical_pumping_continuous = ['729Experiments','optical_pumping_continuous']
     optical_pumping_continuous_duration = ['729Experiments','optical_pumping_continuous_duration']
     optical_pumping_continuous_pump_additional = ['729Experiments','optical_pumping_continuous_repump_additional']
-    optical_pumping_pulsed = ['729Experiments','optical_pumping_pulsed']
+#    optical_pumping_pulsed = ['729Experiments','optical_pumping_pulsed']
     optical_pumping_enable = ['729Experiments','optical_pumping_enable']
     optical_pumping_frequency = ['729Experiments','optical_pumping_frequency']
-    optical_pumping_pulsed_cycles = ['729Experiments','optical_pumping_pulsed_cycles']
-    optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
-    optical_pumping_pulsed_duration_854 = ['729Experiments','optical_pumping_pulsed_duration_854']
+#    optical_pumping_pulsed_cycles = ['729Experiments','optical_pumping_pulsed_cycles']
+#    optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
+#    optical_pumping_pulsed_duration_854 = ['729Experiments','optical_pumping_pulsed_duration_854']
     
 class config_729_spectrum(object):
     #IDs for signaling
