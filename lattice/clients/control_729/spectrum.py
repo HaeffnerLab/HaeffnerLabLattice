@@ -30,14 +30,23 @@ class spectrum(QtGui.QWidget):
         self.segments = QtGui.QComboBox()
         self.segments.addItems([str(i + 1) for i in range(self.max_segments)])
         self.duration = durationWdiget(self.reactor)
-        layout.addWidget(self.duration, 0, 0, 2, 2)
+        layout.addWidget(self.duration, 1, 0, 2, 2)
+        self.ampl_729 = QtGui.QDoubleSpinBox()
+        self.ampl_729.setSuffix('dBm')
+        self.ampl_729.setDecimals(1)
+        self.ampl_729.setSingleStep(0.1)
+        self.ampl_729.setKeyboardTracking(False)
+        label = QtGui.QLabel("Spectrum Amplitude 729")
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 0, 0, 1, 1)
+        layout.addWidget(self.ampl_729, 0, 1, 1, 1)
         label = QtGui.QLabel("Segments")
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        layout.addWidget(label, 0, 2, 1, 1)
-        layout.addWidget(self.segments, 0, 3, 1, 1)
+        layout.addWidget(label, 1, 2, 1, 1)
+        layout.addWidget(self.segments, 1, 3, 1, 1)
         self.limitWidgets = [limitWidget_with_dropdown(self.reactor) for i in range(self.max_segments)]
         for index,w in enumerate(self.limitWidgets):
-            layout.addWidget(w, index + 3, 0, 1, 4)
+            layout.addWidget(w, index + 4, 0, 1, 4)
             w.displayed = None
         self.setLayout(layout)
     
@@ -92,6 +101,7 @@ class spectrum_connection(spectrum, async_semaphore):
         self.d = {
                 #spin boxes
                 tuple(c.excitation_time): Parameter(c.excitation_time, self.duration.setNewDuration_blocking, self.duration.new_duration, self.duration.duration.setRange, 'us'),
+                tuple(c.spectrum_amplitude_729): Parameter(c.spectrum_amplitude_729, setValueBlocking(self.ampl_729), self.ampl_729.valueChanged, self.ampl_729.setRange, 'dBm'),
                 #list
                 tuple(c.frequencies):Parameter(c.frequencies, do_nothing, self.new_frequencies_signal, self.on_new_freq_range, 'MHz'),
                   }

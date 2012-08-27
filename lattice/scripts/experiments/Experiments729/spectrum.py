@@ -83,7 +83,7 @@ class spectrum(SemaphoreExperiment):
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_amplitude_854'] = self.check_parameter(self.p.amplitude_854)
         
-        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.amplitude_729)
+        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.spectrum_amplitude_729)
         sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
         
         return sequence_parameters

@@ -84,7 +84,7 @@ class rabi_flopping(SemaphoreExperiment):
         sequence_parameters['repump_d_amplitude_854'] = self.check_parameter(self.p.amplitude_854)
         
         sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
-        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.amplitude_729)
+        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
 
         return sequence_parameters
         

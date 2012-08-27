@@ -29,11 +29,10 @@ class general_parameters(QtGui.QWidget):
         layout.addWidget(label, 1, 0, 1, 1)
         layout.addWidget(self.heating, 1, 1, 1, 1)
         #amplitudes
-        self.ampl_729 = QtGui.QDoubleSpinBox()
         self.ampl_854 = QtGui.QDoubleSpinBox()
         self.state_readout_amplitude_397 = QtGui.QDoubleSpinBox()
-        self.ampl729_reduction = QtGui.QDoubleSpinBox()
-        for w in [self.ampl_729, self.ampl_854, self.ampl729_reduction, self.state_readout_amplitude_397]:
+
+        for w in [self.ampl_854, self.state_readout_amplitude_397]:
             w.setSuffix('dBm')
             w.setDecimals(1)
             w.setSingleStep(0.1)
@@ -43,21 +42,7 @@ class general_parameters(QtGui.QWidget):
         self.state_readout_frequency_397.setKeyboardTracking(False)
         self.state_readout_frequency_397.setSuffix('MHz')
         self.state_readout_frequency_397.setDecimals(1)
-        #amplitude 729
-        label = QtGui.QLabel("Amplitude 729")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        layout.addWidget(label, 2, 0, 1, 1)
-        layout.addWidget(self.ampl_729, 2, 1, 1, 1)
-        #double pass calibration
-        label = QtGui.QLabel("Use Double Pass Calibration")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.enable_calibration = QtGui.QCheckBox()  
-        layout.addWidget(label, 3, 0, 1, 1)
-        layout.addWidget(self.enable_calibration, 3, 1, 1, 1)
-        label = QtGui.QLabel("Calbrated Amplitude Reduction")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)    
-        layout.addWidget(label, 3, 2, 1, 1)
-        layout.addWidget(self.ampl729_reduction, 3, 3, 1, 1)
+
         label = QtGui.QLabel("Repump D Amplitude 854")
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         layout.addWidget(label, 4, 0, 1, 1)
@@ -105,18 +90,14 @@ class general_parameters_connection(general_parameters, async_semaphore):
         
         self.d = {
                 #spin boxes
-                tuple(c.amplitude_729): Parameter(c.amplitude_729, setValueBlocking(self.ampl_729), self.ampl_729.valueChanged, self.ampl_729.setRange, 'dBm'),
                 tuple(c.amplitude_854): Parameter(c.amplitude_854, setValueBlocking(self.ampl_854), self.ampl_854.valueChanged, self.ampl_854.setRange, 'dBm'),
-                tuple(c.calibration_reduction): Parameter(c.calibration_reduction, setValueBlocking(self.ampl729_reduction), self.ampl729_reduction.valueChanged, self.ampl729_reduction.setRange, 'dBm'),
                 tuple(c.heating_duration): Parameter(c.heating_duration, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
                 tuple(c.repump_d_duration): Parameter(c.repump_d_duration, setValueBlocking(self.repump_d_duration), self.repump_d_duration.valueChanged, self.repump_d_duration.setRange, 'ms'),
                 tuple(c.state_readout_frequency_397): Parameter(c.state_readout_frequency_397, setValueBlocking(self.state_readout_frequency_397), self.state_readout_frequency_397.valueChanged, self.state_readout_frequency_397.setRange, 'MHz'),
                 tuple(c.state_readout_amplitude_397): Parameter(c.state_readout_amplitude_397, setValueBlocking(self.state_readout_amplitude_397), self.state_readout_amplitude_397.valueChanged, self.state_readout_amplitude_397.setRange, 'dBm'),
                 #int
                 tuple(c.repeat_each_measurement): Parameter(c.repeat_each_measurement, setValueBlocking(self.repeats), self.repeats.valueChanged, self.repeats.setRange, None),
-                #bool
-                tuple(c.enable_calibration): Parameter(c.enable_calibration, self.enable_calibration.setChecked, updateSignal = self.enable_calibration.toggled),
-                  }
+               }
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
