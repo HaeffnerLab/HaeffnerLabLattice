@@ -44,6 +44,8 @@ class sample_parameters(object):
               'optical_pumping_continuous_repump_additional':T.Value(500, 'us'),
               'optical_pumping_continuous_frequency_854':T.Value(80.0, 'MHz'),
               'optical_pumping_continuous_amplitude_854':T.Value(-11.0, 'dBm'),
+              'optical_pumping_continuous_frequency_866':T.Value(80.0, 'MHz'),
+              'optical_pumping_continuous_amplitude_866':T.Value(-11.0, 'dBm'),
               'optical_pumping_continuous_frequency_729':T.Value(220.0, 'MHz'),
               'optical_pumping_continuous_amplitude_729':T.Value(-11.0, 'dBm'),
               

@@ -77,6 +77,8 @@ class rabi_flopping(SemaphoreExperiment):
         sequence_parameters['optical_pumping_continuous_amplitude_854'] = self.check_parameter(self.p.optical_pumping_amplitude_854)
         sequence_parameters['optical_pumping_continuous_frequency_729'] = self.check_parameter(self.p.optical_pumping_frequency)
         sequence_parameters['optical_pumping_continuous_amplitude_729'] = self.check_parameter(self.p.optical_pumping_amplitude_729)
+        sequence_parameters['optical_pumping_continuous_frequency_866'] = self.check_parameter(self.p.frequency_866)
+        sequence_parameters['optical_pumping_continuous_amplitude_866'] = self.check_parameter(self.p.doppler_cooling_amplitude_866)
         
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_amplitude_854'] = self.check_parameter(self.p.amplitude_854)
