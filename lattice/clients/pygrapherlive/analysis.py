@@ -2,6 +2,7 @@
 Analysis Widget
 '''
 from PyQt4 import QtCore, QtGui
+from twisted.internet.defer import inlineCallbacks
 import numpy as np
 from scipy import optimize
 
@@ -10,6 +11,8 @@ class AnalysisWidget(QtGui.QWidget):
     def __init__(self, parent):
         QtGui.QWidget.__init__(self)  
         self.parent = parent     
+        self.cxn = self.parent.parent.cxn
+        self.createContext()
         self.parameterWindow = ParameterWindow(self)
         self.analysisCheckboxes = {}      
         self.fitCurveDictionary = {'Line': self.fitLine,
@@ -70,6 +73,9 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.setLayout(mainLayout)        
 
+    @inlineCallbacks
+    def createContext(self):
+        self.context = yield self.cxn.context()
 
     def setParameters(self, evt):
         self.parameterWindow.show()
@@ -160,6 +166,7 @@ class AnalysisWidget(QtGui.QWidget):
         fitFunc = p[0]*np.exp(-(((x - p[1])/p[2])**2)/2) + p[3]# gaussian
         return fitFunc
 
+    @inlineCallbacks
     def fitLorentzian(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         dataX = np.array(dataX)
@@ -195,6 +202,10 @@ class AnalysisWidget(QtGui.QWidget):
         
         self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]'] = [gamma, center, I, offset] 
                
+        yield self.cxn.data_vault.cd(directory, context = self.context)
+        yield self.cxn.data_vault.open(dataset, context = self.context)
+        yield self.cxn.data_vault.add_parameter_over_write('Solutions'+'-'+str(index)+'-'+'Lorentzian', [gamma, center, I, offset], context = self.context)        
+        
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncLorentzian(modelX, [gamma, center, I, offset])
         plotData = np.vstack((modelX, modelY)).transpose()
@@ -218,6 +229,7 @@ class AnalysisWidget(QtGui.QWidget):
         fitFunc = p[3] + p[2]*(p[0]**2/((x - p[1])**2 + p[0]**2))# Lorentzian
         return fitFunc
 
+    @inlineCallbacks
     def fitLine(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         dataX = np.array(dataX)
@@ -242,6 +254,11 @@ class AnalysisWidget(QtGui.QWidget):
         slope, offset = self.fit(self.fitFuncLine, [slope, offset], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]'] = [slope, offset] 
+        
+        yield self.cxn.data_vault.cd(directory, context = self.context)
+        yield self.cxn.data_vault.open(dataset, context = self.context)
+        yield self.cxn.data_vault.add_parameter_over_write('Solutions'+'-'+str(index)+'-'+'Line', [slope, offset], context = self.context)        
+        
         
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncLine(modelX, [slope, offset])
