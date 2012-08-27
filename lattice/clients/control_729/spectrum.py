@@ -60,6 +60,7 @@ class spectrum(QtGui.QWidget):
         shownWidgets = [w for w in self.limitWidgets if w.displayed]
         for w in shownWidgets:
             freqs.extend(w.frequencies)
+        print freqs
         self.new_frequencies_signal.emit(freqs)
     
     
@@ -71,6 +72,7 @@ class spectrum(QtGui.QWidget):
         for i in range(index, self.max_segments):
             self.limitWidgets[i].displayed = False
             self.limitWidgets[i].hide()
+        self.emit_new()
         
     def closeEvent(self, x):
         self.reactor.stop()
