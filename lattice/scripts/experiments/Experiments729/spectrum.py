@@ -16,6 +16,7 @@ class spectrum(SemaphoreExperiment):
             self.sequence()
         except Exception,e:
             print 'Had to stop Sequence with error:', e
+            raise e
         finally:
             self.finalize()
 
