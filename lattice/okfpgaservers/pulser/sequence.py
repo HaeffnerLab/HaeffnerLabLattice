@@ -1,6 +1,5 @@
 import numpy
 import array
-import decimal
 from hardwareConfiguration import hardwareConfiguration
 
 class Sequence():
