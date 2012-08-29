@@ -26,7 +26,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.setCentralWidget(centralWidget)
     
     def makeScriptControl(self, reactor):
-        from latticeguiscriptcontrol.scriptcontrol import ScriptControl
+        from guiscriptcontrol.scriptcontrol import ScriptControl
         self.sc = ScriptControl(reactor, self)
         return self.sc
     
@@ -50,7 +50,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         returnValue(widget)
 
     def createExperimentParametersTab(self, expContext, globalContext):
-        from latticeguiscriptcontrol.parameterswidget import ParametersWidget
+        from guiscriptcontrol.parameterswidget import ParametersWidget
         self.experimentParametersWidget = ParametersWidget(self, expContext, globalContext)
         self.tabWidget.addTab(self.experimentParametersWidget, '&Experiment Parameters')
     
