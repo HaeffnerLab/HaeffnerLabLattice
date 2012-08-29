@@ -2,6 +2,7 @@ from labrad.server import LabradServer, setting
 from twisted.internet.defer import returnValue, inlineCallbacks
 from twisted.internet.threads import deferToThread
 import array
+from labrad import types as T
 
 class DDS(LabradServer):
     
@@ -39,12 +40,11 @@ class DDS(LabradServer):
         channel = self.ddsDict[name]
         if amplitude is not None:
             #set the amplitude
-            amplitude = amplitude.inUnitsOf('dBm')
-            amplitude = float( amplitude )
+            amplitude = amplitude['dBm']
             self._checkRange('amplitude', channel, amplitude)
             yield self._setAmplitude(channel, amplitude)
             channel.amplitude = amplitude
-        amplitude = channel.amplitude
+        amplitude = T.Value(channel.amplitude, 'dBm')
         returnValue(amplitude)
 
     @setting(44, "Frequency", frequency = ['v[MHz]'], returns = ['v[MHz]'])
@@ -59,12 +59,11 @@ class DDS(LabradServer):
         channel = self.ddsDict[name]
         if frequency is not None:
             #set the amplitude
-            frequency = frequency.inUnitsOf('MHz')
-            frequency = float( frequency )
+            frequency = frequency['MHz']
             self._checkRange('frequency', channel, frequency)
             yield self._setFrequency(channel, frequency)
             channel.frequency = float(frequency)
-        frequency = channel.frequency
+        frequency = T.Value(channel.frequency, 'MHz')
         returnValue(frequency)
     
     @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm])','*(sv[s]v[s]v[MHz]v[dBm]v)'])
