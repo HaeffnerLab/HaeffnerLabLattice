@@ -114,9 +114,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
 
     def stopReactor(self, res):
         self.reactor.stop()
-
-#    def exitScriptControl(self, res):
-#        self.sc.exitProcedure(1)
         
     def closeEvent(self, x):
         dl = Deferred()
