@@ -1,4 +1,5 @@
 from sequence import Sequence
+from labrad import types as T
 
 class TimeResolved(Sequence):
     #dictionary of variable: (type, min, max, default)
@@ -8,7 +9,7 @@ class TimeResolved(Sequence):
     
     def defineSequence(self):
         recordTime = self.vars['recordTime']       
-        self.pulser.add_ttl_pulse('TimeResolvedCount', 0.0, recordTime) #record the whole time
+        self.pulser.add_ttl_pulse('TimeResolvedCount', T.Value(0.0,'s'), T.Value(recordTime,'s')) #record the whole time
 
 if __name__ == '__main__':
     import labrad
