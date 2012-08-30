@@ -82,7 +82,6 @@ class NormalPMTFlow( LabradServer):
             self.dv = yield self.client.data_vault
             yield self.dv.cd(self.saveFolder, True)    
             if self.openDataSet is not None:
-                print self.openDataSet
                 self.openDataSet = yield self.makeNewDataSet(self.saveFolder, self.dataSetName)        
                 self.onNewSetting(('dataset', self.openDataSet))
             print 'Connected: Data Vault'
@@ -142,6 +141,7 @@ class NormalPMTFlow( LabradServer):
     
     @inlineCallbacks
     def addParameters(self, start):
+        yield self.dv.add_parameter("Window", ["PMT Counts"])
         yield self.dv.add_parameter('plotLive',True)
         yield self.dv.add_parameter('startTime',start)
     
