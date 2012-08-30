@@ -1,6 +1,7 @@
-from scripts.PulseSequences.TimeResolvedRecord import TimeResolved  
+from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags  
 
 import labrad
+from labrad import types as T
 import numpy as np
 from processFFT import processFFT
 
@@ -28,13 +29,10 @@ class measureFFT():
     
     def programPulseSequence(self, recordTime):
         params = {
-                  'recordTime': recordTime
+                  'record_timetags_duration': T.Value(recordTime, 's')
                   }
-        seq = TimeResolved(self.pulser)
-        self.pulser.new_sequence()
-        seq.setVariables(**params)
-        seq.defineSequence()
-        self.pulser.program_sequence()
+        seq = record_timetags(**params)
+        seq.programSequence(self.pulser)
     
     def getTotalPower(self):
         '''computers the total power in the spectrum of the given frequencies'''
