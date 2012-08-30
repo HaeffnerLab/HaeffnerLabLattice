@@ -45,11 +45,11 @@ class ParameterLimitsWindow(QtGui.QWidget):
     def updateExperimentParameterValue(self):
         from labrad import types as T
         currentParameter = str(self.expParamLabel.text())
-        value = yield self.parent.server.get_parameter(self.experimentPath + [currentParameter])
+        value = yield self.parent.parent.server.get_parameter(self.experimentPath + [currentParameter])
         limits = eval(str(self.expParamLimitsEdit.text()))
         value[0] = T.Value(limits[0][0], limits[0][1])
         value[1] = T.Value(limits[1][0], limits[1][1])
-        yield self.parent.server.set_parameter(self.experimentPath + [currentParameter], value)
+        yield self.parent.parent.server.set_parameter(self.experimentPath + [currentParameter], value)
         if (len(value) == 3):
             #update the spinBox
             self.parent.experimentGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0].value, value[1].value)
@@ -64,11 +64,11 @@ class ParameterLimitsWindow(QtGui.QWidget):
     def updateGlobalParameterValue(self):
         from labrad import types as T
         currentParameter = str(self.globalParamLabel.text())
-        value = yield self.parent.server.get_parameter(self.parent.globalGrid.globalParameterDict[currentParameter])
+        value = yield self.parent.parent.server.get_parameter(self.parent.globalGrid.globalParameterDict[currentParameter])
         limits = eval(str(self.globalParamLimitsEdit.text()))
         value[0] = T.Value(limits[0][0], limits[0][1])
         value[1] = T.Value(limits[1][0], limits[1][1])
-        yield self.parent.server.set_parameter(self.parent.globalGrid.globalParameterDict[currentParameter], value)
+        yield self.parent.parent.server.set_parameter(self.parent.globalGrid.globalParameterDict[currentParameter], value)
         self.parent.globalGrid.parameterDoubleSpinBoxDict[currentParameter].setRange(value[0], value[1])
         if (len(value) == 3):
             #update the spinBox
@@ -93,9 +93,9 @@ class ExperimentParameterListWidget(QtGui.QListWidget):
         
     @inlineCallbacks
     def setupWidget(self):
-        expParamNames = yield self.parent.parent.server.get_parameter_names(self.experimentPath)
+        expParamNames = yield self.parent.parent.parent.server.get_parameter_names(self.experimentPath)
         for parameter in expParamNames:
-            value = yield self.parent.parent.server.get_parameter(self.experimentPath + [parameter])
+            value = yield self.parent.parent.parent.server.get_parameter(self.experimentPath + [parameter])
             if (type(value) != bool):
                 # must be a list
                 if (type(value[0]) != tuple):
@@ -108,7 +108,7 @@ class ExperimentParameterListWidget(QtGui.QListWidget):
 
     @inlineCallbacks
     def loadExperimentParameterLimits(self, parameter):
-        value = yield self.parent.parent.server.get_parameter(self.parent.experimentPath + [parameter])
+        value = yield self.parent.parent.parent.server.get_parameter(self.parent.experimentPath + [parameter])
         self.parent.expParamLabel.setText(parameter)
         try:
             self.parent.expParamLimitsEdit.setText('['+'('+str(value[0].value)+','+'\''+str(value[0].units)+'\''+')'+', '+'('+str(value[1].value)+','+'\''+str(value[1].units)+'\''+')'']')
@@ -140,7 +140,7 @@ class GlobalParameterListWidget(QtGui.QListWidget):
     def setupWidget(self):
         globalParamNames = self.parent.parent.globalGrid.globalParameterDict.keys()
         for parameter in globalParamNames:
-            value = yield self.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
+            value = yield self.parent.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
             if (type(value) != bool):
                 # must be a list
                 if (type(value[0]) != tuple):
@@ -159,7 +159,7 @@ class GlobalParameterListWidget(QtGui.QListWidget):
 
     @inlineCallbacks
     def loadGlobalParameterLimits(self, parameter):
-        value = yield self.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
+        value = yield self.parent.parent.parent.server.get_parameter(self.parent.parent.globalGrid.globalParameterDict[parameter])
         self.parent.globalParamLabel.setText(parameter)
         try:
             self.parent.globalParamLimitsEdit.setText('['+'('+str(value[0].value)+','+'\''+str(value[0].units)+'\''+')'+', '+'('+str(value[1].value)+','+'\''+str(value[1].units)+'\''+')'']')

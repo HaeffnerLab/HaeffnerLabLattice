@@ -30,7 +30,7 @@ class GlobalGrid(QtGui.QTableWidget):
         path = self.experimentPath
         for i in range(len(self.experimentPath)):
             path = path[:-1]
-            paramNames = yield self.parent.parent.sc.server.get_parameter_names(path)
+            paramNames = yield self.parent.parent.server.get_parameter_names(path)
             numParams += len(paramNames)
             for paramName in paramNames:
                 self.globalParameterDict[paramName] = path + [paramName]
@@ -45,8 +45,8 @@ class GlobalGrid(QtGui.QTableWidget):
             item = QtGui.QTableWidgetItem(parameter)
             self.setItem(Row, 1, item)
             # create a label and spin box, add it to the grid
-            value = yield self.parent.parent.sc.server.get_parameter(self.globalParameterDict[parameter])
-            widget = self.parent.parent.sc.typeCheckerWidget(value)
+            value = yield self.parent.parent.server.get_parameter(self.globalParameterDict[parameter])
+            widget = self.parent.parent.typeCheckerWidget(value)
             widgetType = type(widget)
             if (widgetType == QtGui.QCheckBox):
                 self.checkBoxParameterDict[widget] = parameter
@@ -75,9 +75,9 @@ class GlobalGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def setupGlobalParameterListener(self):
-        context = yield self.parent.parent.sc.cxn.context()
-        yield self.parent.parent.sc.cxn.semaphore.signal__parameter_change(33333, context = context)
-        yield self.parent.parent.sc.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = context)    
+        context = yield self.parent.parent.cxn.context()
+        yield self.parent.parent.cxn.semaphore.signal__parameter_change(33333, context = context)
+        yield self.parent.parent.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = context)    
 
     def updateGlobalParameter(self, x, y):
         # check to see if parameter is global
@@ -117,12 +117,12 @@ class GlobalGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def updateCheckBoxStateToSemaphore(self, evt):
-        yield self.parent.parent.sc.server.set_parameter(self.globalParameterDict[self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
+        yield self.parent.parent.server.set_parameter(self.globalParameterDict[self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
     
     @inlineCallbacks
     def updateSpinBoxValueToSemaphore(self, parameterValue):
         from labrad import types as T       
-        yield self.parent.parent.sc.server.set_parameter(self.globalParameterDict[self.doubleSpinBoxParameterDict[self.sender()]], [T.Value(self.sender().minimum(), str(self.sender().suffix()[1:])), T.Value(self.sender().maximum(), str(self.sender().suffix()[1:])), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
+        yield self.parent.parent.server.set_parameter(self.globalParameterDict[self.doubleSpinBoxParameterDict[self.sender()]], [T.Value(self.sender().minimum(), str(self.sender().suffix()[1:])), T.Value(self.sender().maximum(), str(self.sender().suffix()[1:])), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
 
     @inlineCallbacks
     def updateLineEditValueToSemaphore(self):
@@ -141,4 +141,4 @@ class GlobalGrid(QtGui.QTableWidget):
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value(value[i][1][0], value[i][1][1]))
-        yield self.parent.parent.sc.server.set_parameter(self.globalParameterDict[self.lineEditParameterDict[self.sender()]], value, context = self.context)
+        yield self.parent.parent.server.set_parameter(self.globalParameterDict[self.lineEditParameterDict[self.sender()]], value, context = self.context)

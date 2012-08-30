@@ -142,6 +142,10 @@ class AnalysisWidget(QtGui.QWidget):
         height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]'] = [height, center, sigma, offset]
+
+        yield self.cxn.data_vault.cd(directory, context = self.context)
+        yield self.cxn.data_vault.open(dataset, context = self.context)
+        yield self.cxn.data_vault.add_parameter_over_write('Solutions'+'-'+str(index)+'-'+'Gaussian', [height, center, sigma, offset], context = self.context)        
                
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncGaussian(modelX, [height, center, sigma, offset])
@@ -309,6 +313,10 @@ class AnalysisWidget(QtGui.QWidget):
         A, B, C = self.fit(self.fitFuncParabola, [A, B, C], newYData, dataX)
         
         self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]'] = [A, B, C] 
+        
+        yield self.cxn.data_vault.cd(directory, context = self.context)
+        yield self.cxn.data_vault.open(dataset, context = self.context)
+        yield self.cxn.data_vault.add_parameter_over_write('Solutions'+'-'+str(index)+'-'+'Parabola', [A, B, C], context = self.context)               
         
         modelX = np.linspace(dataX[0], dataX[-1], len(dataX)*4)
         modelY = self.fitFuncParabola(modelX, [A, B, C])

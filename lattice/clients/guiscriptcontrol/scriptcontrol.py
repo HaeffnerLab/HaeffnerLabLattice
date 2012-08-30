@@ -1,11 +1,13 @@
 import time
-from twisted.internet.defer import inlineCallbacks, DeferredList
+from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 import re
 from experimentlist import ExperimentListWidget
 from status import StatusWidget
 from activeexperimentslist import ActiveExperimentsListWidget
+from parameterswidget import ParametersWidget
+import sys
 
 class ScriptControl(QtGui.QWidget):
     def __init__(self, reactor, parent):
@@ -13,23 +15,39 @@ class ScriptControl(QtGui.QWidget):
         self.reactor = reactor
         self.parent = parent
         
-        # import all the experiments
-        import experiments.Test
-        import experiments.Test2
-        import scripts.simpleMeasurements.ADCpowerMonitor
-        import scripts.experiments.Experiments729.spectrum
-        import scripts.experiments.Experiments729.rabi_flopping        
-        # main dictionary organized by path in the Registry
-
-        self.experiments = {
-                            ('Test', 'Exp1'):  (experiments.Test, 'Test'),
-                            ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
-                            ('SimpleMeasurements', 'ADCPowerMonitor'):  (scripts.simpleMeasurements.ADCpowerMonitor, 'ADCPowerMonitor'),
-                            ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
-                            ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
-                           }
+        try:
+            # import all the experiments
+            import experiments.Test
+            import experiments.Test2
+            import scripts.simpleMeasurements.ADCpowerMonitor
+            import scripts.experiments.Experiments729.spectrum
+            import scripts.experiments.Experiments729.rabi_flopping        
+            # main dictionary organized by path in the Registry
+    
+            self.experiments = {
+                                ('Test', 'Exp1'):  (experiments.Test, 'Test'),
+                                ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
+                                ('SimpleMeasurements', 'ADCPowerMonitor'):  (scripts.simpleMeasurements.ADCpowerMonitor, 'ADCPowerMonitor'),
+                                ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
+                                ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
+                               }
+        except ImportError as e:
+            print 'Script Control: ', e
+            self.experiments = {}
+    
         self.setupExperimentProgressDict()
         self.connect()
+        
+        self.experimentParametersWidget = ParametersWidget(self)
+        self.setupMainWidget()
+
+
+        
+
+    def getWidgets(self):
+        return self, self.experimentParametersWidget         
+        
+        
         
     # A dictionary to keep track of the progress of each experiment
     def setupExperimentProgressDict(self):
@@ -43,15 +61,12 @@ class ScriptControl(QtGui.QWidget):
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync()
         self.server = self.cxn.semaphore
-        self.setupMainWidget()
+        self.createContexts()
     
     # Setup the main layout
-    @inlineCallbacks
     def setupMainWidget(self):    
         # contexts
-        self.experimentContext = yield self.cxn.context()
-        self.globalContext = yield self.cxn.context()
-        self.statusContext = yield self.cxn.context()
+
         
         self.mainLayout = QtGui.QVBoxLayout()
         
@@ -94,14 +109,14 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListLayout.addWidget(self.activeExperimentListWidget)        
         
         # Setup Experiment Parameter Widget
-        yield deferToThread(time.sleep, .05) # necessary delay. Qt issue.
+#        yield deferToThread(time.sleep, .05) # necessary delay. Qt issue.
 #        self.experimentGridLayout = QtGui.QVBoxLayout()
 #        self.setupExperimentGrid(['Test', 'Exp1']) # the experiment to start with
         # Setup Global Parameter Widget
 #        self.globalGridLayout = QtGui.QVBoxLayout()      
 #        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with
         # Setup Status Widget
-        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+#        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
 
         self.widgetLayout.addLayout(self.experimentListLayout)
 #        self.widgetLayout.addLayout(self.experimentGridLayout)
@@ -118,8 +133,18 @@ class ScriptControl(QtGui.QWidget):
         self.setLayout(self.mainLayout)
         self.show()
         
-        self.parent.createExperimentParametersTab(self.experimentContext, self.globalContext)
-
+#        self.parent.createExperimentParametersTab(self.experimentContext, self.globalContext)
+#        self.parent.createExperimentParametersWidget(self.experimentContext, self.globalContext)
+#        self.experimentParametersWidget = ParametersWidget(self, self.experimentContext, self.globalContext)
+ 
+    @inlineCallbacks
+    def createContexts(self):
+        self.experimentListWidget.populateList([])
+        self.experimentContext = yield self.cxn.context()
+        self.globalContext = yield self.cxn.context()
+        self.statusContext = yield self.cxn.context()        
+        self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
+        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
     def setupStatusWidget(self, experiment):
         try:
             self.statusWidget.hide()
@@ -171,6 +196,9 @@ class ScriptControl(QtGui.QWidget):
             yield deferToThread(instance.run)
         except Exception as e:
             self.statusWidget.handleScriptError(e)
+        except:
+            print sys.exc_info()
+            self.statusWidget.handleScriptError()
         
     def saveParametersToRegistry(self, res):
         return self.server.save_parameters_to_registry()

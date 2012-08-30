@@ -5,12 +5,10 @@ from globalgrid import GlobalGrid
 from parameterlimitswindow import ParameterLimitsWindow
 
 class ParametersWidget(QtGui.QWidget):
-    def __init__(self, parent, experimentContext, globalContext):
+#    def __init__(self, parent, experimentContext, globalContext):
+    def __init__(self, parent):
         QtGui.QWidget.__init__(self)
         self.parent = parent
-        
-        self.experimentContext = experimentContext
-        self.globalContext = globalContext
         
         self.mainLayout = QtGui.QVBoxLayout()
         
@@ -26,10 +24,10 @@ class ParametersWidget(QtGui.QWidget):
         self.miscLayout = QtGui.QHBoxLayout()
         
         self.experimentGridLayout = QtGui.QVBoxLayout()
-        self.setupExperimentGrid(['Test', 'Exp1']) # the experiment to start with
+#        self.setupExperimentGrid(['Test', 'Exp1']) # the experiment to start with
         # Setup Global Parameter Widget
         self.globalGridLayout = QtGui.QVBoxLayout()      
-        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with  
+#        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with  
         
         self.widgetsLayout.addLayout(self.experimentGridLayout)
         self.widgetsLayout.addLayout(self.globalGridLayout)
@@ -41,8 +39,15 @@ class ParametersWidget(QtGui.QWidget):
         
         self.mainLayout.addLayout(self.widgetsLayout)
         self.mainLayout.addLayout(self.miscLayout)
+        
         self.setLayout(self.mainLayout)
         self.show()
+
+    def setContexts(self, experimentContext, globalContext):
+        self.experimentContext = experimentContext
+        self.globalContext = globalContext
+        self.setupExperimentGrid(['Test', 'Exp1'])
+        self.setupGlobalGrid(['Test', 'Exp1'])      
 
     def setupExperimentGrid(self, experimentPath):
         try:

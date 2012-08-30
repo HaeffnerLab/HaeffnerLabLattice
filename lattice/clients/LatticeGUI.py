@@ -12,7 +12,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         control729Widget =  self.makecontrol729Widget(reactor)
         centralWidget = QtGui.QWidget()
         grid = QtGui.QGridLayout()
-        scriptControl = self.makeScriptControl(reactor)
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
@@ -20,6 +19,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(control729Widget,'&Control 729')
         self.createGrapherTab()
+        scriptControl = self.makeScriptControl(reactor)
         grid.addWidget(scriptControl, 0, 0, 1, 1)
         grid.addWidget(self.tabWidget, 0, 1, 1, 3)
         centralWidget.setLayout(grid)
@@ -28,6 +28,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def makeScriptControl(self, reactor):
         from guiscriptcontrol.scriptcontrol import ScriptControl
         self.sc = ScriptControl(reactor, self)
+        self.sc, self.experimentParametersWidget = self.sc.getWidgets()
+        self.createExperimentParametersTab()
         return self.sc
     
     @inlineCallbacks
@@ -49,9 +51,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         yield Connections.communicate.connectionReady.connect(widgetReady)
         returnValue(widget)
 
-    def createExperimentParametersTab(self, expContext, globalContext):
-        from guiscriptcontrol.parameterswidget import ParametersWidget
-        self.experimentParametersWidget = ParametersWidget(self, expContext, globalContext)
+    def createExperimentParametersTab(self):
         self.tabWidget.addTab(self.experimentParametersWidget, '&Experiment Parameters')
     
     def makecontrol729Widget(self, reactor):

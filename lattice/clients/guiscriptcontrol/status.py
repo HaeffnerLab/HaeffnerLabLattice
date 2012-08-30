@@ -143,10 +143,12 @@ class StatusWidget(QtGui.QWidget):
         self.pauseContinueButton.setText('Pause')
         self.statusLabel.setText('Stopping')  
     
-    def handleScriptError(self, e):
+    def handleScriptError(self, e=None):
         self.stopButton.setDisabled(True)
         self.startButton.setEnabled(True)    
         self.pauseContinueButton.setDisabled(True)    
         self.pauseContinueButton.setText('Pause')
         self.statusLabel.setText('Error')
-        print 'Error in script: ', self.experimentPath[-1], ' - ', e
+        if (e != None):
+            print 'Error in script: ', self.experimentPath[-1], ' - ', e
+        self.parent.activeExperimentListWidget.removeExperiment(self.experimentPath)

@@ -10,8 +10,8 @@ class Test():
         print 'Initializing Test'
         self.iterations = 15
         self.progress = 0.0
-        #threading.Thread.__init__(self)
-    
+        raise
+            
     def pause(self, progress):
         Continue = self.cxn.semaphore.block_experiment(self.experimentPath, progress)
         if (Continue == True):
@@ -24,7 +24,6 @@ class Test():
         import labrad
         self.cxn = labrad.connect()
         for i in range(self.iterations):
-            
             # blocking function goes here
             self.progress = ((i)/float(self.iterations))*100
             Continue = self.pause(self.progress)

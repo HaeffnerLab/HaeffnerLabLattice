@@ -11,7 +11,6 @@ class ExperimentListWidget(QtGui.QListWidget):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
         self.path = []
-        self.populateList(self.path)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
     
     @inlineCallbacks
@@ -49,8 +48,8 @@ class ExperimentListWidget(QtGui.QListWidget):
     def handleMouseClick(self, itemText):
         newDirectories = yield self.parent.server.get_directory_names(self.path + [itemText])
         if (newDirectories == ['Semaphore']):
-            self.parent.parent.experimentParametersWidget.setupExperimentGrid(self.path + [itemText])
-            self.parent.parent.experimentParametersWidget.setupGlobalGrid(self.path + [itemText])
+            self.parent.experimentParametersWidget.setupExperimentGrid(self.path + [itemText])
+            self.parent.experimentParametersWidget.setupGlobalGrid(self.path + [itemText])
             self.parent.setupStatusWidget(self.path + [itemText])
         else:
             self.path = self.path + [itemText]

@@ -25,7 +25,7 @@ class ExperimentGrid(QtGui.QTableWidget):
         self.lineEditParameterDict = {}
         self.parameterLineEditDict = {}        
         
-        expParams = yield self.parent.parent.sc.server.get_parameter_names(self.experimentPath)      
+        expParams = yield self.parent.parent.server.get_parameter_names(self.experimentPath)      
         expParamNames = expParams.aslist        
         expParamNames.sort()
         
@@ -35,8 +35,8 @@ class ExperimentGrid(QtGui.QTableWidget):
         for parameter in expParamNames:
             item = QtGui.QTableWidgetItem(parameter)
             self.setItem(Row, 1, item)
-            value = yield self.parent.parent.sc.server.get_parameter(self.experimentPath + [parameter])
-            widget = self.parent.parent.sc.typeCheckerWidget(value)
+            value = yield self.parent.parent.server.get_parameter(self.experimentPath + [parameter])
+            widget = self.parent.parent.typeCheckerWidget(value)
             widgetType = type(widget)
             if (widgetType == QtGui.QCheckBox):
                 self.checkBoxParameterDict[widget] = parameter
@@ -66,8 +66,8 @@ class ExperimentGrid(QtGui.QTableWidget):
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
-        yield self.parent.parent.sc.cxn.semaphore.signal__parameter_change(22222, context = self.context)
-        yield self.parent.parent.sc.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
+        yield self.parent.parent.cxn.semaphore.signal__parameter_change(22222, context = self.context)
+        yield self.parent.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
 
     def updateExperimentParameter(self, x, y):
         # check to see if this is an experiment parameter
@@ -108,12 +108,12 @@ class ExperimentGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def updateCheckBoxStateToSemaphore(self, evt):
-        yield self.parent.parent.sc.server.set_parameter(self.experimentPath + [self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
+        yield self.parent.parent.server.set_parameter(self.experimentPath + [self.checkBoxParameterDict[self.sender()]], bool(evt), context = self.context)
         
     @inlineCallbacks
     def updateSpinBoxValueToSemaphore(self, parameterValue):
         from labrad import types as T
-        yield self.parent.parent.sc.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [T.Value(self.sender().minimum(), str(self.sender().suffix()[1:])), T.Value(self.sender().maximum(), str(self.sender().suffix()[1:])), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
+        yield self.parent.parent.server.set_parameter(self.experimentPath + [self.doubleSpinBoxParameterDict[self.sender()]], [T.Value(self.sender().minimum(), str(self.sender().suffix()[1:])), T.Value(self.sender().maximum(), str(self.sender().suffix()[1:])), T.Value(parameterValue, str(self.sender().suffix()[1:]))], context = self.context)
         
     @inlineCallbacks
     def updateLineEditValueToSemaphore(self):
@@ -136,4 +136,4 @@ class ExperimentGrid(QtGui.QTableWidget):
         elif (typeSecondElement == tuple):
             for i in range(len(value)):
                 value[i] = (value[i][0], T.Value[value[i][1][0]], value[i][1][1])
-        yield self.parent.parent.sc.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], value, context = self.context)
+        yield self.parent.parent.server.set_parameter(self.experimentPath + [self.lineEditParameterDict[self.sender()]], value, context = self.context)

@@ -155,8 +155,8 @@ class CONNECTIONS(QtGui.QGraphicsObject):
                 print 'Was plotLive set for this dataset?'
 
     def updateDataset(self, x, y):
-        dataset = int(y[0][0:5]) # retrieve dataset number
-        datasetName = str(y[0][8:len(y[0])])
+#        dataset = int(y[0][0:5]) # retrieve dataset number
+#        datasetName = str(y[0][8:len(y[0])])
 #        print datasetName
         directory = y[1] # retrieve directory
         itemLabel = y[0] # 'dataset - datasetName' 
