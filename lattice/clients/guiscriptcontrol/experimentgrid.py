@@ -66,8 +66,8 @@ class ExperimentGrid(QtGui.QTableWidget):
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
-        yield self.parent.parent.cxn.semaphore.signal__parameter_change(22222, context = self.context)
-        yield self.parent.parent.cxn.semaphore.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
+        yield self.parent.parent.server.signal__parameter_change(22222, context = self.context)
+        yield self.parent.parent.server.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
 
     def updateExperimentParameter(self, x, y):
         # check to see if this is an experiment parameter

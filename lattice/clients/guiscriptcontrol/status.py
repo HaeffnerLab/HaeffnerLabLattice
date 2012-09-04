@@ -81,8 +81,8 @@ class StatusWidget(QtGui.QWidget):
                             
     @inlineCallbacks
     def setupStatusListener(self):
-        yield self.parent.cxn.semaphore.signal__parameter_change(11111, context = self.context)
-        yield self.parent.cxn.semaphore.addListener(listener = self.updateStatus, source = None, ID = 11111, context = self.context)    
+        yield self.parent.server.signal__parameter_change(11111, context = self.context)
+        yield self.parent.server.addListener(listener = self.updateStatus, source = None, ID = 11111, context = self.context)    
     
     @inlineCallbacks
     def updateStatus(self, x, y):
@@ -109,9 +109,9 @@ class StatusWidget(QtGui.QWidget):
         self.startButton.setDisabled(True)
         self.stopButton.setEnabled(True)  
         self.pauseContinueButton.setEnabled(True)      
-        yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], True, context = self.context)
-        yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
-        yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
+        yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], True, context = self.context)
+        yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
+        yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
         self.statusLabel.setText('Running')
         self.parent.startExperiment(tuple(self.experimentPath))
         self.parent.activeExperimentListWidget.addExperiment(self.experimentPath)
@@ -120,13 +120,13 @@ class StatusWidget(QtGui.QWidget):
     def pauseContinueButtonSignal(self, evt):
         status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
         if (status == 'Running'):
-            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Pausing', context = self.context)
-#            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], True, context = self.context)
+            yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Pausing', context = self.context)
+#            yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Block'], True, context = self.context)
             self.pauseContinueButton.setText('Continue')
             self.statusLabel.setText('Pausing')
         elif (status == 'Paused' or status == 'Pausing'):
-            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
-            yield self.parent.cxn.semaphore.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
+            yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Block'], False, context = self.context)
+            yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Status'], 'Running', context = self.context)
             self.pauseContinueButton.setText('Pause')
             self.statusLabel.setText('Running')
 

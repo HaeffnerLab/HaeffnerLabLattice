@@ -75,9 +75,9 @@ class GlobalGrid(QtGui.QTableWidget):
 
     @inlineCallbacks
     def setupGlobalParameterListener(self):
-        context = yield self.parent.parent.cxn.context()
-        yield self.parent.parent.cxn.semaphore.signal__parameter_change(33333, context = context)
-        yield self.parent.parent.cxn.semaphore.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = context)    
+#        context = yield self.parent.parent.cxn.context()
+        yield self.parent.parent.server.signal__parameter_change(33333, context = self.context)
+        yield self.parent.parent.server.addListener(listener = self.updateGlobalParameter, source = None, ID = 33333, context = self.context)    
 
     def updateGlobalParameter(self, x, y):
         # check to see if parameter is global

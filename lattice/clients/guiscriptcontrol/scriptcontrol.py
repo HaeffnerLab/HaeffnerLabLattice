@@ -58,10 +58,43 @@ class ScriptControl(QtGui.QWidget):
     # Connect to LabRAD
     @inlineCallbacks
     def connect(self):
-        from labrad.wrappers import connectAsync
-        self.cxn = yield connectAsync()
-        self.server = self.cxn.semaphore
+#        from labrad.wrappers import connectAsync
+#        self.cxn = yield connectAsync()
+#        self.server = self.cxn.semaphore
+#        self.createContexts()
+        
+        from connection import connection
+        self.cxn = connection()
+        yield self.cxn.connect()
+#        self.context = yield self.cxn.context()
+        try:
+            test = yield self.cxn.servers['Semaphore'].test_connection()
+        except Exception, e:
+            print 'Not Initially Connected to Semaphore', e
+            self.setDisabled(True)
+            self.experimentParametersWidget.setDisabled(True)
+        self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
+        self.cxn.on_disconnect['Semaphore'].append( self.disable)        
+  
+        self.server = self.cxn.servers['Semaphore']
         self.createContexts()
+            
+    @inlineCallbacks
+    def reinitialize_semaphore(self):
+        self.setEnabled(True)
+        self.experimentParametersWidget.setEnabled(True)
+        self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
+        self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
+        self.setupStatusWidget(self.statusWidget.experimentPath)
+        yield None
+
+        
+    @inlineCallbacks
+    def disable(self):
+        self.setDisabled(True)
+        self.experimentParametersWidget.setDisabled(True)
+        yield None
+
     
     # Setup the main layout
     def setupMainWidget(self):    
@@ -204,7 +237,7 @@ class ScriptControl(QtGui.QWidget):
         return self.server.save_parameters_to_registry()
        
     def exitProcedure(self, x):
-        dl = [self.cxn.semaphore.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext) for experiment in self.experiments.keys()]
+        dl = [self.server.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Stopped', context = self.statusContext) for experiment in self.experiments.keys()]
         dl = DeferredList(dl)
         dl.addCallback(self.saveParametersToRegistry)
         return dl

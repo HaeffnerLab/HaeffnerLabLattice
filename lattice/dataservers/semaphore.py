@@ -230,6 +230,12 @@ class Semaphore(LabradServer):
             self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
             self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)   
     
+    @setting(15, "Test Connection", returns = 's')
+    def testConnection(self, c):
+        return 'Connected!'
+    
+    
+    
 if __name__ == "__main__":
     from labrad import util
     util.runServer(Semaphore())
