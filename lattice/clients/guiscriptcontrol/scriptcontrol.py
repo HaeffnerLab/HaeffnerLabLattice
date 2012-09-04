@@ -7,6 +7,7 @@ from experimentlist import ExperimentListWidget
 from status import StatusWidget
 from activeexperimentslist import ActiveExperimentsListWidget
 from parameterswidget import ParametersWidget
+from scheduler import Scheduler
 import sys
 
 class ScriptControl(QtGui.QWidget):
@@ -89,7 +90,7 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
-        except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original error will probably just be reproduced
+        except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()
         yield None
@@ -121,13 +122,16 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListLabel = QtGui.QLabel('Experiment Navigation')
         self.experimentListLabel.setFont(font)
         self.activeExperimentListLabel = QtGui.QLabel('Active Experiments')
-        self.activeExperimentListLabel.setFont(font)        
-        self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
-        self.experimentParametersLabel.setFont(font)
-        self.globalParametersLabel = QtGui.QLabel('Global Parameters')
-        self.globalParametersLabel.setFont(font)
-        self.controlLabel = QtGui.QLabel('Control')
-        self.controlLabel.setFont(font)
+        self.activeExperimentListLabel.setFont(font)     
+        self.schedulerLabel = QtGui.QLabel('Scheduler')
+        self.schedulerLabel.setFont(font)        
+
+#        self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+#        self.experimentParametersLabel.setFont(font)
+#        self.globalParametersLabel = QtGui.QLabel('Global Parameters')
+#        self.globalParametersLabel.setFont(font)
+#        self.controlLabel = QtGui.QLabel('Control')
+#        self.controlLabel.setFont(font)
                      
         self.experimentListLayout = QtGui.QVBoxLayout()
                
@@ -138,15 +142,26 @@ class ScriptControl(QtGui.QWidget):
         self.activeExperimentListWidget = ActiveExperimentsListWidget(self)
         self.activeExperimentListWidget.show()
         
+        self.schedulerWidget = Scheduler(self)
+        self.schedulerWidget.show()
+        
         self.experimentListLayout.addWidget(self.experimentListLabel)
         self.experimentListLayout.setAlignment(self.experimentListLabel, QtCore.Qt.AlignCenter)
         self.experimentListLayout.setStretchFactor(self.experimentListLabel, 0)
         self.experimentListLayout.addWidget(self.experimentListWidget)
+        self.experimentListLayout.addWidget(self.schedulerLabel)
+        self.experimentListLayout.setAlignment(self.schedulerLabel, QtCore.Qt.AlignCenter)
+        self.experimentListLayout.setStretchFactor(self.schedulerLabel, 0)        
+        self.experimentListLayout.addWidget(self.schedulerWidget)               
         self.experimentListLayout.addWidget(self.activeExperimentListLabel)
         self.experimentListLayout.setAlignment(self.activeExperimentListLabel, QtCore.Qt.AlignCenter)
         self.experimentListLayout.setStretchFactor(self.activeExperimentListLabel, 0)        
-        self.experimentListLayout.addWidget(self.activeExperimentListWidget)        
+        self.experimentListLayout.addWidget(self.activeExperimentListWidget)    
         
+        self.experimentListLayout.setStretchFactor(self.experimentListWidget, 0)
+        self.experimentListLayout.setStretchFactor(self.schedulerWidget, 0)
+        self.experimentListLayout.setStretchFactor(self.activeExperimentListWidget, 0)
+                
         # Setup Experiment Parameter Widget
 #        yield deferToThread(time.sleep, .05) # necessary delay. Qt issue.
 #        self.experimentGridLayout = QtGui.QVBoxLayout()

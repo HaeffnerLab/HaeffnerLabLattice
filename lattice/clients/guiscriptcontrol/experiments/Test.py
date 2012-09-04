@@ -10,7 +10,6 @@ class Test():
         print 'Initializing Test'
         self.iterations = 15
         self.progress = 0.0
-        raise
             
     def pause(self, progress):
         Continue = self.cxn.semaphore.block_experiment(self.experimentPath, progress)
