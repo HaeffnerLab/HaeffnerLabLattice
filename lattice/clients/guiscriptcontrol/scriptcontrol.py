@@ -67,25 +67,31 @@ class ScriptControl(QtGui.QWidget):
         self.cxn = connection()
         yield self.cxn.connect()
 #        self.context = yield self.cxn.context()
+        self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
+        self.cxn.on_disconnect['Semaphore'].append( self.disable)        
+  
+
         try:
+            self.server = self.cxn.servers['Semaphore']
             test = yield self.cxn.servers['Semaphore'].test_connection()
+            self.createContexts()
         except Exception, e:
             print 'Not Initially Connected to Semaphore', e
             self.setDisabled(True)
             self.experimentParametersWidget.setDisabled(True)
-        self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
-        self.cxn.on_disconnect['Semaphore'].append( self.disable)        
-  
-        self.server = self.cxn.servers['Semaphore']
-        self.createContexts()
+
             
     @inlineCallbacks
     def reinitialize_semaphore(self):
         self.setEnabled(True)
-        self.experimentParametersWidget.setEnabled(True)
-        self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
-        self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
-        self.setupStatusWidget(self.statusWidget.experimentPath)
+        try:
+            self.experimentParametersWidget.setEnabled(True)
+            self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
+            self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
+            self.setupStatusWidget(self.statusWidget.experimentPath)
+        except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original error will probably just be reproduced
+            self.server = self.cxn.servers['Semaphore']
+            self.createContexts()
         yield None
 
         
