@@ -24,6 +24,10 @@ class Scheduler(QtGui.QTableWidget):
         yield self.parent.server.signal__parameter_change(66666, context = self.context)
         yield self.parent.server.addListener(listener = self.updateStatusScheduler, source = None, ID = 66666, context = self.context)           
         
+    @inlineCallbacks
+    def reinitializeListener(self):
+        yield self.parent.server.addListener(listener = self.updateStatusScheduler, source = None, ID = 66666, context = self.context)
+    
     def setupScheduler(self):
         self.setColumnCount(4)
         self.setRowCount(len(self.parent.experiments.keys()) + 1)

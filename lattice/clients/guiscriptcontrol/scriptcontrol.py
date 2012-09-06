@@ -101,6 +101,7 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
+            self.schedulerWidget.reinitializeListener()
         except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()
