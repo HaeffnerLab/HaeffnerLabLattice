@@ -100,6 +100,7 @@ class Scheduler(QtGui.QTableWidget):
                 yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Block'], False, context = self.parent.statusContext)
                 yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Running', context = self.parent.statusContext)                      
                 self.parent.startExperiment(experiment)
+                self.parent.activeExperimentListWidget.addExperiment(list(experiment))
 #            self.experimentCounter[experiment] += 1
     
     @inlineCallbacks
