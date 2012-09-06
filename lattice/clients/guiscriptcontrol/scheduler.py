@@ -13,6 +13,7 @@ class Scheduler(QtGui.QTableWidget):
         self.checkBoxExperimentDict = {}
         self.experimentCounter = {} # tracks number of times an experiment has been called
         self.setupScheduler()
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
 
     def setContext(self, context):
         self.context = context
@@ -20,7 +21,6 @@ class Scheduler(QtGui.QTableWidget):
 
     @inlineCallbacks
     def setupParameterListener(self):
-        print 'setting up!'
         yield self.parent.server.signal__parameter_change(66666, context = self.context)
         yield self.parent.server.addListener(listener = self.updateStatusScheduler, source = None, ID = 66666, context = self.context)           
         
@@ -88,24 +88,24 @@ class Scheduler(QtGui.QTableWidget):
             self.experimentTimerDict[experiment].stop()
 
     @inlineCallbacks
-    def startExperiment(self, experiment):
+    def startExperiment(self, experiment, queued = False):
         # start the experiment
         # we'll put in something to skip the first interval later
-#        if (self.experimentCounter[experiment] == 0 and (self.cellWidget(self.experimentRowDict[experiment], 1).isChecked() == False)):
-#            pass
-#        else:
-        clearToRun = yield self.checkConflictingExperiments(experiment)
-        # run the experiment        
-        if (clearToRun == True):        
-            if (experiment == tuple(self.parent.statusWidget.experimentPath)):
-                yield self.parent.statusWidget.startButtonSignal(1)
-            else:
-                yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Continue'], True, context = self.parent.statusContext)
-                yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Block'], False, context = self.parent.statusContext)
-                yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Running', context = self.parent.statusContext)                      
-                self.parent.startExperiment(experiment)
-                self.parent.activeExperimentListWidget.addExperiment(list(experiment))
-#            self.experimentCounter[experiment] += 1
+        if (self.experimentCounter[experiment] == 0 and (self.cellWidget(self.experimentRowDict[experiment], 1).isChecked() == False) and (queued == False)):
+            pass
+        else:
+            clearToRun = yield self.checkConflictingExperiments(experiment)
+            # run the experiment        
+            if (clearToRun == True):        
+                if (experiment == tuple(self.parent.statusWidget.experimentPath)):
+                    yield self.parent.statusWidget.startButtonSignal(1)
+                else:
+                    yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Continue'], True, context = self.parent.statusContext)
+                    yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Block'], False, context = self.parent.statusContext)
+                    yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Running', context = self.parent.statusContext)                      
+                    self.parent.startExperiment(experiment)
+                    self.parent.activeExperimentListWidget.addExperiment(list(experiment))
+        self.experimentCounter[experiment] += 1
     
     @inlineCallbacks
     def checkConflictingExperiments(self, experiment):
@@ -130,7 +130,7 @@ class Scheduler(QtGui.QTableWidget):
                 if (y[0][-1] == 'Status'):
                     parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
                     if (parameter == 'Finished' or parameter == 'Stopped' or parameter == 'Paused'):
-                        self.startExperiment(self.experimentQueue[-1])
+                        self.startExperiment(self.experimentQueue[-1], True)
                         self.experimentQueue.remove(self.experimentQueue[-1])
         except IndexError:
             # experimentQueue is empty

@@ -11,6 +11,7 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
         self.activeExperiments = [] # list of experiment names
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
     
     def addExperiment(self, experiment):
         self.activeExperiments.append(experiment)
