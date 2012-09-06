@@ -14,12 +14,9 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
     
     def addExperiment(self, experiment):
         self.activeExperiments.append(experiment)
-        print 'im confused: ', self.activeExperiments
         self.populateList()
         
     def removeExperiment(self, experiment):
-        print 'active: ', self.activeExperiments
-        print 'experiment: ', experiment
         try:
             self.activeExperiments.remove(experiment)
         except ValueError:

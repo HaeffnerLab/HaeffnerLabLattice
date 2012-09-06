@@ -116,6 +116,7 @@ class StatusWidget(QtGui.QWidget):
                     self.pauseContinueButton.setDisabled(True)
                     self.pauseContinueButton.setText('Pause')
                     yield self.parent.server.set_parameter(self.experimentPath + ['Semaphore', 'Continue'], True, context = self.context)
+                    self.parent.activeExperimentListWidget.removeExperiment(self.experimentPath)
                 elif (parameter == 'Paused'):
                     self.statusLabel.setText(parameter)
             elif (y[0][-1] == 'Progress'):

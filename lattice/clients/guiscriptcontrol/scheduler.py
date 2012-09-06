@@ -113,6 +113,7 @@ class Scheduler(QtGui.QTableWidget):
                 # add experiment to queue
                 clearToRun = False
                 self.experimentQueue.append(experiment)
+                print 'Current Experiment Queue: ', self.experimentQueue
                 break
             else:
                 clearToRun = True     
