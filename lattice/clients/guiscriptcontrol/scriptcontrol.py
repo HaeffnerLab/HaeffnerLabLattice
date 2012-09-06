@@ -32,6 +32,16 @@ class ScriptControl(QtGui.QWidget):
                                 ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
                                 ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
                                }
+            
+            # Every experiment conflicts with at least itself
+            self.conflictingExperiments = {
+                                            ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')], # Exp1 conflicts with itself and Exp2
+                                            ('Test', 'Exp2'): [('Test', 'Exp2')],
+                                            ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
+                                            ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
+                                            ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
+                                          }
+                        
         except ImportError as e:
             print 'Script Control: ', e
             self.experiments = {}
@@ -40,6 +50,7 @@ class ScriptControl(QtGui.QWidget):
         self.connect()
         
         self.experimentParametersWidget = ParametersWidget(self)
+        self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
         self.setupMainWidget()
 
 
@@ -142,7 +153,7 @@ class ScriptControl(QtGui.QWidget):
         self.activeExperimentListWidget = ActiveExperimentsListWidget(self)
         self.activeExperimentListWidget.show()
         
-        self.schedulerWidget = Scheduler(self)
+#        self.schedulerWidget = Scheduler(self)
         self.schedulerWidget.show()
         
         self.experimentListLayout.addWidget(self.experimentListLabel)
@@ -196,9 +207,11 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListWidget.populateList([])
         self.experimentContext = yield self.cxn.context()
         self.globalContext = yield self.cxn.context()
-        self.statusContext = yield self.cxn.context()        
+        self.statusContext = yield self.cxn.context()
+        self.schedulerContext = yield self.cxn.context()
         self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
         self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+        self.schedulerWidget.setContext(self.schedulerContext)
     def setupStatusWidget(self, experiment):
         try:
             self.statusWidget.hide()

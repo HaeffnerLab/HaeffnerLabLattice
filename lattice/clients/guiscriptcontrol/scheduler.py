@@ -1,16 +1,28 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.task import LoopingCall
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 class Scheduler(QtGui.QTableWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, conflictingExperiments):
         QtGui.QTableWidget.__init__(self)
         self.parent = parent
+        self.conflictingExperiments = conflictingExperiments
+        self.experimentQueue = []
         self.experimentRowDict = {}
         self.experimentTimerDict = {}
         self.checkBoxExperimentDict = {}
         self.experimentCounter = {} # tracks number of times an experiment has been called
         self.setupScheduler()
+
+    def setContext(self, context):
+        self.context = context
+        self.setupParameterListener()
+
+    @inlineCallbacks
+    def setupParameterListener(self):
+        print 'setting up!'
+        yield self.parent.server.signal__parameter_change(66666, context = self.context)
+        yield self.parent.server.addListener(listener = self.updateStatusScheduler, source = None, ID = 66666, context = self.context)           
         
     def setupScheduler(self):
         self.setColumnCount(4)
@@ -75,10 +87,12 @@ class Scheduler(QtGui.QTableWidget):
     def startExperiment(self, experiment):
         # start the experiment
         # we'll put in something to skip the first interval later
-        if (self.experimentCounter[experiment] == 0 and (self.cellWidget(self.experimentRowDict[experiment], 1).isChecked() == False)):
-            pass
-        else:
-#            status = yield self.parent.cxn.semaphore.get_parameter(list(experiment) + ['Semaphore', 'Status'], context = self.parent.statusContext)
+#        if (self.experimentCounter[experiment] == 0 and (self.cellWidget(self.experimentRowDict[experiment], 1).isChecked() == False)):
+#            pass
+#        else:
+        clearToRun = yield self.checkConflictingExperiments(experiment)
+        # run the experiment        
+        if (clearToRun == True):        
             if (experiment == tuple(self.parent.statusWidget.experimentPath)):
                 yield self.parent.statusWidget.startButtonSignal(1)
             else:
@@ -86,6 +100,34 @@ class Scheduler(QtGui.QTableWidget):
                 yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Block'], False, context = self.parent.statusContext)
                 yield self.parent.server.set_parameter(list(experiment) + ['Semaphore', 'Status'], 'Running', context = self.parent.statusContext)                      
                 self.parent.startExperiment(experiment)
-        self.experimentCounter[experiment] += 1
+#            self.experimentCounter[experiment] += 1
+    
+    @inlineCallbacks
+    def checkConflictingExperiments(self, experiment):
+        clearToRun = False
+        # check if any of the conflicting experiments for a particular experiment are running/pausing/stopping, if so, do not run the experiment yet.
+        for conflictExperiment in self.conflictingExperiments[experiment]:
+            status = yield self.parent.server.get_parameter(list(conflictExperiment) + ['Semaphore', 'Status'], context = self.parent.statusContext)
+            if (status == 'Running' or status == 'Pausing' or status == 'Stopping'):
+                # add experiment to queue
+                clearToRun = False
+                self.experimentQueue.append(experiment)
+                break
+            else:
+                clearToRun = True     
+        returnValue(clearToRun)   
         
+    @inlineCallbacks
+    def updateStatusScheduler(self, x, y):
+        try:
+            if (tuple(y[0][:-2]) in self.conflictingExperiments[self.experimentQueue[-1]]):
+                if (y[0][-1] == 'Status'):
+                    parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
+                    if (parameter == 'Finished' or parameter == 'Stopped' or parameter == 'Paused'):
+                        self.startExperiment(self.experimentQueue[-1])
+                        self.experimentQueue.remove(self.experimentQueue[-1])
+        except IndexError:
+            # experimentQueue is empty
+            pass
+        yield None
         
