@@ -2,7 +2,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Compensation Box
-version = 1.1
+version = 1.2
 description = 
 instancename = Compensation Box
 
@@ -15,8 +15,7 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 """
-from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
-from labrad.types import Error
+from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError
 from twisted.internet import reactor
 import binascii
 from labrad.server import Signal
@@ -30,6 +29,45 @@ RESP_STRING = 'r' #expected response from dc box after write
 ERROR_TIME = 1.0 #time to wait if correct response not received
 
 SIGNALID = 94976
+
+class compensation_channel():
+    def __init__(self, name, device_channel, limits, calibration):
+        self.name = name
+        self.channel = device_channel
+        self.limits = limits
+        self.calibration = calibration
+        self._value = None
+    
+    def setValue(self, value):
+        self._value = value
+    
+    @property
+    def value(self):
+        return self._value
+    
+    @property
+    def comstring(self):
+        
+        
+    def volToSequential(self, channel, voltage):
+        (m,b) = self.d[channel]['calibration']
+        seq = int(round( m * voltage + b ))
+        return seq
+    
+    def mapMessage( self, channel, value ):
+        devChannel = self.d[channel]['devChannel']
+        return self.makeComString( devChannel, self.volToSequential( channel, value ) )
+    
+    #converts sequential representation to string understood by microcontroller                                                                                                        
+    #i.e ch 1 set to maximum, which is sequentially 2**16-1 or ffff in hex -> '1,str' where str =  is character representation of 0xffff given by binascii.unhexlify(ffff)
+    @staticmethod
+    def makeComString( channel, binVolt ):
+        hexrepr = hex( binVolt )[2:] #select ffff out of 0xfff'                                                                                                                          
+        hexrepr = hexrepr.zfill( 4 ) #left pads to make sure 4 characters                                                                                                            
+        numstr = binascii.unhexlify( hexrepr ) #converts ffff to ascii characters                                                                                                    
+        comstring = str( channel ) + ',' + numstr
+        return comstring
+                
 
 class CompensationBox( SerialDeviceServer ):
     name = 'Compensation Box'
@@ -66,9 +104,9 @@ class CompensationBox( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
-        yield self.populateDict()
         self.listeners = set()
         self.free = True
+        yield self.getRegValues()
     
     def createDict( self ):
         """
@@ -79,10 +117,10 @@ class CompensationBox( SerialDeviceServer ):
         """
         self.d = {
                   1: {'devChannel':0,
-                      'range':(-479, -10),
+                      'range':(-479.0, -10.0),
                       }, 
                   2: {'devChannel':1,
-                      'range':(-479, -10),
+                      'range':(-479.0, -10.0),
                       } 
                   }
         self.addCalibration()
@@ -96,18 +134,27 @@ class CompensationBox( SerialDeviceServer ):
             self.d[chan]['calibration'] = (m,b)
     
     @inlineCallbacks
-    def populateDict(self):
+    def getRegValues(self):
         """
-        Gets the information about the current setting from the hardware
-        """
+        Gets the information about the current setting from the registry
+        """  
+        yield self.client.registry.cd(['','Servers', 'Compensation'], True)
         for channel in self.d.keys():
-            devChannel = self.d[channel]['devChannel']
-            comstring = str(devChannel)+'r'
-            yield self.ser.write(comstring)
-            encoded = yield self.ser.read(3)
-            seq = int(binascii.hexlify(encoded[0:2]),16)
-            voltage = self.seqToVoltage(channel, seq)
-            self.d[channel]['value'] = voltage
+#            try:
+                voltage = yield self.client.registry.get(channel)
+#            except Exception:
+#                ra
+#                print '{} not found in registry'.format(channel)
+#                r1,r2 = self.d[channel]['range']
+#                first = abs(r1) < abs(r2)
+#                if first:
+#                    voltage = r1
+#                else:
+#                    voltage = r2
+#            else:
+#                print 'sending', channel. voltage
+#            yield self.tryToSend( channel, voltage )
+#            self.d[channel]['value'] = voltage
 
     @inlineCallbacks      
     def tryToSend( self, channel, value ):
@@ -222,31 +269,24 @@ class CompensationBox( SerialDeviceServer ):
         voltage = (seq  - b) / m
         return voltage
     
-    def volToSequential(self, channel, voltage):
-        (m,b) = self.d[channel]['calibration']
-        seq = int(round( m * voltage + b ))
-        return seq
-    
-    def mapMessage( self, channel, value ):
-        devChannel = self.d[channel]['devChannel']
-        return self.makeComString( devChannel, self.volToSequential( channel, value ) )
-    
-    #converts sequential representation to string understood by microcontroller                                                                                                        
-    #i.e ch 1 set to maximum, which is sequentially 2**16-1 or ffff in hex -> '1,str' where str =  is character representation of 0xffff given by binascii.unhexlify(ffff)
-    @staticmethod
-    def makeComString( channel, binVolt ):
-        hexrepr = hex( binVolt )[2:] #select ffff out of 0xfff'                                                                                                                          
-        hexrepr = hexrepr.zfill( 4 ) #left pads to make sure 4 characters                                                                                                            
-        numstr = binascii.unhexlify( hexrepr ) #converts ffff to ascii characters                                                                                                    
-        comstring = str( channel ) + ',' + numstr
-        return comstring
-    
     def initContext(self, c):
         """Initialize a new context object."""
         self.listeners.add(c.ID)
     
     def expireContext(self, c):
         self.listeners.remove(c.ID)
+        
+    @inlineCallbacks
+    def stopServer(self):
+        '''save the latest voltages into registry'''
+        yield None
+#        try:
+#            yield self.client.registry.cd(['','Servers', 'Compensation'], True)
+#            for channel in self.d.keys():
+#                yield self.client.registry.set(channel, self.d[channel]['value'])
+#        except AttributeError:
+#            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
+#            pass
 
 if __name__ == "__main__":
     from labrad import util

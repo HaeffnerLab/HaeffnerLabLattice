@@ -1,5 +1,4 @@
 from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags  
-
 import labrad
 from labrad import types as T
 import numpy as np
