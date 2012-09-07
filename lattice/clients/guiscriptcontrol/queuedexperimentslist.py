@@ -1,26 +1,26 @@
 '''
-Active Experiments List Widget
+Queued Experiments List Widget
 '''
 from twisted.internet.defer import inlineCallbacks
 from PyQt4 import QtGui
 
 
-class ActiveExperimentsListWidget(QtGui.QListWidget):
+class QueuedExperimentsListWidget(QtGui.QListWidget):
 
     def __init__(self, parent):
         QtGui.QListWidget.__init__(self)
         self.parent = parent
-        self.activeExperiments = [] # list of experiment names
+        self.experimentQueue = [] # list of experiment names
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
         self.setMaximumHeight(100)
     
     def addExperiment(self, experiment):
-        self.activeExperiments.append(experiment)
+        self.experimentQueue.append(experiment)
         self.populateList()
         
     def removeExperiment(self, experiment):
         try:
-            self.activeExperiments.remove(experiment)
+            self.experimentQueue.remove(experiment)
         except ValueError:
             # double signal?
             pass
@@ -28,7 +28,7 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
 
     def populateList(self):
         self.clear()
-        for experiment in self.activeExperiments:
+        for experiment in self.experimentQueue:
             self.addItem(experiment[-1])
         
     def mousePressEvent(self, event):
@@ -44,6 +44,6 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
                 item.setSelected(True)
     
     def handleMouseClick(self, itemText):
-        for experiment in self.activeExperiments:
+        for experiment in self.experimentQueue:
             if (experiment[-1] == itemText):
-                self.parent.setupStatusWidget(experiment)
+                self.parent.setupStatusWidget(list(experiment))

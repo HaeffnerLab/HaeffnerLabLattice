@@ -8,6 +8,7 @@ from status import StatusWidget
 from activeexperimentslist import ActiveExperimentsListWidget
 from parameterswidget import ParametersWidget
 from scheduler import Scheduler
+from queuedexperimentslist import QueuedExperimentsListWidget
 import sys
 
 class ScriptControl(QtGui.QWidget):
@@ -134,7 +135,9 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListLabel = QtGui.QLabel('Experiment Navigation')
         self.experimentListLabel.setFont(font)
         self.activeExperimentListLabel = QtGui.QLabel('Active Experiments')
-        self.activeExperimentListLabel.setFont(font)     
+        self.activeExperimentListLabel.setFont(font)  
+        self.queuedExperimentListLabel = QtGui.QLabel('Queued Experiments')
+        self.queuedExperimentListLabel.setFont(font)     
         self.schedulerLabel = QtGui.QLabel('Scheduler')
         self.schedulerLabel.setFont(font)        
 
@@ -154,6 +157,9 @@ class ScriptControl(QtGui.QWidget):
         self.activeExperimentListWidget = ActiveExperimentsListWidget(self)
         self.activeExperimentListWidget.show()
         
+        self.queuedExperimentsListWidget = QueuedExperimentsListWidget(self)
+        self.queuedExperimentsListWidget.show()
+        
 #        self.schedulerWidget = Scheduler(self)
         self.schedulerWidget.show()
         
@@ -169,6 +175,10 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListLayout.setAlignment(self.activeExperimentListLabel, QtCore.Qt.AlignCenter)
         self.experimentListLayout.setStretchFactor(self.activeExperimentListLabel, 0)        
         self.experimentListLayout.addWidget(self.activeExperimentListWidget)    
+        self.experimentListLayout.addWidget(self.queuedExperimentListLabel)
+        self.experimentListLayout.setAlignment(self.queuedExperimentListLabel, QtCore.Qt.AlignCenter)
+        self.experimentListLayout.setStretchFactor(self.queuedExperimentListLabel, 0)        
+        self.experimentListLayout.addWidget(self.queuedExperimentsListWidget)         
         
         self.experimentListLayout.setStretchFactor(self.experimentListWidget, 0)
         self.experimentListLayout.setStretchFactor(self.schedulerWidget, 0)

@@ -7,7 +7,6 @@ class Scheduler(QtGui.QTableWidget):
         QtGui.QTableWidget.__init__(self)
         self.parent = parent
         self.conflictingExperiments = conflictingExperiments
-        self.experimentQueue = []
         self.experimentRowDict = {}
         self.experimentTimerDict = {}
         self.checkBoxExperimentDict = {}
@@ -116,8 +115,8 @@ class Scheduler(QtGui.QTableWidget):
             if (status == 'Running' or status == 'Pausing' or status == 'Stopping'):
                 # add experiment to queue
                 clearToRun = False
-                self.experimentQueue.append(experiment)
-                print 'Current Experiment Queue: ', self.experimentQueue
+                self.parent.queuedExperimentsListWidget.addExperiment(experiment)
+                print 'Current Experiment Queue: ', self.parent.queuedExperimentsListWidget.experimentQueue
                 break
             else:
                 clearToRun = True     
@@ -126,14 +125,16 @@ class Scheduler(QtGui.QTableWidget):
     @inlineCallbacks
     def updateStatusScheduler(self, x, y):
         try:
-            if (tuple(y[0][:-2]) in self.conflictingExperiments[self.experimentQueue[-1]]):
+            if (tuple(y[0][:-2]) in self.conflictingExperiments[self.parent.queuedExperimentsListWidget.experimentQueue[-1]]):
                 if (y[0][-1] == 'Status'):
                     parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
                     if (parameter == 'Finished' or parameter == 'Stopped' or parameter == 'Paused'):
-                        self.startExperiment(self.experimentQueue[-1], True)
-                        self.experimentQueue.remove(self.experimentQueue[-1])
+                        self.startExperiment(self.parent.queuedExperimentsListWidget.experimentQueue[-1], True)
+                        self.parent.queuedExperimentsListWidget.removeExperiment(self.parent.queuedExperimentsListWidget.experimentQueue[-1])
         except IndexError:
             # experimentQueue is empty
             pass
+#        except:
+#            pass # queued experiments list widget not created yet!
         yield None
         
