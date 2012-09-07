@@ -106,7 +106,7 @@ class AnalysisWidget(QtGui.QWidget):
                         # MULTIPLE LINES IN THE SAME DATASET!!!!
                         fitFunction = self.fitCurveDictionary[key]
                         fitFunction(dataset, directory, index, labels[index], parameters)
-        self.solutionsWindow = SolutionsWindow(self.solutionsDictionary)
+        self.solutionsWindow = SolutionsWindow(self, self.context, self.solutionsDictionary)
         self.solutionsWindow.show()
 
     def fitGaussian(self, dataset, directory, index, label, parameters):
@@ -141,7 +141,7 @@ class AnalysisWidget(QtGui.QWidget):
                
         height, center, sigma, offset = self.fit(self.fitFuncGaussian, [height, center, sigma, offset], newYData, dataX)
         
-        self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]'] = [height, center, sigma, offset]
+        self.solutionsDictionary[dataset, directory, label, 'Gaussian', '[Height, Center, Sigma, Offset]', index] = [height, center, sigma, offset]
 
         yield self.cxn.data_vault.cd(directory, context = self.context)
         yield self.cxn.data_vault.open(dataset, context = self.context)
@@ -204,7 +204,7 @@ class AnalysisWidget(QtGui.QWidget):
         
         gamma, center, I, offset = self.fit(self.fitFuncLorentzian, [gamma, center, I, offset], newYData, dataX)
         
-        self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]'] = [gamma, center, I, offset] 
+        self.solutionsDictionary[dataset, directory, label, 'Lorentzian', '[Gamma, Center, I, Offset]', index] = [gamma, center, I, offset] 
                
         yield self.cxn.data_vault.cd(directory, context = self.context)
         yield self.cxn.data_vault.open(dataset, context = self.context)
@@ -257,7 +257,7 @@ class AnalysisWidget(QtGui.QWidget):
             
         slope, offset = self.fit(self.fitFuncLine, [slope, offset], newYData, dataX)
         
-        self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]'] = [slope, offset] 
+        self.solutionsDictionary[dataset, directory, label, 'Line', '[Slope, Offset]', index] = [slope, offset] 
         
         yield self.cxn.data_vault.cd(directory, context = self.context)
         yield self.cxn.data_vault.open(dataset, context = self.context)
@@ -312,7 +312,7 @@ class AnalysisWidget(QtGui.QWidget):
 
         A, B, C = self.fit(self.fitFuncParabola, [A, B, C], newYData, dataX)
         
-        self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]'] = [A, B, C] 
+        self.solutionsDictionary[dataset, directory, label, 'Parabola', '[A, B, C]', index] = [A, B, C] 
         
         yield self.cxn.data_vault.cd(directory, context = self.context)
         yield self.cxn.data_vault.open(dataset, context = self.context)
@@ -520,29 +520,48 @@ class ParameterWindow(QtGui.QWidget):
 class SolutionsWindow(QtGui.QWidget):
     """Creates the fitting parameter window"""
 
-    def __init__(self, solutionsDictionary):
+    def __init__(self, parent, context, solutionsDictionary):
         QtGui.QWidget.__init__(self)
+        self.parent = parent
+        self.context = context
         self.solutionsDictionary = solutionsDictionary
         self.labels = []
         self.textBoxes = []
+        self.acceptButtons = []
         self.setWindowTitle('Solutions')
+        self.buttonIndexDict = {}
         self.setupUI()
    
     def setupUI(self):
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(5)        
         
-        for dataset, directory, label, curve, parameters in self.solutionsDictionary.keys():
+        for dataset, directory, label, curve, parameters, index in self.solutionsDictionary.keys():
             datasetLabel = QtGui.QLabel(str(dataset) + ' - ' + str(directory[-1]) + ' - ' + label)
             self.labels.append(datasetLabel)
             textBox = QtGui.QLineEdit(readOnly=True)
-            textBox.setText('\'Fit\', [\'[]\', \''+ str(curve) + '\', ' + '\'' + str(self.solutionsDictionary[dataset, directory, label, curve, parameters]) + '\']')
+            textBox.setText('\'Fit\', [\'[]\', \''+ str(curve) + '\', ' + '\'' + str(self.solutionsDictionary[dataset, directory, label, curve, parameters, index]) + '\']')
             textBox.setMinimumWidth(550)
             self.textBoxes.append(textBox)
+            acceptButton = QtGui.QPushButton("Accept", self)
+            acceptButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+            acceptButton.clicked.connect(self.acceptSignal)  
+            self.acceptButtons.append(acceptButton)          
+            self.buttonIndexDict[acceptButton] = [directory, dataset, index]
         
         for i in range(len(self.labels)):
             self.grid.addWidget(self.labels[i], i, 0, QtCore.Qt.AlignCenter)
             self.grid.addWidget(self.textBoxes[i], i, 1, QtCore.Qt.AlignCenter)
+            self.grid.addWidget(self.acceptButtons[i], i, 2, QtCore.Qt.AlignCenter)
 
         self.setLayout(self.grid)
         self.show()
+    
+    @inlineCallbacks
+    def acceptSignal(self, evt):
+        directory, dataset, index = self.buttonIndexDict[self.sender()]
+        yield self.parent.cxn.data_vault.cd(directory, context = self.context)
+        yield self.parent.cxn.data_vault.open(dataset, context = self.context)
+        yield self.parent.cxn.data_vault.add_parameter_over_write('Accept-' + str(index), True, context = self.context)        
+        
+        

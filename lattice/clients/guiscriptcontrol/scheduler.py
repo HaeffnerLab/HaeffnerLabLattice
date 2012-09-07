@@ -15,7 +15,6 @@ class Scheduler(QtGui.QTableWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
         self.setMaximumWidth(425) 
      
-
     def setContext(self, context):
         self.context = context
         self.setupParameterListener()
