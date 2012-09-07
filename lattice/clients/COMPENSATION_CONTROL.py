@@ -14,19 +14,18 @@ class COMPENSATION_CONTROL(QCustomLevelTilt):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
-        from labrad.types import Error
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.compensation_box
         yield self.setupListeners()
-        range1 = yield self.server.getrange(1)
-        range2 = yield self.server.getrange(2)
+        range1 = yield self.server.getrange('comp1')
+        range2 = yield self.server.getrange('comp2')
         MinLevel = max(range1[0],range2[0])
         MaxLevel = min(range1[1],range2[1])
         self.setRange((MinLevel,MaxLevel))
         self.setStepSize(.1)
         #set initial values
-        one = yield self.server.getcomp(1)
-        two = yield self.server.getcomp(2)
+        one = yield self.server.getcomp('comp1')
+        two = yield self.server.getcomp('comp2')
         self.setValues(one,two)
         #connect functions
         self.onNewValues.connect(self.inputHasUpdated)
@@ -45,25 +44,25 @@ class COMPENSATION_CONTROL(QCustomLevelTilt):
         yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
     
     def followSignal(self, x, (channel,voltage)):
-        if channel == 1:
+        if channel == 'comp1':
             two = self.valueRight.value()
             self.setValues(voltage,two)
-        elif channel == 2:
+        elif channel == 'comp2':
             one = self.valueLeft.value()
             self.setValues(one,voltage)
-	
+
     @inlineCallbacks
     def sendToServer(self):
         if(self.inputUpdated):
             one = self.valueLeft.value()
             two =  self.valueRight.value()
-            yield self.server.setcomp(1,one)
-            yield self.server.setcomp(2,two)
+            yield self.server.setcomp('comp1',one)
+            yield self.server.setcomp('comp2',two)
             self.inputUpdated = False;
             
     def closeEvent(self, x):
         self.reactor.stop()
-    	      
+        
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor

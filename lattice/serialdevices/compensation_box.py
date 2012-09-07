@@ -19,6 +19,7 @@ from serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, Ser
 from twisted.internet import reactor
 import binascii
 from labrad.server import Signal
+from labrad.types import Error
 from labrad import types as T
 
 PREC_BITS = 16.
@@ -31,7 +32,7 @@ ERROR_TIME = 1.0 #time to wait if correct response not received
 SIGNALID = 94976
 
 class compensation_channel():
-    def __init__(self, name, device_channel, limits, calibration):
+    def __init__(self, name, device_channel, limits, calibration = (1.0, 0.0)):
         self.name = name
         self.channel = device_channel
         self.limits = limits
@@ -47,25 +48,22 @@ class compensation_channel():
     
     @property
     def comstring(self):
-        
-        
-    def volToSequential(self, channel, voltage):
-        (m,b) = self.d[channel]['calibration']
+        seq =  self.volToSequential(self._value)
+        comstring = self.makeComString(seq)
+        return comstring
+    
+    def volToSequential(self, voltage):
+        (m,b) = self.calibration
         seq = int(round( m * voltage + b ))
         return seq
     
-    def mapMessage( self, channel, value ):
-        devChannel = self.d[channel]['devChannel']
-        return self.makeComString( devChannel, self.volToSequential( channel, value ) )
-    
     #converts sequential representation to string understood by microcontroller                                                                                                        
     #i.e ch 1 set to maximum, which is sequentially 2**16-1 or ffff in hex -> '1,str' where str =  is character representation of 0xffff given by binascii.unhexlify(ffff)
-    @staticmethod
-    def makeComString( channel, binVolt ):
+    def makeComString(self, binVolt ):
         hexrepr = hex( binVolt )[2:] #select ffff out of 0xfff'                                                                                                                          
         hexrepr = hexrepr.zfill( 4 ) #left pads to make sure 4 characters                                                                                                            
         numstr = binascii.unhexlify( hexrepr ) #converts ffff to ascii characters                                                                                                    
-        comstring = str( channel ) + ',' + numstr
+        comstring = str( self.channel ) + ',' + numstr
         return comstring
                 
 
@@ -75,18 +73,10 @@ class CompensationBox( SerialDeviceServer ):
     port = None
     serNode = 'lattice-imaging'
     timeout = T.Value(TIMEOUT,'s')
-    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(wv)')
+    onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(sv)')
 
     @inlineCallbacks
     def initServer( self ):
-        """
-        Initialize server      
-        Initializes dictionary (dcDict) of relevant device data
-        Initializes queue (queue) for commands to send
-        Initializes serial connection
-        Frees connection for writing
-        @raise SerialDeviceError: (For subclass author) Define regKey and serNode attributes
-        """
         self.createDict()
         self.queue = []
         if not self.regKey or not self.serNode: raise SerialDeviceError( 'Must define regKey and serNode attributes' )
@@ -110,28 +100,22 @@ class CompensationBox( SerialDeviceServer ):
     
     def createDict( self ):
         """
-        Initializes dictionary object (d) in the format
-        channel : {'devChannel':
-                    'range':
-                    'calibration':
+        Initializes dictionary object (d) with the channel information
         """
-        self.d = {
-                  1: {'devChannel':0,
-                      'range':(-479.0, -10.0),
-                      }, 
-                  2: {'devChannel':1,
-                      'range':(-479.0, -10.0),
-                      } 
-                  }
+        self.d = {}
+        self.d['comp1'] = compensation_channel('comp1', 0, (-479.0, -10.0))
+        self.d['comp2'] = compensation_channel('comp2', 1, (-479.0, -10.0))
         self.addCalibration()
         
     def addCalibration(self):
         #calibration with two points in the format (channel, (voltage, sequential DAC))
-        recordedCalibration = ((1,((-7.67, 2000), (-479.9, 2**16 - 1))), (2,((-7.82, 2000), (-483.3, 2**16 - 1))) ) 
-        for chan, points in recordedCalibration:
+        recordedCalibration = {'comp1':((-7.67, 2000), (-479.9, 2**16 - 1)),
+                               'comp2':((-7.82, 2000), (-483.3, 2**16 - 1))
+                               } 
+        for name, points in recordedCalibration.iteritems():
             m = ( points[1][1] - points[0][1] ) / ( points[1][0] - points [0][0] )
             b = points[0][1] - m * points[0][0]
-            self.d[chan]['calibration'] = (m,b)
+            self.d[name].calibration = (m,b)
     
     @inlineCallbacks
     def getRegValues(self):
@@ -139,25 +123,28 @@ class CompensationBox( SerialDeviceServer ):
         Gets the information about the current setting from the registry
         """  
         yield self.client.registry.cd(['','Servers', 'Compensation'], True)
-        for channel in self.d.keys():
-#            try:
-                voltage = yield self.client.registry.get(channel)
-#            except Exception:
-#                ra
-#                print '{} not found in registry'.format(channel)
-#                r1,r2 = self.d[channel]['range']
-#                first = abs(r1) < abs(r2)
-#                if first:
-#                    voltage = r1
-#                else:
-#                    voltage = r2
-#            else:
-#                print 'sending', channel. voltage
-#            yield self.tryToSend( channel, voltage )
-#            self.d[channel]['value'] = voltage
+        for name,channel in self.d.iteritems():
+            try:
+                voltage = yield self.client.registry.get(name)
+            except Error,e:
+                if e.code == 21:
+                    print '{} not found in registry'.format(name)
+                    r1,r2 = channel.limits
+                    first = abs(r1) < abs(r2)
+                    if first:
+                        voltage = r1
+                    else:
+                        voltage = r2
+                    print 'initializing to value {}'.format(voltage)
+                else:
+                    raise
+            else:
+                channel.setValue(voltage)
+                message = channel.comstring
+                yield self.tryToSend( message )
 
     @inlineCallbacks      
-    def tryToSend( self, channel, value ):
+    def tryToSend( self, message ):
         """
         Check if serial connection is free.
         If free, write value to channel.
@@ -166,13 +153,13 @@ class CompensationBox( SerialDeviceServer ):
         """
         if self.free:
             self.free = False
-            yield self.writeToSerial( channel, value )
+            yield self.writeToSerial( message )
         elif len( self.queue ) > MAX_QUEUE_SIZE:
             raise Exception( 'Queue size exceeded')
-        else: self.queue.append( ( channel, value ) )
+        else: self.queue.append( message )
         
     @inlineCallbacks
-    def writeToSerial( self, channel, value ):
+    def writeToSerial( self, message ):
         """
         Write value to specified channel through serial connection.
         
@@ -187,22 +174,18 @@ class CompensationBox( SerialDeviceServer ):
         @raise SerialConnectionError: Error code 2.  No open serial connection.
         """
         self.checkConnection()
-        toSend = self.mapMessage( channel, value )   
-        self.ser.write( toSend )
+        self.ser.write( message )
         resp = yield self.ser.read( len( RESP_STRING ) )
         if RESP_STRING != resp:
 #            Since we didn't get the the correct response,
 #            place the value back in the front of the queue
 #            and wait for a specified ERROR_TIME before
 #            checking the queue again.
-            self.queue.insert( 0, ( channel, value ) )
+            self.queue.insert( 0, message )
             reactor.callLater( ERROR_TIME, self.checkQueue )
-            raise Exception ( 'Correct response from DC box not received, sleeping for short period')
+            print 'Correct response from DC box not received, sleeping for short period'
         else:
-#            Since we got the correct response,
-#            update the value entry for this channel
-#            and check the queue.
-            self.d[channel]['value'] = value
+            #got the correct response, moving on
             self.checkQueue()
     
     @inlineCallbacks
@@ -211,50 +194,54 @@ class CompensationBox( SerialDeviceServer ):
         Check queue for values to write
         """
         if self.queue:
-            yield self.writeToSerial( *self.queue.pop( 0 ) )
+            yield self.writeToSerial( self.queue.pop( 0 ) )
         else:
             self.free = True
 
-    def validateChannel( self, channel ):
+    def validateChannel( self, name ):
         """
         Check to see if specified device possesses specified channel.
         """
-        if channel not in self.d.keys(): raise Exception('Invalid device channel {}'.format(channel))
+        if name not in self.d.keys(): raise Exception('Invalid device channel {}'.format(name))
 
-    def validateVoltage( self, channel, voltage ):
+    def validateVoltage( self, name, voltage ):
         """
         Check to see if value lies within specified device's range.
         """
-        (MIN,MAX) = self.d[channel]['range']
+        channel = self.d[name]
+        (MIN,MAX) = channel.limits
         if not MIN <= voltage <= MAX: raise Exception('Invalid voltage {}'.format(voltage))
 
-    @setting( 0, channel = 'w: which electrode (1 or 2)', voltage = 'v: voltage to apply', returns = '' )
-    def setComp( self, c, channel, voltage ):
+    @setting( 0, name = 's: channel name', voltage = 'v: voltage to apply', returns = '' )
+    def setComp( self, c, name, voltage ):
         """
         Sets compensation electrode voltages.
         """
-        self.validateChannel( channel )
-        self.validateVoltage( channel, voltage )
-        self.tryToSend( channel, voltage )
-        self.notifyOtherListeners(c, (channel,voltage))
+        self.validateChannel( name )
+        self.validateVoltage( name, voltage )
+        channel = self.d[name]
+        channel.setValue(voltage)
+        message = channel.comstring
+        self.tryToSend( message )
+        self.notifyOtherListeners(c, (name,voltage))
 
-    @setting( 1 , channel = 'w: which electrode (1 or 2)', returns = 'v: voltage' )
-    def getComp( self, c, channel ):
+    @setting( 1 , name = 's: channel name', returns = 'v: voltage' )
+    def getComp( self, c, name ):
         """
         Retrieve compensation voltage for specified device channel.
         """
-        self.validateChannel( channel )
-        value = self.d[channel]['value']
+        self.validateChannel( name )
+        value = self.d[name].value
         return value
     
-    @setting(2,  channel = 'w: which electrode (1 or 2)', returns = '*v: range' )
-    def getRange(self, c, channel):
+    @setting(2,  name = 's: channel name', returns = '*v: range' )
+    def getRange(self, c, name):
         """
         Returns range of the specified device channel
         """
-        self.validateChannel( channel )
-        range = self.d[channel]['range']
-        return range
+        self.validateChannel( name )
+        limits = self.d[name].limits
+        return limits
     
     def notifyOtherListeners(self, context, chanInfo):
         """
@@ -263,11 +250,6 @@ class CompensationBox( SerialDeviceServer ):
         notified = self.listeners.copy()
         notified.remove(context.ID)
         self.onNewUpdate(chanInfo, notified)
-
-    def seqToVoltage(self, channel, seq):
-        (m,b) = self.d[channel]['calibration']
-        voltage = (seq  - b) / m
-        return voltage
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -279,14 +261,13 @@ class CompensationBox( SerialDeviceServer ):
     @inlineCallbacks
     def stopServer(self):
         '''save the latest voltages into registry'''
-        yield None
-#        try:
-#            yield self.client.registry.cd(['','Servers', 'Compensation'], True)
-#            for channel in self.d.keys():
-#                yield self.client.registry.set(channel, self.d[channel]['value'])
-#        except AttributeError:
-#            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
-#            pass
+        try:
+            yield self.client.registry.cd(['','Servers', 'Compensation'], True)
+            for name,channel in self.d.iteritems():
+                yield self.client.registry.set(name, channel.value)
+        except AttributeError:
+            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
+            pass
 
 if __name__ == "__main__":
     from labrad import util
