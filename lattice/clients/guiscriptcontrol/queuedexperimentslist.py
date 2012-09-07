@@ -13,6 +13,7 @@ class QueuedExperimentsListWidget(QtGui.QListWidget):
         self.experimentQueue = [] # list of experiment names
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
         self.setMaximumHeight(100)
+        self.setMaximumWidth(425)
     
     def addExperiment(self, experiment):
         self.experimentQueue.append(experiment)

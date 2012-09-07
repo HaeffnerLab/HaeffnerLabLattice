@@ -13,6 +13,8 @@ class Scheduler(QtGui.QTableWidget):
         self.experimentCounter = {} # tracks number of times an experiment has been called
         self.setupScheduler()
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
+        self.setMaximumWidth(425) 
+     
 
     def setContext(self, context):
         self.context = context

@@ -12,6 +12,8 @@ class ExperimentListWidget(QtGui.QListWidget):
         self.parent = parent
         self.path = []
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
+        self.setMaximumWidth(425)
+
     
     @inlineCallbacks
     def populateList(self, path):

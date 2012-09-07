@@ -13,6 +13,7 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
         self.activeExperiments = [] # list of experiment names
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
         self.setMaximumHeight(100)
+        self.setMaximumWidth(425)
     
     def addExperiment(self, experiment):
         self.activeExperiments.append(experiment)
