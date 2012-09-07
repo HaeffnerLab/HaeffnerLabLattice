@@ -7,6 +7,8 @@ from experimentlist import ExperimentListWidget
 from status import StatusWidget
 from activeexperimentslist import ActiveExperimentsListWidget
 from parameterswidget import ParametersWidget
+from scheduler import Scheduler
+from queuedexperimentslist import QueuedExperimentsListWidget
 import sys
 
 class ScriptControl(QtGui.QWidget):
@@ -31,6 +33,16 @@ class ScriptControl(QtGui.QWidget):
                                 ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
                                 ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
                                }
+            
+            # Every experiment conflicts with at least itself
+            self.conflictingExperiments = {
+                                            ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')], # Exp1 conflicts with itself and Exp2
+                                            ('Test', 'Exp2'): [('Test', 'Exp2')],
+                                            ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
+                                            ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
+                                            ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
+                                          }
+                        
         except ImportError as e:
             print 'Script Control: ', e
             self.experiments = {}
@@ -39,6 +51,7 @@ class ScriptControl(QtGui.QWidget):
         self.connect()
         
         self.experimentParametersWidget = ParametersWidget(self)
+        self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
         self.setupMainWidget()
 
 
@@ -89,7 +102,8 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
-        except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original error will probably just be reproduced
+            self.schedulerWidget.reinitializeListener()
+        except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()
         yield None
@@ -121,13 +135,18 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListLabel = QtGui.QLabel('Experiment Navigation')
         self.experimentListLabel.setFont(font)
         self.activeExperimentListLabel = QtGui.QLabel('Active Experiments')
-        self.activeExperimentListLabel.setFont(font)        
-        self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
-        self.experimentParametersLabel.setFont(font)
-        self.globalParametersLabel = QtGui.QLabel('Global Parameters')
-        self.globalParametersLabel.setFont(font)
-        self.controlLabel = QtGui.QLabel('Control')
-        self.controlLabel.setFont(font)
+        self.activeExperimentListLabel.setFont(font)  
+        self.queuedExperimentListLabel = QtGui.QLabel('Queued Experiments')
+        self.queuedExperimentListLabel.setFont(font)     
+        self.schedulerLabel = QtGui.QLabel('Scheduler')
+        self.schedulerLabel.setFont(font)        
+
+#        self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
+#        self.experimentParametersLabel.setFont(font)
+#        self.globalParametersLabel = QtGui.QLabel('Global Parameters')
+#        self.globalParametersLabel.setFont(font)
+#        self.controlLabel = QtGui.QLabel('Control')
+#        self.controlLabel.setFont(font)
                      
         self.experimentListLayout = QtGui.QVBoxLayout()
                
@@ -138,15 +157,33 @@ class ScriptControl(QtGui.QWidget):
         self.activeExperimentListWidget = ActiveExperimentsListWidget(self)
         self.activeExperimentListWidget.show()
         
+        self.queuedExperimentsListWidget = QueuedExperimentsListWidget(self)
+        self.queuedExperimentsListWidget.show()
+        
+#        self.schedulerWidget = Scheduler(self)
+        self.schedulerWidget.show()
+        
         self.experimentListLayout.addWidget(self.experimentListLabel)
         self.experimentListLayout.setAlignment(self.experimentListLabel, QtCore.Qt.AlignCenter)
         self.experimentListLayout.setStretchFactor(self.experimentListLabel, 0)
         self.experimentListLayout.addWidget(self.experimentListWidget)
+        self.experimentListLayout.addWidget(self.schedulerLabel)
+        self.experimentListLayout.setAlignment(self.schedulerLabel, QtCore.Qt.AlignCenter)
+        self.experimentListLayout.setStretchFactor(self.schedulerLabel, 0)        
+        self.experimentListLayout.addWidget(self.schedulerWidget)               
         self.experimentListLayout.addWidget(self.activeExperimentListLabel)
         self.experimentListLayout.setAlignment(self.activeExperimentListLabel, QtCore.Qt.AlignCenter)
         self.experimentListLayout.setStretchFactor(self.activeExperimentListLabel, 0)        
-        self.experimentListLayout.addWidget(self.activeExperimentListWidget)        
+        self.experimentListLayout.addWidget(self.activeExperimentListWidget)    
+        self.experimentListLayout.addWidget(self.queuedExperimentListLabel)
+        self.experimentListLayout.setAlignment(self.queuedExperimentListLabel, QtCore.Qt.AlignCenter)
+        self.experimentListLayout.setStretchFactor(self.queuedExperimentListLabel, 0)        
+        self.experimentListLayout.addWidget(self.queuedExperimentsListWidget)         
         
+        self.experimentListLayout.setStretchFactor(self.experimentListWidget, 0)
+        self.experimentListLayout.setStretchFactor(self.schedulerWidget, 0)
+        self.experimentListLayout.setStretchFactor(self.activeExperimentListWidget, 0)
+                
         # Setup Experiment Parameter Widget
 #        yield deferToThread(time.sleep, .05) # necessary delay. Qt issue.
 #        self.experimentGridLayout = QtGui.QVBoxLayout()
@@ -181,9 +218,11 @@ class ScriptControl(QtGui.QWidget):
         self.experimentListWidget.populateList([])
         self.experimentContext = yield self.cxn.context()
         self.globalContext = yield self.cxn.context()
-        self.statusContext = yield self.cxn.context()        
+        self.statusContext = yield self.cxn.context()
+        self.schedulerContext = yield self.cxn.context()
         self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
         self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+        self.schedulerWidget.setContext(self.schedulerContext)
     def setupStatusWidget(self, experiment):
         try:
             self.statusWidget.hide()

@@ -8,7 +8,7 @@ class Test2():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp2']
         print 'Initializing Test2'
-        self.iterations = 15
+        self.iterations = 10
         self.progress = 0.0
         #threading.Thread.__init__(self)
     
