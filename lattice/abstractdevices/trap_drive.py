@@ -18,7 +18,6 @@ timeout = 20
 
 from labrad.server import LabradServer, Signal, setting
 from twisted.internet.defer import inlineCallbacks, returnValue
-from labrad.types import Error
 
 class TrapDrive( LabradServer ):
     """Controls Trap Drive"""
@@ -29,8 +28,8 @@ class TrapDrive( LabradServer ):
     
     @inlineCallbacks
     def initServer( self ):
-        self.powerRange = (-7.0,-1.7) #dBM
-        self.freqRange = (14.5,15.5) #MHz
+        self.powerRange = (-20.0,0.0) #dBM
+        self.freqRange = (30.0,40.0) #MHz
         self.listeners = set()
         self.serverName = 'RohdeSchwarz Server'
         self.device = 'lattice-imaging GPIB Bus - USB0::0x0AAD::0x0054::104541'
@@ -82,13 +81,13 @@ class TrapDrive( LabradServer ):
     
     @setting(3, 'Output',  os=['b'], returns=['b'])
     def output(self, c, os = None):
-         """Get or set the output status."""
-         if self.server is None: raise Exception ('{} not connected'.format(self.serverName))
-         outp = yield self.server.output(os)
-         if os is not None:
-             otherListeners = self.getOtherListeners(c)
-             self.onStateUpdate(os)
-         returnValue(outp)
+        """Get or set the output status."""
+        if self.server is None: raise Exception ('{} not connected'.format(self.serverName))
+        outp = yield self.server.output(os)
+        if os is not None:
+            otherListeners = self.getOtherListeners(c)
+            self.onStateUpdate(os)
+        returnValue(outp)
     
     @setting(4, 'Get Amplitude Range', returns = '(vv)')
     def getPowerRange(self, c):

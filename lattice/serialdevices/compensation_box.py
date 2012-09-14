@@ -141,6 +141,7 @@ class CompensationBox( SerialDeviceServer ):
             else:
                 channel.setValue(voltage)
                 message = channel.comstring
+                print channel.name, channel.value
                 yield self.tryToSend( message )
 
     @inlineCallbacks      

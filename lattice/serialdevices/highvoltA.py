@@ -91,7 +91,7 @@ class HighVoltBoxA( SerialDeviceServer ):
                 print 'Error opening serial connection'
                 print 'Check set up and restart serial server'
             else: raise
-        self.populateDict()
+        yield self.populateDict()
         self.free = True
     
     def createDict(self):

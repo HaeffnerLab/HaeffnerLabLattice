@@ -289,13 +289,3 @@ class ScriptControl(QtGui.QWidget):
 
     def closeEvent(self, res):
         self.reactor.stop()
-
-
-if __name__=="__main__":
-    a = QtGui.QApplication( [] )
-    import qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
-    scriptControl = ScriptControl(reactor)
-    reactor.run()
-

@@ -47,10 +47,8 @@ class hvWidget(QtGui.QFrame):
     def setupListeners(self):
         yield self.server.signal__new_voltage(SIGNALID)
         yield self.server.addListener(listener = self.followSignal, source = None, ID = SIGNALID)
-        print 'setup lis'
     
     def followSignal(self, x, volt):
-        print 'new signal, x'
         self.spin.blockSignals(True)
         self.spin.setValue(volt)
         self.spin.blockSignals(False)
