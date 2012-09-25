@@ -95,9 +95,11 @@ class Dataset(QtCore.QObject):
         variables = yield self.cxn.data_vault.variables(context = self.context)
         numberDependentVariables = len(variables[1])
 #       if (self.parameters != None):
-        for window in self.parent.dwDict[self]:
-            window.fitFromScript(self.dataset, self.directory, numberDependentVariables, value) 
-            
+        try:
+            for window in self.parent.dwDict[self]:
+                window.fitFromScript(self.dataset, self.directory, numberDependentVariables, value) 
+        except KeyError:
+            print 'dwDict not created yet. Either the Fit parameter was added before data was created or the data is added too quickly. Try adding a pause after adding all the data intended for fitting.'
     # sets up the listener for new data
     @inlineCallbacks
     def setupDataListener(self, context):
