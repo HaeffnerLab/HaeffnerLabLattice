@@ -37,7 +37,7 @@ class NormalPMTFlow( LabradServer):
     def initServer(self):
         self.saveFolder = ['','PMT Counts']
         self.dataSetName = 'PMT Counts'
-        self.collectTimes = {'Normal':0.100, 'Differential':0.100}
+        self.collectTimes = {'Normal':T.Value(0.100,'s'), 'Differential':T.Value(0.100,'s')}
         self.lastDifferential = {'ON': 0, 'OFF': 0}
         self.currentMode = 'Normal'
         self.dv = None
@@ -235,24 +235,25 @@ class NormalPMTFlow( LabradServer):
         if self.openDataSet is None: return ''
         return self.openDataSet
     
-    @setting(8, 'Set Time Length', timelength = 'v')
+    @setting(8, 'Set Time Length', timelength = 'v[s]')
     def setTimeLength(self, c, timelength):
         """Sets the time length for the current mode"""
+        print 'set time length', timelength
         mode = self.currentMode
         if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
-        if not self.collectTimeRange[0] <= timelength <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
+        if not self.collectTimeRange[0] <= timelength['s'] <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
         self.collectTimes[mode] = timelength
         initrunning = self.recording.running #if recording when the call is made, need to stop and restart
         if initrunning:
             yield self.recording.stop()
-        yield self.pulser.set_collection_time(timelength, mode)
+        yield self.pulser.set_collection_time(timelength['s'], mode)
         if initrunning:
             if mode == 'Differential':
                 yield self._stopPulserDiff()
                 yield self._programPulserDiff()
-            self.recording.start(timelength/2.0)
+            self.recording.start(timelength['s']/2.0)
         otherListeners = self.getOtherListeners(c)      
-        self.onNewSetting(('timelength', str(timelength)), otherListeners)
+        self.onNewSetting(('timelength', str(timelength['s'])), otherListeners)
     
     @setting(9, 'Get Next Counts', kind = 's', number = 'w', average = 'b', returns = ['*v', 'v'])
     def getNextCounts(self, c, kind, number, average = False):
@@ -290,9 +291,9 @@ class NormalPMTFlow( LabradServer):
         yield self.pulser.new_sequence()
         countRate = self.collectTimes['Differential']
         yield self.pulser.add_ttl_pulse('DiffCountTrigger', T.Value(0.0,'us'), T.Value(10.0,'us'))
-        yield self.pulser.add_ttl_pulse('DiffCountTrigger', T.Value(countRate, 's'), T.Value(10.0,'us'))
-        yield self.pulser.add_ttl_pulse('866DP', T.Value(0.0,'us'), T.Value(countRate, 's'))
-        yield self.pulser.extend_sequence_length(T.Value(2 * countRate, 's'))
+        yield self.pulser.add_ttl_pulse('DiffCountTrigger', countRate, T.Value(10.0,'us'))
+        yield self.pulser.add_ttl_pulse('866DP', T.Value(0.0,'us'), countRate)
+        yield self.pulser.extend_sequence_length(2 * countRate)
         yield self.pulser.program_sequence()
         yield self.pulser.start_infinite()
     

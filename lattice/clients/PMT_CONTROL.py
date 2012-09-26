@@ -1,5 +1,5 @@
-from PyQt4 import QtGui, QtCore, uic
-from twisted.internet.defer import inlineCallbacks, returnValue
+from PyQt4 import QtGui, uic
+from twisted.internet.defer import inlineCallbacks
 import os
 
 SIGNALID = 874193
@@ -16,6 +16,8 @@ class pmtWidget(QtGui.QWidget):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
+        from labrad import types as T
+        self.T = T
         cxn = yield connectAsync()
         self.server = cxn.normalpmtflow
         yield self.initializeContent()
@@ -46,6 +48,7 @@ class pmtWidget(QtGui.QWidget):
         self.doubleSpinBox.setValue(duration)
     
     def followSignal(self,signal,value):
+        #print signal,value
         self.lcdNumber.display(value)
     
     def followSetting(self, signal, message):
@@ -106,6 +109,7 @@ class pmtWidget(QtGui.QWidget):
     
     @inlineCallbacks
     def onNewDuration(self, value):
+        value = self.T.Value(value, 's')
         yield self.server.set_time_length(value)
     
     def closeEvent(self, x):
