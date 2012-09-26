@@ -17,6 +17,6 @@ else:
 			cxn.servers[node].refresh_servers()
 			#if node server is up, start all possible servers on it that are not already running
 			running_servers = cxn.servers[node].running_servers()
-			for name, othername in running_servers:
-				print 'stopping {}'.format(name)
-				cxn.servers[node].stop(name)
+			for name, fullname in running_servers:
+				print 'stopping {}'.format(fullname)
+				cxn.servers[node].stop(fullname)

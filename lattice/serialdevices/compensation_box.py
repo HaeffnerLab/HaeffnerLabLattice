@@ -72,7 +72,7 @@ class CompensationBox( SerialDeviceServer ):
     name = 'Compensation Box'
     regKey = 'COMPBOX'
     port = None
-    serNode = 'lattice-imaging'
+    serNode = 'lattice_control'
     timeout = T.Value(TIMEOUT,'s')
     onNewUpdate = Signal(SIGNALID, 'signal: channel has been updated', '(sv)')
 

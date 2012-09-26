@@ -34,7 +34,7 @@ class ADCServer( SerialDeviceServer ):
     name = 'ADCserver'
     regKey = 'ADC'
     port = None
-    serNode = 'lattice-imaging'
+    serNode = 'lattice_control'
     timeout = T.Value(1.0, 's')
 
     @inlineCallbacks

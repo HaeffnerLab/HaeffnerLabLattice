@@ -56,7 +56,7 @@ class HighVoltBoxA( SerialDeviceServer ):
     name = SERVERNAME
     regKey = 'HighVoltA'
     port = None
-    serNode = 'lattice-imaging'
+    serNode = 'lattice_control'
     timeout = T.Value(TIMEOUT,'s')
     
     onNewVoltage = Signal(795474, 'signal: new voltage', 'v')
@@ -99,8 +99,10 @@ class HighVoltBoxA( SerialDeviceServer ):
     
     @inlineCallbacks
     def populateDict(self):
-        a = yield self.ser.write('r')
+        yield self.ser.write('r')
         reading = yield self.ser.read(5)
+        print'reading'
+        print reading
         form = int(reading[0:4])
         self.dict['voltage'] = self.formatToVoltage(form)
         print self.dict
