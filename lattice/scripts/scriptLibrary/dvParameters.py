@@ -42,7 +42,7 @@ def measure_endcaps(cxn , d):
     
 def measure_compensation(cxn , d):
     server = cxn.compensation_box
-    [comp1, comp2] = [server.getcomp(1), server.getcomp(2)]
+    [comp1, comp2] = [server.getcomp('comp1'), server.getcomp('comp2')]
     d['comp1'] = comp1
     d['comp2'] = comp2
 
