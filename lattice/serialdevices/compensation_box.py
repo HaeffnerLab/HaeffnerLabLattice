@@ -28,6 +28,7 @@ MAX_QUEUE_SIZE = 1000
 TIMEOUT = 1.0 #time to wait for response from dc box
 RESP_STRING = 'r' #expected response from dc box after write
 ERROR_TIME = 1.0 #time to wait if correct response not received
+MAX_ERROR_COUNT = 3 #tolerance for consecutive send/receive errors
 
 SIGNALID = 94976
 
@@ -95,6 +96,7 @@ class CompensationBox( SerialDeviceServer ):
                 print 'Check set up and restart serial server'
             else: raise
         self.listeners = set()
+        self.error_count = 0
         self.free = True
         yield self.getRegValues()
     
@@ -182,11 +184,15 @@ class CompensationBox( SerialDeviceServer ):
 #            place the value back in the front of the queue
 #            and wait for a specified ERROR_TIME before
 #            checking the queue again.
+            if self.error_count > MAX_ERROR_COUNT:
+                raise Exception ("Too many communciation errors")
             self.queue.insert( 0, message )
+            self.error_count += 1
             reactor.callLater( ERROR_TIME, self.checkQueue )
             print 'Correct response from DC box not received, sleeping for short period'
         else:
-            #got the correct response, moving on
+            #got the correct response, clear the erros, moving on
+            self.error_count = 0
             self.checkQueue()
     
     @inlineCallbacks

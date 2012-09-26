@@ -74,8 +74,8 @@ if  __name__ == '__main__':
     cxn = labrad.connect()
     recordTime = 0.5 #seconds
     average = 4
-    freqSpan = 300.0 #Hz 
-    freqOffset = -310.0 #Hz, the offset between the counter clock and the rf synthesizer clock
+    freqSpan = 500.0 #Hz 
+    freqOffset = -740.0 #Hz, the offset between the counter clock and the rf synthesizer clock
     fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = True)
     #totalPower = fft.getTotalPower()
     peakArea = fft.getPeakArea(ptsAround = 3)
