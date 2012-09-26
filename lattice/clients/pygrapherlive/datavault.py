@@ -46,6 +46,7 @@ class DataVaultWidget(QtGui.QListWidget):
     def addDatasetItem(self, itemLabel, directory):
         if (directory == self.currentDirectory):
             self.addItem(itemLabel)
+            self.datasets.append(itemLabel)
 
 #        # configure the items list
 #        self.setViewMode(QtGui.QListView.IconMode)
