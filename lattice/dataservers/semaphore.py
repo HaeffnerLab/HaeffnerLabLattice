@@ -24,14 +24,14 @@ from twisted.internet.threads import deferToThread
 class Semaphore(LabradServer):
     """Houses the Blocking Function"""
     name = "Semaphore"
-    
+    registryDirectory = ['','Servers', 'Semaphore']
     onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)', '(*s, *s)'])
 
     @inlineCallbacks
     def initServer(self):
         self.listeners = set()  
         self.parametersDict = {}
-        yield self._initializeExperiments()
+        yield self.loadDictionary()
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -46,55 +46,22 @@ class Semaphore(LabradServer):
         return notified
     
     @inlineCallbacks
-    def _initializeExperiments(self):
-        topDir = ['','Servers', 'Semaphore']
+    def loadDictionary(self):
+        regDir = self.registryDirectory
+        
         @inlineCallbacks
-        def addParametersToDictionary(directory, parametersDict):
-            yield self.client.registry.cd(directory)
+        def _addParametersInDirectory(topPath, subPath):
+            yield self.client.registry.cd(topPath + subPath)
             directories,parameters = yield self.client.registry.dir()
-            #add available parameters
             for parameter in parameters:
                 value = yield self.client.registry.get(parameter)
-                parametersDict[parameter] = value
-            if not len(directories) and (directory != 'Semaphore'):
-                #if this is a bottom-level directory and not called a semaphore, then it's considered an experiment
-                parametersDict['Semaphore'] = {}
-                parametersDict['Semaphore']['Block'] = False
-                parametersDict['Semaphore']['Status'] = 'Finished'
-                parametersDict['Semaphore']['Continue'] = True
+                key = tuple(subPath + [parameter])
+                self.parametersDict[key] = value
             for directory in directories:
-                parametersDict[directory] = {}
-                yield addParametersToDictionary(directory, parametersDict[directory])
-                currentDir = yield self.client.registry.cd()
-                if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
-                    yield self.client.registry.cd(currentDir[0:-1])
-        #recursively the semaphore data from the registry
-        yield addParametersToDictionary(topDir, self.parametersDict)
-        
-    def _setParameter(self, path, value):
-        nest = self.parametersDict
-        try:
-            for key in path[:-1]:
-                nest = nest[key]
-        except KeyError:
-            raise Exception ("Provided Directory Not Found")
-        nest[path[-1]] = value
-
-    def _getParameter(self, path):
-        nest = self.parametersDict
-        #do down into the specified directory
-        try:
-            for key in path[:-1]:
-                nest = nest[key]
-        except KeyError:
-            raise Exception ("Provided Directory Not Found")
-        try:
-            value = nest[path[-1]]
-        except KeyError:
-            raise Exception("Parameter Not Found In Specified Directory")
-        if (type(value) == dict):
-            raise Exception('Asking for a Directory, not a Parameter')
-        return value
+                newpath = subPath + [directory]
+                yield _addParametersInDirectory(topPath, newpath)
+        #recursively add all parameters to the dictionary
+        yield _addParametersInDirectory(regDir, []) 
     
     def _getParameterNames(self, path):
         names = []
@@ -138,34 +105,42 @@ class Semaphore(LabradServer):
         for parameterName in parameterNames:
             allNames.remove(parameterName)
         return allNames
-   
-    @inlineCallbacks
-    def _saveParametersToRegistry(self):
-        '''save the latest parameters into registry'''
-
-        topDir = ['','Servers', 'Semaphore']
+#   
+#    @inlineCallbacks
+#    def _saveParametersToRegistry(self):
+#        '''save the latest parameters into registry'''
+#
+#        topDir = ['','Servers', 'Semaphore']
+#        while True:
+#            for key self.parametersDict.keys():
+#                
         
-        @inlineCallbacks
-        def saveParametersToRegistry(path, parametersDict):
-            if (len(path) == 0):
-                yield self.client.registry.cd(topDir, True)
-            else:
-                yield self.client.registry.cd(topDir + path, True)
-            parameters = self._getParameterNames(path)
-            dirList = self._getAllNames(path)
-            for name in parameters:
-                dirList.remove(name)
-            for parameter in parameters:
-                yield self.client.registry.set(parameter, parametersDict[parameter])
-            for directory in dirList:
-                if (directory != 'Semaphore'):
-                    #don't save Semaphore values to registry
-                    yield saveParametersToRegistry(path + [directory], parametersDict[directory])
-                    currentDir = yield self.client.registry.cd()
-                    if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
-                        yield self.client.registry.cd(currentDir[0:-1])
-            
-        yield saveParametersToRegistry([], self.parametersDict)
+#        @inlineCallbacks
+#        def saveParametersToRegistry(path, parametersDict):
+#            #go to the right directory
+#            if not len(path):
+#                yield self.client.registry.cd(topDir, True)
+#            else:
+#                yield self.client.registry.cd(topDir + path, True)
+#                
+#            parameters = self._getParameterNames(path)
+#            dirList = self._getAllNames(path)
+#            for name in parameters:
+#                dirList.remove(name)
+#            #MR why do this can do _getDirectoryNames?
+#            #set all parameters for the directory
+#            for parameter in parameters:
+#                yield self.client.registry.set(parameter, parametersDict[parameter])
+#            #save parameters for every subdirectory
+#            for directory in dirList:
+#                if (directory != 'Semaphore'):
+#                    #don't save Semaphore values to registry
+#                    yield saveParametersToRegistry(path + [directory], parametersDict[directory])
+#                    currentDir = yield self.client.registry.cd()
+#                    if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
+#                        yield self.client.registry.cd(currentDir[0:-1])
+#            
+#        yield saveParametersToRegistry([], self.parametersDict)
    
     @inlineCallbacks            
     def _blockExperiment(self, path):
@@ -177,25 +152,26 @@ class Semaphore(LabradServer):
                 shouldContinue = self._getParameter(continuePath) 
                 returnValue(shouldContinue)
 
-#    @setting(0, "Initialize Experiments", experiments = '*s', returns = '')
-#    def initializeExperiments(self, c, experiments):
-#        """Prepares the inital state for the experiment"""
-#        self._initializeExperiments(experiments)
-
-    @setting(1, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
+    @setting(0, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
     def setParameter(self, c, path, value):
         """Set Parameter"""
-        self._setParameter(path, value)
+        key = tuple(path)
+        if key not in self.parametersDict.keys():
+            raise Exception ("Parameter Not Found")
+        self.parametersDict[key] = value
         notified = self.getOtherListeners(c)
         self.onParameterChange((path, value), notified)
 
-    @setting(3, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s'])
+    @setting(1, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s'])
     def getParameter(self, c, path):
         """Get Parameter Value"""
-        value = self._getParameter(path)
+        key = path.astuple
+        if key not in self.parametersDict.keys():
+            raise Exception ("Parameter Not Found")
+        value = self.parametersDict[key]
         return value
 
-    @setting(5, "Get Parameter Names", path = '*s', returns = '*s')
+    @setting(2, "Get Parameter Names", path = '*s', returns = '*s')
     def getParameterNames(self, c, path):
         """Get Parameter Names"""
         parameterNames = self._getParameterNames(path)
