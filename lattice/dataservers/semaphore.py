@@ -141,7 +141,7 @@ class Semaphore(LabradServer):
             raise Exception ("Parameter Not Found")
         self.parametersDict[key] = value
         notified = self.getOtherListeners(c)
-        self.onParameterChange((path, value), notified)
+        self.onParameterChange((list(path), value), notified)
 
     @setting(1, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s'])
     def getParameter(self, c, path):
@@ -195,19 +195,24 @@ class Semaphore(LabradServer):
         if (status == 'Pausing'):
             self.parametersDict[block_key] = True
             self.parametersDict[status_key] = 'Paused'
-            ####self.onParameterChange((experiment + ['Semaphore', 'Status'], 'Paused'), self.listeners)
+            self.onParameterChange((list(status_key), 'Paused'), self.listeners)
         result = yield self._blockExperiment(status_key, block_key, continue_key)
         returnValue(result)
     
-    @setting(11, "Finish Experiment", path = '*s', returns = '')
+    @setting(11, "Finish Experiment", path = '*s', progress = 'v', returns = '')
     def finishExperiment(self, c, path, progress=None):
+        key = path.astuple
+        if key not in self.parametersDict.keys():
+            raise Exception ("Experiment Not Found or Has No Parameters")
+        status_key = tuple(list(key) + ['Semaphore', 'Status'])
+        progress_key = tuple(list(key) + ['Semaphore', 'Progress'])
         if (progress == 100.0):
-            self._setParameter(path + ['Semaphore', 'Status'], 'Finished')
-            self.onParameterChange((path + ['Semaphore', 'Status'], 'Finished'), self.listeners)
-            self.onParameterChange((path + ['Semaphore', 'Progress'], progress), self.listeners)
+            self.parametersDict[status_key] = 'Finished'
+            self.onParameterChange((list(status_key), 'Finished'), self.listeners)
+            self.onParameterChange((list(progress_key), progress), self.listeners)
         else:
-            self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
-            self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)
+            self.parametersDict[status_key] = 'Stopped'
+            self.onParameterChange((list(status_key), 'Stopped'), self.listeners)
     
     @setting(21, "Test Connection", returns = 's')
     def testConnection(self, c):
