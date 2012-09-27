@@ -15,7 +15,6 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 """
-
 from labrad.server import LabradServer, setting, Signal
 import time
 from twisted.internet import reactor
