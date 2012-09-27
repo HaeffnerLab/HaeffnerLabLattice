@@ -1,6 +1,5 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.threads import deferToThread
 
 class StatusWidget(QtGui.QWidget):
     def __init__(self, parent, experimentPath, context):
@@ -105,12 +104,16 @@ class StatusWidget(QtGui.QWidget):
 #        yield None
 
     @inlineCallbacks
-    def updateStatus(self, x, y):
-        if (y[0][:-2] == self.experimentPath):
-            if (y[0][-1] == 'Status'):
+    def updateStatus(self, target, message):
+        name, value = message
+        print name,value
+        print name[:-2]
+        if (name[:-2] == self.experimentPath):
+            #current experiment
+            if (name[-1] == 'Status'):
                 parameter = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'] , context = self.context)
                 if (parameter == 'Finished' or parameter == 'Stopped'):
-                    self.statusLabel.setText(y[1])
+                    self.statusLabel.setText(value)
                     self.stopButton.setDisabled(True)
                     self.startButton.setEnabled(True)    
                     self.pauseContinueButton.setDisabled(True)
@@ -119,13 +122,14 @@ class StatusWidget(QtGui.QWidget):
                     self.parent.activeExperimentListWidget.removeExperiment(self.experimentPath)
                 elif (parameter == 'Paused'):
                     self.statusLabel.setText(parameter)
-            elif (y[0][-1] == 'Progress'):
-                self.parent.experimentProgressDict[tuple(self.experimentPath)] = y[1]
-                self.pbar.setValue(y[1])
+            elif (name[-1] == 'Progress'):
+                self.parent.experimentProgressDict[tuple(self.experimentPath)] = value
+                self.pbar.setValue(value)
         else:
-            parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
-            if (parameter == 'Finished' or parameter == 'Stopped'):
-                self.parent.activeExperimentListWidget.removeExperiment(y[0][:-2])
+            print 'not current experiment'
+#            parameter = yield self.parent.server.get_parameter(name[:-2] + ['Semaphore', 'Status'] , context = self.context)
+#            if (parameter == 'Finished' or parameter == 'Stopped'):
+#                self.parent.activeExperimentListWidget.removeExperiment(name[:-2])
         yield None
     
     @inlineCallbacks

@@ -122,7 +122,7 @@ class Semaphore(LabradServer):
     def _blockExperiment(self, status, block, cont):
         while(True):
             if (self.parametersDict[block] == False):
-                shouldContinue = self.parametersDict(cont) 
+                shouldContinue = self.parametersDict[cont] 
                 returnValue(shouldContinue)
             yield self.wait(time.sleep, 0.1)
     
@@ -181,15 +181,14 @@ class Semaphore(LabradServer):
         """Discards current parameters and reloads them from registry"""
         yield self.loadDictionary()
     
-    @setting(10, "Block Experiment", experiment = '*s', returns="b")
-    def blockExperiment(self, c, experiment):
+    @setting(10, "Block Experiment", experiment = '*s', progress = 'v',  returns='b')
+    def blockExperiment(self, c, experiment, progress = None):
         """Can be called from the experiment to see whether it could be continued"""
-        key = experiment.astuple
-        if key not in self.parametersDict.keys():
+        status_key = tuple(list(experiment) + ['Semaphore', 'Status'])
+        block_key = tuple(list(experiment) + ['Semaphore', 'Block'])
+        continue_key = tuple(list(experiment) + ['Semaphore', 'Continue'])
+        if status_key not in self.parametersDict.keys():
             raise Exception ("Experiment Not Found or Has No Parameters")
-        status_key = tuple(list(key) + ['Semaphore', 'Status'])
-        block_key = tuple(list(key) + ['Semaphore', 'Block'])
-        continue_key = tuple(list(key) + ['Semaphore', 'Continue'])
         status = self.parametersDict[status_key]
         if (status == 'Pausing'):
             self.parametersDict[block_key] = True
@@ -200,11 +199,10 @@ class Semaphore(LabradServer):
     
     @setting(11, "Finish Experiment", path = '*s', progress = 'v', returns = '')
     def finishExperiment(self, c, path, progress=None):
-        key = path.astuple
-        if key not in self.parametersDict.keys():
+        status_key = tuple(list(path) + ['Semaphore', 'Status'])
+        progress_key = tuple(list(path) + ['Semaphore', 'Progress'])
+        if status_key not in self.parametersDict.keys():
             raise Exception ("Experiment Not Found or Has No Parameters")
-        status_key = tuple(list(key) + ['Semaphore', 'Status'])
-        progress_key = tuple(list(key) + ['Semaphore', 'Progress'])
         if (progress == 100.0):
             self.parametersDict[status_key] = 'Finished'
             self.onParameterChange((list(status_key), 'Finished'), self.listeners)
