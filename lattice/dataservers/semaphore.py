@@ -18,8 +18,8 @@ timeout = 20
 
 from labrad.server import LabradServer, setting, Signal
 import time
-from twisted.internet.defer import inlineCallbacks, returnValue
-from twisted.internet.threads import deferToThread
+from twisted.internet import reactor
+from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 
 class Semaphore(LabradServer):
     """Houses the Blocking Function"""
@@ -60,7 +60,9 @@ class Semaphore(LabradServer):
                 self.parametersDict[key] = value
             if not len(directories):
                 #bottom level directory is considered an experiment
-                
+                self.parametersDict[tuple(subPath + ['Semaphore','Block'])] = False
+                self.parametersDict[tuple(subPath + ['Semaphore','Status'])] = 'Finished'
+                self.parametersDict[tuple(subPath + ['Semaphore','Continue'])] = True
             for directory in directories:
                 newpath = subPath + [directory]
                 yield _addParametersInDirectory(topPath, newpath)
@@ -118,14 +120,18 @@ class Semaphore(LabradServer):
             yield self.client.registry.set(parameter_name, value)
    
     @inlineCallbacks            
-    def _blockExperiment(self, path):
-        blockPath = path + ['Semaphore', 'Block']
-        continuePath = path + ['Semaphore', 'Continue'] 
-        while(1):
-            yield deferToThread(time.sleep, .5)
-            if (self._getParameter(blockPath) == False):
-                shouldContinue = self._getParameter(continuePath) 
+    def _blockExperiment(self, status, block, cont):
+        while(True):
+            if (self.parametersDict[block] == False):
+                shouldContinue = self.parametersDict(cont) 
                 returnValue(shouldContinue)
+            yield self.wait(time.sleep, 0.1)
+    
+    def wait(self, seconds, result=None):
+        """Returns a deferred that will be fired later"""
+        d = Deferred()
+        reactor.callLater(seconds, d.callback, result)
+        return d
 
     @setting(0, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
     def setParameter(self, c, path, value):
@@ -179,12 +185,18 @@ class Semaphore(LabradServer):
     @setting(10, "Block Experiment", experiment = '*s', returns="b")
     def blockExperiment(self, c, experiment):
         """Can be called from the experiment to see whether it could be continued"""
-        status = self._getParameter(experiment + ['Semaphore', 'Status'])
+        key = experiment.astuple
+        if key not in self.parametersDict.keys():
+            raise Exception ("Experiment Not Found or Has No Parameters")
+        status_key = tuple(list(key) + ['Semaphore', 'Status'])
+        block_key = tuple(list(key) + ['Semaphore', 'Block'])
+        continue_key = tuple(list(key) + ['Semaphore', 'Continue'])
+        status = self.parametersDict[status_key]
         if (status == 'Pausing'):
-            self._setParameter(experiment + ['Semaphore', 'Block'], True)
-            self._setParameter(experiment + ['Semaphore', 'Status'], 'Paused')
-            self.onParameterChange((experiment + ['Semaphore', 'Status'], 'Paused'), self.listeners)
-        result = yield self._blockExperiment(experiment)
+            self.parametersDict[block_key] = True
+            self.parametersDict[status_key] = 'Paused'
+            ####self.onParameterChange((experiment + ['Semaphore', 'Status'], 'Paused'), self.listeners)
+        result = yield self._blockExperiment(status_key, block_key, continue_key)
         returnValue(result)
     
     @setting(11, "Finish Experiment", path = '*s', returns = '')
