@@ -58,6 +58,9 @@ class Semaphore(LabradServer):
                 value = yield self.client.registry.get(parameter)
                 key = tuple(subPath + [parameter])
                 self.parametersDict[key] = value
+            if not len(directories):
+                #bottom level directory is considered an experiment
+                
             for directory in directories:
                 newpath = subPath + [directory]
                 yield _addParametersInDirectory(topPath, newpath)
