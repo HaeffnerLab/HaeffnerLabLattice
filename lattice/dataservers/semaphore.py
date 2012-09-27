@@ -29,7 +29,6 @@ class Semaphore(LabradServer):
 
     @inlineCallbacks
     def initServer(self):
-        
         self.listeners = set()  
         self.parametersDict = {}
         yield self._initializeExperiments()
@@ -52,59 +51,75 @@ class Semaphore(LabradServer):
         @inlineCallbacks
         def addParametersToDictionary(directory, parametersDict):
             yield self.client.registry.cd(directory)
-            dirList = yield self.client.registry.dir()
-
-            parameters = dirList[1]
+            directories,parameters = yield self.client.registry.dir()
+            #add available parameters
             for parameter in parameters:
                 value = yield self.client.registry.get(parameter)
                 parametersDict[parameter] = value
-            if ((len(dirList[0]) == 0) and (directory != 'Semaphore')):
-                # Experiment!
+            if not len(directories) and (directory != 'Semaphore'):
+                #if this is a bottom-level directory and not called a semaphore, then it's considered an experiment
                 parametersDict['Semaphore'] = {}
                 parametersDict['Semaphore']['Block'] = False
                 parametersDict['Semaphore']['Status'] = 'Finished'
-                parametersDict['Semaphore']['Continue'] = True # If set to False, then the SCRIPT should know to clean itself up.
-
-            for directory in dirList[0]:
+                parametersDict['Semaphore']['Continue'] = True
+            for directory in directories:
                 parametersDict[directory] = {}
                 yield addParametersToDictionary(directory, parametersDict[directory])
                 currentDir = yield self.client.registry.cd()
                 if (currentDir != ['', 'Servers', 'Semaphore']): # first pass crappy solution i know        
                     yield self.client.registry.cd(currentDir[0:-1])
-        
+        #recursively the semaphore data from the registry
         yield addParametersToDictionary(topDir, self.parametersDict)
-        print 'Dictionary Initialized.'  
         
     def _setParameter(self, path, value):
         nest = self.parametersDict
-        for key in path[:-1]:
-            nest = nest[key]
+        try:
+            for key in path[:-1]:
+                nest = nest[key]
+        except KeyError:
+            raise Exception ("Provided Directory Not Found")
         nest[path[-1]] = value
 
     def _getParameter(self, path):
         nest = self.parametersDict
-        for key in path[:-1]:
-            nest = nest[key]
-        value = nest[path[-1]]
+        #do down into the specified directory
+        try:
+            for key in path[:-1]:
+                nest = nest[key]
+        except KeyError:
+            raise Exception ("Provided Directory Not Found")
+        try:
+            value = nest[path[-1]]
+        except KeyError:
+            raise Exception("Parameter Not Found In Specified Directory")
         if (type(value) == dict):
-            raise Exception('Cannot return a directory.')
+            raise Exception('Asking for a Directory, not a Parameter')
         return value
     
     def _getParameterNames(self, path):
         names = []
         nest = self.parametersDict
-        try:
-            for key in path[:-1]:
-                nest = nest[key]
-            for name in nest[path[-1]].keys():
-                if (type(nest[path[-1]][name]) != dict):
-                    names.append(name)
-        # in the root directory
-        except IndexError:
-            for name in nest.keys():
-                if (type(nest[name]) != dict):
-                    names.append(name)
-        return names
+        while True:
+            try:
+                key = path.pop(0)
+            except IndexError:
+                #reached the bottom directory
+                for name,value in nest.iteritems():
+                            if (type(value) != dict):
+                                names.append(name)
+                return names
+            else:
+                try:
+                    nest = nest[key]
+                except KeyError:
+                    if key == '':
+                        #edge case for top level directory
+                        for name,value in nest.iteritems():
+                            if (type(value) != dict):
+                                names.append(name)
+                        return names
+                    else:
+                        raise Exception ("Wrong Directory")
     
     def _getAllNames(self, path):
         nest = self.parametersDict
@@ -140,11 +155,8 @@ class Semaphore(LabradServer):
             dirList = self._getAllNames(path)
             for name in parameters:
                 dirList.remove(name)
-            
-            
             for parameter in parameters:
                 yield self.client.registry.set(parameter, parametersDict[parameter])
-            
             for directory in dirList:
                 if (directory != 'Semaphore'):
                     #don't save Semaphore values to registry
@@ -162,13 +174,13 @@ class Semaphore(LabradServer):
         while(1):
             yield deferToThread(time.sleep, .5)
             if (self._getParameter(blockPath) == False):
-                continueFactor = self._getParameter(continuePath) 
-                returnValue(continueFactor)
+                shouldContinue = self._getParameter(continuePath) 
+                returnValue(shouldContinue)
 
-    @setting(0, "Initialize Experiments", experiments = '*s', returns = '')
-    def initializeExperiments(self, c, experiments):
-        """Reserve Parameter Space For Each Experiment"""
-        self._initializeExperiments(experiments)
+#    @setting(0, "Initialize Experiments", experiments = '*s', returns = '')
+#    def initializeExperiments(self, c, experiments):
+#        """Prepares the inital state for the experiment"""
+#        self._initializeExperiments(experiments)
 
     @setting(1, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
     def setParameter(self, c, path, value):
@@ -195,11 +207,8 @@ class Semaphore(LabradServer):
         self._saveParametersToRegistry()
         
     @setting(11, "Block Experiment", experiment = '*s', returns="b")
-    def blockExperiment(self, c, experiment, progress=None):
-        """Update and get the number."""
-        if (progress != None):
-            self._setParameter(experiment + ['Semaphore', 'Progress'], progress)
-            self.onParameterChange((experiment + ['Semaphore', 'Progress'], progress), self.listeners)
+    def blockExperiment(self, c, experiment):
+        """Can be called from the experiment to see whether it could be continued"""
         status = self._getParameter(experiment + ['Semaphore', 'Status'])
         if (status == 'Pausing'):
             self._setParameter(experiment + ['Semaphore', 'Block'], True)
@@ -228,14 +237,12 @@ class Semaphore(LabradServer):
             self.onParameterChange((path + ['Semaphore', 'Progress'], progress), self.listeners)
         else:
             self._setParameter(path + ['Semaphore', 'Status'], 'Stopped')
-            self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)   
+            self.onParameterChange((path + ['Semaphore', 'Status'], 'Stopped'), self.listeners)
     
     @setting(15, "Test Connection", returns = 's')
     def testConnection(self, c):
         return 'Connected!'
-    
-    
-    
+      
 if __name__ == "__main__":
     from labrad import util
     util.runServer(Semaphore())
