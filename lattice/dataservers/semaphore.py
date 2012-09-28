@@ -124,7 +124,7 @@ class Semaphore(LabradServer):
             if (self.parametersDict[block] == False):
                 shouldContinue = self.parametersDict[cont] 
                 returnValue(shouldContinue)
-            yield self.wait(time.sleep, 0.1)
+            yield self.wait(0.1)
     
     def wait(self, seconds, result=None):
         """Returns a deferred that will be fired later"""
