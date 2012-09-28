@@ -72,7 +72,7 @@ class ScriptControl(QtGui.QWidget):
 
         try:
             self.server = self.cxn.servers['Semaphore']
-            test = yield self.cxn.servers['Semaphore'].test_connection()
+            test = yield self.cxn.servers['Semaphore'].test_connection() ####MR,why is this necessary?
             self.createContexts()
         except Exception, e:
             print 'Not Initially Connected to Semaphore', e
@@ -89,6 +89,7 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
             self.schedulerWidget.reinitializeListener()
+        ####MR3?
         except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()
@@ -204,8 +205,9 @@ class ScriptControl(QtGui.QWidget):
         self.statusContext = yield self.cxn.context()
         self.schedulerContext = yield self.cxn.context()
         self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
-        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with ####shouldn't be manually written
         self.schedulerWidget.setContext(self.schedulerContext)
+        
     def setupStatusWidget(self, experiment):
         try:
             self.statusWidget.hide()
