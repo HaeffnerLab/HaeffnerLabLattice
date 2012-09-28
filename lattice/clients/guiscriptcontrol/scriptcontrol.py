@@ -1,5 +1,4 @@
-import time
-from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
+from twisted.internet.defer import inlineCallbacks, DeferredList
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 import re
@@ -12,57 +11,50 @@ from queuedexperimentslist import QueuedExperimentsListWidget
 import sys
 
 class ScriptControl(QtGui.QWidget):
-    def __init__(self, reactor, parent):
+    
+    #dictionary in the form semaphore_path: (import_part, name)
+    ExperimentInfo = {
+     ('Test', 'Exp1'):  ('experiments.Test', 'Test'),
+     ('Test', 'Exp2'):  ('experiments.Test2', 'Test2'),
+     ('SimpleMeasurements', 'ADCPowerMonitor'):  ('scripts.simpleMeasurements.ADCpowerMonitor', 'ADCPowerMonitor'),
+     ('729Experiments','Spectrum'):  ('scripts.experiments.Experiments729.spectrum', 'spectrum'),
+     ('729Experiments','RabiFlopping'):  ('scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping')
+     }
+    #conflicting experiments, every experiment conflicts with itself
+    conflictingExperiments = {
+    ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')],
+    ('Test', 'Exp2'): [('Test', 'Exp2')],
+    ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
+    ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
+    ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
+    }
+    
+    def __init__(self, reactor):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
-        self.parent = parent
         
-        try:
-            # import all the experiments
-            import experiments.Test
-            import experiments.Test2
-            import scripts.simpleMeasurements.ADCpowerMonitor
-            import scripts.experiments.Experiments729.spectrum
-            import scripts.experiments.Experiments729.rabi_flopping        
-            # main dictionary organized by path in the Registry
+        #import all experiments
+        self.experiments = {}
+        for semaphore_path,value in self.ExperimentInfo.iteritems():
+            local_path,name = value
+            try:
+                module = __import__(local_path)
+                self.experiments[semaphore_path] = (module, name)
+            except ImportError as e:
+                print 'Script Control: ', e
     
-            self.experiments = {
-                                ('Test', 'Exp1'):  (experiments.Test, 'Test'),
-                                ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
-                                ('SimpleMeasurements', 'ADCPowerMonitor'):  (scripts.simpleMeasurements.ADCpowerMonitor, 'ADCPowerMonitor'),
-                                ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
-                                ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
-                               }
-            
-            # Every experiment conflicts with at least itself
-            self.conflictingExperiments = {
-                                            ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')], # Exp1 conflicts with itself and Exp2
-                                            ('Test', 'Exp2'): [('Test', 'Exp2')],
-                                            ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
-                                            ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
-                                            ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
-                                          }
-                        
-        except ImportError as e:
-            print 'Script Control: ', e
-            self.experiments = {}
-    
-        self.setupExperimentProgressDict()
+        self.setupExperimentProgressDict()####MR1
         self.connect()
         
         self.experimentParametersWidget = ParametersWidget(self)
         self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
         self.setupMainWidget()
 
-
-        
-
     def getWidgets(self):
         return self, self.experimentParametersWidget         
         
-        
-        
     # A dictionary to keep track of the progress of each experiment
+    ####MR1 is dictionary necessary, why not use semaphore?
     def setupExperimentProgressDict(self):
         self.experimentProgressDict = self.experiments.copy()
         for key in self.experimentProgressDict.keys():
@@ -70,16 +62,10 @@ class ScriptControl(QtGui.QWidget):
         
     # Connect to LabRAD
     @inlineCallbacks
-    def connect(self):
-#        from labrad.wrappers import connectAsync
-#        self.cxn = yield connectAsync()
-#        self.server = self.cxn.semaphore
-#        self.createContexts()
-        
+    def connect(self):        
         from connection import connection
         self.cxn = connection()
         yield self.cxn.connect()
-#        self.context = yield self.cxn.context()
         self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
         self.cxn.on_disconnect['Semaphore'].append( self.disable)        
   
@@ -208,9 +194,6 @@ class ScriptControl(QtGui.QWidget):
 #        self.mainLayout.addLayout(self.miscLayout)
         self.setLayout(self.mainLayout)
         self.show()
-        
-#        self.parent.createExperimentParametersTab(self.experimentContext, self.globalContext)
-#        self.parent.createExperimentParametersWidget(self.experimentContext, self.globalContext)
 #        self.experimentParametersWidget = ParametersWidget(self, self.experimentContext, self.globalContext)
  
     @inlineCallbacks
