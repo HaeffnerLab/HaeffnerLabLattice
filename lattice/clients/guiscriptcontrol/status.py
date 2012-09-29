@@ -123,9 +123,12 @@ class StatusWidget(QtGui.QWidget):
                 self.parent.experimentProgressDict[tuple(self.experimentPath)] = y[1]
                 self.pbar.setValue(y[1])
         else:
-            parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
-            if (parameter == 'Finished' or parameter == 'Stopped'):
-                self.parent.activeExperimentListWidget.removeExperiment(y[0][:-2])
+            # Because global parameters don't have semaphore! duh!
+            if (y[0][:-2] in self.parent.experiments.keys()):
+                parameter = yield self.parent.server.get_parameter(y[0][:-2] + ['Semaphore', 'Status'] , context = self.context)
+                if (parameter == 'Finished' or parameter == 'Stopped'):
+                    self.parent.activeExperimentListWidget.removeExperiment(y[0][:-2])
+            print y[0][:-2]
         yield None
     
     @inlineCallbacks
