@@ -62,9 +62,8 @@ class ParametersWidget(QtGui.QWidget):
 
         self.experimentGrid.show()  
 
-    @inlineCallbacks
     def setupExperimentGridSubsequent(self, experimentPath):
-        yield self.experimentGrid.setupExperimentGrid(experimentPath)
+        self.experimentGrid.setupExperimentGrid(experimentPath)
        
 
     def setupGlobalGrid(self, experimentPath):

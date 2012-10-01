@@ -187,6 +187,10 @@ class Semaphore(LabradServer):
         status_key = tuple(list(experiment) + ['Semaphore', 'Status'])
         block_key = tuple(list(experiment) + ['Semaphore', 'Block'])
         continue_key = tuple(list(experiment) + ['Semaphore', 'Continue'])
+        progress_key = tuple(list(experiment) + ['Semaphore', 'Progress'])
+        if (progress != None):
+            self.parametersDict[progress_key] = progress
+            self.onParameterChange((list(progress_key), progress), self.listeners)
         if status_key not in self.parametersDict.keys():
             raise Exception ("Experiment Not Found or Has No Parameters")
         status = self.parametersDict[status_key]

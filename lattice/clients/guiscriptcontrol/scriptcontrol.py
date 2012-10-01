@@ -14,8 +14,8 @@ class ScriptControl(QtGui.QWidget):
     
     #dictionary in the form semaphore_path: (import_part, name)
     ExperimentInfo = {
-     ('Test', 'Exp1'):  ('experiments.Test', 'Test'),
-     ('Test', 'Exp2'):  ('experiments.Test2', 'Test2'),
+     ('Test', 'Exp1'):  ('clients.guiscriptcontrol.experiments.Test', 'Test'),
+     ('Test', 'Exp2'):  ('clients.guiscriptcontrol.experiments.Test2', 'Test2'),
      ('SimpleMeasurements', 'ADCPowerMonitor'):  ('scripts.simpleMeasurements.ADCpowerMonitor', 'ADCPowerMonitor'),
      ('729Experiments','Spectrum'):  ('scripts.experiments.Experiments729.spectrum', 'spectrum'),
      ('729Experiments','RabiFlopping'):  ('scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping')
@@ -29,20 +29,21 @@ class ScriptControl(QtGui.QWidget):
     ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
     }
     
-    def __init__(self, reactor):
+    def __init__(self, reactor, parent):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
+        self.parent = parent
         
         #import all experiments
         self.experiments = {}
         for semaphore_path,value in self.ExperimentInfo.iteritems():
             local_path,name = value
             try:
-                module = __import__(local_path)
-                self.experiments[semaphore_path] = (module, name)
+                __import__(local_path)
+                self.experiments[semaphore_path] = (sys.modules[local_path], name)
             except ImportError as e:
                 print 'Script Control: ', e
-    
+        
         self.setupExperimentProgressDict() #MR, is this dictionary necessary or is it enough to use semaphore?
         self.connect()
         self.experimentParametersWidget = ParametersWidget(self)
