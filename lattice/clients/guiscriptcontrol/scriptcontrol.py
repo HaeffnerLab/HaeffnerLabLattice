@@ -43,17 +43,16 @@ class ScriptControl(QtGui.QWidget):
                                             ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
                                           }
                         
+            self.setupExperimentProgressDict()
+            self.connect()
+            
+            self.experimentParametersWidget = ParametersWidget(self)
+            self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
+            self.setupMainWidget()
+
         except ImportError as e:
             print 'Script Control: ', e
             self.experiments = {}
-    
-        self.setupExperimentProgressDict()
-        self.connect()
-        
-        self.experimentParametersWidget = ParametersWidget(self)
-        self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
-        self.setupMainWidget()
-
 
         
 
