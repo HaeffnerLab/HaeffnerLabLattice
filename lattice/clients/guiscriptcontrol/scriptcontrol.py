@@ -204,17 +204,25 @@ class ScriptControl(QtGui.QWidget):
         self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
         self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with ####shouldn't be manually written
         self.schedulerWidget.setContext(self.schedulerContext)
-        
+
     def setupStatusWidget(self, experiment):
-        try:
-            self.statusWidget.hide()
-        except:
-            # First time
-            pass
         self.statusWidget = StatusWidget(self, experiment, self.statusContext)
         self.experimentListLayout.addWidget(self.statusWidget)
         self.experimentListLayout.setAlignment(self.statusWidget, QtCore.Qt.AlignCenter)
-        self.statusWidget.show() 
+        self.statusWidget.show()
+        self.setupStatusWidget = self.setupStatusWidgetSubsequent 
+        
+#        try:
+#            self.statusWidget.disconnectSignal()
+#            self.statusWidget.hide()
+#            del self.statusWidget
+#        except:
+#            # First time
+#            pass
+
+    def setupStatusWidgetSubsequent(self, experiment):
+        self.statusWidget.createStatusLabel(experiment)
+
         
     # Returns a different widget depending on the type of value provided by the semaphore 
     def typeCheckerWidget(self, Value):

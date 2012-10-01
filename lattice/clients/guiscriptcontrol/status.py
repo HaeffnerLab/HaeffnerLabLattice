@@ -12,14 +12,16 @@ class StatusWidget(QtGui.QWidget):
         
         self.controlLayout = QtGui.QHBoxLayout()
         
-        self.createStatusLabel()
+        self.createStatusLabel(experimentPath)
         
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.mainLayout.addLayout(self.controlLayout)
         self.setLayout(self.mainLayout)
     
     @inlineCallbacks
-    def createStatusLabel(self):
+    def createStatusLabel(self, experimentPath):
+        self.experimentPath = experimentPath
+        
         if (tuple(self.experimentPath) in self.parent.experiments.keys()):
             
             status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
@@ -77,11 +79,51 @@ class StatusWidget(QtGui.QWidget):
             self.mainLayout.addWidget(self.statusLabel)
         
         self.mainLayout.setAlignment(self.statusLabel, QtCore.Qt.AlignCenter)
+        
+        self.createStatusLabel = self.refreshStatus
+
+    @inlineCallbacks
+    def refreshStatus(self, experimentPath):
+        self.experimentPath = experimentPath
+        
+        if (tuple(self.experimentPath) in self.parent.experiments.keys()):
+            
+            status = yield self.parent.server.get_parameter(self.experimentPath + ['Semaphore', 'Status'])
+            
+            self.statusLabel.setText(status)
+
+            if (self.statusLabel.text() == 'Paused'):
+                self.startButton.setDisabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setText('Continue')
+            elif (self.statusLabel.text() == 'Running'):            
+                self.startButton.setDisabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.pauseContinueButton.setText('Pause')
+            elif(self.statusLabel.text() == 'Pausing'):
+                self.startButton.setDisabled(True)
+                self.pauseContinueButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
+                self.pauseContinueButton.setText('Continue')              
+            elif (status == 'Stopping'):
+                self.startButton.setDisabled(True)                
+                self.pauseContinueButton.setDisabled(True)    
+                self.stopButton.setDisabled(True)
+            else:
+                self.pauseContinueButton.setDisabled(True)    
+                self.stopButton.setDisabled(True)
+                self.startButton.setEnabled(True)   
+
+            self.pbar.setValue(self.parent.experimentProgressDict[tuple(self.experimentPath)])
+                     
+
                             
     @inlineCallbacks
     def setupStatusListener(self):
         yield self.parent.server.signal__parameter_change(11111, context = self.context)
-        yield self.parent.server.addListener(listener = self.updateStatus, source = None, ID = 11111, context = self.context)    
+        yield self.parent.server.addListener(listener = self.updateStatus, source = None, ID = 11111, context = self.context)
 
     @inlineCallbacks
     def updateStatus(self, target, message):

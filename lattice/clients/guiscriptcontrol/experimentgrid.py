@@ -8,12 +8,14 @@ class ExperimentGrid(QtGui.QTableWidget):
         self.parent = parent
         self.context = context
         self.experimentPath = experimentPath
-        self.parent.setWindowTitle(experimentPath[-1])
-        self.setupExperimentGrid()
+#        self.parent.setWindowTitle(experimentPath[-1])
+        self.setupExperimentGrid(self.experimentPath)
         self.setupExperimentParameterListener()
 
     @inlineCallbacks
-    def setupExperimentGrid(self):
+    def setupExperimentGrid(self, experimentPath):
+        self.parent.setWindowTitle(experimentPath[-1])
+        self.experimentPath = experimentPath
         self.setColumnCount(2)
 
         self.checkBoxParameterDict = {}
@@ -57,18 +59,18 @@ class ExperimentGrid(QtGui.QTableWidget):
             
             Row += 1
 
-        self.resizeColumnsToContents()  
-        self.setColumnWidth(0, self.columnWidth(0) + 10)
-        self.setColumnWidth(1, self.columnWidth(1) + 20)
-        width = self.columnWidth(0) + self.columnWidth(1)      
-        self.setMinimumWidth(width*1.5)
+#        self.resizeColumnsToContents()  
+#        self.setColumnWidth(0, self.columnWidth(0) + 10)
+#        self.setColumnWidth(1, self.columnWidth(1) + 20)
+#        width = self.columnWidth(0) + self.columnWidth(1)      
+#        self.setMinimumWidth(width*1.5)
         self.horizontalHeader().setStretchLastSection(True)
     
     @inlineCallbacks
     def setupExperimentParameterListener(self):
         yield self.parent.parent.server.signal__parameter_change(22222, context = self.context)
-        yield self.parent.parent.server.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)    
-
+        yield self.parent.parent.server.addListener(listener = self.updateExperimentParameter, source = None, ID = 22222, context = self.context)  
+    
     def updateExperimentParameter(self, x, y):
         # check to see if this is an experiment parameter
         if (y[0][:-1] == self.experimentPath):
@@ -120,6 +122,7 @@ class ExperimentGrid(QtGui.QTableWidget):
         from labrad import types as T
         # two types....tuples [(value, unit)] or tuples of strings and values [(string, (value, unit))]
         value = eval(str(self.sender().text()))
+        print 'Value!: ', value
         typeFirstElement = type(value[0])
         typeSecondElement = type(value[0][1])
         # normal list of labrad values
