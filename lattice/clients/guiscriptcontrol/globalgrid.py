@@ -8,11 +8,12 @@ class GlobalGrid(QtGui.QTableWidget):
         self.context = context
         self.parent = parent
         self.experimentPath = experimentPath
-        self.setupGlobalGrid()
+        self.setupGlobalGrid(self.experimentPath)
         self.setupGlobalParameterListener()
 
     @inlineCallbacks
-    def setupGlobalGrid(self):
+    def setupGlobalGrid(self, experimentPath):
+        self.experimentPath = experimentPath        
         self.setColumnCount(2)
 
         self.checkBoxParameterDict = {}
@@ -65,11 +66,11 @@ class GlobalGrid(QtGui.QTableWidget):
                 self.setCellWidget(Row, 0, widget)            
             Row += 1
             
-        self.resizeColumnsToContents()
-        self.setColumnWidth(0, self.columnWidth(0) + 10)
-        self.setColumnWidth(1, self.columnWidth(1) + 20)
-        width = self.columnWidth(0) + self.columnWidth(1)      
-        self.setMinimumWidth(width*1.5)
+#        self.resizeColumnsToContents()
+#        self.setColumnWidth(0, self.columnWidth(0) + 10)
+#        self.setColumnWidth(1, self.columnWidth(1) + 20)
+#        width = self.columnWidth(0) + self.columnWidth(1)      
+#        self.setMinimumWidth(width*1.5)
         self.horizontalHeader().setStretchLastSection(True)
 #        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 

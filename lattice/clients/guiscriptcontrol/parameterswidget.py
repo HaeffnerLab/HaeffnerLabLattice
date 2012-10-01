@@ -50,31 +50,50 @@ class ParametersWidget(QtGui.QWidget):
         self.setupGlobalGrid(['Test', 'Exp1'])      
 
     def setupExperimentGrid(self, experimentPath):
-        try:
-            self.experimentGrid.hide()
-        except:
-            # First time
-            pass
+#        try:
+#            self.experimentGrid.setupExperimentGrid(experimentPath, self.experimentContext)
+#            self.experimentGridLayout.addWidget(self.experimentParametersLabel)
+#            self.experimentGridLayout.setAlignment(self.experimentParametersLabel, QtCore.Qt.AlignCenter)
+#            self.experimentGridLayout.setStretchFactor(self.experimentParametersLabel, 0)
+#            self.experimentGridLayout.addWidget(self.experimentGrid)
+##            self.experimentGrid.disconnectSignal()
+##            self.experimentGrid.hide()
+##            del self.experimentGrid
+#        except:
+#            # First time
         self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
         self.experimentGridLayout.addWidget(self.experimentParametersLabel)
         self.experimentGridLayout.setAlignment(self.experimentParametersLabel, QtCore.Qt.AlignCenter)
         self.experimentGridLayout.setStretchFactor(self.experimentParametersLabel, 0)
-        self.experimentGridLayout.addWidget(self.experimentGrid)
+        self.experimentGridLayout.addWidget(self.experimentGrid)         
+        self.setupExperimentGrid = self.setupExperimentGridSubsequent
+#        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
+
         self.experimentGrid.show()  
 
+    @inlineCallbacks
+    def setupExperimentGridSubsequent(self, experimentPath):
+        yield self.experimentGrid.setupExperimentGrid(experimentPath)
+       
+
     def setupGlobalGrid(self, experimentPath):
-        try:
-            self.globalGrid.hide()
-        except:
-            # First time
-            pass
         self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)
         self.globalGridLayout.addWidget(self.globalParametersLabel)
         self.globalGridLayout.setAlignment(self.globalParametersLabel, QtCore.Qt.AlignCenter)
         self.globalGridLayout.setStretchFactor(self.globalParametersLabel, 0)
-        self.globalGridLayout.addWidget(self.globalGrid)
-        self.globalGrid.show()            
+        self.globalGridLayout.addWidget(self.globalGrid)            
+#            self.globalGrid.disconnectSignal()
+#            self.globalGrid.hide()
+#            del self.globalGrid
+
+            # First time
+
+#        self.globalGrid.show()  
+        self.setupGlobalGrid = self.setupGlobalGridSubsequent          
         
+    def setupGlobalGridSubsequent(self, experimentPath):
+        self.globalGrid.setupGlobalGrid(experimentPath)        
+    
     def parameterLimitsWindowEvent(self, evt):
         experimentPath = self.experimentGrid.experimentPath
         try:
