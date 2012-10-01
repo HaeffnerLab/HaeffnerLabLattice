@@ -37,7 +37,8 @@ class NormalPMTFlow( LabradServer):
     def initServer(self):
         self.saveFolder = ['','PMT Counts']
         self.dataSetName = 'PMT Counts'
-        self.collectTimes = {'Normal':T.Value(0.100,'s'), 'Differential':T.Value(0.100,'s')}
+        self.modes = ['Normal', 'Differential']
+        self.collection_period= T.Value(0.100,'s')
         self.lastDifferential = {'ON': 0, 'OFF': 0}
         self.currentMode = 'Normal'
         self.dv = None
@@ -164,14 +165,13 @@ class NormalPMTFlow( LabradServer):
         """
         Start recording Time Resolved Counts into Data Vault
         """
-        if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
+        if mode not in self.modes: raise Exception('Incorrect Mode')
         if not self.recording.running:
             self.currentMode = mode
             yield self.pulser.set_mode(mode)
         else:
             yield self.dostopRecording()
             self.currentMode = mode
-            yield self.pulser.set_mode(mode)
             yield self.dorecordData()
         otherListeners = self.getOtherListeners(c)      
         self.onNewSetting(('mode', mode), otherListeners)
@@ -197,15 +197,18 @@ class NormalPMTFlow( LabradServer):
     
     @inlineCallbacks
     def dorecordData(self):
+        #begins the process of data record
+        #sets the collection time and mode, programs the pulser if necessary and opens the dataset if necessasry
+        #then starts the recording loop
         newSet = None
         self.keepRunning = True
-        yield self.pulser.set_collection_time(self.collectTimes[self.currentMode], self.currentMode)
+        yield self.pulser.set_collection_time(self.collection_period, self.currentMode)
         yield self.pulser.set_mode(self.currentMode)
         if self.currentMode == 'Differential':
             yield self._programPulserDiff()
         if self.openDataSet is None:
             self.openDataSet = yield self.makeNewDataSet(self.saveFolder, self.dataSetName)
-        self.recording.start(self.collectTimes[self.currentMode]/2.0)
+        self.recording.start(self.collection_period/2.0)
         returnValue(newSet)
         
     @setting(5, returns = '')
@@ -238,11 +241,9 @@ class NormalPMTFlow( LabradServer):
     @setting(8, 'Set Time Length', timelength = 'v[s]')
     def setTimeLength(self, c, timelength):
         """Sets the time length for the current mode"""
-        print 'set time length', timelength
         mode = self.currentMode
-        if mode not in self.collectTimes.keys(): raise Exception('Incorrect Mode')
         if not self.collectTimeRange[0] <= timelength['s'] <= self.collectTimeRange[1]: raise Exception ('Incorrect Recording Time')
-        self.collectTimes[mode] = timelength
+        self.collection_period = timelength
         initrunning = self.recording.running #if recording when the call is made, need to stop and restart
         if initrunning:
             yield self.recording.stop()
@@ -280,7 +281,7 @@ class NormalPMTFlow( LabradServer):
         """
         Returns the current timelength of in the current mode
         """
-        return self.collectTimes[self.currentMode]
+        return self.collection_period
 
     @setting(11, 'Get Time Length Range', returns = '(vv)')
     def get_time_length_range(self, c):
@@ -289,11 +290,10 @@ class NormalPMTFlow( LabradServer):
     @inlineCallbacks
     def _programPulserDiff(self):
         yield self.pulser.new_sequence()
-        countRate = self.collectTimes['Differential']
         yield self.pulser.add_ttl_pulse('DiffCountTrigger', T.Value(0.0,'us'), T.Value(10.0,'us'))
-        yield self.pulser.add_ttl_pulse('DiffCountTrigger', countRate, T.Value(10.0,'us'))
-        yield self.pulser.add_ttl_pulse('866DP', T.Value(0.0,'us'), countRate)
-        yield self.pulser.extend_sequence_length(2 * countRate)
+        yield self.pulser.add_ttl_pulse('DiffCountTrigger', self.collection_period, T.Value(10.0,'us'))
+        yield self.pulser.add_ttl_pulse('866DP', T.Value(0.0,'us'), self.collection_period)
+        yield self.pulser.extend_sequence_length(2 * self.collection_period)
         yield self.pulser.program_sequence()
         yield self.pulser.start_infinite()
     
