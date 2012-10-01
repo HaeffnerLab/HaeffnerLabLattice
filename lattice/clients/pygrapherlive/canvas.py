@@ -156,7 +156,7 @@ class Qt4MplCanvas(FigureCanvas):
         self.ax.grid()
         colormap = pyplot.cm.gist_ncar
 #        self.ax.set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, 15)])
-        colors = ['b', 'g', 'r', 'm', 'k', colormap(.2), colormap(.9), colormap(.3166), colormap(.7833), colormap(.4333), colormap(.666)]
+        colors = ['b', 'g', 'r', 'm', 'k', colormap(.2), colormap(.9), colormap(.3166), colormap(.7833), colormap(.666)]
         #colors.extend([colormap(i) for i in np.linspace(.2, 0.9, 7)])
         colors.pop(8)
         self.ax.set_color_cycle(colors)
