@@ -17,7 +17,7 @@ except:
 	errors = True
 else:
 	nodes = nodeDict.keys()
-	if len(nodes):
+	if not len(nodes):
 		print "No Nodes Running"
 		errors = True
 	for node in nodeDict.keys():
