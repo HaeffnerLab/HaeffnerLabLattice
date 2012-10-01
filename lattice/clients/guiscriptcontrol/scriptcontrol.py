@@ -43,9 +43,8 @@ class ScriptControl(QtGui.QWidget):
             except ImportError as e:
                 print 'Script Control: ', e
     
-        self.setupExperimentProgressDict()####MR1
+        self.setupExperimentProgressDict() #MR, is this dictionary necessary or is it enough to use semaphore?
         self.connect()
-        
         self.experimentParametersWidget = ParametersWidget(self)
         self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
         self.setupMainWidget()
@@ -53,8 +52,6 @@ class ScriptControl(QtGui.QWidget):
     def getWidgets(self):
         return self, self.experimentParametersWidget         
         
-    # A dictionary to keep track of the progress of each experiment
-    ####MR1 is dictionary necessary, why not use semaphore?
     def setupExperimentProgressDict(self):
         self.experimentProgressDict = self.experiments.copy()
         for key in self.experimentProgressDict.keys():
@@ -72,7 +69,7 @@ class ScriptControl(QtGui.QWidget):
 
         try:
             self.server = self.cxn.servers['Semaphore']
-            test = yield self.cxn.servers['Semaphore'].test_connection() ####MR,why is this necessary?
+            test = yield self.cxn.servers['Semaphore'].test_connection() #not sure why this is necessary
             self.createContexts()
         except Exception, e:
             print 'Not Initially Connected to Semaphore', e
@@ -89,7 +86,7 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
             self.schedulerWidget.reinitializeListener()
-        ####MR3?
+        #MR not sure why this is necessary
         except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()

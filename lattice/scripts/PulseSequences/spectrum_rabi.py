@@ -36,7 +36,9 @@ class sample_parameters(object):
               'doppler_cooling_amplitude_397':T.Value(-11.0, 'dBm'),
               'doppler_cooling_frequency_866':T.Value(80.0, 'MHz'),
               'doppler_cooling_amplitude_866':T.Value(-11.0, 'dBm'),
+              'doppler_cooling_repump_additional':T.Value(100, 'us'),
               'doppler_cooling_duration':T.Value(1.0,'ms'),
+              
               
               'optical_pumping_enable':True,
               

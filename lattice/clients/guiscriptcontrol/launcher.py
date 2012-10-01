@@ -9,7 +9,7 @@ class ScriptControlWidgets():
     @inlineCallbacks
     def makeScriptControl(self, reactor):
         sc = ScriptControl(reactor)
-        ####MR2 not clear on how this works
+        #MR, may be cleaner to get the widgets, then show them
         status, params = yield sc.getWidgets()
 
 if __name__=="__main__":
