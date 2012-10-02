@@ -106,18 +106,19 @@ flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_
 #heating times in ms
 info = [
 (0, 0.0, ('2012Aug20','2312_42'), 40e-6, {'nbar': Parameter(24.4), 'delta': 0.0, 'T_Rabi' : Parameter(15.2e-6)}),
+(0, 10.0, ('2012Aug20','2314_26'), 33e-6, {'nbar': Parameter(47.0), 'delta': 0.0, 'T_Rabi' : Parameter(16.8e-6)}),
+(0, 20.0, ('2012Aug20','2316_49'), 40e-6, {'nbar': Parameter(59.0), 'delta': 0.1, 'T_Rabi' : Parameter(18.0e-6)}),
+(0, 40.0, ('2012Aug20','2319_25'), 40e-6, {'nbar': Parameter(116.0), 'delta': 0.25, 'T_Rabi' : Parameter(20.0e-6)}),
+(0, 50.0, ('2012Aug20','2321_53'), 40e-6, {'nbar': Parameter(140.0), 'delta': 0.30, 'T_Rabi' : Parameter(21.7e-6)}),
 ]
-#info = ('Carrier', 0, 10.0, ('2012Aug20','2314_26'), {})
-#nbar = Parameter(80); delta = 0.00; T_Rabi = Parameter(15.2e-6)
-#info = ('Carrier', [(20.0,[('2012Aug20','2316_49')])], {})
-#nbar = 110; delta = 0.0; T_Rabi = 17.5e-6;
-#info = ('Carrier', [(40.0,[('2012Aug20','2319_25')])], {})
-#nbar = 230; delta = 0.15; T_Rabi = 20.0e-6;
-#info = ('Carrier', 0, 50.0, ('2012Aug20','2321_53'), {})
-#nbar = Parameter(270); delta = Parameter(0.15); T_Rabi = Parameter(21.0e-6);
+num_figures = len(info) + 1
+num_horizonal = 2 * (num_figures > 1)
+num_vertical = num_figures / 2
 
 fig = pyplot.figure()
-for trace in info:
+
+for number,trace in enumerate(info):
+    pyplot.subplot(1,2,number + 1)
     order,wait_time,dataset,fit_region_max,kwargs = trace
     date,datasetName = dataset
     nbar = kwargs['nbar']
