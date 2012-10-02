@@ -128,8 +128,8 @@ class StatusWidget(QtGui.QWidget):
     @inlineCallbacks
     def updateStatus(self, target, message):
         name, value = message
-        print name,value
-        print name[:-2]
+#        print name,value
+#        print name[:-2]
         if (name[:-2] == self.experimentPath):
             #current experiment
             if (name[-1] == 'Status'):
@@ -149,11 +149,13 @@ class StatusWidget(QtGui.QWidget):
                 self.pbar.setValue(value)
         else:
             # Because global parameters don't have semaphore! duh!
-            if (name[:-2] in self.parent.experiments.keys()):
+            if (tuple(name[:-2]) in self.parent.experiments.keys()):
                 parameter = yield self.parent.server.get_parameter(name[:-2] + ['Semaphore', 'Status'] , context = self.context)
+                print 'its the else parameter!', parameter
                 if (parameter == 'Finished' or parameter == 'Stopped'):
                     self.parent.activeExperimentListWidget.removeExperiment(name[:-2])
-            print name[:-2]
+                elif (parameter == 'Progress'):
+                    self.parent.experimentProgressDict[tuple(self.experimentPath)] = value
         yield None
     
     @inlineCallbacks

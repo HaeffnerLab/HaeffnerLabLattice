@@ -237,10 +237,10 @@ class ScriptControl(QtGui.QWidget):
             value = Value.aslist
 
         from labrad.units import Value as labradValue
-        if ((type(value) == list) and (len(value) == 3) and (type(value[0]) == labradValue)):
+        if ((type(value) == list) and (len(value) == 3) and (type(value[2]) == labradValue)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
-            number_dec = len(str(value[0].value-int(value[0].value))[2:])
+            number_dec = len(str(value[2].value-int(value[2].value))[2:])
             doubleSpinBox.setDecimals(number_dec + 1)
             doubleSpinBox.setValue(value[2])
             doubleSpinBox.setSuffix(' ' + value[2].units)
