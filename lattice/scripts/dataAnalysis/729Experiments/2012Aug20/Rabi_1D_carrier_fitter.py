@@ -112,13 +112,17 @@ info = [
 (0, 50.0, ('2012Aug20','2321_53'), 40e-6, {'nbar': Parameter(140.0), 'delta': 0.30, 'T_Rabi' : Parameter(21.7e-6)}),
 ]
 num_figures = len(info) + 1
-num_horizonal = 2 * (num_figures > 1)
-num_vertical = num_figures / 2
 
 fig = pyplot.figure()
+pyplot.subplots_adjust(top = 0.98, bottom = 0, hspace = 0.15)
+plots = []
+ax1 = pyplot.subplot(num_figures, 1, 1)
+plots.append(ax1)
 
 for number,trace in enumerate(info):
-    pyplot.subplot(1,2,number + 1)
+    if number > 0:
+        ax = pyplot.subplot(num_figures,1,number + 1, sharex = ax1)
+        plots.append(ax)
     order,wait_time,dataset,fit_region_max,kwargs = trace
     date,datasetName = dataset
     nbar = kwargs['nbar']
@@ -150,9 +154,8 @@ for number,trace in enumerate(info):
     #plotting
     pyplot.plot(10**6 * detailed_times , evolution,  'b')
     pyplot.plot(10**6 * times, prob, '--o')
-    pyplot.title('Heating {} ms'.format(wait_time))
-    pyplot.xlabel('time (us)')
-    pyplot.ylabel('D state occupation probability')
+#    pyplot.suptitle('Heating {} ms'.format(wait_time))
+    pyplot.ylabel('D5/2 Occupation')
     #get the final values
     values = []
     for param in [nbar, delta, T_Rabi]:
@@ -161,10 +164,14 @@ for number,trace in enumerate(info):
         else:
             values.append( param )
     nbar_value, delta_value, T_Rabi_value = values
+    pyplot.annotate('Something', xy=(0.80, 0.80), xycoords='axes fraction')
     #add the values to the plot
-    pyplot.text(max(10**6 *times)*0.70,0.95, 'detuning = {0}'.format(delta_value))
-    pyplot.text(max(10**6 *times)*0.70,0.90, 'nbar = {:.0f}'.format(nbar_value))
-    pyplot.text(max(10**6 *times)*0.70,0.85, 'Rabi Time = {:.1f} us'.format(10**6 * T_Rabi_value))
+#    pyplot.text(1.1 * max(10**6 *times)*0.70,0.95, 'detuning = {0}'.format(delta_value))
+#    pyplot.text(max(10**6 *times)*0.70,0.90, 'nbar = {:.0f}'.format(nbar_value))
+#    pyplot.text(max(10**6 *times)*0.70,0.85, 'Rabi Time = {:.1f} us'.format(10**6 * T_Rabi_value))
     #set plot limits and show
     pyplot.ylim([0,1])
+for ax in plots[0:-1]:
+    pyplot.setp(ax.get_xticklabels(), visible = False)
+pyplot.xlabel('Time us')
 pyplot.show()
