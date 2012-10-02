@@ -31,16 +31,16 @@ pump_eff = 1.0
 eta = lamb_dicke(729*10**-9,2.0e6,45)/w   # axial
 offset_time = 5e-6
 #heating times in ms
-#info = ('Carrier', [(0.0,[('2012Aug20','2312_42')])], {})
-#nbar = 45; delta = 0.0; T_Rabi = 15.e-6;
+info = ('Carrier', [(0.0,[('2012Aug20','2312_42')])], {})
+nbar = 45; delta = 0.0; T_Rabi = 15.e-6;
 #info = ('Carrier', [(10.0,[('2012Aug20','2314_26')])], {})
 #nbar = 80; delta = 0.00; T_Rabi = 17.0e-6;
 #info = ('Carrier', [(20.0,[('2012Aug20','2316_49')])], {})
 #nbar = 110; delta = 0.0; T_Rabi = 17.5e-6;
 #info = ('Carrier', [(40.0,[('2012Aug20','2319_25')])], {})
 #nbar = 230; delta = 0.15; T_Rabi = 20.0e-6;
-info = ('Carrier', [(50.0,[('2012Aug20','2321_53')])], {})
-nbar = 270; delta = 0.15; T_Rabi = 21.0e-6;
+#info = ('Carrier', [(50.0,[('2012Aug20','2321_53')])], {})
+#nbar = 270; delta = 0.15; T_Rabi = 21.0e-6;
 
 
 cxn = labrad.connect('192.168.169.197')
@@ -75,7 +75,7 @@ points = 100
 t_increment = maxt/points
 t = np.linspace(0, maxt, points)
 # Distribution truncated at nmax
-nmax = nbar*5 
+nmax = 1000#nbar*5 
 n = np.arange(0, nmax +1)
 
 #lists of the generalized laguere polynomails of the corresponding order evaluated at eta**2
@@ -97,6 +97,8 @@ for arr in [om, om1, om2, om3, om4]:
 p = ((float(nbar)/(nbar+1.))**n)/(nbar+1.) 
 
 ones = np.ones_like(t)
+
+print om
 def compute_state_evolution():
     result = []
     for omega in [om , om1 , om2 , om3 ,om4]:

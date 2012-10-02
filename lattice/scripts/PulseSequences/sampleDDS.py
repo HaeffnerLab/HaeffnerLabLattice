@@ -1,29 +1,27 @@
-from sequence import Sequence
-from plotsequence import SequencePlotter
-import time
-import numpy
+from PulseSequence import PulseSequence
+from labrad import types as T
 
-class sampleDDS(Sequence):
+class sampleDDS(PulseSequence):
     #dictionary of variable: (type, min, max, default)
-    requiredVars = {
-                    }
+    def configuration(self):
+        config = [
+                  ]
+        return config
     
 
-    def defineSequence(self):
-        pulser = self.pulser
-        #pulser.add_ttl_pulse('AdvanceDDS', 200e-3, 10e-6)
-        pulser.add_ttl_pulse('ResetDDS', 200e-3, 10e-6)
+    def sequence(self):
+        duration = T.Value(10, 'ms')
+        self.dds_pulses.append( ('866DP',self.start + T.Value(10, 'us'), T.Value(10, 'ms'), T.Value(80, 'MHz'), T.Value(-3.0, 'dBm')) )
+        self.dds_pulses.append( ('110DP',self.start + T.Value(10, 'us'), 2* T.Value(10, 'ms'), T.Value(110, 'MHz'), T.Value(-11.0, 'dBm')) )
+        self.end = self.start + 2 * duration
         
         
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
-    pulser = cxn.pulser
-    seq = sampleDDS(pulser)
-    pulser.new_sequence()
-    seq.defineSequence()
-    pulser.program_sequence()
-    pulser.start_single()
-    pulser.wait_sequence_done()
-    pulser.stop_sequence()
-    print 'done'
+    cs = sampleDDS(**{})
+    cs.programSequence(cxn.pulser)
+    cxn.pulser.start_number(1000)
+    cxn.pulser.wait_sequence_done()
+    cxn.pulser.stop_sequence()
+    print 'DONE'

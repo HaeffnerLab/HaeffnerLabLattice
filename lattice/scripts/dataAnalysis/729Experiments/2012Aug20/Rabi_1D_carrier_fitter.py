@@ -44,17 +44,13 @@ class rabi_flop():
         self.n = np.arange(0, nmax +1) #how many vibrational states to consider
         self.eta = self.lamb_dicke() / np.sqrt(ionnumber)
         self.rabi_coupling = self.rabi_coupling()
-        print self.rabi_coupling
         
     def rabi_coupling(self):
         order = self.sideband_order
         eta = self.eta
         n = self.n
-        print eta
-        print order
         #lists of the generalized laguere polynomails of the corresponding order evaluated at eta**2
         L = np.array([laguer(i, order, eta**2) for i in n])
-        print L
         if self.sideband_order == 0:
             omega = L * np.exp(-1./2*eta**2)
         elif self.sideband_order == 1:
@@ -82,7 +78,7 @@ class rabi_flop():
         frequency = self.trap_frequency
         hbar = U.hbar['J*s']
         k = 2.*np.pi/wavelength
-        eta = k*np.sqrt(U.hbar/(2*mass*2*np.pi*frequency))*np.abs(np.cos(theta*2.*np.pi / 360.0))
+        eta = k*np.sqrt(hbar/(2*mass*2*np.pi*frequency))*np.abs(np.cos(theta*2.*np.pi / 360.0))
         return eta
         
     def compute_state_evolution(self, nbar, delta, T_Rabi, t):
@@ -100,14 +96,19 @@ class rabi_flop():
 
 cxn = labrad.connect('192.168.169.197')
 dv = cxn.data_vault
-
+trap_frequency = T.Value(0.972, 'MHz') #Hz
+projection_angle = 45 #degrees
+sideband_order = 0
 pump_eff = 1.0
 offset_time = 5e-6
+flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_angle, sideband_order = sideband_order)
+
 #heating times in ms
-info = ('Carrier', 0, 0.0, ('2012Aug20','2312_42'), {})
-nbar = Parameter(25); delta = 0; T_Rabi = Parameter(16.0e-6);
-#info = ('Carrier', [(10.0,[('2012Aug20','2314_26')])], {})
-#nbar = 80; delta = 0.00; T_Rabi = 17.0e-6;
+info = [
+(0, 0.0, ('2012Aug20','2312_42'), 40e-6, {'nbar': Parameter(24.4), 'delta': 0.0, 'T_Rabi' : Parameter(15.2e-6)}),
+]
+#info = ('Carrier', 0, 10.0, ('2012Aug20','2314_26'), {})
+#nbar = Parameter(80); delta = 0.00; T_Rabi = Parameter(15.2e-6)
 #info = ('Carrier', [(20.0,[('2012Aug20','2316_49')])], {})
 #nbar = 110; delta = 0.0; T_Rabi = 17.5e-6;
 #info = ('Carrier', [(40.0,[('2012Aug20','2319_25')])], {})
@@ -115,45 +116,54 @@ nbar = Parameter(25); delta = 0; T_Rabi = Parameter(16.0e-6);
 #info = ('Carrier', 0, 50.0, ('2012Aug20','2321_53'), {})
 #nbar = Parameter(270); delta = Parameter(0.15); T_Rabi = Parameter(21.0e-6);
 
-trap_frequency = T.Value(0.972, 'MHz') #Hz
-projection_angle = 45 #degrees
-sideband_order = 0
-flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_angle, sideband_order = sideband_order)
-
-def f(x): 
-    evolution = flop.compute_state_evolution( nbar(), delta, T_Rabi(), x  )
-    return evolution
-
-
-#plots the data for all waiting times while averaging the probabilities
 fig = pyplot.figure()
-title,order, wait_time,dataset,kwargs = info 
-date,datasetName = dataset
-dv.cd( ['','Experiments','729Experiments','RabiFlopping',date,datasetName] )
-dv.open(1)  
-times,prob = dv.get().asarray.transpose()
-tmin,tmax = times.min(), times.max()
-detailed_times = np.linspace(tmin, tmax, 1000) 
-#evolution = flop.compute_state_evolution( nbar(), delta, T_Rabi, detailed_times - offset_time )
-#pyplot.plot(detailed_times , evolution,  'b', label = 'fit')
-
-fitting_region = np.where(times <= 30e-6)
-p,success = fit(f, [nbar, T_Rabi], y = prob[fitting_region], x = times[fitting_region] - offset_time)
-print 'fit for nbar is', nbar()
-print 'fit to T rabi is ', T_Rabi()
-evolution = flop.compute_state_evolution( nbar(), delta, T_Rabi(), detailed_times - offset_time )
-pyplot.plot(detailed_times , evolution,  'b', label = 'fit')
-
-pyplot.plot(times, prob, '--o', label = 'heating {} ms'.format(wait_time))
-
-pyplot.hold(True)
-pyplot.legend()
-pyplot.title(title)
-pyplot.xlabel('time (us)')
-pyplot.ylabel('D state occupation probability')
-pyplot.text(max(times)*0.70,0.68, 'detuning = {0}'.format(delta))
-pyplot.text(max(times)*0.70,0.73, 'nbar = {:.0f}'.format(nbar()))
-pyplot.text(max(times)*0.70,0.78, 'Rabi Time = {:.1f} us'.format(10**6 * T_Rabi()))
-pyplot.ylim([0,1])
-pyplot.legend()
+for trace in info:
+    order,wait_time,dataset,fit_region_max,kwargs = trace
+    date,datasetName = dataset
+    nbar = kwargs['nbar']
+    delta = kwargs['delta']
+    T_Rabi = kwargs['T_Rabi']
+    #fit function definition
+    def f(x): 
+        #making in such that the method could be called for inputs being parameters or values
+        values = []
+        for param in [nbar, delta, T_Rabi]:
+            if param.__class__ == Parameter:
+                values.append( param() )
+            else:
+                values.append( param )
+        nbar_value, delta_value, T_Rabi_value = values
+        evolution = flop.compute_state_evolution( nbar_value, delta_value, T_Rabi_value, x  )
+        return evolution
+    #get data
+    dv.cd( ['','Experiments','729Experiments','RabiFlopping',date,datasetName] )
+    dv.open(1)  
+    times,prob = dv.get().asarray.transpose()
+    #fitting
+    fitting_region = np.where(times <= fit_region_max)
+    to_fit = [param for param in [nbar, delta, T_Rabi] if param.__class__ == Parameter] #all parameters
+    p,success = fit(f, to_fit, y = prob[fitting_region], x = times[fitting_region] - offset_time)
+    tmin,tmax = times.min(), times.max()
+    detailed_times = np.linspace(tmin, tmax, 1000) 
+    evolution = f(detailed_times  - offset_time)
+    #plotting
+    pyplot.plot(10**6 * detailed_times , evolution,  'b')
+    pyplot.plot(10**6 * times, prob, '--o')
+    pyplot.title('Heating {} ms'.format(wait_time))
+    pyplot.xlabel('time (us)')
+    pyplot.ylabel('D state occupation probability')
+    #get the final values
+    values = []
+    for param in [nbar, delta, T_Rabi]:
+        if param.__class__ == Parameter:
+            values.append( param() )
+        else:
+            values.append( param )
+    nbar_value, delta_value, T_Rabi_value = values
+    #add the values to the plot
+    pyplot.text(max(10**6 *times)*0.70,0.95, 'detuning = {0}'.format(delta_value))
+    pyplot.text(max(10**6 *times)*0.70,0.90, 'nbar = {:.0f}'.format(nbar_value))
+    pyplot.text(max(10**6 *times)*0.70,0.85, 'Rabi Time = {:.1f} us'.format(10**6 * T_Rabi_value))
+    #set plot limits and show
+    pyplot.ylim([0,1])
 pyplot.show()
