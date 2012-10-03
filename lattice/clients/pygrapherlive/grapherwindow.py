@@ -130,7 +130,7 @@ class GrapherWindow(QtGui.QWidget):
         self.analysisWidget.datasetCheckboxListWidget.setItemWidget(self.analysisWidget.datasetCheckboxListWidget.item(self.datasetAnalysisCheckboxCounter), datasetAnalysisCheckbox)
         self.datasetAnalysisCheckboxCounter = self.datasetAnalysisCheckboxCounter + 1
 
-    def fitFromScript(self, dataset, directory, numberDependentVariables, scriptParameters):
+    def fitFromScript(self, dataset, directory, numberDependentVariables, scriptParameters, fitOverride = None):
         datasetsToFit = eval(scriptParameters[0])
         curveToFit = scriptParameters[1]
         curveParameters = eval(scriptParameters[2])
@@ -165,6 +165,8 @@ class GrapherWindow(QtGui.QWidget):
                 self.analysisWidget.analysisCheckboxes[curveToFit].toggle()
 
         # everything is now set up to fit, so call fitCurves and pass in the parameters
+        if (fitOverride == None): 
+            self.qmc.fitData()        
         self.analysisWidget.fitCurves(curveParameters)
 
     def datasetCheckboxSignal(self):

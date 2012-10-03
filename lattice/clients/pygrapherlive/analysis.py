@@ -528,9 +528,11 @@ class SolutionsWindow(QtGui.QWidget):
         self.solutionsDictionary = solutionsDictionary
         self.labels = []
         self.textBoxes = []
+        self.refitButtons = []
         self.acceptButtons = []
         self.setWindowTitle('Solutions')
         self.buttonIndexDict = {}
+        self.refitButtonIndexDict = {}
         self.setupUI()
    
     def setupUI(self):
@@ -541,9 +543,14 @@ class SolutionsWindow(QtGui.QWidget):
             datasetLabel = QtGui.QLabel(str(dataset) + ' - ' + str(directory[-1]) + ' - ' + label)
             self.labels.append(datasetLabel)
             textBox = QtGui.QLineEdit(readOnly=True)
-            textBox.setText('\'Fit\', [\'[]\', \''+ str(curve) + '\', ' + '\'' + str(self.solutionsDictionary[dataset, directory, label, curve, parameters, index]) + '\']')
+            textBox.setText('\'Fit\', [\'['+str(index)+']\', \''+ str(curve) + '\', ' + '\'' + str(self.solutionsDictionary[dataset, directory, label, curve, parameters, index]) + '\']')
             textBox.setMinimumWidth(550)
             self.textBoxes.append(textBox)
+            refitButton = QtGui.QPushButton("Refit Curve", self)
+            refitButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
+            refitButton.clicked.connect(self.refitSignal)    
+            self.refitButtons.append(refitButton)
+            self.refitButtonIndexDict[refitButton] = [dataset, directory, index, curve, str(self.solutionsDictionary[dataset, directory, label, curve, parameters, index])]        
             acceptButton = QtGui.QPushButton("Accept", self)
             acceptButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
             acceptButton.clicked.connect(self.acceptSignal)  
@@ -553,7 +560,8 @@ class SolutionsWindow(QtGui.QWidget):
         for i in range(len(self.labels)):
             self.grid.addWidget(self.labels[i], i, 0, QtCore.Qt.AlignCenter)
             self.grid.addWidget(self.textBoxes[i], i, 1, QtCore.Qt.AlignCenter)
-            self.grid.addWidget(self.acceptButtons[i], i, 2, QtCore.Qt.AlignCenter)
+            self.grid.addWidget(self.refitButtons[i], i, 2, QtCore.Qt.AlignCenter)
+            self.grid.addWidget(self.acceptButtons[i], i, 3, QtCore.Qt.AlignCenter)
 
         self.setLayout(self.grid)
         self.show()
@@ -565,4 +573,8 @@ class SolutionsWindow(QtGui.QWidget):
         yield self.parent.cxn.data_vault.open(dataset, context = self.context)
         yield self.parent.cxn.data_vault.add_parameter_over_write('Accept-' + str(index), True, context = self.context)        
         
-        
+    def refitSignal(self, evt):
+        dataset, directory, index, curve, parameters = self.refitButtonIndexDict[self.sender()]
+        scriptParameters = [str('['+str(index+1)+']'), str(curve), parameters]
+        print scriptParameters
+        self.parent.parent.fitFromScript(dataset, directory, 1, scriptParameters, True)

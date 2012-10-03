@@ -72,6 +72,10 @@ class StatusWidget(QtGui.QWidget):
             self.pbar.setValue(self.parent.experimentProgressDict[tuple(self.experimentPath)])
             self.mainLayout.addWidget(self.pbar)   
             
+            self.experimentLabel = QtGui.QLabel(self.experimentPath[-1])
+            self.experimentLabel.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
+            self.mainLayout.addWidget(self.experimentLabel)
+            
             self.setupStatusListener()               
 
         else:
@@ -79,12 +83,14 @@ class StatusWidget(QtGui.QWidget):
             self.mainLayout.addWidget(self.statusLabel)
         
         self.mainLayout.setAlignment(self.statusLabel, QtCore.Qt.AlignCenter)
+        self.mainLayout.setAlignment(self.experimentLabel, QtCore.Qt.AlignCenter)
         
         self.createStatusLabel = self.refreshStatus
 
     @inlineCallbacks
     def refreshStatus(self, experimentPath):
         self.experimentPath = experimentPath
+        self.experimentLabel.setText(self.experimentPath[-1])
         
         if (tuple(self.experimentPath) in self.parent.experiments.keys()):
             
