@@ -109,6 +109,7 @@ class AnalysisWidget(QtGui.QWidget):
         self.solutionsWindow = SolutionsWindow(self, self.context, self.solutionsDictionary)
         self.solutionsWindow.show()
 
+    @inlineCallbacks
     def fitGaussian(self, dataset, directory, index, label, parameters):
         dataX, dataY = self.parent.qmc.plotDict[dataset, directory][index].get_data() # dependent variable
         dataX = np.array(dataX)

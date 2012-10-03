@@ -151,7 +151,6 @@ class StatusWidget(QtGui.QWidget):
             # Because global parameters don't have semaphore! duh!
             if (tuple(name[:-2]) in self.parent.experiments.keys()):
                 parameter = yield self.parent.server.get_parameter(name[:-2] + ['Semaphore', 'Status'] , context = self.context)
-                print 'its the else parameter!', parameter
                 if (parameter == 'Finished' or parameter == 'Stopped'):
                     self.parent.activeExperimentListWidget.removeExperiment(name[:-2])
                 elif (parameter == 'Progress'):

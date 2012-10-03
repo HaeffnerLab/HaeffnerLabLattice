@@ -509,26 +509,32 @@ class Qt4MplCanvas(FigureCanvas):
         return ymin, ymax
 
     def autofitDataY(self, currentY, minmax):
+        print 'Autofitting in Y'
         ymin, ymax = self.ax.get_ylim()
         dataymin, dataymax = self.getDataYLimits()
         if (minmax == MAX):
             newmaxY = ((1.0/SCROLLFRACTION)*(dataymax - ymin) + ymin)
             self.ax.set_ylim(ymin, newmaxY)
+            print 'Y maximum reached, new y limits: ', ymin, newmaxY
         elif (minmax == MIN):
             newminY = (ymax - (1.0/SCROLLFRACTION)*(ymax - dataymin))
             self.ax.set_ylim(newminY, ymax) 
+            print 'Y minimum reached, new y limits: ', newminY, ymax
         self.draw()
     
     # update boundaries to fit all the data and leave room for more               
     def autofitDataX(self, currentX, minmax):
+        print 'Autofitting in X'
         xmin, xmax = self.ax.get_xlim()
         dataxmin, dataxmax = self.getDataXLimits()
         if (minmax == MAX):
             newmaxX = ((1.0/SCROLLFRACTION)*(dataxmax - xmin) + xmin)
             self.ax.set_xlim(xmin, newmaxX)
+            print 'X maximum reached, new x limits: ', xmin, newmaxX
         elif (minmax == MIN):
             newminX = (xmax - (1.0/SCROLLFRACTION)*(xmax - dataxmin))
             self.ax.set_xlim(newminX, xmax)
+            print 'X minimum reached, new x limits: ', newminX, xmax
         self.draw()
         
     
