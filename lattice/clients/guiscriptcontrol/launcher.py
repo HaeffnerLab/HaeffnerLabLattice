@@ -6,18 +6,11 @@ class ScriptControlWidgets():
     def __init__(self, reactor):
         self.makeScriptControl(reactor)
         
-        
-
     @inlineCallbacks
     def makeScriptControl(self, reactor):
-        Status = ScriptControl(reactor, self)
-        status, params = yield Status.getWidgets()
-
-#    def createExperimentParametersWidget(self, expContext, globalContext):
-#        self.experimentParametersWidget = ParametersWidget(self, expContext, globalContext)    
-#        return self.sc, self.experimentParametersWidget
-
-        
+        sc = ScriptControl(reactor)
+        #MR, may be cleaner to get the widgets, then show them
+        status, params = yield sc.getWidgets()
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )

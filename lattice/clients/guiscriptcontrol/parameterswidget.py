@@ -1,51 +1,42 @@
 from PyQt4 import QtGui, QtCore
-from twisted.internet.defer import inlineCallbacks
 from experimentgrid import ExperimentGrid
 from globalgrid import GlobalGrid
 from parameterlimitswindow import ParameterLimitsWindow
 
 class ParametersWidget(QtGui.QWidget):
-#    def __init__(self, parent, experimentContext, globalContext):
     def __init__(self, parent):
         QtGui.QWidget.__init__(self)
         self.parent = parent
-        
+        #set up layout
         self.mainLayout = QtGui.QVBoxLayout()
-        
         font = QtGui.QFont('MS Shell Dlg 2',pointSize=14)
         font.setUnderline(True)
         self.experimentParametersLabel = QtGui.QLabel('Experiment Parameters')
         self.experimentParametersLabel.setFont(font)
         self.globalParametersLabel = QtGui.QLabel('Global Parameters')
         self.globalParametersLabel.setFont(font)        
-        
-        # Setup Experiment Parameter Widget
+        #experiment parameters and global parameters
         self.widgetsLayout = QtGui.QHBoxLayout()
         self.miscLayout = QtGui.QHBoxLayout()
-        
         self.experimentGridLayout = QtGui.QVBoxLayout()
-#        self.setupExperimentGrid(['Test', 'Exp1']) # the experiment to start with
-        # Setup Global Parameter Widget
         self.globalGridLayout = QtGui.QVBoxLayout()      
-#        self.setupGlobalGrid(['Test', 'Exp1']) # the experiment to start with  
-        
         self.widgetsLayout.addLayout(self.experimentGridLayout)
         self.widgetsLayout.addLayout(self.globalGridLayout)
-        
+        #parameter limits button
         parameterLimitsButton = QtGui.QPushButton("Parameter Limits", self)
         parameterLimitsButton.setGeometry(QtCore.QRect(0, 0, 30, 30))
         parameterLimitsButton.clicked.connect(self.parameterLimitsWindowEvent)
         self.miscLayout.addWidget(parameterLimitsButton)
-        
+        #create main layout and show
         self.mainLayout.addLayout(self.widgetsLayout)
         self.mainLayout.addLayout(self.miscLayout)
-        
         self.setLayout(self.mainLayout)
         self.show()
 
     def setContexts(self, experimentContext, globalContext):
         self.experimentContext = experimentContext
         self.globalContext = globalContext
+        #MR should not be hard coded
         self.setupExperimentGrid(['Test', 'Exp1'])
         self.setupGlobalGrid(['Test', 'Exp1'])      
 
@@ -71,9 +62,8 @@ class ParametersWidget(QtGui.QWidget):
 
         self.experimentGrid.show()  
 
-    @inlineCallbacks
     def setupExperimentGridSubsequent(self, experimentPath):
-        yield self.experimentGrid.setupExperimentGrid(experimentPath)
+        self.experimentGrid.setupExperimentGrid(experimentPath)
        
 
     def setupGlobalGrid(self, experimentPath):

@@ -1,5 +1,4 @@
-import time
-from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
+from twisted.internet.defer import inlineCallbacks, DeferredList
 from twisted.internet.threads import deferToThread
 from PyQt4 import QtGui, QtCore
 import re
@@ -12,56 +11,48 @@ from queuedexperimentslist import QueuedExperimentsListWidget
 import sys
 
 class ScriptControl(QtGui.QWidget):
+    
+    #dictionary in the form semaphore_path: (import_part, name)
+    ExperimentInfo = {
+     ('Test', 'Exp1'):  ('clients.guiscriptcontrol.experiments.Test', 'Test'),
+     ('Test', 'Exp2'):  ('clients.guiscriptcontrol.experiments.Test2', 'Test2'),
+     ('SimpleMeasurements', 'ADCPowerMonitor'):  ('scripts.simpleMeasurements.ADCpowerMonitor', 'ADCPowerMonitor'),
+     ('729Experiments','Spectrum'):  ('scripts.experiments.Experiments729.spectrum', 'spectrum'),
+     ('729Experiments','RabiFlopping'):  ('scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping')
+     }
+    #conflicting experiments, every experiment conflicts with itself
+    conflictingExperiments = {
+    ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')],
+    ('Test', 'Exp2'): [('Test', 'Exp2')],
+    ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
+    ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
+    ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
+    }
+    
     def __init__(self, reactor, parent):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
         self.parent = parent
         
-        try:
-            # import all the experiments
-            import experiments.Test
-            import experiments.Test2
-            import scripts.simpleMeasurements.ADCpowerMonitor
-            import scripts.experiments.Experiments729.spectrum
-            import scripts.experiments.Experiments729.rabi_flopping        
-            # main dictionary organized by path in the Registry
-    
-            self.experiments = {
-                                ('Test', 'Exp1'):  (experiments.Test, 'Test'),
-                                ('Test', 'Exp2'):  (experiments.Test2, 'Test2'),
-                                ('SimpleMeasurements', 'ADCPowerMonitor'):  (scripts.simpleMeasurements.ADCpowerMonitor, 'ADCPowerMonitor'),
-                                ('729Experiments','Spectrum'):  (scripts.experiments.Experiments729.spectrum, 'spectrum'),
-                                ('729Experiments','RabiFlopping'):  (scripts.experiments.Experiments729.rabi_flopping, 'rabi_flopping')
-                               }
-            
-            # Every experiment conflicts with at least itself
-            self.conflictingExperiments = {
-                                            ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')], # Exp1 conflicts with itself and Exp2
-                                            ('Test', 'Exp2'): [('Test', 'Exp2')],
-                                            ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
-                                            ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
-                                            ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')]
-                                          }
-                        
-            self.setupExperimentProgressDict()
-            self.connect()
-            
-            self.experimentParametersWidget = ParametersWidget(self)
-            self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
-            self.setupMainWidget()
-
-        except ImportError as e:
-            print 'Script Control: ', e
-            self.experiments = {}
-
+        #import all experiments
+        self.experiments = {}
+        for semaphore_path,value in self.ExperimentInfo.iteritems():
+            local_path,name = value
+            try:
+                __import__(local_path)
+                self.experiments[semaphore_path] = (sys.modules[local_path], name)
+            except ImportError as e:
+                print 'Script Control: ', e
         
+        self.setupExperimentProgressDict() #MR, is this dictionary necessary or is it enough to use semaphore?
+        self.connect()
+        self.experimentParametersWidget = ParametersWidget(self)
+        self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
+        self.setupMainWidget()
 
     def getWidgets(self):
         return self, self.experimentParametersWidget         
         
-        
-        
-    # A dictionary to keep track of the progress of each experiment
     def setupExperimentProgressDict(self):
         self.experimentProgressDict = self.experiments.copy()
         for key in self.experimentProgressDict.keys():
@@ -69,23 +60,17 @@ class ScriptControl(QtGui.QWidget):
         
     # Connect to LabRAD
     @inlineCallbacks
-    def connect(self):
-#        from labrad.wrappers import connectAsync
-#        self.cxn = yield connectAsync()
-#        self.server = self.cxn.semaphore
-#        self.createContexts()
-        
+    def connect(self):        
         from connection import connection
         self.cxn = connection()
         yield self.cxn.connect()
-#        self.context = yield self.cxn.context()
         self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
         self.cxn.on_disconnect['Semaphore'].append( self.disable)        
   
 
         try:
             self.server = self.cxn.servers['Semaphore']
-            test = yield self.cxn.servers['Semaphore'].test_connection()
+            test = yield self.cxn.servers['Semaphore'].test_connection() #not sure why this is necessary
             self.createContexts()
         except Exception, e:
             print 'Not Initially Connected to Semaphore', e
@@ -102,6 +87,7 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.setupStatusWidget(self.statusWidget.experimentPath)
             self.schedulerWidget.reinitializeListener()
+        #MR not sure why this is necessary
         except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er
             self.server = self.cxn.servers['Semaphore']
             self.createContexts()
@@ -207,9 +193,6 @@ class ScriptControl(QtGui.QWidget):
 #        self.mainLayout.addLayout(self.miscLayout)
         self.setLayout(self.mainLayout)
         self.show()
-        
-#        self.parent.createExperimentParametersTab(self.experimentContext, self.globalContext)
-#        self.parent.createExperimentParametersWidget(self.experimentContext, self.globalContext)
 #        self.experimentParametersWidget = ParametersWidget(self, self.experimentContext, self.globalContext)
  
     @inlineCallbacks
@@ -220,9 +203,9 @@ class ScriptControl(QtGui.QWidget):
         self.statusContext = yield self.cxn.context()
         self.schedulerContext = yield self.cxn.context()
         self.experimentParametersWidget.setContexts(self.experimentContext, self.globalContext)
-        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with
+        self.setupStatusWidget(['Test', 'Exp1']) # the experiment to start with ####shouldn't be manually written
         self.schedulerWidget.setContext(self.schedulerContext)
-    
+
     def setupStatusWidget(self, experiment):
         self.statusWidget = StatusWidget(self, experiment, self.statusContext)
         self.experimentListLayout.addWidget(self.statusWidget)
@@ -254,10 +237,10 @@ class ScriptControl(QtGui.QWidget):
             value = Value.aslist
 
         from labrad.units import Value as labradValue
-        if ((type(value) == list) and (len(value) == 3) and (type(value[0]) == labradValue)):
+        if ((type(value) == list) and (len(value) == 3) and (type(value[2]) == labradValue)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
             doubleSpinBox.setRange(value[0], value[1])
-            number_dec = len(str(value[0].value-int(value[0].value))[2:])
+            number_dec = len(str(value[2].value-int(value[2].value))[2:])
             doubleSpinBox.setDecimals(number_dec + 1)
             doubleSpinBox.setValue(value[2])
             doubleSpinBox.setSuffix(' ' + value[2].units)
