@@ -48,7 +48,7 @@ class rabi_flopping(SemaphoreExperiment):
         directory.extend(self.experimentPath)
         directory.extend(self.dirappend)
         self.dv.cd(directory ,True )
-        self.dv.new('Spectrum {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
+        self.dv.new('Rabi Flopping {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
         self.dv.add_parameter('Window', self.p.window_name)
         self.dv.add_parameter('plotLive',self.p.plot_live_parameter)
         self.dv.cd(directory , context = self.readout_save_context)
