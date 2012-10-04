@@ -100,17 +100,17 @@ trap_frequency = T.Value(0.972, 'MHz') #Hz
 projection_angle = 45 #degrees
 sideband_order = 0
 pump_eff = 1.0
-offset_time = 5e-6
+offset_time = 6.0e-6
 flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_angle, sideband_order = sideband_order)
 
 #heating times in ms
-fig_title = '2012Aug20: first measurements'
+fig_title = '2012Aug29: before making changes'
 info = [
-(0, 0.0, ('2012Aug20','2312_42'), 40e-6, {'nbar': Parameter(24.4), 'delta': 0.0, 'T_Rabi' : Parameter(15.2e-6)}),
-(0, 10.0, ('2012Aug20','2314_26'), 33e-6, {'nbar': Parameter(47.0), 'delta': 0.0, 'T_Rabi' : Parameter(16.8e-6)}),
-(0, 20.0, ('2012Aug20','2316_49'), 40e-6, {'nbar': Parameter(59.0), 'delta': 0.1, 'T_Rabi' : Parameter(18.0e-6)}),
-(0, 40.0, ('2012Aug20','2319_25'), 40e-6, {'nbar': Parameter(116.0), 'delta': 0.25, 'T_Rabi' : Parameter(20.0e-6)}),
-(0, 50.0, ('2012Aug20','2321_53'), 40e-6, {'nbar': Parameter(140.0), 'delta': 0.30, 'T_Rabi' : Parameter(21.7e-6)}),
+(0, 0.0, ('2012Aug29','1536_54'), 20e-6, {'nbar': 50.0, 'delta': 0.20, 'T_Rabi' : Parameter(9e-6)}),
+(0, 40.0, ('2012Aug29','1538_14'), 33e-6, {'nbar': Parameter(47.0), 'delta': 0.2, 'T_Rabi' : Parameter(9.8e-6)}),
+#(0, 20.0, ('2012Aug20','2316_49'), 40e-6, {'nbar': Parameter(59.0), 'delta': 0.1, 'T_Rabi' : Parameter(18.0e-6)}),
+#(0, 40.0, ('2012Aug20','2319_25'), 40e-6, {'nbar': Parameter(116.0), 'delta': 0.25, 'T_Rabi' : Parameter(20.0e-6)}),
+#(0, 50.0, ('2012Aug20','2321_53'), 40e-6, {'nbar': Parameter(140.0), 'delta': 0.30, 'T_Rabi' : Parameter(21.7e-6)}),
 ]
 num_figures = len(info) + 1
 

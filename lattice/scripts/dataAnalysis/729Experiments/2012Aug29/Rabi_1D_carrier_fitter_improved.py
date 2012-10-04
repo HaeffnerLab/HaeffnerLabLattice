@@ -99,18 +99,17 @@ dv = cxn.data_vault
 trap_frequency = T.Value(0.972, 'MHz') #Hz
 projection_angle = 45 #degrees
 sideband_order = 0
-pump_eff = 1.0
-offset_time = 5e-6
+pump_eff = 0.95
+offset_time = 6.0e-6
 flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_angle, sideband_order = sideband_order)
 
 #heating times in ms
-fig_title = '2012Aug20: first measurements'
+fig_title = '2012Aug29: after improvement, pump_eff = 0.95, trap_freq ~ 1MHz'
 info = [
-(0, 0.0, ('2012Aug20','2312_42'), 40e-6, {'nbar': Parameter(24.4), 'delta': 0.0, 'T_Rabi' : Parameter(15.2e-6)}),
-(0, 10.0, ('2012Aug20','2314_26'), 33e-6, {'nbar': Parameter(47.0), 'delta': 0.0, 'T_Rabi' : Parameter(16.8e-6)}),
-(0, 20.0, ('2012Aug20','2316_49'), 40e-6, {'nbar': Parameter(59.0), 'delta': 0.1, 'T_Rabi' : Parameter(18.0e-6)}),
-(0, 40.0, ('2012Aug20','2319_25'), 40e-6, {'nbar': Parameter(116.0), 'delta': 0.25, 'T_Rabi' : Parameter(20.0e-6)}),
-(0, 50.0, ('2012Aug20','2321_53'), 40e-6, {'nbar': Parameter(140.0), 'delta': 0.30, 'T_Rabi' : Parameter(21.7e-6)}),
+(0, 0.0, ('2012Aug29','1843_54'), 20e-6, {'nbar': Parameter(25.0), 'delta': 0.00, 'T_Rabi' : 4.2e-6}),
+(0, 50.0, ('2012Aug29','1848_31'), 15e-6, {'nbar': Parameter(47.0), 'delta': 0.0, 'T_Rabi' : Parameter(5.0e-6)}),
+(0, 25.0, ('2012Aug29','1857_48'), 15e-6, {'nbar': Parameter(59.0), 'delta': 0.0, 'T_Rabi' : Parameter(4.7e-6)}),
+(0, 100.0, ('2012Aug29','1903_45'), 20e-6, {'nbar': Parameter(116.0), 'delta': 0.0, 'T_Rabi' : Parameter(4.7e-6)}),
 ]
 num_figures = len(info) + 1
 
@@ -140,17 +139,17 @@ for number,trace in enumerate(info):
             else:
                 values.append( param )
         nbar_value, delta_value, T_Rabi_value = values
-        evolution = flop.compute_state_evolution( nbar_value, delta_value, T_Rabi_value, x  )
+        evolution = pump_eff * flop.compute_state_evolution( nbar_value, delta_value, T_Rabi_value, x  )
         return evolution
     #get data
     dv.cd( ['','Experiments','729Experiments','RabiFlopping',date,datasetName] )
     dv.open(1)  
     times,prob = dv.get().asarray.transpose()
     #fitting
-    fitting_region = np.where(times <= fit_region_max)
+    fitting_region = np.where((offset_time <= times) * (times <= fit_region_max))
     to_fit = [param for param in [nbar, delta, T_Rabi] if param.__class__ == Parameter] #all parameters
     p,success = fit(f, to_fit, y = prob[fitting_region], x = times[fitting_region] - offset_time)
-    tmin,tmax = times.min(), times.max()
+    tmin,tmax = times[fitting_region].min(), times.max()
     detailed_times = np.linspace(tmin, tmax, 1000) 
     evolution = f(detailed_times  - offset_time)
     #plotting

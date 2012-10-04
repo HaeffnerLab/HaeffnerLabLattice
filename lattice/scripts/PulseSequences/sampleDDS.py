@@ -11,7 +11,7 @@ class sampleDDS(PulseSequence):
 
     def sequence(self):
         duration = T.Value(10, 'ms')
-        self.dds_pulses.append( ('866DP',self.start + T.Value(10, 'us'), T.Value(10, 'ms'), T.Value(80, 'MHz'), T.Value(-3.0, 'dBm')) )
+        self.dds_pulses.append( ('729DP',self.start + T.Value(10, 'us'), T.Value(10, 'ms'), T.Value(220, 'MHz'), T.Value(-3.0, 'dBm')) )
         self.dds_pulses.append( ('110DP',self.start + T.Value(10, 'us'), 2* T.Value(10, 'ms'), T.Value(110, 'MHz'), T.Value(-11.0, 'dBm')) )
         self.end = self.start + 2 * duration
         
