@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from experimentgrid import ExperimentGrid
 from globalgrid import GlobalGrid
+from parametergrid import ParameterGrid
 from parameterlimitswindow import ParameterLimitsWindow
 
 class ParametersWidget(QtGui.QWidget):
@@ -52,26 +53,44 @@ class ParametersWidget(QtGui.QWidget):
 ##            del self.experimentGrid
 #        except:
 #            # First time
-        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
+########################################### working!
+#        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
+#        self.experimentGridLayout.addWidget(self.experimentParametersLabel)
+#        self.experimentGridLayout.setAlignment(self.experimentParametersLabel, QtCore.Qt.AlignCenter)
+#        self.experimentGridLayout.setStretchFactor(self.experimentParametersLabel, 0)
+#        self.experimentGridLayout.addWidget(self.experimentGrid)         
+#        self.setupExperimentGrid = self.setupExperimentGridSubsequent
+########################################### working!
+        self.experimentGrid = ParameterGrid(self, experimentPath, self.experimentContext)
         self.experimentGridLayout.addWidget(self.experimentParametersLabel)
         self.experimentGridLayout.setAlignment(self.experimentParametersLabel, QtCore.Qt.AlignCenter)
         self.experimentGridLayout.setStretchFactor(self.experimentParametersLabel, 0)
         self.experimentGridLayout.addWidget(self.experimentGrid)         
         self.setupExperimentGrid = self.setupExperimentGridSubsequent
-#        self.experimentGrid = ExperimentGrid(self, experimentPath, self.experimentContext)
+
 
         self.experimentGrid.show()  
 
     def setupExperimentGridSubsequent(self, experimentPath):
-        self.experimentGrid.setupExperimentGrid(experimentPath)
+        self.experimentGrid.setupParameterGrid(experimentPath)
        
 
     def setupGlobalGrid(self, experimentPath):
-        self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)
+########################################## working        
+#        self.globalGrid = GlobalGrid(self, experimentPath, self.globalContext)
+#        self.globalGridLayout.addWidget(self.globalParametersLabel)
+#        self.globalGridLayout.setAlignment(self.globalParametersLabel, QtCore.Qt.AlignCenter)
+#        self.globalGridLayout.setStretchFactor(self.globalParametersLabel, 0)
+#        self.globalGridLayout.addWidget(self.globalGrid)
+########################################## working     
+
+        self.globalGrid = ParameterGrid(self, experimentPath, self.globalContext, True)
         self.globalGridLayout.addWidget(self.globalParametersLabel)
         self.globalGridLayout.setAlignment(self.globalParametersLabel, QtCore.Qt.AlignCenter)
         self.globalGridLayout.setStretchFactor(self.globalParametersLabel, 0)
-        self.globalGridLayout.addWidget(self.globalGrid)            
+        self.globalGridLayout.addWidget(self.globalGrid)
+
+       
 #            self.globalGrid.disconnectSignal()
 #            self.globalGrid.hide()
 #            del self.globalGrid
@@ -82,7 +101,7 @@ class ParametersWidget(QtGui.QWidget):
         self.setupGlobalGrid = self.setupGlobalGridSubsequent          
         
     def setupGlobalGridSubsequent(self, experimentPath):
-        self.globalGrid.setupGlobalGrid(experimentPath)        
+        self.globalGrid.setupParameterGrid(experimentPath)        
     
     def parameterLimitsWindowEvent(self, evt):
         experimentPath = self.experimentGrid.experimentPath

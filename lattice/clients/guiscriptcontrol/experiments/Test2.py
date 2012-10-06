@@ -104,6 +104,7 @@ class Test2():
         print 'Accepted!, doing calculation....'
     
     def cleanUp(self):
+        print 'why am i not cleaning up?'
         self.cxn.semaphore.finish_experiment(self.experimentPath)
         print 'all cleaned up boss'
 

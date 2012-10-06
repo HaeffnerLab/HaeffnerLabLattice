@@ -132,6 +132,10 @@ class StatusWidget(QtGui.QWidget):
         yield self.parent.server.addListener(listener = self.updateStatus, source = None, ID = 11111, context = self.context)
 
     @inlineCallbacks
+    def refreshStatusListener(self):
+        yield self.parent.server.signal__parameter_change(11111, context = self.context)
+
+    @inlineCallbacks
     def updateStatus(self, target, message):
         name, value = message
 #        print name,value

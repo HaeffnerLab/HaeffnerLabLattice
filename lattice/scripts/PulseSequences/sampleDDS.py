@@ -10,10 +10,10 @@ class sampleDDS(PulseSequence):
     
 
     def sequence(self):
-        duration = T.Value(10, 'ms')
-        self.dds_pulses.append( ('729DP',self.start + T.Value(10, 'us'), T.Value(10, 'ms'), T.Value(220, 'MHz'), T.Value(-3.0, 'dBm')) )
-        self.dds_pulses.append( ('110DP',self.start + T.Value(10, 'us'), 2* T.Value(10, 'ms'), T.Value(110, 'MHz'), T.Value(-11.0, 'dBm')) )
-        self.end = self.start + 2 * duration
+        duration = T.Value(3000, 'ms')
+        freqs = [T.Value(f, 'MHz') for f in [210.0, 240.0, 230.0]]
+        for i,f in enumerate(freqs):
+            self.dds_pulses.append( ('729DP',self.start + 2*i*duration + T.Value(10, 'us'), duration, f, T.Value(-3.0, 'dBm')) )
         
         
 if __name__ == '__main__':
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     cxn = labrad.connect()
     cs = sampleDDS(**{})
     cs.programSequence(cxn.pulser)
-    cxn.pulser.start_number(1000)
+    cxn.pulser.start_number(3)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     print 'DONE'

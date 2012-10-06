@@ -85,7 +85,10 @@ class ScriptControl(QtGui.QWidget):
             self.experimentParametersWidget.setEnabled(True)
             self.experimentParametersWidget.setupExperimentGrid(self.experimentParametersWidget.globalGrid.experimentPath)
             self.experimentParametersWidget.setupGlobalGrid(self.experimentParametersWidget.globalGrid.experimentPath)
+            self.experimentParametersWidget.experimentGrid.refreshParameterListener()
+            self.experimentParametersWidget.globalGrid.refreshParameterListener()
             self.setupStatusWidget(self.statusWidget.experimentPath)
+            self.statusWidget.refreshStatusListener()
             self.schedulerWidget.reinitializeListener()
         #MR not sure why this is necessary
         except AttributeError: # happens when server wasn't on from the beginning. Warning, this might catch unrelated errors, although the original er

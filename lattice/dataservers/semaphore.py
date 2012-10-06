@@ -203,6 +203,8 @@ class Semaphore(LabradServer):
     
     @setting(11, "Finish Experiment", path = '*s', progress = 'v', returns = '')
     def finishExperiment(self, c, path, progress=None):
+        if (progress != None):
+            progress = progress.value
         status_key = tuple(list(path) + ['Semaphore', 'Status'])
         progress_key = tuple(list(path) + ['Semaphore', 'Progress'])
         if status_key not in self.parametersDict.keys():
