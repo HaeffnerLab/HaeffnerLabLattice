@@ -79,10 +79,10 @@ class LATTICE_GUI(QtGui.QMainWindow):
     
     def makeVoltageWidget(self, reactor):
         widget = QtGui.QWidget()
-        from TRAPDRIVE_CONTROL import TRAPDRIVE_CONTROL as trapDriveWidget
+#        from TRAPDRIVE_CONTROL import TRAPDRIVE_CONTROL as trapDriveWidget
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
         from COMPENSATION_CONTROL import COMPENSATION_CONTROL as compensationWidget
-        from DCONRF_CONTROL import DCONRF_CONTROL as dconrfWidget
+#        from DCONRF_CONTROL import DCONRF_CONTROL as dconrfWidget
         #from TRAPDRIVE_MODULATION_CONTROL import TRAPDRIVE_MODULATION_CONTROL as trapModWidget
         #from COMPENSATION_LINESCAN import COMPENSATION_LINESCAN_CONTROL as compLineWidget
         from HV_CONTROL import hvWidget
@@ -91,8 +91,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout.addWidget(compensationWidget(reactor),1,0,1,2)
         #gridLayout.addWidget(compLineWidget(reactor),2,0)
         gridLayout.addWidget(hvWidget(reactor),2,1)
-        gridLayout.addWidget(trapDriveWidget(reactor),3,0)
-        gridLayout.addWidget(dconrfWidget(reactor),3,1)
+#        gridLayout.addWidget(trapDriveWidget(reactor),3,0)
+#        gridLayout.addWidget(dconrfWidget(reactor),3,1)
         #gridLayout.addWidget(trapModWidget(reactor),4,0)
         widget.setLayout(gridLayout)
         return widget

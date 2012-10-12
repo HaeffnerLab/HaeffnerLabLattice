@@ -58,13 +58,13 @@ class DAC(LabradServer):
     def initializeDAC(self):
         '''creates dictionary for information storage'''
         d = {}
-        for name,channel_number,min_voltage in [
-                             ('dconrf1', 0, -9.9558),
-                             ('dconrf2', 1, -9.9557),
-                             ('endcap1', 2, -9.9552),
-                             ('endcap2', 3, -9.9561),
+        for name,channel_number,min_voltage,vpp in [
+                             ('comp1', 0, -40.0, 80.0),
+                             ('comp2', 1, -40.0, 80.0),
+                             ('endcap1', 2, -9.9552, 20.0),
+                             ('endcap2', 3, -9.9561, 20.0),
                              ]:
-            chan = dac_channel(name, channel_number, min_voltage)
+            chan = dac_channel(name, channel_number, min_voltage, vpp)
             chan.voltage = yield self.getRegValue(name)
             d[name] = chan
             value = self.voltage_to_val(chan.voltage, chan.min_voltage, chan.vpp)

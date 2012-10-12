@@ -3,9 +3,9 @@ import numpy as np
 import time
 
 nodeDict = {'node_lattice_control':
-					['Serial Server','Data Vault', 'DAC', 'Compensation Box','Pulser',
+					['Serial Server','Data Vault', 'DAC', 'Pulser',
 					'Agilent Server', 'GPIB Device Manager', 'RohdeSchwarz Server','Tektronix Server','NormalPMTFlow',
-					'Compensation LineScan','ADCserver',  'Trap Drive', 'HighVoltA','Semaphore'],
+					'Compensation LineScan','ADCserver',  'HighVoltA','Semaphore'],
 		}
 
 #connect to LabRAD

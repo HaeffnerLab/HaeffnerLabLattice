@@ -1,14 +1,12 @@
 import labrad
 
 #connect to LabRAD
-errors = False
+
 try:
 	cxn = labrad.connect()
 except:
 	print 'Please start LabRAD Manager'
-	errors = True
-else:
-	
+else:	
 	for node in ['node_lattice_control']:
 		#make sure all node servers are up
 		if not node in cxn.servers:'{} is not running'.format(node)
@@ -20,3 +18,4 @@ else:
 			for name, fullname in running_servers:
 				print 'stopping {}'.format(fullname)
 				cxn.servers[node].stop(fullname)
+print 'DONE'
