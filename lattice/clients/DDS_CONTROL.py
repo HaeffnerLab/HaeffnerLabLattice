@@ -124,7 +124,7 @@ class DDS_CONTROL(QtGui.QWidget):
     def __init__(self, reactor):
         super(DDS_CONTROL, self).__init__()
         self.reactor = reactor
-        self.channels = ['866DP', '110DP', '854DP','pump', '729DP']
+        self.channels = ['866DP', '110DP', '854DP', '729DP']
         self.setupDDS()
         
     @inlineCallbacks

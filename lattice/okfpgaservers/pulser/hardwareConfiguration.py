@@ -57,7 +57,6 @@ class hardwareConfiguration(object):
                    'axial':channelConfiguration(4, False, True, True, True),
                    'camera':channelConfiguration(5, False, False, True, True),
                    ### 7 is channel 1 on the optical to electric translator
-                   'pump':channelConfiguration(7, False, True, True, False),
                    #------------INTERNAL CHANNELS----------------------------------------#
                    'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
                    'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
