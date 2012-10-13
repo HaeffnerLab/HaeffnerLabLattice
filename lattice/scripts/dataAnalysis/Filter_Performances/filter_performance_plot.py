@@ -6,8 +6,8 @@ from matplotlib import pyplot
 figure = pyplot.figure()
 figure.clf()
 
-#lowpass filter
-lowp_data = [
+#minicircuits low pass filter 5MHz+
+minicircuit_lowpass_5 = ('minicircuit low pass 5MHz +', [
 100.0, -95.0,
 95.0, -95.0,
 90.0, -94.0,
@@ -50,10 +50,10 @@ lowp_data = [
 1.5, -5.0,
 1.0, -5.0,
 0.5, -5.0,
-0.3, -5.0]
+0.3, -5.0])
 
 #isolated filter
-iso_data = [
+isolation_box_filter = ('isolation box filter',[
 108.0, -61.0,
 100.0, -58.0,
 99.0, -59.0,
@@ -98,35 +98,20 @@ iso_data = [
 2.5, -121.0,
 2.0, -122.0,
 1.5, -122.0,
-1.0, -122.0]
+1.0, -122.0])
 
-"""
-i = 0
-while i < len(data):
-	if i % 2 == 0:
-		freqs.append(data[i])
-	else:
-		dbm.append(data[i])
-	i += 1
-"""
-
-lp = numpy.array(lowp_data)
-lp = lp.reshape(-1, 2)
-freqs, ampl_dbm = lp.transpose()
-
-iso = numpy.array(iso_data)
-iso = iso.reshape(-1, 2)
-freqs2, ampl_dbm2 = iso.transpose()
-
+for name,data in [minicircuit_lowpass_5, isolation_box_filter]:
+	print name
+	data = numpy.array(data)
+	data = data.reshape(-1, 2)
+	freqs, ampl_dbm = data.transpose()
+	pyplot.plot(freqs, ampl_dbm, 'o-', label=name)
 
 # Set axes
+pyplot.suptitle('Filter Performances')
 pyplot.ylabel('dBm')
 pyplot.ylim(-126, 0)
 pyplot.xlabel('MHz')
 pyplot.xlim(0, 110)
-pyplot.suptitle('Filter Performances')
-
-pyplot.plot(freqs, ampl_dbm, 'o-', label='Minicircuits 5 MHz Low Pass Filter')
-pyplot.plot(freqs2, ampl_dbm2, 'go-', label='Isolated Filter')
 pyplot.legend()
 pyplot.show()

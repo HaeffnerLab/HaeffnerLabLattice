@@ -15,8 +15,8 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
     @inlineCallbacks
     def connect(self):
         from labrad.wrappers import connectAsync
-        from labrad import types as T
-        self.T = T
+        from labrad.units import WithUnit
+        self.WithUnit = WithUnit
         self.cxn = yield connectAsync()
         self.server = yield self.cxn.dac
         #set initial values
@@ -40,8 +40,8 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
         if(self.inputUpdated):
             one = self.valueLeft.value()
             two =  self.valueRight.value()
-            yield self.server.set_voltage("endcap1",self.T.Value(one, "V"))
-            yield self.server.set_voltage("endcap2",self.T.Value(two, "V"))
+            yield self.server.set_voltage("endcap1",self.WithUnit(one, "V"))
+            yield self.server.set_voltage("endcap2",self.WithUnit(two, "V"))
             self.inputUpdated = False;
     
     def closeEvent(self, x):
