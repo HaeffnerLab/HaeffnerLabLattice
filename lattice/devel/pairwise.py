@@ -1,9 +1,8 @@
-import numpy as np
-import matplotlib
-matplotlib.use('Qt4Agg')
-from matplotlib import pyplot
+#import numpy as np
 #
-#detuning_para = .5
+#
+#detuning_para = 0.0
+#
 #detuning = detuning_para*1.319E8
 #
 #s = 1.0
@@ -21,6 +20,10 @@ from matplotlib import pyplot
 #rho_ee = s*0.5/(1+s+(2*(detuning+doppler)/gamma)**2.0)
 #
 #print rho_ee
+import numpy as np
+import matplotlib
+matplotlib.use('Qt4Agg')
+from matplotlib import pyplot
 data = np.loadtxt('/home/lattice/Simulation/trajectories')
 x = np.arange(len(data))
 figure = pyplot.figure()

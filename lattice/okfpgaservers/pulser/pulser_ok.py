@@ -56,11 +56,8 @@ class Pulser(LabradServer, DDS):
 
     def initializeBoard(self):
         connected = self.api.connectOKBoard()
-        while not connected:
-            print 'not connected, waiting for {} seconds to try again'.format(self.devicePollingPeriod)
-            #self.wait(self.devicePollingPeriod)
-            time.sleep(10)
-            connected = self.api.connectOKBoard()
+        if not connected:
+            raise Exception ("Pulser Not Found")
             
     def initializeSettings(self):
         for channel in self.channelDict.itervalues():
