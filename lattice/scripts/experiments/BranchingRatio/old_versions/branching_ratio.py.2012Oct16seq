@@ -27,9 +27,6 @@ class branching_ratio(PulseSequence):
             dds.append( ('110DP',self.end, p.duration_397_pulse, p.frequency_397_pulse, p.amplitude_397_pulse) )
             self.end += p.duration_397_pulse
             self.addSequence(empty_sequence, **{'empty_sequence_duration':p.between_pulses})
-            dds.append( ('110DP',self.end, p.duration_397_pulse, p.frequency_397_pulse, p.amplitude_397_pulse) )
-            self.end += p.duration_397_pulse
-            self.addSequence(empty_sequence, **{'empty_sequence_duration':p.between_pulses})
             dds.append( ('866DP',self.end, p.duration_866_pulse, p.frequency_866_pulse, p.amplitude_866_pulse) )
             self.end += p.duration_866_pulse
         stop_recording_timetags = self.end
@@ -37,7 +34,7 @@ class branching_ratio(PulseSequence):
         #record timetags while cycling takes place
         self.ttl_pulses.append(('TimeResolvedCount',start_recording_timetags, timetag_record_duration))
         self.start_recording_timetags = start_recording_timetags
-        self.timetag_record_cycle = 3 * p.between_pulses + 2 * p.duration_397_pulse + p.duration_866_pulse
+        self.timetag_record_cycle = 2 * p.between_pulses + p.duration_397_pulse + p.duration_866_pulse
 
 class sample_parameters(object):
     
@@ -50,7 +47,7 @@ class sample_parameters(object):
                   'doppler_cooling_repump_additional':WithUnit(100, 'us'),
                   'doppler_cooling_duration':WithUnit(1.0,'ms'),
                   #cycling
-                  'cycles_per_sequence':84,
+                  'cycles_per_sequence':126,
                   'between_pulses':WithUnit(20, 'us'),
                   'duration_397_pulse':WithUnit(20, 'us'),
                   'duration_866_pulse':WithUnit(20, 'us'),
@@ -70,4 +67,4 @@ if __name__ == '__main__':
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_timetags().asarray
-    print 'got ' + len(readout) + ' timetags'
+    print len(readout)

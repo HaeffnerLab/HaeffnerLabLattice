@@ -27,9 +27,8 @@ class branching_ratio(SemaphoreExperiment):
         self.setup_data_vault()
         self.sequence_parameters = self.setup_sequence_parameters()
         self.setup_pulser()
-        self.binner = Binner(self.timetag_record_cycle, 100e-9)
+        self.binner = Binner(self.timetag_record_cycle['s'], 0.5e-6)
         self.timetags_since_last_binsave = 0
-        self.save_timetags_every = 25000
     
     def import_labrad(self):
         import labrad
@@ -74,7 +73,7 @@ class branching_ratio(SemaphoreExperiment):
     def program_pulser(self):
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
-        self.timetag_record_cycle = seq.timetag_record_cycle['s']
+        self.timetag_record_cycle = seq.timetag_record_cycle
         self.start_recording_timetags = seq.start_recording_timetags['s']
 
     def sequence(self):
@@ -106,14 +105,13 @@ class branching_ratio(SemaphoreExperiment):
                 self.dv.add(numpy.vstack((iters,timetags)).transpose())
                 #collapse the timetags onto a single cycle starting at 0
                 timetags = timetags - self.start_recording_timetags
-                timetags = timetags % self.timetag_record_cycle
+                timetags = timetags % self.timetag_record_cycle['s']
                 self.binner.add(timetags, sequences_back_to_back * cycles_per_sequence)
                 print 'saved {} timetags'.format(len(timetags))
                 self.timetags_since_last_binsave += timetags.size
-                if self.timetags_since_last_binsave > self.save_timetags_every:
+                if self.timetags_since_last_binsave > 100000:
                     self.save_histogram()
                     self.timetags_since_last_binsave = 0
-                    self.save_timetags_every *= 2
         self.percentDone = 100.0
                 
     def save_histogram(self, force = False):
@@ -127,6 +125,8 @@ class branching_ratio(SemaphoreExperiment):
     
     def save_parameters(self):
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
+        print self.start_recording_timetags
+        print self.timetag_record_cycle
         dvParameters.saveParameters(self.dv, {'start_recording_timetags':self.start_recording_timetags})
         dvParameters.saveParameters(self.dv, {'timetag_record_cycle':self.timetag_record_cycle})
         dvParameters.saveParameters(self.dv, measuredDict)
