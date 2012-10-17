@@ -12,7 +12,7 @@ nodeDict = {'node_lattice_control':
 errors = False
 try:
 	cxn = labrad.connect()
-except:
+except Exception:
 	print 'Please start LabRAD Manager'
 	errors = True
 else:

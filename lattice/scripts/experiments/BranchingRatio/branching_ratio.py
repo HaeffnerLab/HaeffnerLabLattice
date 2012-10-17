@@ -109,7 +109,7 @@ class branching_ratio(SemaphoreExperiment):
                 self.binner.add(timetags, sequences_back_to_back * cycles_per_sequence)
                 print 'saved {} timetags'.format(len(timetags))
                 self.timetags_since_last_binsave += timetags.size
-                if self.timetags_since_last_binsave > 10000:
+                if self.timetags_since_last_binsave > 100000:
                     self.save_histogram()
                     self.timetags_since_last_binsave = 0
         self.percentDone = 100.0
@@ -125,6 +125,10 @@ class branching_ratio(SemaphoreExperiment):
     
     def save_parameters(self):
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
+        print self.start_recording_timetags
+        print self.timetag_record_cycle
+        dvParameters.saveParameters(self.dv, {'start_recording_timetags':self.start_recording_timetags})
+        dvParameters.saveParameters(self.dv, {'timetag_record_cycle':self.timetag_record_cycle})
         dvParameters.saveParameters(self.dv, measuredDict)
         dvParameters.saveParameters(self.dv, self.p.toDict())
     
