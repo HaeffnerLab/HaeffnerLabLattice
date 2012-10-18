@@ -208,7 +208,7 @@ class NormalPMTFlow( LabradServer):
             yield self._programPulserDiff()
         if self.openDataSet is None:
             self.openDataSet = yield self.makeNewDataSet(self.saveFolder, self.dataSetName)
-        self.recording.start(self.collection_period/2.0)
+        self.recording.start(self.collection_period['s']/2.0)
         returnValue(newSet)
         
     @setting(5, returns = '')
