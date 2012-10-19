@@ -22,13 +22,3 @@ hist = np.histogram(timetags, bins)[0]
 together = np.vstack((bins[:-1], hist)).transpose()
 bin_filename = timetag_file[:-4] + '_binned'
 np.save(bin_filename, together)
-#plot the binned timetags
-import matplotlib
-matplotlib.use('Qt4Agg')
-from matplotlib import pyplot
-bins = bins*1e6 #plot time bins in microseconds
-pyplot.plot(bins[:-1], hist)
-pyplot.title('Branching Ratio ' + timetag_file)
-pyplot.xlabel(u'Time \265s')
-pyplot.ylabel('Photons per bin of {}s'.format(bin_size))
-pyplot.show()
