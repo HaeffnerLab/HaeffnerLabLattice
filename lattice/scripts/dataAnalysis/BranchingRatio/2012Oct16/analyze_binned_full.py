@@ -84,24 +84,43 @@ bin_size = bins[1] - bins[0]
 t1 = t1 - t1 % bin_size
 t2 = t2 - t2 % bin_size
 
+def rise(x, t_start, B):
+    y = np.zeros_like(x)
+    before = np.where(x < t_start)
+    after = np.where(x >= t_start)
+    x_after = x[after]
+    y[before] = background_level
+    y[after] = B * (x_after -  t_start) + background_level
+    return y
+
+rise_domain = (20.5e-6, 22.0e-6)
+rise_domain_where = np.where((rise_domain[0] <= bins) * (bins <= rise_domain[1]))
+rise_bins,rise_counts =  bins[rise_domain_where], hist[rise_domain_where]
+err = np.sqrt(rise_counts)
+p0 = [21.7e-6, 100.0]
+p, covm = curve_fit(rise, rise_bins, rise_counts, p0, err)#do the fit
+t_start,B = p
+t_start = t_start - t_start % bin_size
+
 #computing the area of the 397 peak
-peak_397_domain = (21.75e-6, 30.0e-6)
+peak_397_domain = (15.75e-6, 33.0e-6)
 peak_397_where = np.where((peak_397_domain[0] <= bins) * (bins <= peak_397_domain[1]))
 peak_397_bins,peak_397_counts = bins[peak_397_where], hist[peak_397_where]
 
 peak_397_area = np.sum(peak_397_counts)
 peak_397_area_sigma = np.sqrt(peak_397_area)
 
-background_397_area = peak_397_bins.size * background_level + .5 * (t2 - t1) / bin_size *  background_397 + (peak_397_bins.size - (t2 - t1) / bin_size) * background_397
+background_397_area = peak_397_bins.size * background_level + .5 * (t2 - t1) / bin_size *  background_397 + (peak_397_domain[1] - t_start -  (t2 - t1)) / bin_size * background_397
 background_397_area_sigma = np.sqrt(background_397_area)
 background_subtracted_397_area = peak_397_area - background_397_area 
 background_subtracted_397_area_sigma = np.sqrt(peak_397_area_sigma**2 + background_397_area_sigma**2)
 
-print 1 - background_subtrated_866_area / background_subtracted_397_area
+print 'Branching: ', 1 - background_subtrated_866_area / background_subtracted_397_area
 
 pyplot.plot(domain_fall_bins, slope(domain_fall_bins, t1, t2), 'r', linewidth=1.0)
 pyplot.plot(x, f(x, A, tau, background_397), 'r', linewidth=1.0)
 pyplot.plot(background_bins, background_level * np.ones_like(background_bins), 'r', linewidth=1.0)
+pyplot.plot(rise_bins, rise(rise_bins, t_start, B), 'r', linewidth=1.0)
 pyplot.plot(bins, hist, 'k.', markersize=0.4)
 pyplot.ylim(ymin = 0)
 pyplot.title('Branching Ratio ' + binned_file)
