@@ -91,28 +91,28 @@ class GrapherWindow(QtGui.QWidget):
         grapherLayout.addLayout(buttonBox)
 
     # adds a checkbox when a new dataset is overlaid on the graph
-    def createDatasetCheckbox(self, dataset, directory):
-        datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + str(directory[-1]), self)
+    def createDatasetCheckbox(self, dataset, directory, label, index):
+        datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + str(directory[-1]) + ' - ' + label, self)
 #        datasetCheckbox = QtGui.QCheckBox(str(dataset) + ' - ' + label, self)
         datasetCheckbox.toggle()
         datasetCheckbox.clicked.connect(self.datasetCheckboxSignal)
         try:
             #This if statement should fail if no model exists.
-            if (self.datasetCheckboxes[dataset, directory] != None):
+            if (self.datasetCheckboxes[dataset, directory, index] != None):
                 # if the checkbox does exist, then just reassign it.
-                self.datasetCheckboxes[dataset, directory] = datasetCheckbox
+                self.datasetCheckboxes[dataset, directory, index] = datasetCheckbox
                 self.datasetCheckboxListWidget.setItemWidget(self.datasetCheckboxListWidget.item(self.datasetCheckboxPositionDict[dataset, directory]), datasetCheckbox)
         except:
-            self.datasetCheckboxes[dataset, directory] = datasetCheckbox
+            self.datasetCheckboxes[dataset, directory, index] = datasetCheckbox
             # The trick here is to create an item with enough text to activate the scrollbar, and then hide the text.
             # This must be done because a checkbox, even with a lot of text, does not activate the scroll bar horizontally
             item = QtGui.QListWidgetItem()
-            item.setText('     ' + str(dataset) + ' - ' + str(directory[-1]))
+            item.setText('     ' + str(dataset) + ' - ' + str(directory[-1]) + ' - ' + label)
             item.setTextColor(QtGui.QColor(255, 255, 255))
             self.datasetCheckboxListWidget.addItem(item)
     #        self.datasetCheckboxListWidget.addItem(str(dataset) + ' ' + str(directory[-1]))
             self.datasetCheckboxListWidget.setItemWidget(self.datasetCheckboxListWidget.item(self.datasetCheckboxCounter), datasetCheckbox)
-            self.datasetCheckboxPositionDict[dataset, directory] = self.datasetCheckboxCounter
+            self.datasetCheckboxPositionDict[dataset, directory, index] = self.datasetCheckboxCounter
             self.datasetCheckboxCounter = self.datasetCheckboxCounter + 1
 
     # adds a checkbox when a new dataset is overlaid on the graph

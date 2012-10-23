@@ -184,11 +184,13 @@ class Qt4MplCanvas(FigureCanvas):
             if (directory[-1][-5:len(directory[-1])] != 'Model'):
                 for i in range(numberOfDependentVariables):
                     label = self.datasetLabelsDict[dataset, directory][i]
-                    self.parent.createDatasetAnalysisCheckbox(dataset, directory, label, i)                
-
+                    self.parent.createDatasetCheckbox(dataset, directory, label, i)
+                    self.parent.createDatasetAnalysisCheckbox(dataset, directory, label, i)
+            else:
+                self.parent.createDatasetCheckbox(dataset, directory, directory[-1][-5:len(directory[-1])], 0)                
             self.dataDict[dataset, directory] = [[np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]#, [np.zeros([MAXDATASETSIZE]), np.zeros([MAXDATASETSIZE*numberOfDependentVariables]).reshape(numberOfDependentVariables, MAXDATASETSIZE)]]           
             self.plotDict[dataset, directory] = [[]]*numberOfDependentVariables
-            self.parent.createDatasetCheckbox(dataset, directory)
+#            self.parent.createDatasetCheckbox(dataset, directory)
             # plot parameters
             self.plotParametersDict[dataset, directory] = [MAXDATASETSIZE, 0, False, False, False]          
             # update the data points
@@ -337,26 +339,25 @@ class Qt4MplCanvas(FigureCanvas):
 #        handles, labels = self.ax.get_legend_handles_labels()
         handles = []
         labels = []
-        for dataset,directory in self.parent.datasetCheckboxes.keys():
-            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
-                for i in self.plotDict[dataset, directory]:
-                    handles.append(i)
-                    labels.append(str(dataset) + ' - ' + i.get_label())
+        for dataset,directory, index in self.parent.datasetCheckboxes.keys():
+            if self.parent.datasetCheckboxes[dataset, directory, index].isChecked():
+                handles.append(self.plotDict[dataset, directory][index])
+                labels.append(str(dataset) + ' - ' + self.plotDict[dataset, directory][index].get_label())
         self.ax.legend(handles, labels, loc='best')
     
     # Check which datasets are meant to be plotted and draw them.
     def drawGraph(self):
 #        tstartupdate = time.clock()
 #        for dataset, directory in self.dataDict:
-        for dataset,directory in self.parent.datasetCheckboxes.keys():
+        for dataset,directory,index in self.parent.datasetCheckboxes.keys():
             # if dataset is intended to be drawn (a checkbox governs this)
-            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
-                self.drawPlot(dataset, directory)
+            if self.parent.datasetCheckboxes[dataset, directory, index].isChecked():
+                self.drawPlot(dataset, directory, index)
 #        tstopupdate = time.clock()
 #        print tstopupdate - tstartupdate
     
     # plot the data
-    def drawPlot(self, dataset, directory):#, dataset, directory):
+    def drawPlot(self, dataset, directory, index):#, dataset, directory):
             
         # check if data has been initialized
         try:
@@ -364,7 +365,7 @@ class Qt4MplCanvas(FigureCanvas):
             dataInitialized = self.plotParametersDict[dataset, directory][DATAINITIALIZED]          
 #            tstartupdate = time.clock()
          
-            numberOfDependentVariables = len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][1])
+#            numberOfDependentVariables = len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][1])
                                               
             # finds the maximum independent variable value
 #            self.maxX = self.dataDict[dataset, directory][INDEPENDENT][-1]
@@ -379,18 +380,17 @@ class Qt4MplCanvas(FigureCanvas):
             else:
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE 
             #print 'drawRange: ', drawRange, ' array to plot: ', self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
-            for i in range(numberOfDependentVariables):
-                #if the box is checked, otherwise skip this!
-                self.plotDict[dataset, directory][i].set_data(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange],self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange])
-                try:
-                    self.ax.draw_artist(self.plotDict[dataset, directory][i])
-                except AssertionError:
-                    print 'failed to draw!'
+            #if the box is checked, otherwise skip this!
+            self.plotDict[dataset, directory][index].set_data(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange],self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][index][0:drawRange])
+            try:
+                self.ax.draw_artist(self.plotDict[dataset, directory][index])
+            except AssertionError:
+                print 'failed to draw!'
         
             self.blit(self.ax.bbox)
             
             # check to see if the boundary needs updating
-            self.updateBoundary(dataset, directory, numberOfDependentVariables, drawRange)
+            self.updateBoundary(dataset, directory, index, drawRange)
             
 #            tstopupdate = time.clock()
 #            print tstopupdate - tstartupdate
@@ -399,7 +399,7 @@ class Qt4MplCanvas(FigureCanvas):
         except:
             pass
     # if the screen has reached the scrollfraction limit, it will update the boundaries
-    def updateBoundary(self, dataset, directory, numberOfDependentVariables, drawRange):
+    def updateBoundary(self, dataset, directory, index, drawRange):
         #print 'drawRange: ', drawRange, ' array to plot: ', self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
         #print self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT]
         arrayToPlot = self.plotParametersDict[dataset, directory][ARRAYTOPLOT]
@@ -409,15 +409,14 @@ class Qt4MplCanvas(FigureCanvas):
         # find the current maximum/minimum Y values between all lines 
         currentYmax = None
         currentYmin = None
-        for i in range(numberOfDependentVariables):
-            if (currentYmax == None):
-                currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
-                currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
-            else:
-                if (self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] > currentYmax):
-                    currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
-                elif ((self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][-1] < currentYmin)):
-                    currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][i][drawRange - 1]
+        if (currentYmax == None):
+            currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][drawRange - 1]
+            currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][drawRange - 1]
+        else:
+            if (self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][-1] > currentYmax):
+                currentYmax = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][drawRange - 1]
+            elif ((self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][-1] < currentYmin)):
+                currentYmin = self.dataDict[dataset, directory][arrayToPlot][DEPENDENT][index][drawRange - 1]
         
         xmin, xmax = self.ax.get_xlim()
         xwidth = xmax - xmin
@@ -468,12 +467,12 @@ class Qt4MplCanvas(FigureCanvas):
     def getDataXLimits(self):
         xmin = None
         xmax = None
-        for dataset, directory in self.parent.datasetCheckboxes.keys():
+        for dataset, directory, index in self.parent.datasetCheckboxes.keys():
             if (self.plotParametersDict[dataset, directory][ARRAYTOPLOT] == 0):
                 drawRange = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
             else:
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE
-            if self.parent.datasetCheckboxes[dataset, directory].isChecked():             
+            if self.parent.datasetCheckboxes[dataset, directory, index].isChecked():             
                 datasetXmax = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange].max()
                 datasetXmin = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][INDEPENDENT][0:drawRange].min()
                 if (xmin == None):
@@ -489,23 +488,22 @@ class Qt4MplCanvas(FigureCanvas):
     def getDataYLimits(self):
         ymin = None
         ymax = None
-        for dataset, directory in self.parent.datasetCheckboxes.keys():
+        for dataset, directory, index in self.parent.datasetCheckboxes.keys():
             if (self.plotParametersDict[dataset, directory][ARRAYTOPLOT] == 0):
                 drawRange = self.plotParametersDict[dataset, directory][DATAINDEX]%MAXDATASETSIZE
             else:
                 drawRange = (self.plotParametersDict[dataset, directory][DATAINDEX] + MAXDATASETSIZE/2)%MAXDATASETSIZE           
-            if self.parent.datasetCheckboxes[dataset, directory].isChecked():
-                for i in range(len(self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT])):
-                    datasetYmax = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange].max()
-                    datasetYmin = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][i][0:drawRange].min()
-                    if (ymin == None):
+            if self.parent.datasetCheckboxes[dataset, directory, index].isChecked():
+                datasetYmax = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][index][0:drawRange].max()
+                datasetYmin = self.dataDict[dataset, directory][self.plotParametersDict[dataset, directory][ARRAYTOPLOT]][DEPENDENT][index][0:drawRange].min()
+                if (ymin == None):
+                    ymin = datasetYmin
+                    ymax = datasetYmax
+                else:
+                    if datasetYmin < ymin:
                         ymin = datasetYmin
+                    if datasetYmax > ymax:
                         ymax = datasetYmax
-                    else:
-                        if datasetYmin < ymin:
-                            ymin = datasetYmin
-                        if datasetYmax > ymax:
-                            ymax = datasetYmax
         return ymin, ymax
 
     def autofitDataY(self, currentY, minmax):
