@@ -136,8 +136,10 @@ class Pulser(LabradServer, DDS):
         if channel not in self.channelDict.keys(): raise Exception("Unknown Channel {}".format(channel))
         hardwareAddr = self.channelDict.get(channel).channelnumber
         sequence = c.get('sequence')
+        start = start['s']
+        duration = duration['s']
         #simple error checking
-        if not (self.sequenceTimeRange[0] <= start,start + duration <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
+        if not ( (self.sequenceTimeRange[0] <= start <= self.sequenceTimeRange[1]) and (self.sequenceTimeRange[0] <= start + duration <= self.sequenceTimeRange[1])): raise Exception ("Time boundaries are out of range")
         if not duration >= self.timeResolution: raise Exception ("Incorrect duration")
         if not sequence: raise Exception ("Please create new sequence first")
         sequence.addPulse(hardwareAddr, start, duration)
@@ -159,9 +161,9 @@ class Pulser(LabradServer, DDS):
         Allows to optionally extend the total length of the sequence beyond the last TTL pulse.
         """
         sequence = c.get('sequence')
-        if not (self.sequenceTimeRange[0] <= timeLength.value <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
+        if not (self.sequenceTimeRange[0] <= timeLength['s'] <= self.sequenceTimeRange[1]): raise Exception ("Time boundaries are out of range")
         if not sequence: raise Exception ("Please create new sequence first")
-        sequence.extendSequenceLength(timeLength.value)
+        sequence.extendSequenceLength(timeLength['s'])
         
     @setting(8, "Stop Sequence")
     def stopSequence(self, c):

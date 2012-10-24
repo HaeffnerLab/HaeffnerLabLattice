@@ -138,9 +138,9 @@ class readout_histgram(QtGui.QWidget):
         yield self.cxn.servers['Semaphore'].signal__parameter_change(c.ID_B, context = self.context)
         yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID_B, context = self.context)
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
-        self.threshold.setRange(init_val[0],init_val[1])
-        self.threshold.setValue(init_val[2])
-        self.update_canvas_line(init_val[2])
+        self.threshold.setRange(init_val[0].value,init_val[1].value)
+        self.threshold.setValue(init_val[2].value)
+        self.update_canvas_line(init_val[2].value)
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
         self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
         self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
@@ -179,7 +179,7 @@ class readout_histgram(QtGui.QWidget):
         d, sett = y
         if d == c.readout_threshold_dir:
             val = sett[2]
-            yield deferToThread(self.set_threshold_block_signals, val)
+            yield deferToThread(self.set_threshold_block_signals, val.value)
         elif d == c.readout_time_dir:
             val = sett[2]
             yield deferToThread(self.set_readout_time_block_signals, val.inUnitsOf('ms'))

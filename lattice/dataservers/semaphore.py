@@ -16,7 +16,6 @@ timeout = 20
 ### END NODE INFO
 """
 from labrad.server import LabradServer, setting, Signal
-import time
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 
@@ -203,8 +202,6 @@ class Semaphore(LabradServer):
     
     @setting(11, "Finish Experiment", path = '*s', progress = 'v', returns = '')
     def finishExperiment(self, c, path, progress=None):
-        if (progress != None):
-            progress = progress.value
         status_key = tuple(list(path) + ['Semaphore', 'Status'])
         progress_key = tuple(list(path) + ['Semaphore', 'Progress'])
         if status_key not in self.parametersDict.keys():
