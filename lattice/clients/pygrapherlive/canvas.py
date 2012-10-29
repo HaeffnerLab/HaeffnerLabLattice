@@ -122,6 +122,7 @@ TIMERREFRESH = .01 #s
 MAXDATASETSIZE = 100000
 #SCALEFACTOR = 1.5
 SCROLLFRACTION = .8; # Data reaches this much of the screen before auto-scroll takes place
+AUTOFITSCROLLFRACTION = .65
 INDEPENDENT = 0
 DEPENDENT = 1
 PLOTS = 2
@@ -511,11 +512,11 @@ class Qt4MplCanvas(FigureCanvas):
         ymin, ymax = self.ax.get_ylim()
         dataymin, dataymax = self.getDataYLimits()
         if (minmax == MAX):
-            newmaxY = ((1.0/SCROLLFRACTION)*(dataymax - ymin) + ymin)
+            newmaxY = ((1.0/AUTOFITSCROLLFRACTION)*(dataymax - ymin) + ymin)
             self.ax.set_ylim(ymin, newmaxY)
             print 'Y maximum reached, new y limits: ', ymin, newmaxY
         elif (minmax == MIN):
-            newminY = (ymax - (1.0/SCROLLFRACTION)*(ymax - dataymin))
+            newminY = (ymax - (1.0/AUTOFITSCROLLFRACTION)*(ymax - dataymin))
             self.ax.set_ylim(newminY, ymax) 
             print 'Y minimum reached, new y limits: ', newminY, ymax
         self.draw()
@@ -526,11 +527,11 @@ class Qt4MplCanvas(FigureCanvas):
         xmin, xmax = self.ax.get_xlim()
         dataxmin, dataxmax = self.getDataXLimits()
         if (minmax == MAX):
-            newmaxX = ((1.0/SCROLLFRACTION)*(dataxmax - xmin) + xmin)
+            newmaxX = ((1.0/AUTOFITSCROLLFRACTION)*(dataxmax - xmin) + xmin)
             self.ax.set_xlim(xmin, newmaxX)
             print 'X maximum reached, new x limits: ', xmin, newmaxX
         elif (minmax == MIN):
-            newminX = (xmax - (1.0/SCROLLFRACTION)*(xmax - dataxmin))
+            newminX = (xmax - (1.0/AUTOFITSCROLLFRACTION)*(xmax - dataxmin))
             self.ax.set_xlim(newminX, xmax)
             print 'X minimum reached, new x limits: ', newminX, xmax
         self.draw()

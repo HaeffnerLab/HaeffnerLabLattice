@@ -25,7 +25,7 @@ print y_axis
 #thorlabs_i = thorlabs[:,1]-np.average(thorlabs[:,1])
 #ilx_i = ilx[:,1]-np.average(ilx[:,1])
 
-pyplot.plot(x_axis,y_axis)
+pyplot.plot(x_axis,y_axis, 'o')
 
 pyplot.xlabel( 'Frequency (kHz)')
 pyplot.ylabel('Excitation probability')
