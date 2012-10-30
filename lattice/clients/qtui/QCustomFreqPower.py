@@ -14,14 +14,14 @@ class TextChangingButton(QtGui.QPushButton):
     
     def setAppearance(self, down):
         if down:
-            self.setText('ON')
+            self.setText('I')
             self.setPalette(QtGui.QPalette(QtCore.Qt.darkGreen))
         else:
-            self.setText('OFF')
+            self.setText('O')
             self.setPalette(QtGui.QPalette(QtCore.Qt.darkRed))
     
     def sizeHint(self):
-        return QtCore.QSize(52, 26)
+        return QtCore.QSize(40, 26)
 
 class QCustomFreqPower(QtGui.QFrame):
     def __init__(self, title, switchable = True, parent=None):

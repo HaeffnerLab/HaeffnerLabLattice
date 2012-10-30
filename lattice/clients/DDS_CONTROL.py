@@ -118,7 +118,7 @@ class RS_CHAN(QCustomFreqPower):
 
 class DDS_CONTROL(QtGui.QWidget):
     
-    widgets_per_row = 4
+    widgets_per_row = 2
     
     def __init__(self, reactor):
         super(DDS_CONTROL, self).__init__()
