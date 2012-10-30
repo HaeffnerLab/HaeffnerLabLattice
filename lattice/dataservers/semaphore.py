@@ -2,7 +2,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Semaphore
-version = 1.0
+version = 1.1
 description = 
 instancename = Semaphore
 
@@ -112,10 +112,12 @@ class Semaphore(LabradServer):
         regDir = self.registryDirectory
         for key, value in self.parametersDict.iteritems():
             key = list(key)
-            parameter_name = key.pop() 
-            dir = regDir + key
-            yield self.client.registry.cd(dir)
-            yield self.client.registry.set(parameter_name, value)
+            parameter_name = key.pop()
+            fullDir = regDir + key
+            if not fullDir[-1] == 'Semaphore':
+                #don't save internal parameters which are found under 'semaphore' directory
+                yield self.client.registry.cd(fullDir)
+                yield self.client.registry.set(parameter_name, value)
    
     @inlineCallbacks            
     def _blockExperiment(self, status, block, cont):
@@ -160,7 +162,7 @@ class Semaphore(LabradServer):
     @setting(3, "Save Parameters To Registry", returns = '')
     def saveParametersToRegistry(self, c):
         """Get Experiment Parameter Names"""
-        self._saveParametersToRegistry()
+        yield self._saveParametersToRegistry()
     
     @setting(4, "Get Directory Names", path = '*s', returns = '*s')
     def getDirectoryNames(self, c, path):
@@ -217,6 +219,14 @@ class Semaphore(LabradServer):
     @setting(21, "Test Connection", returns = 's')
     def testConnection(self, c):
         return 'Connected!'
+    
+    @inlineCallbacks
+    def stopServer(self):
+        try:
+            yield self._saveParametersToRegistry()
+        except AttributeError:
+            #if values don't exist yet, i.e stopServer was called due to an Identification Rrror
+            pass
       
 if __name__ == "__main__":
     from labrad import util
