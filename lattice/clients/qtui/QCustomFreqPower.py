@@ -1,12 +1,33 @@
 import sys
 from PyQt4 import QtGui, QtCore
 
+class TextChangingButton(QtGui.QPushButton):
+    """Button that changes its text to ON or OFF and colors when it's pressed""" 
+    def __init__(self, parent = None):
+        super(TextChangingButton, self).__init__(parent)
+        self.setCheckable(True)
+        self.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=10))
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        #connect signal for appearance changing
+        self.toggled.connect(self.setAppearance)
+        self.setAppearance(self.isDown())
+    
+    def setAppearance(self, down):
+        if down:
+            self.setText('ON')
+            self.setPalette(QtGui.QPalette(QtCore.Qt.darkGreen))
+        else:
+            self.setText('OFF')
+            self.setPalette(QtGui.QPalette(QtCore.Qt.darkRed))
+    
+    def sizeHint(self):
+        return QtCore.QSize(52, 26)
+
 class QCustomFreqPower(QtGui.QFrame):
     def __init__(self, title, switchable = True, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setFrameStyle(0x0001 | 0x0030)
         self.makeLayout(title, switchable)
-        self.connectSignals(switchable)
     
     def makeLayout(self, title, switchable):
         layout = QtGui.QGridLayout()
@@ -38,16 +59,9 @@ class QCustomFreqPower(QtGui.QFrame):
         layout.addWidget(self.spinFreq,     2, 0)
         layout.addWidget(self.spinPower,    2, 1)
         if switchable:
-            self.buttonSwitch = QtGui.QPushButton('On/Off')
-            self.buttonSwitch.setCheckable(True)
-            self.buttonSwitch.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=10))
+            self.buttonSwitch = TextChangingButton()
             layout.addWidget(self.buttonSwitch, 2, 2)
         self.setLayout(layout)
-        
-    def connectSignals(self, switchable):
-        if switchable:
-            self.buttonSwitch.clicked.connect(self.setText)
-            self.buttonSwitch.toggled.connect(self.setText)
     
     def setPowerRange(self, powerrange):
         self.spinPower.setRange(*powerrange)
@@ -68,14 +82,8 @@ class QCustomFreqPower(QtGui.QFrame):
     def setStateNoSignal(self, state):
         self.buttonSwitch.blockSignals(True)
         self.buttonSwitch.setChecked(state)
-        self.setText(state)
+        self.buttonSwitch.setAppearance(state)
         self.buttonSwitch.blockSignals(False)
-        
-    def setText(self, down):
-        if down:
-            self.buttonSwitch.setText('ON')
-        else:
-            self.buttonSwitch.setText('OFF')
 
 if __name__=="__main__":
     app = QtGui.QApplication(sys.argv)

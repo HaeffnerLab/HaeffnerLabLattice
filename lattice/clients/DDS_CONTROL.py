@@ -30,8 +30,7 @@ class DDS_CHAN(QCustomFreqPower):
         initpower = yield self.server.amplitude()
         initfreq = yield self.server.frequency()
         initstate = yield self.server.output()
-        self.buttonSwitch.setChecked(initstate)
-        self.setText(initstate)
+        self.setStateNoSignal(initstate)
         self.spinPower.setValue(initpower)
         self.spinFreq.setValue(initfreq)
         #connect functions

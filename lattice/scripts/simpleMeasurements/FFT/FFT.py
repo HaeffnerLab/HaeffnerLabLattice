@@ -18,7 +18,7 @@ class measureFFT():
         self.savePlot = savePlot
     
     def getCenterFreq(self):
-        rffreq = 37.070*10**6
+        rffreq = 37.000*10**6
         #rffreq = float(self.trap_drive.frequency())*10.0**6 #in Hz
         return rffreq
 
@@ -75,7 +75,7 @@ if  __name__ == '__main__':
     cxn = labrad.connect()
     recordTime = 0.5 #seconds
     average = 4
-    freqSpan = 10000.0 #Hz 
+    freqSpan = 500.0 #Hz 
     freqOffset = -740.0 #Hz, the offset between the counter clock and the rf synthesizer clock
     fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = True)
     #totalPower = fft.getTotalPower()

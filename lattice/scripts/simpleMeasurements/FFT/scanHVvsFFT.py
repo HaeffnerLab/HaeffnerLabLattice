@@ -8,11 +8,11 @@ dv = cxn.data_vault
 hv = cxn.highvolta
 
 voltageMin = 0.0
-VoltageMax = 4000.0
-VoltageStep = 250.0
+VoltageMax = 3000.0
+VoltageStep = 100.0
 voltagesettime = 1.0
 recordTime = 0.5 #seconds
-average = 4
+average = 6
 freqSpan = 500.0 #Hz 
 freqOffset = -740.0 #Hz, the offset between the counter clock and the rf synthesizer clock
 #setting up FFT

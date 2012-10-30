@@ -5,7 +5,7 @@ from labrad.units import WithUnit
 import numpy
 from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags as sequence
 #parameters
-iterations = 5
+iterations = 30
 iteration_duration = WithUnit(1, 's')
 #connect to servers
 cxn = labrad.connect()
@@ -23,6 +23,9 @@ dv.new('Timetags {}'.format(datasetNameAppend),[('Iterations', 'Arb')],[('Timeta
 sequence_parameters = {'record_timetags_duration':iteration_duration}
 seq = sequence(**sequence_parameters)
 seq.programSequence(pulser)
+
+print directory
+
 for itr in range(iterations):
     pulser.start_number(1)
     pulser.wait_sequence_done()
@@ -31,3 +34,4 @@ for itr in range(iterations):
     print 'Got {} timetags'.format(timetags.size)
     iters = numpy.ones_like(timetags) * itr
     dv.add(numpy.vstack((iters, timetags)).transpose())
+print 'DONE'
