@@ -1,9 +1,5 @@
-#import threading
 import time
-import sys
 
-
-#class Script(threading.Thread):
 class Test():
     def __init__(self):
         self.experimentPath = ['Test', 'Exp1']
@@ -23,16 +19,13 @@ class Test():
         import labrad
         self.cxn = labrad.connect()
         for i in range(self.iterations):
-            # blocking function goes here
+            print 'Running Test 1, iteration {}'.format(i)
             self.progress = ((i)/float(self.iterations))*100
             Continue = self.pause(self.progress)
             if (Continue == False):
                 self.cxn.semaphore.finish_experiment(self.experimentPath, self.progress)
-                return
-            
+                return        
             time.sleep(1)
-            #print 'Test parameters: ', self.parameters
-            print 'hello'
 
         self.progress = 100.0   
         self.cleanUp()
