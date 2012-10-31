@@ -4,7 +4,7 @@ import time
 
 cxn = labrad.connect()
 dv = cxn.data_vault
-totalReadouts = numpy.random.randint(0,100, 100)
+totalReadouts = numpy.random.randint(50, 150, 200)
 hist, bins = numpy.histogram(totalReadouts, 50)
 
 dirappend = time.strftime("%Y%b%d_%H%M_%S",time.localtime())

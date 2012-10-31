@@ -6,6 +6,7 @@ class ActiveExperimentsListWidget(QtGui.QListWidget):
         self.parent = parent
         self.activeExperiments = {} #dictionary in the form {'experiment name':qlabelwidget}
         self.currentItemChanged.connect(self.on_change)
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Minimum)
         
     def on_change(self, current, previous):
         if current is not None:

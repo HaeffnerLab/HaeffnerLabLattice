@@ -46,8 +46,8 @@ class readout_histgram(QtGui.QWidget):
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self)
         self.axes = self.fig.add_subplot(111)
-        self.axes.set_xlim([0,100])
-        self.axes.autoscale()
+        self.axes.set_xlim(left = 0, right = 100)
+        self.axes.set_ylim(bottom = 0, top = 50)
         self.thresholdLine = self.axes.axvline(self.thresholdVal, linewidth=3.0, color = 'r', label = 'Threshold')
         self.axes.legend(loc = 'best')
         self.mpl_toolbar = NavigationToolbar(self.canvas, self)
@@ -74,6 +74,15 @@ class readout_histgram(QtGui.QWidget):
         if self.last_hist is not None: 
             for obj in self.last_hist: obj.remove()
         self.last_hist = self.axes.bar(data[:,0], data[:,1], width = numpy.max(data[:,0])/len(data[:,0]))
+        #redo the limits
+        x_maximum = data[:,0].max()
+        self.axes.set_xlim(left = 0)
+        if x_maximum > self.axes.get_xlim()[1]:
+            self.axes.set_xlim(right = x_maximum)
+        self.axes.set_ylim(bottom = 0)
+        y_maximum = data[:,1].max()
+        if y_maximum > self.axes.get_ylim()[1]:
+            self.axes.set_ylim(top = y_maximum)
         self.canvas.draw()
     
     @inlineCallbacks
@@ -162,8 +171,8 @@ class readout_histgram(QtGui.QWidget):
             yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID_B, context = self.context)
             self.subscribed[1] = True
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
-        self.threshold.setRange(init_val[0],init_val[1])
-        self.set_threshold_block_signals(init_val[2])
+        self.threshold.setRange(init_val[0].value,init_val[1].value)
+        self.set_threshold_block_signals(init_val[2].value)
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
         self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
         self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
