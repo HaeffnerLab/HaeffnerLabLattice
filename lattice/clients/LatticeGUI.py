@@ -106,7 +106,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(switchWidget(reactor),0,0)
         gridLayout.addWidget(pmtWidget(reactor),0,1)
-        gridLayout.addWidget(DDS_CONTROL(reactor),1,0)
+        gridLayout.addWidget(DDS_CONTROL(reactor),1,0, 1, 2)
         gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
         gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
         widget.setLayout(gridLayout)

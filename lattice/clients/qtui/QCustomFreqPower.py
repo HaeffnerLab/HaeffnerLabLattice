@@ -18,10 +18,10 @@ class TextChangingButton(QtGui.QPushButton):
             self.setPalette(QtGui.QPalette(QtCore.Qt.darkGreen))
         else:
             self.setText('O')
-            self.setPalette(QtGui.QPalette(QtCore.Qt.darkRed))
+            self.setPalette(QtGui.QPalette(QtCore.Qt.black))
     
     def sizeHint(self):
-        return QtCore.QSize(40, 26)
+        return QtCore.QSize(37, 26)
 
 class QCustomFreqPower(QtGui.QFrame):
     def __init__(self, title, switchable = True, parent=None):
