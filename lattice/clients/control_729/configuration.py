@@ -66,6 +66,3 @@ class config_729_general_parameters(object):
     state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
     state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
     
-=======
-    ion_mass = 40*1.67E-27
->>>>>>> Customarny
