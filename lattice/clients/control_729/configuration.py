@@ -1,5 +1,4 @@
 class config_729_hist(object):
-<<<<<<< HEAD
     #IDs for signaling
     ID_A = 99999
     ID_B = 99998
