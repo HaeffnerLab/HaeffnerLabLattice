@@ -1,6 +1,155 @@
 from PyQt4 import QtGui, QtCore
-from configuration import config_729_general_parameters as c
+from configuration import config_729_state_preparation as c
 from async_semaphore import async_semaphore, Parameter
+
+class optical_pumping_frame(QtGui.QFrame):
+    def __init__(self, reactor, title, font, large_font):
+        super(optical_pumping_frame, self).__init__()
+        self.reactor = reactor
+        self.setFrameStyle(QtGui.QFrame.Panel  | QtGui.QFrame.Sunken)
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.initializeGUI(title, font, large_font)
+    
+    def initializeGUI(self, title, font, large_font):
+        layout = QtGui.QGridLayout()
+        #make title
+        title_label = QtGui.QLabel(title, font = large_font)
+        title_label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+        layout.addWidget(title_label, 0, 0, 1, 2)
+        #enable button
+        label = QtGui.QLabel('Enable', font = font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 0, 2)
+        self.enable = QtGui.QCheckBox()
+        layout.addWidget(self.enable, 0, 3)
+        #exculsive check boxes
+        self.continous = QtGui.QRadioButton()
+        self.pulsed = QtGui.QRadioButton()
+        bg = QtGui.QButtonGroup()
+        #make them exclusive
+        bg.addButton(self.continous)
+        bg.addButton(self.pulsed)
+        label = QtGui.QLabel('Continous', font = font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 4, 0)
+        layout.addWidget(self.continous, 4, 1)
+        label = QtGui.QLabel('Pulsed', font = font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 4, 2)
+        layout.addWidget(self.pulsed, 4, 3)
+        bg.setExclusive(True)
+        #frequencies and amplitudes
+        self.freq = QtGui.QDoubleSpinBox()
+        self.freq.setSuffix('MHz')
+        self.freq.setDecimals(4)
+        self.freq.setSingleStep(10**-3)
+        self.freq.setKeyboardTracking(False)
+        self.freq.setFont(large_font)
+        self.freq854 = QtGui.QDoubleSpinBox()
+        self.freq866 = QtGui.QDoubleSpinBox()
+        self.ampl729 = QtGui.QDoubleSpinBox()
+        self.ampl854 = QtGui.QDoubleSpinBox()
+        self.ampl866 = QtGui.QDoubleSpinBox()
+        for w in [self.freq854, self.freq866]:
+            w.setFont(font)
+            w.setKeyboardTracking(False)
+            w.setSuffix('MHz')
+            w.setDecimals(1)
+            w.setFont(font)
+        for w in [self.ampl729, self.ampl854, self.ampl866]:
+            w.setSuffix('dBm')
+            w.setDecimals(1)
+            w.setSingleStep(0.1)
+            w.setKeyboardTracking(False)
+            w.setFont(font)
+#        self.dropdown = saved_frequencies_dropdown(self.reactor)
+        label = QtGui.QLabel("Frequency 729")
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        label.setFont(font)
+        layout.addWidget(label, 1, 0, 1, 1)
+        layout.addWidget(self.freq, 1, 1, 1, 1)
+#        layout.addWidget(self.dropdown, 1, 2, 1, 1)
+        label = QtGui.QLabel("Amplitude 729")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 1, 2, 1, 1)
+        layout.addWidget(self.ampl729, 1, 3, 1, 1)
+        label = QtGui.QLabel("Frequency 854")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 2, 0, 1, 1)
+        layout.addWidget(self.freq854, 2, 1, 1, 1)
+        label = QtGui.QLabel("Amplitude 854")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 2, 2, 1, 1)
+        layout.addWidget(self.ampl854, 2, 3, 1, 1)
+        label = QtGui.QLabel("Frequency 866")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 3, 0, 1, 1)
+        layout.addWidget(self.freq866, 3, 1, 1, 1)
+        label = QtGui.QLabel("Amplitude 866")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 3, 2, 1, 1)
+        layout.addWidget(self.ampl866, 3, 3, 1, 1)
+        #durations
+        self.continous_duration = QtGui.QDoubleSpinBox()
+        self.repump_additional = QtGui.QDoubleSpinBox()
+        for w in [self.continous_duration, self.repump_additional]:
+            w.setKeyboardTracking(False)
+            w.setSuffix('us')
+            w.setDecimals(1)
+            w.setSingleStep(0.1)
+            w.setFont(font)
+        self.pulses = QtGui.QSpinBox()
+        self.pulses.setKeyboardTracking(False)
+        self.pulses.setFont(font)
+        self.pulse_729 = QtGui.QDoubleSpinBox()
+        self.pulse_repumps = QtGui.QDoubleSpinBox()
+        self.pulse_866_additional = QtGui.QDoubleSpinBox()
+        for w in [self.pulse_729, self.pulse_repumps, self.pulse_866_additional]:
+            w.setSuffix('\265s')
+            w.setDecimals(1)
+            w.setSingleStep(0.1)
+            w.setKeyboardTracking(False)
+            w.setFont(font)
+        label =  QtGui.QLabel("Duration")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 5, 0, 1, 1)
+        layout.addWidget(self.continous_duration, 5, 1, 1, 1)
+        label =  QtGui.QLabel("Additional Repump")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 6, 0, 1, 1)
+        layout.addWidget(self.repump_additional, 6, 1, 1, 1)
+        label =  QtGui.QLabel("Pulses")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 5, 2, 1, 1)
+        layout.addWidget(self.pulses, 5, 3, 1, 1)
+        label =  QtGui.QLabel("Pulse 729")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 6, 2, 1, 1)
+        layout.addWidget(self.pulse_729, 6, 3, 1, 1)
+        label =  QtGui.QLabel("Pulse Repumps")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 7, 2, 1, 1)
+        layout.addWidget(self.pulse_repumps, 7, 3, 1, 1)
+        label =  QtGui.QLabel("Additional 866")
+        label.setFont(font)
+        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        layout.addWidget(label, 8, 2, 1, 1)
+        layout.addWidget(self.pulse_866_additional, 8, 3, 1, 1)
+        self.setLayout(layout)
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
+        
 
 class state_preparation(QtGui.QWidget):
     def __init__(self, reactor, cxn = None, parent = None):
@@ -14,11 +163,23 @@ class state_preparation(QtGui.QWidget):
         repump_d_frame = self.make_repump_d_frame()
         heating_frame = self.make_heating_frame()
         doppler_cooling_frame = self.make_doppler_cooling_frame()
+        self.optical_pumping_frame = self.make_optical_pumping_frame()
+#        sideband_cooling_frame = self.make_sideband_cooling_frame()
         widgetLayout = QtGui.QVBoxLayout()
         widgetLayout.addWidget(repump_d_frame)
         widgetLayout.addWidget(doppler_cooling_frame)
+        widgetLayout.addWidget(self.optical_pumping_frame)
+#        widgetLayout.addWidget(sideband_cooling_frame)
         widgetLayout.addWidget(heating_frame)
         self.setLayout(widgetLayout)
+    
+    def make_optical_pumping_frame(self):
+        frame = optical_pumping_frame(self.reactor, 'Optical Pumping', self.font, self.large_font)
+        return frame
+    
+#    def make_sideband_cooling_frame(self):
+#        frame = optical_pumping_frame('Sideband Cooling', self.font, self.large_font)
+#        return frame
     
     def make_doppler_cooling_frame(self):
         frame = QtGui.QFrame()
@@ -75,7 +236,6 @@ class state_preparation(QtGui.QWidget):
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         layout.addWidget(label, 3, 2)
         layout.addWidget(self.doppler_duration_additional, 3, 3)
-        
         frame.setLayout(layout)
         return frame
         
@@ -164,16 +324,50 @@ class state_preparation_connection(state_preparation, async_semaphore):
                 w.blockSignals(False)
             return func
         
+        def setValueBlocking_cb(w):
+            def func(val):
+                #dont' have to block checkboxes
+                w.setChecked(val)
+            return func
+        
         def do_nothing(*args):
             pass
         
         self.d = {
-                #spin boxes
-#                tuple(c.amplitude_854): Parameter(c.amplitude_854, setValueBlocking(self.ampl_854), self.ampl_854.valueChanged, self.ampl_854.setRange, 'dBm'),
-#                tuple(c.heating_duration): Parameter(c.heating_duration, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
-#                tuple(c.repump_d_duration): Parameter(c.repump_d_duration, setValueBlocking(self.repump_d_duration), self.repump_d_duration.valueChanged, self.repump_d_duration.setRange, 'ms'),
-#                tuple(c.state_readout_frequency_397): Parameter(c.state_readout_frequency_397, setValueBlocking(self.state_readout_frequency_397), self.state_readout_frequency_397.valueChanged, self.state_readout_frequency_397.setRange, 'MHz'),
-#                tuple(c.state_readout_amplitude_397): Parameter(c.state_readout_amplitude_397, setValueBlocking(self.state_readout_amplitude_397), self.state_readout_amplitude_397.valueChanged, self.state_readout_amplitude_397.setRange, 'dBm'),      
+                #repump d5/2
+                tuple(c.repump_d_duration): Parameter(c.repump_d_duration, setValueBlocking(self.repump_d_duration), self.repump_d_duration.valueChanged, self.repump_d_duration.setRange, 'us'),
+                tuple(c.repump_d_amplitude_854): Parameter(c.repump_d_amplitude_854, setValueBlocking(self.ampl_854), self.ampl_854.valueChanged, self.ampl_854.setRange, 'dBm'),
+                #doppler cooling
+                tuple(c.doppler_cooling_duration):Parameter(c.doppler_cooling_duration, setValueBlocking(self.doppler_duration), self.doppler_duration.valueChanged, self.doppler_duration.setRange, 'ms'),
+                tuple(c.doppler_cooling_repump_additional):Parameter(c.doppler_cooling_repump_additional, setValueBlocking(self.doppler_duration_additional), self.doppler_duration_additional.valueChanged, self.doppler_duration_additional.setRange, 'us'),
+                tuple(c.doppler_cooling_frequency_397):Parameter(c.doppler_cooling_frequency_397, setValueBlocking(self.doppler_frequency_397), self.doppler_frequency_397.valueChanged, self.doppler_frequency_397.setRange, 'MHz'),
+                tuple(c.doppler_cooling_amplitude_397): Parameter(c.doppler_cooling_amplitude_397, setValueBlocking(self.doppler_amplitude_397), self.doppler_amplitude_397.valueChanged, self.doppler_amplitude_397.setRange, 'dBm'),
+                tuple(c.doppler_cooling_amplitude_866): Parameter(c.doppler_cooling_amplitude_866, setValueBlocking(self.doppler_amplitude_866), self.doppler_amplitude_866.valueChanged, self.doppler_amplitude_866.setRange, 'dBm'),
+                #optical pumping
+                tuple(c.optical_pumping_enable):Parameter(c.optical_pumping_enable, setValueBlocking_cb(self.optical_pumping_frame.enable), updateSignal = self.optical_pumping_frame.enable.toggled),                          
+                tuple(c.optical_pumping_continuous):Parameter(c.optical_pumping_continuous, setValueBlocking_cb(self.optical_pumping_frame.continous), updateSignal = self.optical_pumping_frame.continous.toggled),
+                tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.optical_pumping_frame.pulsed), updateSignal = self.optical_pumping_frame.pulsed.toggled),
+                tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.optical_pumping_frame.pulses), self.optical_pumping_frame.pulses.valueChanged, self.optical_pumping_frame.pulses.setRange, None),
+                tuple(c.optical_pumping_frequency):Parameter(c.optical_pumping_frequency, setValueBlocking(self.optical_pumping_frame.freq), self.optical_pumping_frame.freq.valueChanged, self.optical_pumping_frame.freq.setRange, 'MHz'),
+                tuple(c.optical_pumping_amplitude_729): Parameter(c.optical_pumping_amplitude_729, setValueBlocking(self.optical_pumping_frame.ampl729), self.optical_pumping_frame.ampl729.valueChanged, self.optical_pumping_frame.ampl729.setRange, 'dBm'),
+                tuple(c.optical_pumping_amplitude_854): Parameter(c.optical_pumping_amplitude_854, setValueBlocking(self.optical_pumping_frame.ampl854), self.optical_pumping_frame.ampl854.valueChanged, self.optical_pumping_frame.ampl854.setRange, 'dBm'),
+                tuple(c.optical_pumping_amplitude_866): Parameter(c.optical_pumping_amplitude_866, setValueBlocking(self.optical_pumping_frame.ampl866), self.optical_pumping_frame.ampl866.valueChanged, self.optical_pumping_frame.ampl866.setRange, 'dBm'),
+                tuple(c.optical_pumping_continuous_duration):Parameter(c.optical_pumping_continuous_duration, setValueBlocking(self.optical_pumping_frame.continous_duration), self.optical_pumping_frame.continous_duration.valueChanged, self.optical_pumping_frame.continous_duration.setRange, 'us'),
+                tuple(c.optical_pumping_continuous_pump_additional):Parameter(c.optical_pumping_continuous_pump_additional, setValueBlocking(self.optical_pumping_frame.repump_additional), self.optical_pumping_frame.repump_additional.valueChanged, self.optical_pumping_frame.repump_additional.setRange, 'us'),
+                tuple(c.optical_pumping_pulsed_duration_729):Parameter(c.optical_pumping_pulsed_duration_729, setValueBlocking(self.optical_pumping_frame.pulse_729), self.optical_pumping_frame.pulse_729.valueChanged, self.optical_pumping_frame.pulse_729.setRange, 'us'),
+                tuple(c.optical_pumping_pulsed_duration_repumps):Parameter(c.optical_pumping_pulsed_duration_repumps, setValueBlocking(self.optical_pumping_frame.pulse_repumps), self.optical_pumping_frame.pulse_repumps.valueChanged, self.optical_pumping_frame.pulse_repumps.setRange, 'us'),
+                tuple(c.optical_pumping_pulsed_duration_additional_866):Parameter(c.optical_pumping_pulsed_duration_additional_866, setValueBlocking(self.optical_pumping_frame.pulse_866_additional), self.optical_pumping_frame.pulse_866_additional.valueChanged, self.optical_pumping_frame.pulse_866_additional.setRange, 'us'), 
+                #heating
+                tuple(c.background_heating_duration): Parameter(c.background_heating_duration, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
+                #multiple keys connected to same widgets
+                tuple(c.optical_pumping_frequency_854):[
+                                                        Parameter(c.optical_pumping_frequency_854, setValueBlocking(self.optical_pumping_frame.freq854), self.optical_pumping_frame.freq854.valueChanged, self.optical_pumping_frame.freq854.setRange, 'MHz'),
+                                                        Parameter(c.repump_d_frequency_854, setValueBlocking(self.freq_854), self.freq_854.valueChanged, self.freq_854.setRange, 'MHz'),
+                                                        ],
+               tuple(c.optical_pumping_frequency_866):[
+                                                       Parameter(c.optical_pumping_frequency_866, setValueBlocking(self.optical_pumping_frame.freq866), self.optical_pumping_frame.freq866.valueChanged, self.optical_pumping_frame.freq866.setRange, 'MHz'),
+                                                       Parameter(c.doppler_cooling_frequency_866, setValueBlocking(self.doppler_frequency_866), self.doppler_frequency_866.valueChanged, self.doppler_frequency_866.setRange, 'MHz'),
+                                                       ]
                }
 
 if __name__=="__main__":

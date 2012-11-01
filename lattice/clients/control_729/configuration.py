@@ -21,22 +21,6 @@ class state_readout(object):
     state_readout_frequency_866 = ['frequency_866']
     state_readout_amplitude_866 = ['729Experiments','state_readout_amplitude_866']
 
-class config_729_optical_pumping(object):
-    #IDs for signaling
-    ID = 99997
-    #semaphore locations
-    optical_pumping_amplitude_729 = ['729Experiments','optical_pumping_amplitude_729']
-    optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
-#    optical_pumping_continuous = ['729Experiments','optical_pumping_continuous']
-    optical_pumping_continuous_duration = ['729Experiments','optical_pumping_continuous_duration']
-    optical_pumping_continuous_pump_additional = ['729Experiments','optical_pumping_continuous_repump_additional']
-#    optical_pumping_pulsed = ['729Experiments','optical_pumping_pulsed']
-    optical_pumping_enable = ['729Experiments','optical_pumping_enable']
-    optical_pumping_frequency = ['729Experiments','optical_pumping_frequency']
-#    optical_pumping_pulsed_cycles = ['729Experiments','optical_pumping_pulsed_cycles']
-#    optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
-#    optical_pumping_pulsed_duration_854 = ['729Experiments','optical_pumping_pulsed_duration_854']
-    
 class config_729_spectrum(object):
     #IDs for signaling
     ID = 99996
@@ -53,16 +37,35 @@ class config_729_rabi_flop(object):
     excitation_times = ['729Experiments','RabiFlopping','excitation_times']
     rabi_amplitude_729 = ['729Experiments','RabiFlopping','rabi_amplitude_729']
 
-class config_729_general_parameters(object):
+class config_729_state_preparation(object):
     #IDs for signaling
     ID = 99994
-    #semaphore locations 
-    heating_duration = ['729Experiments','heating_time']
-    amplitude_854 = ['729Experiments','amplitude_854']
-#    enable_calibration = ['729Experiments','enable_calibration_double_pass_729']
-#    calibration_reduction = ['729Experiments','calibration_double_pass_729_reduction']
-    repeat_each_measurement = ['729Experiments','repeat_each_measurement']
+    #repump d5/2
     repump_d_duration = ['729Experiments','repump_d_duration']
-    state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
-    state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
-    
+    repump_d_frequency_854 = ['frequency_854']
+    repump_d_amplitude_854 = ['729Experiments','repump_d_amplitude_854']
+    #doppler cooling
+    doppler_cooling_frequency_397 = ['doppler_cooling_frequency_397']
+    doppler_cooling_frequency_866 = ['frequency_866']
+    doppler_cooling_amplitude_397 = ['doppler_cooling_amplitude_397']
+    doppler_cooling_amplitude_866 = ['doppler_cooling_amplitude_866']
+    doppler_cooling_duration = ['doppler_cooling_duration']
+    doppler_cooling_repump_additional = ['doppler_cooling_repump_additional']
+    #optical pumping
+    optical_pumping_enable = ['729Experiments','optical_pumping_enable']
+    optical_pumping_frequency = ['729Experiments','optical_pumping_frequency']
+    optical_pumping_amplitude_729 = ['729Experiments','optical_pumping_amplitude_729']
+    optical_pumping_frequency_854 = ['frequency_854']
+    optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
+    optical_pumping_frequency_866 = ['frequency_866']
+    optical_pumping_amplitude_866 = ['729Experiments','optical_pumping_amplitude_866']
+    optical_pumping_continuous = ['729Experiments','optical_pumping_continuous']
+    optical_pumping_pulsed = ['729Experiments','optical_pumping_pulsed']
+    optical_pumping_continuous_duration = ['729Experiments','optical_pumping_continuous_duration']
+    optical_pumping_continuous_pump_additional = ['729Experiments','optical_pumping_continuous_repump_additional']
+    optical_pumping_pulsed_cycles = ['729Experiments','optical_pumping_pulsed_cycles']
+    optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
+    optical_pumping_pulsed_duration_repumps = ['729Experiments','optical_pumping_pulsed_duration_repumps']
+    optical_pumping_pulsed_duration_additional_866 = ['729Experiments','optical_pumping_pulsed_duration_additional_866']
+    #heating
+    background_heating_duration = ['729Experiments','background_heating_time']

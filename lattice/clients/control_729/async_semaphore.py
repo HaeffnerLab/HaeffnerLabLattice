@@ -65,8 +65,13 @@ class async_semaphore(object):
     
     def connect_widgets_labrad(self):
         for params in self.d.itervalues():
-            params.updateSignal.connect(self.set_labrad_parameter(params.path, params.units))
-            
+            try:
+                params.updateSignal.connect(self.set_labrad_parameter(params.path, params.units))
+            except AttributeError:
+                #if a list
+                for p in params:
+                    p.updateSignal.connect(self.set_labrad_parameter(p.path, p.units))
+                
     def set_value(self, param, val):
         if type(val) == bool:
             param.setValue(val)
@@ -77,8 +82,14 @@ class async_semaphore(object):
             except:
                 #if unitless number
                 pass
-            param.setRange(val[0],val[1])
-            param.setValue(val[2])
+            try:
+                param.setRange(val[0],val[1])
+                param.setValue(val[2])
+            except AttributeError:
+                #a list
+                for p in param:
+                    p.setRange(val[0],val[1])
+                    p.setValue(val[2])
     
     def set_labrad_parameter(self, path, units):
         @inlineCallbacks

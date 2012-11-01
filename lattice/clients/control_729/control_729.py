@@ -1,6 +1,5 @@
 from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
-from optical_pumping import optical_pumping
 from spectrum import spectrum_connection
 from rabi_flops import rabi_flop_connection
 from state_preparation import state_preparation_connection
@@ -26,21 +25,20 @@ class control_729(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         self.tab = tab = QtGui.QTabWidget()
         histogram_tab = readout_histgram(self.reactor, self.cxn)
-        general_tab = state_preparation_connection(self.reactor, self.cxn)
+        self.state_preparation_tab = state_preparation_connection(self.reactor, self.cxn)
         spectrum_tab =  spectrum_connection(self.reactor, self.cxn)
-        self.optical_pump_tab = optical_pumping(self.reactor, self.cxn)
         flop_tab = rabi_flop_connection(self.reactor, self.cxn)
         tab.addTab(histogram_tab, 'State Readout')
-        tab.addTab(general_tab, 'State Preparation')
-        self.opt_index = tab.addTab(self.optical_pump_tab, 'Optical Pumping')
+        self.state_prep_index = tab.addTab(self.state_preparation_tab, 'State Preparation')
         tab.addTab(spectrum_tab, 'Spectrum')
         tab.addTab(flop_tab, 'Rabi Flopping')
         layout.addWidget(tab, 1, 0, 1, 4)
         self.setLayout(layout)
     
     def connect_tab_signals(self):
-        self.optical_pump_tab.enable.stateChanged.connect(self.change_color(self.opt_index))
-        self.change_color(self.opt_index)(self.optical_pump_tab.enable.isChecked())
+        pumping_enable = self.state_preparation_tab.optical_pumping_frame.enable
+        pumping_enable.stateChanged.connect(self.change_color(self.state_prep_index))
+        self.change_color(self.state_prep_index)(pumping_enable.isChecked())
             
     
     def change_color(self, index):
