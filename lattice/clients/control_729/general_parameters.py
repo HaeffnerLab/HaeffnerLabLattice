@@ -10,13 +10,7 @@ class general_parameters(QtGui.QWidget):
     
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
-        #repeats
-        self.repeats = QtGui.QSpinBox()
-        self.repeats.setKeyboardTracking(False)
-        label = QtGui.QLabel("Repeat each point")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)      
-        layout.addWidget(label, 0, 0, 1, 1)
-        layout.addWidget(self.repeats, 0, 1, 1, 1)
+
         #heating
         self.heating = QtGui.QDoubleSpinBox()
         self.heating.setKeyboardTracking(False)
@@ -38,10 +32,10 @@ class general_parameters(QtGui.QWidget):
             w.setSingleStep(0.1)
             w.setKeyboardTracking(False)
         #staet readout frequency 397
-        self.state_readout_frequency_397 = QtGui.QDoubleSpinBox()
-        self.state_readout_frequency_397.setKeyboardTracking(False)
-        self.state_readout_frequency_397.setSuffix('MHz')
-        self.state_readout_frequency_397.setDecimals(1)
+#        self.state_readout_frequency_397 = QtGui.QDoubleSpinBox()
+#        self.state_readout_frequency_397.setKeyboardTracking(False)
+#        self.state_readout_frequency_397.setSuffix('MHz')
+#        self.state_readout_frequency_397.setDecimals(1)
 
         label = QtGui.QLabel("Repump D Amplitude 854")
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
@@ -51,15 +45,15 @@ class general_parameters(QtGui.QWidget):
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         layout.addWidget(label, 4, 2, 1, 1)
         layout.addWidget(self.repump_d_duration, 4, 3, 1, 1)
-        label = QtGui.QLabel("State Readout Frequency 397")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        layout.addWidget(label, 5, 0, 1, 1)
-        layout.addWidget(self.state_readout_frequency_397, 5, 1, 1, 1)
-        label = QtGui.QLabel("State Readout Amplitude 397")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        layout.addWidget(label, 5, 2, 1, 1)
-        layout.addWidget(self.state_readout_amplitude_397, 5, 3, 1, 1)
-        
+#        label = QtGui.QLabel("State Readout Frequency 397")
+#        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+#        layout.addWidget(label, 5, 0, 1, 1)
+#        layout.addWidget(self.state_readout_frequency_397, 5, 1, 1, 1)
+#        label = QtGui.QLabel("State Readout Amplitude 397")
+#        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+#        layout.addWidget(label, 5, 2, 1, 1)
+#        layout.addWidget(self.state_readout_amplitude_397, 5, 3, 1, 1)
+#        
         
         self.setLayout(layout)
     
@@ -93,10 +87,8 @@ class general_parameters_connection(general_parameters, async_semaphore):
                 tuple(c.amplitude_854): Parameter(c.amplitude_854, setValueBlocking(self.ampl_854), self.ampl_854.valueChanged, self.ampl_854.setRange, 'dBm'),
                 tuple(c.heating_duration): Parameter(c.heating_duration, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
                 tuple(c.repump_d_duration): Parameter(c.repump_d_duration, setValueBlocking(self.repump_d_duration), self.repump_d_duration.valueChanged, self.repump_d_duration.setRange, 'ms'),
-                tuple(c.state_readout_frequency_397): Parameter(c.state_readout_frequency_397, setValueBlocking(self.state_readout_frequency_397), self.state_readout_frequency_397.valueChanged, self.state_readout_frequency_397.setRange, 'MHz'),
-                tuple(c.state_readout_amplitude_397): Parameter(c.state_readout_amplitude_397, setValueBlocking(self.state_readout_amplitude_397), self.state_readout_amplitude_397.valueChanged, self.state_readout_amplitude_397.setRange, 'dBm'),
-                #int
-                tuple(c.repeat_each_measurement): Parameter(c.repeat_each_measurement, setValueBlocking(self.repeats), self.repeats.valueChanged, self.repeats.setRange, None),
+#                tuple(c.state_readout_frequency_397): Parameter(c.state_readout_frequency_397, setValueBlocking(self.state_readout_frequency_397), self.state_readout_frequency_397.valueChanged, self.state_readout_frequency_397.setRange, 'MHz'),
+#                tuple(c.state_readout_amplitude_397): Parameter(c.state_readout_amplitude_397, setValueBlocking(self.state_readout_amplitude_397), self.state_readout_amplitude_397.valueChanged, self.state_readout_amplitude_397.setRange, 'dBm'),      
                }
 
 if __name__=="__main__":
