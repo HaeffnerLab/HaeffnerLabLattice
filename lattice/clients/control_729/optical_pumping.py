@@ -1,16 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from helper_widgets import saved_frequencies_dropdown
 from configuration import config_729_optical_pumping as c
-from async_semaphore import async_semaphore
-
-
-class Parameter(object):
-    def __init__(self, path, setValue, updateSignal, setRange = None, units = ''):
-        self.path = path
-        self.setValue = setValue
-        self.setRange = setRange
-        self.updateSignal = updateSignal
-        self.units = units
+from async_semaphore import async_semaphore, Parameter
 
 class optical_pumping(QtGui.QWidget, async_semaphore):
     
@@ -100,13 +91,13 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
             w.setKeyboardTracking(False)
         #make checkboxes
         self.enable = QtGui.QCheckBox()
-#        self.button_group  = bg = QtGui.QButtonGroup()
-#        self.cont_cb = QtGui.QRadioButton()
-#        self.pulsed_cb = QtGui.QRadioButton()
+        self.button_group  = bg = QtGui.QButtonGroup()
+        self.cont_cb = QtGui.QRadioButton()
+        self.pulsed_cb = QtGui.QRadioButton()
         #make them exclusive
-#        bg.addButton(self.cont_cb)
-#        bg.addButton(self.pulsed_cb)
-#        bg.setExclusive(True)
+        bg.addButton(self.cont_cb)
+        bg.addButton(self.pulsed_cb)
+        bg.setExclusive(True)
         #make dropdown
         self.dropdown = saved_frequencies_dropdown(self.reactor)
     
@@ -144,19 +135,19 @@ class optical_pumping(QtGui.QWidget, async_semaphore):
         frame.setLayout(hbox)
         layout.addWidget(frame, 2, 0, 1, 6)
         #row4
-#        frame = QtGui.QFrame()
-#        frame.setFrameShape(QtGui.QFrame.Box)
-#        hbox = QtGui.QHBoxLayout()
-#        hbox.addWidget(QtGui.QLabel('Pulsed'))
-#        hbox.addWidget(self.pulsed_cb)
-#        hbox.addWidget(QtGui.QLabel('Cycles'))
-#        hbox.addWidget(self.pulses)
-#        hbox.addWidget(QtGui.QLabel('Duration 729'))
-#        hbox.addWidget(self.pulse_729)
-#        hbox.addWidget(QtGui.QLabel('Duration 854'))
-#        hbox.addWidget(self.pulse_854)
-#        frame.setLayout(hbox)
-#        layout.addWidget(frame, 3, 0, 1, 8)
+        frame = QtGui.QFrame()
+        frame.setFrameShape(QtGui.QFrame.Box)
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(QtGui.QLabel('Pulsed'))
+        hbox.addWidget(self.pulsed_cb)
+        hbox.addWidget(QtGui.QLabel('Cycles'))
+        hbox.addWidget(self.pulses)
+        hbox.addWidget(QtGui.QLabel('Duration 729'))
+        hbox.addWidget(self.pulse_729)
+        hbox.addWidget(QtGui.QLabel('Duration 854'))
+        hbox.addWidget(self.pulse_854)
+        frame.setLayout(hbox)
+        layout.addWidget(frame, 3, 0, 1, 8)
         self.setLayout(layout)
         self.show()
         
