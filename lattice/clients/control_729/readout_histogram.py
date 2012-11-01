@@ -1,10 +1,11 @@
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 import numpy
+from state_readout_parameters import general_parameters_connection
 from configuration import config_729_hist as c
 
 class readout_histgram(QtGui.QWidget):
@@ -20,24 +21,10 @@ class readout_histgram(QtGui.QWidget):
         self.connect_labrad()
     
     def create_layout(self):
-        layout = QtGui.QGridLayout()
+        layout = QtGui.QVBoxLayout()
         plot_layout = self.create_plot_layout()
-        layout.addLayout(plot_layout, 0, 0, 1, 4)
-        thresholdLabel = QtGui.QLabel("Threshold (Photon Counts Per Readout)")
-        readoutTimeLabel = QtGui.QLabel("Readout Time")
-        for l in [thresholdLabel, readoutTimeLabel]:
-            l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.threshold = QtGui.QSpinBox()
-        self.threshold.setKeyboardTracking(False)
-        self.readout_time = QtGui.QDoubleSpinBox()
-        self.readout_time.setKeyboardTracking(False)
-        self.readout_time.setSuffix('ms')
-        self.readout_time.setDecimals(1)
-        self.readout_time.setSingleStep(0.1)
-        layout.addWidget(thresholdLabel, 1, 0)
-        layout.addWidget(self.threshold, 1, 1)
-        layout.addWidget(readoutTimeLabel, 1, 2)
-        layout.addWidget(self.readout_time, 1, 3)
+        layout.addLayout(plot_layout)
+        layout.addWidget(general_parameters_connection(self.reactor, self.cxn))
         self.setLayout(layout)
    
     def create_plot_layout(self):
@@ -56,14 +43,13 @@ class readout_histgram(QtGui.QWidget):
         return layout
     
     def connect_layout(self):
-        self.threshold.valueChanged.connect(self.thresholdChange)
         self.canvas.mpl_connect('button_press_event', self.on_key_press)
-        self.readout_time.valueChanged.connect(self.readoutChange)
     
+    @inlineCallbacks
     def on_key_press(self, event):
         if event.button == 2:
             xval = int(round(event.xdata))
-            self.threshold.setValue(xval)
+            yield self.thresholdChange(xval)
     
     def on_new_data(self, readout):
         self.last_data = readout
@@ -96,17 +82,7 @@ class readout_histgram(QtGui.QWidget):
         except Exception, e:
             print e
             yield None
-    
-    @inlineCallbacks
-    def readoutChange(self, value):
-        value = self.T.Value(value, 'ms')
-        try:
-            minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-            yield self.cxn.servers['Semaphore'].set_parameter(c.readout_time_dir, [minim,maxim, value], context = self.context)
-        except Exception, e:
-            print e
-            yield None
-            
+               
     def update_canvas_line(self, threshold):
         self.thresholdLine.remove()
         self.thresholdLine = self.axes.axvline(threshold, ymin=0, ymax= 200, linewidth=3.0, color = 'r', label = 'Threshold')
@@ -147,12 +123,7 @@ class readout_histgram(QtGui.QWidget):
         yield self.cxn.servers['Semaphore'].signal__parameter_change(c.ID_B, context = self.context)
         yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID_B, context = self.context)
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
-        self.threshold.setRange(init_val[0].value,init_val[1].value)
-        self.threshold.setValue(init_val[2].value)
         self.update_canvas_line(init_val[2].value)
-        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-        self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
-        self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
         self.subscribed[1] = True
     
     @inlineCallbacks
@@ -171,39 +142,19 @@ class readout_histgram(QtGui.QWidget):
             yield self.cxn.servers['Semaphore'].addListener(listener = self.on_parameter_change, source = None, ID = c.ID_B, context = self.context)
             self.subscribed[1] = True
         init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_threshold_dir, context = self.context)
-        self.threshold.setRange(init_val[0].value,init_val[1].value)
-        self.set_threshold_block_signals(init_val[2].value)
-        init_val = yield self.cxn.servers['Semaphore'].get_parameter(c.readout_time_dir, context = self.context)
-        self.readout_time.setRange( init_val[0].inUnitsOf('ms'),init_val[1].inUnitsOf('ms'))
-        self.set_readout_time_block_signals(init_val[2].inUnitsOf('ms'))
-        
-        
+        self.update_canvas_line(init_val[2].value)
+
     @inlineCallbacks
     def disable(self):
         self.setDisabled(True)
         yield None
     
-    @inlineCallbacks
     def on_parameter_change(self, x, y):
         d, sett = y
         if d == c.readout_threshold_dir:
             val = sett[2]
-            yield deferToThread(self.set_threshold_block_signals, val.value)
-        elif d == c.readout_time_dir:
-            val = sett[2]
-            yield deferToThread(self.set_readout_time_block_signals, val.inUnitsOf('ms'))
-    
-    def set_threshold_block_signals(self, thresh):
-        self.threshold.blockSignals(True)
-        self.threshold.setValue(thresh)
-        self.threshold.blockSignals(False)
-        self.update_canvas_line(thresh)
-    
-    def set_readout_time_block_signals(self, val):
-        self.readout_time.blockSignals(True)
-        self.readout_time.setValue(val)
-        self.readout_time.blockSignals(False)
-        
+            self.update_canvas_line(val.value)
+
     @inlineCallbacks
     def on_new_dataset(self, x, y):
         if y[3] == c.dv_parameter:

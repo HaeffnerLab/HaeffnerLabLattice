@@ -6,7 +6,20 @@ class config_729_hist(object):
     dv_parameter = 'Histogram729'
     #semaphore locations
     readout_threshold_dir =  ['729Experiments','readout_threshold']
+
+class state_readout(object):
+    #IDs for signaling
+    ID = 99993
+    
+    readout_threshold_dir =  ['729Experiments','readout_threshold']
     readout_time_dir = ['729Experiments','state_readout_duration']
+    
+    repeat_each_measurement = ['729Experiments','repeat_each_measurement']
+    
+    state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
+    state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
+    state_readout_frequency_866 = ['frequency_866']
+    state_readout_amplitude_866 = ['729Experiments','state_readout_amplitude_866']
 
 class config_729_optical_pumping(object):
     #IDs for signaling
