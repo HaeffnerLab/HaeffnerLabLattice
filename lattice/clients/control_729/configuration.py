@@ -1,4 +1,5 @@
 class config_729_hist(object):
+<<<<<<< HEAD
     #IDs for signaling
     ID_A = 99999
     ID_B = 99998
@@ -66,3 +67,6 @@ class config_729_general_parameters(object):
     state_readout_frequency_397 = ['729Experiments','state_readout_frequency_397']
     state_readout_amplitude_397 = ['729Experiments','state_readout_amplitude_397']
     
+=======
+    ion_mass = 40*1.67E-27
+>>>>>>> Customarny
