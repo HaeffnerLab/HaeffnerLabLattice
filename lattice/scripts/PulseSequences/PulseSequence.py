@@ -44,10 +44,11 @@ class PulseSequence(object):
 		self.end = max(self.end, seq.end)
 	
 	def programSequence(self, pulser):
-		pulser.new_sequence()
-		pulser.add_ttl_pulses(self.ttl_pulses)
-		pulser.add_dds_pulses(self.dds_pulses)
-		pulser.program_sequence()
+		print 'NOT PROGRAMMING!!! FOR DEBUGGING'
+#		pulser.new_sequence()
+#		pulser.add_ttl_pulses(self.ttl_pulses)
+#		pulser.add_dds_pulses(self.dds_pulses)
+#		pulser.program_sequence()
 		
 class Bunch:
 	def __init__(self, **kwds):

@@ -70,16 +70,10 @@ class spectrum(SemaphoreExperiment):
         sequence_parameters.update(common_values)
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_continuous_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        
-        sequence_parameters['optical_pumping_continuous_amplitude_854'] = self.check_parameter(self.p.optical_pumping_amplitude_854)
-        sequence_parameters['optical_pumping_continuous_frequency_729'] = self.check_parameter(self.p.optical_pumping_frequency)
-        sequence_parameters['optical_pumping_continuous_amplitude_729'] = self.check_parameter(self.p.optical_pumping_amplitude_729)
-        sequence_parameters['optical_pumping_continuous_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_continuous_amplitude_866'] = self.check_parameter(self.p.optical_pumping_amplitude_866)
-        
+        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
+        sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        
+
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.spectrum_amplitude_729)
         sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
         

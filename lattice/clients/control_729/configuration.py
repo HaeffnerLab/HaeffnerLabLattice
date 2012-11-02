@@ -49,7 +49,7 @@ class config_729_state_preparation(object):
     doppler_cooling_repump_additional = ['doppler_cooling_repump_additional']
     #optical pumping
     optical_pumping_enable = ['729Experiments','optical_pumping_enable']
-    optical_pumping_frequency = ['729Experiments','optical_pumping_frequency']
+    optical_pumping_frequency_729 = ['729Experiments','optical_pumping_frequency_729']
     optical_pumping_amplitude_729 = ['729Experiments','optical_pumping_amplitude_729']
     optical_pumping_frequency_854 = ['frequency_854']
     optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
@@ -63,5 +63,6 @@ class config_729_state_preparation(object):
     optical_pumping_pulsed_duration_729 = ['729Experiments','optical_pumping_pulsed_duration_729']
     optical_pumping_pulsed_duration_repumps = ['729Experiments','optical_pumping_pulsed_duration_repumps']
     optical_pumping_pulsed_duration_additional_866 = ['729Experiments','optical_pumping_pulsed_duration_additional_866']
+    optical_pumping_pulsed_duration_between_pulses = ['729Experiments','optical_pumping_pulsed_duration_between_pulses']
     #heating
     background_heating_duration = ['729Experiments','background_heating_time']

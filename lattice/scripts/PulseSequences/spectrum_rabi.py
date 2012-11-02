@@ -1,7 +1,7 @@
 from PulseSequence import PulseSequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
-from subsequences.OpticalPumpingContinuous import optical_pumping_continuous
+from subsequences.OpticalPumping import optical_pumping
 from subsequences.RabiExcitation import rabi_excitation
 from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
@@ -20,7 +20,7 @@ class spectrum_rabi(PulseSequence):
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
         if self.p.optical_pumping_enable:
-            self.addSequence(optical_pumping_continuous)
+            self.addSequence(optical_pumping)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.background_heating_time})
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
@@ -44,12 +44,21 @@ class sample_parameters(object):
               
               'optical_pumping_continuous_duration':T.Value(1, 'ms'),
               'optical_pumping_continuous_repump_additional':T.Value(500, 'us'),
-              'optical_pumping_continuous_frequency_854':T.Value(80.0, 'MHz'),
-              'optical_pumping_continuous_amplitude_854':T.Value(-11.0, 'dBm'),
-              'optical_pumping_continuous_frequency_866':T.Value(80.0, 'MHz'),
-              'optical_pumping_continuous_amplitude_866':T.Value(-11.0, 'dBm'),
-              'optical_pumping_continuous_frequency_729':T.Value(220.0, 'MHz'),
-              'optical_pumping_continuous_amplitude_729':T.Value(-11.0, 'dBm'),
+              'optical_pumping_frequency_729':T.Value(220.0, 'MHz'),
+              'optical_pumping_frequency_854':T.Value(80.0, 'MHz'),
+              'optical_pumping_frequency_866':T.Value(80.0, 'MHz'),
+              'optical_pumping_amplitude_729':T.Value(-11.0, 'dBm'),
+              'optical_pumping_amplitude_854':T.Value(-11.0, 'dBm'),
+              'optical_pumping_amplitude_866':T.Value(-11.0, 'dBm'),
+              
+              'optical_pumping_pulsed_cycles':10.0,
+              'optical_pumping_pulsed_duration_729':T.Value(20, 'us'),
+              'optical_pumping_pulsed_duration_repumps':T.Value(20, 'us'),
+              'optical_pumping_pulsed_duration_additional_866':T.Value(20, 'us'),
+              'optical_pumping_pulsed_duration_between_pulses':T.Value(5, 'us'),
+              
+              'optical_pumping_continuous':False,
+              'optical_pumping_pulsed':True,
               
               'background_heating_time':T.Value(0.0, 'ms'),
               
