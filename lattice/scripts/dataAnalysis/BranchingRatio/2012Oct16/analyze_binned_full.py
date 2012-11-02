@@ -84,6 +84,8 @@ bin_size = bins[1] - bins[0]
 t1 = t1 - t1 % bin_size
 t2 = t2 - t2 % bin_size
 
+
+
 def rise(x, t_start, B):
     y = np.zeros_like(x)
     before = np.where(x < t_start)
