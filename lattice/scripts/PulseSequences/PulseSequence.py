@@ -44,7 +44,7 @@ class PulseSequence(object):
 		self.end = max(self.end, seq.end)
 	
 	def programSequence(self, pulser):
-		print 'NOT PROGRAMMING!!! FOR DEBUGGING'
+		raise Exception( 'NOT PROGRAMMING!!! FOR DEBUGGING')
 #		pulser.new_sequence()
 #		pulser.add_ttl_pulses(self.ttl_pulses)
 #		pulser.add_dds_pulses(self.dds_pulses)
