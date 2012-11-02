@@ -40,7 +40,7 @@ class blue_rabi(SemaphoreExperiment):
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
         self.p = self.populate_parameters(self.sem, self.experimentPath)
-        self.p_heat = self.populate_parameters(self.sem, self.experimentPath)
+        self.p_heat = self.populate_parameters(self.sem, self.experimentPath_heat)
         
         
     def setup_data_vault(self):
@@ -70,13 +70,16 @@ class blue_rabi(SemaphoreExperiment):
         sequence_parameters = {}.fromkeys(sample_parameters.parameters)
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
-        sequence_parameters.update(common_values)        
+        common_values_heat = dict([(key,check(value)) for key,value in self.p_heat.iteritems() if key in sequence_parameters])
+        print common_values_heat
+        sequence_parameters.update(common_values)
+        sequence_parameters.update(common_values_heat)
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
+        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866) 
+        sequence_parameters['global_blue_heating_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        
         sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
 

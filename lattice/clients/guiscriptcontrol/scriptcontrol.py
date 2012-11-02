@@ -20,6 +20,7 @@ class ScriptControl(QtGui.QWidget):
      ('SimpleMeasurements', 'ADCPowerMonitor'):  ('scripts.simpleMeasurements.ADCpowerMonitor', 'ADCPowerMonitor'),
      ('729Experiments','Spectrum'):  ('scripts.experiments.Experiments729.spectrum', 'spectrum'),
      ('729Experiments','RabiFlopping'):  ('scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping'),
+     ('729Experiments','BlueHeating'):  ('scripts.experiments.Experiments729.blue_rabi', 'blue_rabi'),
      ('BranchingRatio',):  ('scripts.experiments.BranchingRatio.branching_ratio', 'branching_ratio')
      }
     #conflicting experiments, every experiment conflicts with itself
@@ -30,6 +31,7 @@ class ScriptControl(QtGui.QWidget):
     ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
     ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
     ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')],
+    ('729Experiments','BlueHeating'):[('729Experiments','BlueHeating')],
     ('BranchingRatio',):[('BranchingRatio',)]
     }
     

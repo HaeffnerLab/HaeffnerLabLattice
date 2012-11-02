@@ -25,7 +25,6 @@ class blue_heat_rabi(PulseSequence):
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.global_blue_heating_delay_before})
         self.addSequence(global_blue_heating)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.global_blue_heating_delay_after})
-        self.addSequence(global_blue_heating)
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
 
