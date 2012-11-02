@@ -5,24 +5,32 @@ class durationWdiget(QtGui.QWidget):
     
     new_duration = QtCore.pyqtSignal(float)
     
-    def __init__(self, reactor, value = 1, init_range = (1,1000), parent=None):
+    def __init__(self, reactor, value = 1, init_range = (1,1000), font = None, parent=None):
         super(durationWdiget, self).__init__(parent)
         self.reactor = reactor
         self.value = value
         self.ran = init_range
+        if font is None:
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        else:
+            self.font = font
         self.initializeGUI()
         
     def initializeGUI(self):
         layout = QtGui.QGridLayout()
-        durationLabel = QtGui.QLabel('Excitation Time')
-        bandwidthLabel =  QtGui.QLabel('Fourier Bandwidth')
+        durationLabel = QtGui.QLabel('Excitation Time', font = self.font)
+        bandwidthLabel =  QtGui.QLabel('Fourier Bandwidth', font = self.font)
+        durationLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
+        bandwidthLabel.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
         self.duration = duration = QtGui.QSpinBox()
+        duration.setFont(self.font)
         duration.setSuffix('\265s')
         duration.setKeyboardTracking(False)
         duration.setRange(*self.ran)
         duration.setValue(self.value)
         initband = self.conversion(self.value)
         self.bandwidth = bandwidth = QtGui.QDoubleSpinBox()
+        bandwidth.setFont(self.font)
         bandwidth.setDecimals(1)
         bandwidth.setKeyboardTracking(False)
         bandwidth.setRange(*[self.conversion(r) for r in [self.ran[1],self.ran[0]]])
@@ -32,13 +40,12 @@ class durationWdiget(QtGui.QWidget):
         duration.valueChanged.connect(self.onNewDuration)
         bandwidth.valueChanged.connect(self.onNewBandwidth)
         #add to layout
-        layout.addWidget(durationLabel, 0, 0, 1, 1)
-        layout.addWidget(bandwidthLabel, 0, 1, 1, 1)
-        layout.addWidget(duration, 1, 0, 1, 1)
-        layout.addWidget(bandwidth, 1, 1, 1, 1)
+        layout.addWidget(durationLabel, 0, 0)
+        layout.addWidget(bandwidthLabel, 0, 1)
+        layout.addWidget(duration, 1, 0)
+        layout.addWidget(bandwidth, 1, 1)
         self.setLayout(layout)
-        self.show()
-    
+
     def onNewDuration(self, dur):
         band = self.conversion(dur)
         self.bandwidth.blockSignals(True)
@@ -75,11 +82,16 @@ class limitsWidget(QtGui.QWidget):
     
     new_list_signal = QtCore.pyqtSignal(list)
     
-    def __init__(self, reactor, suffix = '', abs_range = None, sigfigs = 3,  parent=None):
+    def __init__(self, reactor, suffix = '', abs_range = None, sigfigs = 3,  font = None, parent=None):
         super(limitsWidget, self).__init__(parent)
         self.reactor = reactor
         self.suffix = suffix
         self.sigfigs = sigfigs
+        if font is None:
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        else:
+            self.font = font
+        
         self.initializeGUI()
         if abs_range is not None:
             self.setRange(*abs_range)
@@ -92,32 +104,44 @@ class limitsWidget(QtGui.QWidget):
         self.center = center = QtGui.QDoubleSpinBox()
         self.span = span = QtGui.QDoubleSpinBox()
         self.setresolution = setresolution = QtGui.QDoubleSpinBox()
-        self.resolution = resolution = QtGui.QLineEdit()
+        self.resolution = resolution = QtGui.QLineEdit( font = self.font)
         self.steps = steps = QtGui.QSpinBox()
+        self.lockSteps = lockSteps = QtGui.QRadioButton()
+        self.lockResolution = lockResolution = QtGui.QRadioButton()
+        bg = QtGui.QButtonGroup()
+        #make them exclusive
+        bg.addButton(self.lockSteps)
+        bg.addButton(self.lockResolution)
+        bg.setExclusive(True)
+        self.lockResolution.setChecked(True)
         steps.setRange(1,1000)
         resolution.setReadOnly(True)
         steps.setKeyboardTracking(False)
+        steps.setFont(self.font)
         for widget in [start, stop, setresolution, center, span]:
             widget.setKeyboardTracking(False)
             widget.setDecimals(self.sigfigs)
             widget.setSuffix(self.suffix)
             widget.setSingleStep(10**-self.sigfigs)
+            widget.setFont(self.font)
         self.updateResolutionLabel(setresolution.value())
         #connect
         start.valueChanged.connect(self.onNewStartStop)
         stop.valueChanged.connect(self.onNewStartStop)
         setresolution.valueChanged.connect(self.onNewResolution)
-        steps.valueChanged.connect(self.onNewStartStop)
+        steps.valueChanged.connect(self.onNewSteps)
         span.valueChanged.connect(self.onNewCenterSpan)
         center.valueChanged.connect(self.onNewCenterSpan)
         #add to layout
-        layout.addWidget( QtGui.QLabel('Start'), 0, 0, 1, 1)
-        layout.addWidget(QtGui.QLabel('Stop'), 0, 1, 1, 1)
-        layout.addWidget(QtGui.QLabel('Set Resolution'), 0, 2, 1, 1)
-        layout.addWidget(QtGui.QLabel('Set Steps'), 0, 3, 1, 1)
-        layout.addWidget(QtGui.QLabel('Resolution'), 0, 4, 1, 1)
-        layout.addWidget(QtGui.QLabel('Center'), 2, 0, 1, 1)
-        layout.addWidget(QtGui.QLabel('Span'), 2, 1, 1, 1)
+        layout.addWidget( QtGui.QLabel('Start', font = self.font), 0, 0, 1, 1)
+        layout.addWidget(QtGui.QLabel('Stop', font = self.font), 0, 1, 1, 1)
+        layout.addWidget(QtGui.QLabel('Set Resolution', font = self.font), 0, 2, 1, 1)
+        layout.addWidget(QtGui.QLabel('Set Steps', font = self.font), 0, 3, 1, 1)
+        layout.addWidget(QtGui.QLabel('Resolution', font = self.font), 0, 4, 1, 1)
+        layout.addWidget(QtGui.QLabel('Center', font = self.font), 2, 0, 1, 1)
+        layout.addWidget(QtGui.QLabel('Span', font = self.font), 2, 1, 1, 1)
+        layout.addWidget(QtGui.QLabel('Lock Resolution', font = self.font), 2, 2, 1, 1)
+        layout.addWidget(QtGui.QLabel('Lock Steps', font = self.font), 2, 3, 1, 1)
         layout.addWidget(start, 1, 0, 1, 1)
         layout.addWidget(stop, 1, 1, 1, 1)
         layout.addWidget(setresolution, 1, 2, 1, 1)
@@ -125,8 +149,9 @@ class limitsWidget(QtGui.QWidget):
         layout.addWidget(resolution, 1, 4, 1, 1)
         layout.addWidget(center, 3, 0, 1, 1)
         layout.addWidget(span, 3, 1, 1, 1)
+        layout.addWidget(lockResolution, 3, 2, 1, 1)
+        layout.addWidget(lockSteps, 3, 3, 1, 1)
         self.setLayout(layout)
-        self.show()
     
     def setRange(self, minim, maxim):
         ran = (minim,maxim)
@@ -155,14 +180,12 @@ class limitsWidget(QtGui.QWidget):
         self.stop.setValue(stop)
         self.start.blockSignals(False)
         self.stop.blockSignals(False)
-        steps = self.steps.value()
-        self.updateResolution(start, stop, steps)
+        self.updateResolutionSteps()
         self.new_list_signal.emit( self.frequencies)
     
     def onNewStartStop(self, x):
         start = self.start.value()
         stop = self.stop.value()
-        steps = self.steps.value()
         #update center and span
         self.center.blockSignals(True)
         self.span.blockSignals(True)
@@ -170,41 +193,64 @@ class limitsWidget(QtGui.QWidget):
         self.span.setValue(stop - start)
         self.center.blockSignals(False)
         self.span.blockSignals(False)
-        self.updateResolution(start, stop, steps)
+        self.updateResolutionSteps()
         self.new_list_signal.emit( self.frequencies)
     
-    def updateResolution(self, start, stop, steps):
-        #calculate and update the resolution
-        if steps > 1:
-            res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
+    def updateResolutionSteps(self):
+        '''calculate and update the resolution or the steps depending on which is locked'''
+        if self.lockSteps.isChecked():
+            self.onNewSteps(self.steps.value())
         else:
-            res = stop - start
-        self.setresolution.blockSignals(True)
-        self.setresolution.setValue(res)
-        self.setresolution.blockSignals(False)
-        self.updateResolutionLabel(res)
+            self.onNewResolution(self.setresolution.value())
         
     def updateResolutionLabel(self, val):
         text = '{:.3f} {}'.format(val, self.suffix)
         self.resolution.setText(text)
     
-    def onNewResolution(self, res):
+    def onNewSteps(self, steps):
         start = self.start.value()
         stop = self.stop.value()
-        try:
-            computed_steps = int(round( (stop - start) / res))
-        except ZeroDivisionError:
-            computed_steps = 0                                
-        steps = 1 +  max(0, computed_steps) #make sure at least 1
+        res = self._resolution_from_steps(start, stop, steps)
+        self._set_resolution_no_signal(res)
+        self.updateResolutionLabel(res)
+        self.new_list_signal.emit( self.frequencies)
+    
+    def onNewResolution(self, res):
+        '''called when resolution is updated'''
+        start = self.start.value()
+        stop = self.stop.value()
+        steps = self._steps_from_resolution(start, stop, res)
+        self._set_steps_nosignal(steps)
+        final_res = self._resolution_from_steps(start, stop, steps)
+        self.updateResolutionLabel(final_res)
+        self.new_list_signal.emit( self.frequencies)
+    
+    def _set_steps_nosignal(self, steps):
         self.steps.blockSignals(True)
         self.steps.setValue(steps)
         self.steps.blockSignals(False)
+    
+    def _set_resolution_no_signal(self, res):
+        self.setresolution.blockSignals(True)
+        self.setresolution.setValue(res)
+        self.setresolution.blockSignals(False)
+    
+    def _resolution_from_steps(self, start, stop, steps):
+        '''computes the resolution given the number of steps'''
         if steps > 1:
-            finalres = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
+            res = numpy.linspace(start, stop, steps, endpoint = True, retstep = True)[1]
         else:
-            finalres = stop - start
-        self.updateResolutionLabel(finalres)
-        self.new_list_signal.emit( self.frequencies)
+            res = stop - start
+        return res
+    
+    def _steps_from_resolution(self, start, stop, res):
+        '''computes the number of steps given the resolution'''
+        try:
+            steps = int(round( (stop - start) / res))
+        except ZeroDivisionError:
+            steps = 0                                
+        steps = 1 +  max(0, steps) #make sure at least 1
+        return steps
     
     @property
     def frequencies(self):
@@ -298,10 +344,10 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = limitsWidget(reactor, suffix = 'us', abs_range = (0,10))
-    #widget = durationWdiget(reactor)
-    #widget = saved_frequencies(reactor)
-    #widget = saved_frequencies_dropdown(reactor)
-    #widget = frequency_wth_dropdown(reactor)
+#    widget = limitsWidget(reactor, suffix = 'us', abs_range = (0,100))
+    widget = durationWdiget(reactor)
+#    widget = saved_frequencies(reactor)
+#    widget = saved_frequencies_dropdown(reactor)
+#    widget = frequency_wth_dropdown(reactor)
     widget.show()
     reactor.run()

@@ -60,9 +60,7 @@ class spectrum(QtGui.QWidget):
         shownWidgets = [w for w in self.limitWidgets if w.displayed]
         for w in shownWidgets:
             freqs.extend(w.frequencies)
-        print freqs
         self.new_frequencies_signal.emit(freqs)
-    
     
     def on_new_index(self, index):
         index = index + 1

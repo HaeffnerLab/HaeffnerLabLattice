@@ -1,7 +1,6 @@
 from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
-from spectrum import spectrum_connection
-from rabi_flops import rabi_flop_connection
+from scans import scans_connection
 from state_preparation import state_preparation_connection
 from twisted.internet.defer import inlineCallbacks
 
@@ -26,13 +25,11 @@ class control_729(QtGui.QWidget):
         self.tab = tab = QtGui.QTabWidget()
         histogram_tab = readout_histgram(self.reactor, self.cxn)
         self.state_preparation_tab = state_preparation_connection(self.reactor, self.cxn)
-        spectrum_tab =  spectrum_connection(self.reactor, self.cxn)
-        flop_tab = rabi_flop_connection(self.reactor, self.cxn)
+        scans_tab =  scans_connection(self.reactor, self.cxn)
         tab.addTab(histogram_tab, 'State Readout')
         self.state_prep_index = tab.addTab(self.state_preparation_tab, 'State Preparation')
-        tab.addTab(spectrum_tab, 'Spectrum')
-        tab.addTab(flop_tab, 'Rabi Flopping')
-        layout.addWidget(tab, 1, 0, 1, 4)
+        tab.addTab(scans_tab, 'Scans')
+        layout.addWidget(tab, 1, 0)
         self.setLayout(layout)
     
     def connect_tab_signals(self):
@@ -40,7 +37,6 @@ class control_729(QtGui.QWidget):
         pumping_enable.stateChanged.connect(self.change_color(self.state_prep_index))
         self.change_color(self.state_prep_index)(pumping_enable.isChecked())
             
-    
     def change_color(self, index):
         def func(selected):
             if selected:

@@ -24,17 +24,13 @@ class state_readout(object):
 class config_729_spectrum(object):
     #IDs for signaling
     ID = 99996
-    #semaphore locations
-    excitation_time = ['729Experiments','Spectrum','excitation_time']
-    frequencies = ['729Experiments','Spectrum','frequencies']
+    #spectrum
+    spectrum_excitation_time = ['729Experiments','Spectrum','excitation_time']
+    spectrum_frequencies = ['729Experiments','Spectrum','frequencies']
     spectrum_amplitude_729 = ['729Experiments','Spectrum','spectrum_amplitude_729']
-
-class config_729_rabi_flop(object):
-    #IDs for signaling
-    ID = 99995
-    #semaphore locations 
-    frequency = ['729Experiments','RabiFlopping','frequency']
-    excitation_times = ['729Experiments','RabiFlopping','excitation_times']
+    #rabi flop
+    rabi_frequency = ['729Experiments','RabiFlopping','frequency']
+    rabi_excitation_times = ['729Experiments','RabiFlopping','excitation_times']
     rabi_amplitude_729 = ['729Experiments','RabiFlopping','rabi_amplitude_729']
 
 class config_729_state_preparation(object):
