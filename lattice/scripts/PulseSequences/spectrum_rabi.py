@@ -11,7 +11,7 @@ class spectrum_rabi(PulseSequence):
     
     def configuration(self):
         config = [
-                  'heating_time','optical_pumping_enable'
+                  'background_heating_time','optical_pumping_enable'
                   ]
         return config
     
@@ -21,7 +21,7 @@ class spectrum_rabi(PulseSequence):
         self.addSequence(doppler_cooling_after_repump_d)
         if self.p.optical_pumping_enable:
             self.addSequence(optical_pumping_continuous)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.heating_time})
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.background_heating_time})
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
 
@@ -51,7 +51,7 @@ class sample_parameters(object):
               'optical_pumping_continuous_frequency_729':T.Value(220.0, 'MHz'),
               'optical_pumping_continuous_amplitude_729':T.Value(-11.0, 'dBm'),
               
-              'heating_time':T.Value(0.0, 'ms'),
+              'background_heating_time':T.Value(0.0, 'ms'),
               
               'rabi_excitation_frequency':T.Value(220.0, 'MHz'),
               'rabi_excitation_amplitude':T.Value(-11.0, 'dBm'),
@@ -68,7 +68,6 @@ if __name__ == '__main__':
     import labrad
     import time
     cxn = labrad.connect()
-    
     params = sample_parameters.parameters
     tinit = time.time()
     cs = spectrum_rabi(**params)

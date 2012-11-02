@@ -69,19 +69,16 @@ class spectrum(SemaphoreExperiment):
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
         sequence_parameters.update(common_values)
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['state_readout_amplitude_866'] = self.check_parameter(self.p.doppler_cooling_amplitude_866)
-        
         sequence_parameters['optical_pumping_continuous_frequency_854'] = self.check_parameter(self.p.frequency_854)
+        
         sequence_parameters['optical_pumping_continuous_amplitude_854'] = self.check_parameter(self.p.optical_pumping_amplitude_854)
         sequence_parameters['optical_pumping_continuous_frequency_729'] = self.check_parameter(self.p.optical_pumping_frequency)
         sequence_parameters['optical_pumping_continuous_amplitude_729'] = self.check_parameter(self.p.optical_pumping_amplitude_729)
         sequence_parameters['optical_pumping_continuous_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_continuous_amplitude_866'] = self.check_parameter(self.p.doppler_cooling_amplitude_866)
+        sequence_parameters['optical_pumping_continuous_amplitude_866'] = self.check_parameter(self.p.optical_pumping_amplitude_866)
         
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        sequence_parameters['repump_d_amplitude_854'] = self.check_parameter(self.p.amplitude_854)
         
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.spectrum_amplitude_729)
         sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
@@ -93,8 +90,8 @@ class spectrum(SemaphoreExperiment):
             print 'overwriting', amplitude_729
             self.sequence_parameters['rabi_excitation_amplitude'] = amplitude_729
         self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
-        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]
-        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]
+        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
+        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 
