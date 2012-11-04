@@ -133,6 +133,11 @@ if __name__ == '__main__':
         pulser = cxn.pulser
         params = sample_parameters.parameters
         cs = spectrum_rabi(**params)
+#    from blue_heat_rabi import sample_parameters, blue_heat_rabi
+#    with labrad.connect() as cxn:
+#        pulser = cxn.pulser
+#        params = sample_parameters.parameters
+#        cs = blue_heat_rabi(**params)
         cs.programSequence(cxn.pulser)
         ttl = pulser.human_readable_ttl().asarray
         dds = pulser.human_readable_dds()

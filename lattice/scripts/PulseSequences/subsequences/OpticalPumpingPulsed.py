@@ -22,7 +22,7 @@ class optical_pumping_pulsed(PulseSequence):
         cycles = int(self.p.optical_pumping_pulsed_cycles)
         cycle_duration = self.p.optical_pumping_pulsed_duration_729 + self.p.optical_pumping_pulsed_duration_repumps +\
         +self.p.optical_pumping_pulsed_duration_additional_866 + 2 * self.p.optical_pumping_pulsed_duration_between_pulses
-        cycles_start = [cycle_duration * i for i in range(cycles)]
+        cycles_start = [self.start + cycle_duration * i for i in range(cycles)]
         self.end = self.start + cycles * cycle_duration
         pulses = self.dds_pulses
         freq729 = self.p.optical_pumping_pulsed_frequency_729
@@ -36,4 +36,4 @@ class optical_pumping_pulsed(PulseSequence):
             duration_866 =  self.p.optical_pumping_pulsed_duration_repumps + self.p.optical_pumping_pulsed_duration_additional_866
             pulses.append(('729DP', start, self.p.optical_pumping_pulsed_duration_729 , freq729 , ampl729))
             pulses.append(('854DP', start_repumps, self.p.optical_pumping_pulsed_duration_repumps, freq854, ampl854))
-            pulses.append(('866DP', self.start, duration_866, freq866 , ampl866))
+            pulses.append(('866DP', start_repumps, duration_866, freq866 , ampl866))

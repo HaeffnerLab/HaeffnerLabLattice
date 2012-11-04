@@ -57,8 +57,8 @@ class sample_parameters(object):
               'optical_pumping_pulsed_duration_additional_866':T.Value(20, 'us'),
               'optical_pumping_pulsed_duration_between_pulses':T.Value(5, 'us'),
               
-              'optical_pumping_continuous':False,
-              'optical_pumping_pulsed':True,
+              'optical_pumping_continuous':True,
+              'optical_pumping_pulsed':False,
               
               'background_heating_time':T.Value(0.0, 'ms'),
               
