@@ -30,7 +30,7 @@ class DDS(LabradServer):
     
     @setting(43, "Amplitude", amplitude = 'v[dBm]', returns = 'v[dBm]')
     def amplitude(self, c, amplitude = None):
-        """Get or Set the amplitude of the named channel, or of the channel selected in the current context"""
+        """Get or set the amplitude of the selected channel"""
         #get the hardware channel
         if self.ddsLock: 
             self.ddsLock = False
@@ -39,17 +39,19 @@ class DDS(LabradServer):
         if name is None: raise Exception ("Channel not provided and not selected")
         channel = self.ddsDict[name]
         if amplitude is not None:
-            #set the amplitude
+            #setting the ampplitude
             amplitude = amplitude['dBm']
             self._checkRange('amplitude', channel, amplitude)
-            yield self._setAmplitude(channel, amplitude)
+            if channel.state:
+                #only send to hardware if the channel is on
+                yield self._setAmplitude(channel, amplitude)
             channel.amplitude = amplitude
         amplitude = T.Value(channel.amplitude, 'dBm')
         returnValue(amplitude)
 
     @setting(44, "Frequency", frequency = ['v[MHz]'], returns = ['v[MHz]'])
     def frequency(self, c, frequency = None):
-        """Get or Set the frequency of the named channel, or of the channel selected in the current context"""
+        """Get or set the frequency of the selected channel"""
         #get the hardware channel
         if self.ddsLock: 
             self.ddsLock = False
@@ -58,11 +60,13 @@ class DDS(LabradServer):
         if name is None: raise Exception ("Channel not provided and not selected")
         channel = self.ddsDict[name]
         if frequency is not None:
-            #set the amplitude
+            #setting the frequency
             frequency = frequency['MHz']
             self._checkRange('frequency', channel, frequency)
-            yield self._setFrequency(channel, frequency)
-            channel.frequency = float(frequency)
+            if channel.state:
+                #only send to hardware if the channel is on
+                yield self._setFrequency(channel, frequency)
+            channel.frequency = frequency
         frequency = T.Value(channel.frequency, 'MHz')
         returnValue(frequency)
     
@@ -182,6 +186,7 @@ class DDS(LabradServer):
     @inlineCallbacks
     def _setParameters(self, channel, freq, ampl):
         addr = channel.channelnumber
+        print 'setting parameters', channel.channelnumber, freq, ampl
         if not channel.remote:
             num = self._valToInt(channel, freq, ampl)
             buf = self._intToBuf(num)
