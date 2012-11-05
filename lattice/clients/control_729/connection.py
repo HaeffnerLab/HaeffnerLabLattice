@@ -32,10 +32,10 @@ class connection(object):
             
     @inlineCallbacks
     def setupListeners(self):
-        yield self.cxn.manager.subscribe_to_named_message('Server Connect', 9898989, True)
-        yield self.cxn.manager.subscribe_to_named_message('Server Disconnect', 9898989+1, True)
-        yield self.cxn.manager.addListener(listener = self.followServerConnect, source = None, ID = 9898989)
-        yield self.cxn.manager.addListener(listener = self.followServerDisconnect, source = None, ID = 9898989+1)
+        yield self.cxn.manager.subscribe_to_named_message('Server Connect', 19898989, True)
+        yield self.cxn.manager.subscribe_to_named_message('Server Disconnect', 19898989+1, True)
+        yield self.cxn.manager.addListener(listener = self.followServerConnect, source = None, ID = 19898989)
+        yield self.cxn.manager.addListener(listener = self.followServerDisconnect, source = None, ID = 19898989+1)
     
     @inlineCallbacks
     def followServerConnect(self, cntx, server_name):

@@ -46,8 +46,9 @@ class async_semaphore(object):
     
     def on_parameter_change(self, x, y):
         path, init_val = y
-        if tuple(path) in self.d.keys():
-            param = self.d[tuple(path)]
+        path = path.astuple
+        if path in self.d.keys():
+            param = self.d[path]
             self.set_value(param, init_val)
     
     @inlineCallbacks

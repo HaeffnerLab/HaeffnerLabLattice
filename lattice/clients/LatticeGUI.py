@@ -1,15 +1,25 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
         super(LATTICE_GUI, self).__init__(parent)
         self.reactor = reactor
+        self.connect_labrad()
+
+    @inlineCallbacks
+    def connect_labrad(self):
+        from connection import connection
+        cxn = connection()
+        yield cxn.connect()
+        self.create_layout(cxn)
+    
+    def create_layout(self, cxn):
         lightControlTab = self.makeLightWidget(reactor)
         voltageControlTab = self.makeVoltageWidget(reactor)
-        tableOpticsWidget = self.makeTableOpticsWidget(reactor)
+        tableOpticsWidget = self.makeTableOpticsWidget(reactor, cxn)
         translationStageWidget = self.makeTranslationStageWidget(reactor)
-        control729Widget =  self.makecontrol729Widget(reactor)
+        control729Widget =  self.makecontrol729Widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         grid = QtGui.QGridLayout()
         self.tabWidget = QtGui.QTabWidget()
@@ -54,9 +64,9 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def createExperimentParametersTab(self):
         self.tabWidget.addTab(self.experimentParametersWidget, '&Experiment Parameters')
     
-    def makecontrol729Widget(self, reactor):
+    def makecontrol729Widget(self, reactor, cxn):
         from control_729.control_729 import control_729
-        widget = control_729(reactor)
+        widget = control_729(reactor, cxn)
         return widget
     
     def makeTranslationStageWidget(self, reactor):
@@ -97,18 +107,18 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget.setLayout(gridLayout)
         return widget
     
-    def makeTableOpticsWidget(self, reactor):
+    def makeTableOpticsWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
         from PMT_CONTROL import pmtWidget
         from SWITCH_CONTROL import switchWidget
-        from DDS_CONTROL import RS_CONTROL_LAB, RS_CONTROL_LOCAL, DDS_CONTROL
+        from DDS_CONTROL import DDS_CONTROL#RS_CONTROL_LAB, RS_CONTROL_LOCAL, 
         #from doublePassWidget import doublePassWidget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(switchWidget(reactor),0,0)
-        gridLayout.addWidget(pmtWidget(reactor),0,1)
-        gridLayout.addWidget(DDS_CONTROL(reactor),1,0, 1, 2)
-        gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
-        gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
+        gridLayout.addWidget(pmtWidget(reactor),0, 0, 1, 1, alignment = QtCore.Qt.AlignRight)
+        gridLayout.addWidget(switchWidget(reactor, cxn),1,0, 1, 1)#, 1, 2)
+        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),2, 0, 1, 2)#, 1, 2)
+#        gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
+#        gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
         widget.setLayout(gridLayout)
         return widget
 
