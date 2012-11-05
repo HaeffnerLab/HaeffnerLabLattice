@@ -111,7 +111,6 @@ class DDS_CONTROL(QtGui.QWidget):
             yield server.signal__new_dds_parameter(self.SIGNALID)
             for w in self.widgets.values():
                 yield w.setupWidget()
-            
     
     @inlineCallbacks
     def do_layout(self, server):
