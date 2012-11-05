@@ -1,4 +1,4 @@
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 from twisted.internet.defer import returnValue, inlineCallbacks
 from twisted.internet.threads import deferToThread
 import array
@@ -7,6 +7,8 @@ from labrad import types as T
 class DDS(LabradServer):
     
     """Contains the DDS functionality for the pulser server"""
+    
+    on_dds_param = Signal(142006, 'signal: new dds parameter', '(ssv)')
     
     @inlineCallbacks
     def initializeDDS(self):
@@ -28,16 +30,14 @@ class DDS(LabradServer):
         if name not in self.ddsDict.keys(): raise Exception("Incorrect DDS Channel {}".format(name))
         c['ddschan'] = name
     
-    @setting(43, "Amplitude", amplitude = 'v[dBm]', returns = 'v[dBm]')
-    def amplitude(self, c, amplitude = None):
-        """Get or set the amplitude of the selected channel"""
+    @setting(43, "Amplitude", name= 's', amplitude = 'v[dBm]', returns = 'v[dBm]')
+    def amplitude(self, c, name = None, amplitude = None):
+        """Get or set the amplitude of the named channel or the selected channel"""
         #get the hardware channel
         if self.ddsLock: 
             self.ddsLock = False
             raise Exception("DDS access is locked. Running pulse sequence.")
-        name = c.get('ddschan')
-        if name is None: raise Exception ("Channel not provided and not selected")
-        channel = self.ddsDict[name]
+        channel = self._getChannel(c, name)
         if amplitude is not None:
             #setting the ampplitude
             amplitude = amplitude['dBm']
@@ -46,19 +46,18 @@ class DDS(LabradServer):
                 #only send to hardware if the channel is on
                 yield self._setAmplitude(channel, amplitude)
             channel.amplitude = amplitude
+            self.notifyOtherListeners(c, (name, 'amplitude', channel.amplitude), self.on_dds_param)
         amplitude = T.Value(channel.amplitude, 'dBm')
         returnValue(amplitude)
 
-    @setting(44, "Frequency", frequency = ['v[MHz]'], returns = ['v[MHz]'])
-    def frequency(self, c, frequency = None):
-        """Get or set the frequency of the selected channel"""
+    @setting(44, "Frequency", name = 's', frequency = ['v[MHz]'], returns = ['v[MHz]'])
+    def frequency(self, c, name = None, frequency = None):
+        """Get or set the frequency of the named channel or the selected channel"""
         #get the hardware channel
         if self.ddsLock: 
             self.ddsLock = False
             raise Exception("DDS access is locked. Running pulse sequence.")
-        name = c.get('ddschan')
-        if name is None: raise Exception ("Channel not provided and not selected")
-        channel = self.ddsDict[name]
+        channel = self._getChannel(c, name)
         if frequency is not None:
             #setting the frequency
             frequency = frequency['MHz']
@@ -67,6 +66,7 @@ class DDS(LabradServer):
                 #only send to hardware if the channel is on
                 yield self._setFrequency(channel, frequency)
             channel.frequency = frequency
+            self.notifyOtherListeners(c, (name, 'frequency', channel.frequency), self.on_dds_param)
         frequency = T.Value(channel.frequency, 'MHz')
         returnValue(frequency)
     
@@ -115,29 +115,25 @@ class DDS(LabradServer):
             sequence.addDDS(name, start, num, 'start')
             sequence.addDDS(name, start + dur, num_off, 'stop')
         
-    @setting(46, 'Get DDS Amplitude Range', returns = '(vv)')
-    def getDDSAmplRange(self, c):
-        name = c.get('ddschan')
-        if name is None: raise Exception ("Channel not provided and not selected")
-        return self.ddsDict[name].allowedamplrange
+    @setting(46, 'Get DDS Amplitude Range', name = 's', returns = '(vv)')
+    def getDDSAmplRange(self, c, name = None):
+        channel = self._getChannel(c, name)
+        return channel.allowedamplrange
         
-    @setting(47, 'Get DDS Frequency Range', returns = '(vv)')
-    def getDDSFreqRange(self, c):
-        name = c.get('ddschan')
-        if name is None: raise Exception ("Channel not provided and not selected")
-        return self.ddsDict[name].allowedfreqrange
+    @setting(47, 'Get DDS Frequency Range', name = 's', returns = '(vv)')
+    def getDDSFreqRange(self, c, name = None):
+        channel = self._getChannel(c, name)
+        return channel.allowedfreqrange
     
-    @setting(48, 'Output', state = 'b', returns =' b')
-    def output(self, c, state = None):
+    @setting(48, 'Output', name= 's', state = 'b', returns =' b')
+    def output(self, c, name = None, state = None):
         """To turn off and on the dds. Turning off the DDS sets the frequency and amplitude 
         to the off_parameters provided in the configuration.
         """
         if self.ddsLock: 
             self.ddsLock = False
             raise Exception("DDS access is locked. Running pulse sequence.")
-        name = c.get('ddschan')
-        if name is None: raise Exception ("Channel not provided and not selected")
-        channel = self.ddsDict[name]
+        channel = self._getChannel(c, name)
         if state is not None:
             if state and not channel.state:
                 #if asked to turn on and is currently off
@@ -147,6 +143,7 @@ class DDS(LabradServer):
                 freq,ampl = channel.off_parameters
                 yield self._setParameters(channel, freq, ampl)
             channel.state = state
+            self.notifyOtherListeners(c, (name, 'state', channel.state), self.on_dds_param)
         state = channel.state
         returnValue(state)
     
@@ -156,6 +153,16 @@ class DDS(LabradServer):
         elif t == 'frequency':
             r = channel.allowedfreqrange
         if not r[0]<= val <= r[1]: raise Exception ("Value {} is outside allowed range".format(val))
+    
+    def _getChannel(self,c, name):
+        if name is None:
+            name = c.get('ddschan')
+            if name is None: raise Exception ("Channel not selected")
+        try:
+            channel = self.ddsDict[name]
+        except KeyError:
+            raise Exception("Channel {0} not found".format(name))
+        return channel
     
     @inlineCallbacks
     def _setAmplitude(self, channel, ampl):
@@ -186,7 +193,6 @@ class DDS(LabradServer):
     @inlineCallbacks
     def _setParameters(self, channel, freq, ampl):
         addr = channel.channelnumber
-        print 'setting parameters', channel.channelnumber, freq, ampl
         if not channel.remote:
             num = self._valToInt(channel, freq, ampl)
             buf = self._intToBuf(num)
