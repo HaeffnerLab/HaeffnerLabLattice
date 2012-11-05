@@ -35,8 +35,8 @@ class remoteChannel(object):
         
 class hardwareConfiguration(object):
     channelTotal = 32
-    timeResolution = 40.0e-9 #seconds
-    timeResolvedResolution = timeResolution/4.0
+    timeResolution = '40.0e-9' #seconds
+    timeResolvedResolution = 10.0e-9
     maxSwitches = 1022
     devicePollingPeriod = 10
     collectionTimeRange = (0.010, 5.0) #range for normal pmt counting

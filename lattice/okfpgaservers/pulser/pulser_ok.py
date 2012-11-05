@@ -40,7 +40,7 @@ class Pulser(LabradServer, DDS):
         self.collectionMode = hardwareConfiguration.collectionMode
         self.sequenceType = hardwareConfiguration.sequenceType
         self.isProgrammed = hardwareConfiguration.isProgrammed
-        self.timeResolution = hardwareConfiguration.timeResolution
+        self.timeResolution = float(hardwareConfiguration.timeResolution)
         self.ddsDict = hardwareConfiguration.ddsDict
         self.timeResolvedResolution = hardwareConfiguration.timeResolvedResolution
         self.remoteChannels = hardwareConfiguration.remoteChannels

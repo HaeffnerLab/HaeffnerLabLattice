@@ -28,7 +28,7 @@ class spectrum_rabi(PulseSequence):
 class sample_parameters(object):
     
     parameters = {
-              'repump_d_duration':T.Value(500, 'us'),
+              'repump_d_duration':T.Value(200, 'us'),
               'repump_d_frequency_854':T.Value(80.0, 'MHz'),
               'repump_d_amplitude_854':T.Value(-11.0, 'dBm'),
               
@@ -43,7 +43,7 @@ class sample_parameters(object):
               'optical_pumping_enable':True,
               
               'optical_pumping_continuous_duration':T.Value(1, 'ms'),
-              'optical_pumping_continuous_repump_additional':T.Value(500, 'us'),
+              'optical_pumping_continuous_repump_additional':T.Value(200, 'us'),
               'optical_pumping_frequency_729':T.Value(220.0, 'MHz'),
               'optical_pumping_frequency_854':T.Value(80.0, 'MHz'),
               'optical_pumping_frequency_866':T.Value(80.0, 'MHz'),
@@ -64,13 +64,13 @@ class sample_parameters(object):
               
               'rabi_excitation_frequency':T.Value(220.0, 'MHz'),
               'rabi_excitation_amplitude':T.Value(-11.0, 'dBm'),
-              'rabi_excitation_duration':T.Value(20.0, 'us'),
+              'rabi_excitation_duration':T.Value(5.0, 'us'),
               
               'state_readout_frequency_397':T.Value(110.0, 'MHz'),
               'state_readout_amplitude_397':T.Value(-11.0, 'dBm'),
               'state_readout_frequency_866':T.Value(80.0, 'MHz'),
               'state_readout_amplitude_866':T.Value(-11.0, 'dBm'),
-              'state_readout_duration':T.Value(1.0,'ms'),
+              'state_readout_duration':T.Value(3.0,'ms'),
               }
 
 if __name__ == '__main__':

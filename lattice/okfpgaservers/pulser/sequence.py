@@ -1,13 +1,14 @@
 import numpy
 import array
 from hardwareConfiguration import hardwareConfiguration
+from decimal import Decimal
 
 class Sequence():
     """Sequence for programming pulses"""
     def __init__(self, parent):
         self.parent = parent
         self.channelTotal = hardwareConfiguration.channelTotal
-        self.timeResolution = hardwareConfiguration.timeResolution
+        self.timeResolution = Decimal(hardwareConfiguration.timeResolution)
         self.MAX_SWITCHES = hardwareConfiguration.maxSwitches
         #dictionary in the form time:which channels to switch
         #time is expressed as timestep with the given resolution
@@ -38,10 +39,11 @@ class Sequence():
 
     def secToStep(self, sec):
         '''converts seconds to time steps'''
-        #note that there is a potential problem with how well this works when sec / self.timeResolution
-        #is close to some integer + .5. Then the rounding is not guaranteed to be consistent because of numerical nouse
-        #this can cause potential problems with overlapping pulses
-        return int( round ( sec / self.timeResolution)) 
+        start = '{0:.9f}'.format(sec) #round to nanoseconds
+        start = Decimal(start) #convert to decimal 
+        step = ( start / self.timeResolution).to_integral_value()
+        step = int(step)
+        return step
     
     def numToHex(self, number):
         '''converts the number to the hex representation for a total of 32 bits
@@ -180,7 +182,7 @@ class Sequence():
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
         arr = arr.reshape(-1,4)
-        times =( 65536  *  arr[:,0] + arr[:,1]) * self.timeResolution
+        times =( 65536  *  arr[:,0] + arr[:,1]) * float(self.timeResolution)
         channels = ( 65536  *  arr[:,2] + arr[:,3])
 
         def expandChannel(ch):
