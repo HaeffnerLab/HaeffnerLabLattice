@@ -25,11 +25,6 @@ class DDS(LabradServer):
         """get the list of available channels"""
         return self.ddsDict.keys()
     
-    @setting(42, "Select DDS Channel", name = 's')
-    def selectChannel(self, c, name):
-        if name not in self.ddsDict.keys(): raise Exception("Incorrect DDS Channel {}".format(name))
-        c['ddschan'] = name
-    
     @setting(43, "Amplitude", name= 's', amplitude = 'v[dBm]', returns = 'v[dBm]')
     def amplitude(self, c, name = None, amplitude = None):
         """Get or set the amplitude of the named channel or the selected channel"""
@@ -155,9 +150,6 @@ class DDS(LabradServer):
         if not r[0]<= val <= r[1]: raise Exception ("Value {} is outside allowed range".format(val))
     
     def _getChannel(self,c, name):
-        if name is None:
-            name = c.get('ddschan')
-            if name is None: raise Exception ("Channel not selected")
         try:
             channel = self.ddsDict[name]
         except KeyError:

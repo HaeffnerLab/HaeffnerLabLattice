@@ -59,8 +59,7 @@ class spectrum(SemaphoreExperiment):
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
-        self.pulser.select_dds_channel('729DP')
-        self.pulser.output(False)
+        self.pulser.output('729DP', False)
     
     def setup_sequence_parameters(self):
         #update the sequence parameters with our values
