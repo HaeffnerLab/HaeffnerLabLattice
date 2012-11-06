@@ -47,6 +47,8 @@ class hardwareConfiguration(object):
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     okDeviceID = 'Pulser'
     okDeviceFile = 'photon.bit'
+    secondPMT = False
+    DAC = False
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {

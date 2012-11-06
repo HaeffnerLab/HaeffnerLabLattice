@@ -4,7 +4,7 @@
 ### BEGIN NODE INFO
 [info]
 name = Pulser
-version = 0.42
+version = 1.0
 description =
 instancename = Pulser
 
@@ -29,6 +29,7 @@ from api import api
 import numpy
 
 class Pulser(LabradServer, DDS):
+    
     name = 'Pulser'
     onSwitch = Signal(611051, 'signal: switch toggled', '(ss)')
     
@@ -47,6 +48,8 @@ class Pulser(LabradServer, DDS):
         self.devicePollingPeriod = hardwareConfiguration.devicePollingPeriod
         self.collectionTimeRange = hardwareConfiguration.collectionTimeRange
         self.sequenceTimeRange = hardwareConfiguration.sequenceTimeRange
+        self.haveSecondPMT = hardwareConfiguration.secondPMT
+        self.haveDAC = hardwareConfiguration.DAC
         self.inCommunication = DeferredLock()
         self.initializeBoard()
         yield self.initializeRemote()
@@ -337,6 +340,9 @@ class Pulser(LabradServer, DDS):
             #clear existing counts
             c =  yield deferToThread(self.api.getNormalTotal);
             yield deferToThread(self.api.getNormalCounts,c)
+            if self.haveSecondPMT:
+                d = yield deferToThread(self.api.getSecondaryNormalTotal);
+                yield deferToThread(self.api.getSecondaryNormalCounts,d)
             self.inCommunication.release()
         elif mode == 'Differential':
             self.collectionTime[mode] = new_time
@@ -415,21 +421,21 @@ class Pulser(LabradServer, DDS):
         count = 65536*(256*ord(buf[1])+ord(buf[0]))+(256*ord(buf[3])+ord(buf[2]))
         return count
     
-    def convertKCperSec(self, input):
-        [rawCount,type] = input
+    def convertKCperSec(self, inp):
+        [rawCount,typ] = inp
         countKCperSec = float(rawCount) / self.collectionTime[self.collectionMode] / 1000.
-        return [countKCperSec, type]
+        return [countKCperSec, typ]
         
-    def appendTimes(self, list, timeLast):
+    def appendTimes(self, l, timeLast):
         #in the case that we received multiple PMT counts, uses the current time
         #and the collectionTime to guess the arrival time of the previous readings
         #i.e ( [[1,2],[2,3]] , timeLAst = 1.0, normalupdatetime = 0.1) ->
         # ( [(1,2,0.9),(2,3,1.0)])
         collectionTime = self.collectionTime[self.collectionMode]
-        for i in range(len(list)):
-            list[-i - 1].append(timeLast - i * collectionTime)
-            list[-i - 1] = tuple(list[-i - 1])
-        return list
+        for i in range(len(l)):
+            l[-i - 1].append(timeLast - i * collectionTime)
+            l[-i - 1] = tuple(l[-i - 1])
+        return l
     
     def split_len(self,seq, length):
         '''useful for splitting a string in length-long pieces'''
@@ -463,6 +469,41 @@ class Pulser(LabradServer, DDS):
     def getTimeTagResolution(self, c):
         return self.timeResolvedResolution
     
+    #Methods relating to using optional DAC
+    @setting(34, "Set DAC Voltage", stringy = 's', returns = '')
+    def setDACVoltages(self, c, stringy):
+        if not self.haveDAC: raise Exception ("No DAC")
+        yield self.inCommunication.acquire()
+        yield deferToThread(self.api.setDACVoltage, stringy)
+        self.inCommunication.release()
+    
+    @setting(35, "Reset FIFO DAC", returns = '')
+    def resetFIFODAC(self, c):
+        if not self.haveDAC: raise Exception ("No DAC")
+        yield self.inCommunication.acquire()
+        yield deferToThread(self.api.resetFIFODAC)        
+        self.inCommunication.release()
+    
+    #Methods relating to using the optional second PMT
+    @setting(36, 'Get Secondary PMT Counts', returns = '*(vsv)')
+    def getAllSecondaryCounts(self, c):
+        if not self.haveSecondPMT: raise Exception ("No Second PMT")
+        yield self.inCommunication.acquire()
+        countlist = yield deferToThread(self.doGetAllSecondaryCounts)
+        self.inCommunication.release()
+        returnValue(countlist)
+            
+    def doGetAllSecondaryCounts(self):
+        if not self.haveSecondPMT: raise Exception ("No Second PMT")
+        inFIFO = self.api.getSecondaryNormalTotal()
+        reading = self.api.getSecondaryNormalCounts(inFIFO)
+        split = self.split_len(reading, 4)
+        countlist = map(self.infoFromBuf, split)
+        countlist = map(self.convertKCperSec, countlist)
+        countlist = self.appendTimes(countlist, time.time())
+        return countlist        
+
+
     def wait(self, seconds, result=None):
         """Returns a deferred that will be fired later"""
         d = Deferred()
