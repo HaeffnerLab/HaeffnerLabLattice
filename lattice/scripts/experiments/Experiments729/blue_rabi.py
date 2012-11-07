@@ -136,6 +136,7 @@ class blue_rabi(SemaphoreExperiment):
     def finalize(self):
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath, self.percentDone)
+        self.pulser.clear_dds_lock()
         self.cxn.disconnect()
         self.cxnlab.disconnect()
         print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)

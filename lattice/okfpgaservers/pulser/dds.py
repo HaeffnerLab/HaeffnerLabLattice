@@ -29,8 +29,7 @@ class DDS(LabradServer):
     def amplitude(self, c, name = None, amplitude = None):
         """Get or set the amplitude of the named channel or the selected channel"""
         #get the hardware channel
-        if self.ddsLock: 
-            self.ddsLock = False
+        if self.ddsLock and amplitude is not None: 
             raise Exception("DDS access is locked. Running pulse sequence.")
         channel = self._getChannel(c, name)
         if amplitude is not None:
@@ -49,8 +48,7 @@ class DDS(LabradServer):
     def frequency(self, c, name = None, frequency = None):
         """Get or set the frequency of the named channel or the selected channel"""
         #get the hardware channel
-        if self.ddsLock: 
-            self.ddsLock = False
+        if self.ddsLock and frequency is not None: 
             raise Exception("DDS access is locked. Running pulse sequence.")
         channel = self._getChannel(c, name)
         if frequency is not None:
@@ -84,11 +82,12 @@ class DDS(LabradServer):
                 channel = self.ddsDict[name]
             except KeyError:
                 raise Exception("Unknown DDS channel {}".format(name))
-            start = start.inUnitsOf('s').value
-            dur = dur.inUnitsOf('s').value
-            freq = freq.inUnitsOf('MHz').value
-            ampl = ampl.inUnitsOf('dBm').value
+            start = start['s']
+            dur = dur['s']
+            freq = freq['MHz']
+            ampl = ampl['dBm']
             freq_off, ampl_off = channel.off_parameters
+            print 'adding pulse', name, start, dur, freq, ampl, freq_off,ampl_off
             if freq == 0 or ampl == 0: #off state
                 freq, ampl = freq_off,ampl_off
             else:
@@ -106,9 +105,9 @@ class DDS(LabradServer):
                 raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start))
             if not self.sequenceTimeRange[0] < start + dur <= self.sequenceTimeRange[1]: 
                 raise Exception ("DDS start time out of acceptable input range for channel {0} at time {1}".format(name, start + dur))
-            if dur == 0: return #0 length pulses are ignored
-            sequence.addDDS(name, start, num, 'start')
-            sequence.addDDS(name, start + dur, num_off, 'stop')
+            if not dur == 0:#0 length pulses are ignored
+                sequence.addDDS(name, start, num, 'start')
+                sequence.addDDS(name, start + dur, num_off, 'stop')
         
     @setting(46, 'Get DDS Amplitude Range', name = 's', returns = '(vv)')
     def getDDSAmplRange(self, c, name = None):
@@ -125,8 +124,7 @@ class DDS(LabradServer):
         """To turn off and on the dds. Turning off the DDS sets the frequency and amplitude 
         to the off_parameters provided in the configuration.
         """
-        if self.ddsLock: 
-            self.ddsLock = False
+        if self.ddsLock and state is not None: 
             raise Exception("DDS access is locked. Running pulse sequence.")
         channel = self._getChannel(c, name)
         if state is not None:
@@ -141,6 +139,10 @@ class DDS(LabradServer):
             self.notifyOtherListeners(c, (name, 'state', channel.state), self.on_dds_param)
         state = channel.state
         returnValue(state)
+    
+    @setting(49, 'Clear DDS Lock')
+    def clear_dds_lock(self, c):
+        self.ddsLock = False
     
     def _checkRange(self, t, channel, val):
         if t == 'amplitude':

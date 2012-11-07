@@ -25,7 +25,6 @@ class blue_heat_rabi(PulseSequence):
         self.addSequence(global_blue_heating)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.global_blue_heating_delay_after})
         if self.p.optical_pumping_enable:
-            print 'pumping!'
             self.addSequence(optical_pumping)
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
@@ -77,13 +76,13 @@ class sample_parameters(object):
               'state_readout_amplitude_866':T.Value(-11.0, 'dBm'),
               'state_readout_duration':T.Value(1.0,'ms'),
               
-              'global_blue_heating_delay_before':T.Value(1.0,'ms'),
+              'global_blue_heating_delay_before':T.Value(0.1,'ms'),
               'global_blue_heating_frequency_397':T.Value(130.0, 'MHz'),
               'global_blue_heating_amplitude_397':T.Value(-11.0, 'dBm'),
               'global_blue_heating_frequency_866':T.Value(80.0, 'MHz'),
               'global_blue_heating_amplitude_866':T.Value(-11.0, 'dBm'),
-              'global_blue_heating_duration':T.Value(1.0,'ms'),
-              'global_blue_heating_delay_after':T.Value(1.0,'ms'),
+              'global_blue_heating_duration':T.Value(0.0,'ms'),
+              'global_blue_heating_delay_after':T.Value(0.1,'ms'),
               }
 
 if __name__ == '__main__':
