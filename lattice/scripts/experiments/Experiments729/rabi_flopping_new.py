@@ -1,15 +1,14 @@
 from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
-from scripts.PulseSequences.blue_heat_rabi import blue_heat_rabi as sequence
-from scripts.PulseSequences.blue_heat_rabi import sample_parameters
+from scripts.PulseSequences.spectrum_blue_dephase import spectrum_blue_dephase as sequence
+from scripts.PulseSequences.spectrum_rabi import sample_parameters
 from scripts.scriptLibrary import dvParameters
 import time
 import numpy
        
-class blue_rabi(SemaphoreExperiment):
+class rabi_flopping(SemaphoreExperiment):
     
     def __init__(self):
         self.experimentPath = ['729Experiments','RabiFlopping']
-        self.experimentPath_heat = ['729Experiments','BlueHeating']
 
     def run(self):
         self.initialize()
@@ -40,8 +39,6 @@ class blue_rabi(SemaphoreExperiment):
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
         self.p = self.populate_parameters(self.sem, self.experimentPath)
-        self.p_heat = self.populate_parameters(self.sem, self.experimentPath_heat)
-        
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -69,24 +66,31 @@ class blue_rabi(SemaphoreExperiment):
         sequence_parameters = {}.fromkeys(sample_parameters.parameters)
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
-        common_values_heat = dict([(key,check(value)) for key,value in self.p_heat.iteritems() if key in sequence_parameters])
-        print common_values_heat
-        sequence_parameters.update(common_values)
-        sequence_parameters.update(common_values_heat)
+        sequence_parameters.update(common_values)        
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866) 
-        sequence_parameters['global_blue_heating_frequency_866'] = self.check_parameter(self.p.frequency_866)        
+        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
+        
         sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
+        sp = sequence_parameters
+        from labrad import types as T
+        sp['pulse_gap'] = T.Value(50.0, 'us')
+        sp['dephasing_duration_729'] = T.Value(40, 'us')
+        
+        sp['dephasing_frequency_729'] = T.Value(228.729, 'MHz')
+        sp['dephasing_amplitude_729'] = T.Value(-3.0, 'dBm')
+        
+        sp['preparation_pulse_duration_729'] = T.Value(12.0, 'us')
+        
         return sequence_parameters
         
     def program_pulser(self, duration):
         self.sequence_parameters['rabi_excitation_duration'] = duration
         #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print 'unfilled', unfilled
+        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 
@@ -109,9 +113,7 @@ class blue_rabi(SemaphoreExperiment):
                 self.pulser.stop_sequence()
                 readouts = self.pulser.get_readout_counts().asarray
                 #save frequency scan
-                print readouts
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-                print perc_excited
                 self.dv.add(duration, perc_excited)
                 #save readout counts
                 durations = numpy.ones_like(readouts) * duration
@@ -141,5 +143,5 @@ class blue_rabi(SemaphoreExperiment):
         print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)
 
 if __name__ == '__main__':
-    exprt = blue_rabi()
+    exprt = rabi_flopping()
     exprt.run()
