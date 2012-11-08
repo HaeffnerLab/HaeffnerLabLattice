@@ -98,14 +98,13 @@ class SerialDeviceServer( LabradServer ):
         @raise labrad.types.Error: Error in opening serial connection   
         """
         def __init__( self, ser, port, **kwargs ):
-            pass
             timeout = kwargs.get('timeout')
             baudrate = kwargs.get('baudrate')
             ser.open( port )
-            print timeout
             if timeout is not None: ser.timeout( timeout )
             if baudrate is not None: ser.baudrate( baudrate )
             self.write = lambda s: ser.write( s )
+            self.writeline = lambda s: ser.write_line(s)
             self.read = lambda x = 0: ser.read( x )
             self.readline = lambda: ser.read_line()
             self.close = lambda: ser.close()
@@ -141,7 +140,6 @@ class SerialDeviceServer( LabradServer ):
         except Error:
             self.ser = None
             raise SerialConnectionError( 1 )
-        
     @inlineCallbacks
     def getPortFromReg( self, regKey = None ):
         """
