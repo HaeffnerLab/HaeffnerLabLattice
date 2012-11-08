@@ -47,24 +47,24 @@ class sample_parameters(object):
               'optical_pumping_frequency_729':T.Value(220.0, 'MHz'),
               'optical_pumping_frequency_854':T.Value(80.0, 'MHz'),
               'optical_pumping_frequency_866':T.Value(80.0, 'MHz'),
-              'optical_pumping_amplitude_729':T.Value(-11.0, 'dBm'),
-              'optical_pumping_amplitude_854':T.Value(-11.0, 'dBm'),
+              'optical_pumping_amplitude_729':T.Value(-10.0, 'dBm'),
+              'optical_pumping_amplitude_854':T.Value(-3.0, 'dBm'),
               'optical_pumping_amplitude_866':T.Value(-11.0, 'dBm'),
               
-              'optical_pumping_pulsed_cycles':10.0,
+              'optical_pumping_pulsed_cycles':2.0,
               'optical_pumping_pulsed_duration_729':T.Value(20, 'us'),
               'optical_pumping_pulsed_duration_repumps':T.Value(20, 'us'),
               'optical_pumping_pulsed_duration_additional_866':T.Value(20, 'us'),
               'optical_pumping_pulsed_duration_between_pulses':T.Value(5, 'us'),
               
-              'optical_pumping_continuous':True,
-              'optical_pumping_pulsed':False,
+              'optical_pumping_continuous':False,
+              'optical_pumping_pulsed':True,
               
               'background_heating_time':T.Value(0.0, 'ms'),
               
               'rabi_excitation_frequency':T.Value(220.0, 'MHz'),
-              'rabi_excitation_amplitude':T.Value(-11.0, 'dBm'),
-              'rabi_excitation_duration':T.Value(5.0, 'us'),
+              'rabi_excitation_amplitude':T.Value(-8.0, 'dBm'),
+              'rabi_excitation_duration':T.Value(40.0, 'us'),
               
               'state_readout_frequency_397':T.Value(110.0, 'MHz'),
               'state_readout_amplitude_397':T.Value(-11.0, 'dBm'),
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
     print 'to program', time.time() - tinit
-    cxn.pulser.start_number(100)
+    cxn.pulser.start_number(1)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray
