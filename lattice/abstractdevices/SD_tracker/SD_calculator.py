@@ -1,6 +1,8 @@
 from fractions import Fraction
 from labrad import units as U
 from labrad.units import WithUnit
+import numpy
+from SD_tracker_config import config as conf
     
 class EnergyLevel(object):
     
@@ -56,6 +58,15 @@ class Transitions_SD(object):
     D = EnergyLevel('D', '5/2')
     allowed_transitions = [0,1,2]
     
+    def transitions(self):
+        transitions = []
+        for m_s,E_s,repr_s in self.S.magnetic_to_energy(WithUnit(0, 'gauss')):
+            for m_d,E_d,repr_d in self.D.magnetic_to_energy(WithUnit(0, 'gauss')):
+                if abs(m_d-m_s) in self.allowed_transitions:
+                    name = repr_s + repr_d
+                    transitions.append(name)
+        return transitions
+    
     def get_transition_energies(self, B, zero_offset = WithUnit(0, 'MHz')):
         '''returns the transition enenrgies in MHz where zero_offset is the 0-field transition energy between S and D'''
         ans = []
@@ -92,8 +103,8 @@ class Transitions_SD(object):
 
 class double_pass(object):
     
-    passes = 2
-    direction = -1 #1 means add frequencies, -1 subtracts
+    passes = conf.double_pass_passes
+    direction = conf.double_pass_passes
     
     def reading_to_offset(self, dp_freq):
         #i.e dp_freq set to 220 mhz, -1 direction -> output is -440
@@ -104,17 +115,40 @@ class double_pass(object):
         #returns dp frequency corresponding to the offset
         freq = offset / float( self.direction * self.passes )
         return freq
+
+class fitter(object):
     
-SD = Transitions_SD()
-dp = double_pass()
-
-#print SD.get_transition_energies(WithUnit(1.20, 'gauss'), WithUnit(0 ,'MHz'))
-#print SD.energies_to_magnetic_field([('S-1/2D-5/2', WithUnit(-3.359095928925048, 'MHz')), ('S-1/2D-3/2', WithUnit(-1.3436383715700189, 'MHz'))])
-
-dp_offset = dp.reading_to_offset(WithUnit(227.257 ,'MHz'))
-result =  SD.get_transition_energies(WithUnit(1.19, 'gauss'), dp_offset)
-for name,freq in result:
-    print name, dp.offset_to_reading(freq)
-
-b,freq = SD.energies_to_magnetic_field([('S+1/2D-3/2', WithUnit(dp.reading_to_offset(229.588772424), 'MHz')), ('S+1/2D-1/2', WithUnit(dp.reading_to_offset(228.589441385), 'MHz'))])
-print b,dp.offset_to_reading(freq)
+    order = conf.fit_order
+    
+    def fit(self, x, y):
+        '''given two inputs x and y returns a polynomail fit'''
+        #if the length of inputs is not sufficient, will avoid erros by decreasing the order of fitting
+        #returns highest order as first element
+        fit_order = min(self.order, x.size - 1)
+        fit = numpy.polyfit(x, y, deg = fit_order)
+        ans = numpy.zeros(self.order + 1)
+        ans[(self.order - fit_order):] = fit
+        return ans
+    
+    def evalate(self, x, fit):
+        return numpy.polyval(fit, x)
+    
+if __name__ == '__main__':
+    SD = Transitions_SD()
+    dp = double_pass()
+    fit = fitter()
+ 
+#    print SD.get_transition_energies(WithUnit(1.20, 'gauss'), WithUnit(0 ,'MHz'))
+#    print SD.energies_to_magnetic_field([('S-1/2D-5/2', WithUnit(-3.359095928925048, 'MHz')), ('S-1/2D-3/2', WithUnit(-1.3436383715700189, 'MHz'))])
+#    
+#    dp_offset = dp.reading_to_offset(WithUnit(227.257 ,'MHz'))
+#    result =  SD.get_transition_energies(WithUnit(1.19, 'gauss'), dp_offset)
+#    for name,freq in result:
+#        print name, dp.offset_to_reading(freq)
+#    
+    b,freq = SD.energies_to_magnetic_field([('S+1/2D-3/2', WithUnit(dp.reading_to_offset(226.091113788), 'MHz')), ('S+1/2D-1/2', WithUnit(dp.reading_to_offset(226.590779307), 'MHz'))])
+    print b,dp.offset_to_reading(freq)
+    x = numpy.arange(1)
+    y = 2 * x + 1
+    fit.fit(x, y)
+    
