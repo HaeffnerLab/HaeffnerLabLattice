@@ -1,9 +1,8 @@
 from fractions import Fraction
-from labrad import types as T, units as U
+from labrad import units as U
+from labrad.units import WithUnit
     
-class EnergyLevel():
-    
-    bohr_magneton = T.Value(9.274e-24,'J/T')
+class EnergyLevel(object):
     
     spectoscopic_notation = {
                             'S': 0,
@@ -30,7 +29,7 @@ class EnergyLevel():
         lande_factor =  self.lande_factor(S, L, J)
         #sublevels are found, 2* self.J is always an integer, so can use numerator
         self.sublevels_m =  [-J + i for i in xrange( 1 + (2 * J).numerator)]
-        self.energy_scale = (lande_factor * self.bohr_magneton / U.hplanck) #1.4 MHz / gauss
+        self.energy_scale = (lande_factor * U.bohr_magneton / U.hplanck) #1.4 MHz / gauss
     
     def lande_factor(self, S, L ,J):
         '''computes the lande g factor'''
@@ -38,8 +37,8 @@ class EnergyLevel():
         return g
     
     def magnetic_to_energy(self, B):
-        #given the magnitude of the magnetic field, returns all energies of all zeeman sublevels
-        energies = [(self.energy_scale * m * B.inUnitsOf('T')).inUnitsOf('MHz') for m in self.sublevels_m]
+        '''given the magnitude of the magnetic field, returns all energies of all zeeman sublevels'''
+        energies = [(self.energy_scale * m * B).inUnitsOf('MHz') for m in self.sublevels_m]
         representations = [self.frac_to_string(m) for m in self.sublevels_m]
         return zip(self.sublevels_m,energies,representations)
     
@@ -50,36 +49,72 @@ class EnergyLevel():
             sublevel = '+' + sublevel
         together = self.spectoscopic_notation_rev[self.L] + sublevel
         return together
-    
-class Transitions_SD():
+
+class Transitions_SD(object):
     
     S = EnergyLevel('S', '1/2')
     D = EnergyLevel('D', '5/2')
     allowed_transitions = [0,1,2]
-    B = None
     
-    def set_magnetic_field(self, B):
-        self.B = B.inUnitsOf('T')
-    
-    def get_transition_energies(self):
-        if self.B is None: raise Exception ("Magnetic Field Not Specified")
+    def get_transition_energies(self, B, zero_offset = WithUnit(0, 'MHz')):
+        '''returns the transition enenrgies in MHz where zero_offset is the 0-field transition energy between S and D'''
         ans = []
-        for m_s,E_s,repr_s in self.S.magnetic_to_energy(self.B):
-            for m_d,E_d,repr_d in self.D.magnetic_to_energy(self.B):
+        for m_s,E_s,repr_s in self.S.magnetic_to_energy(B):
+            for m_d,E_d,repr_d in self.D.magnetic_to_energy(B):
                 if abs(m_d-m_s) in self.allowed_transitions:
                     name = repr_s + repr_d
                     diff = E_d - E_s
+                    diff+= zero_offset
                     ans.append((name, diff))
         return ans
     
-    def energies_to_magnetic_field(self, energies):
-        #given two points in the form ((-1/2,5+/2, 1.0 MHz), (-1/2, 5+/2, 2.0 MHz)), calculates the magnetic field and the zero-field transition frequency
-        s_energy_scale = self.S.energy_scale
-        d_energy_scale = self.D.energy_scale
+    def energies_to_magnetic_field(self, transitions):
+        #given two points in the form [(S-1/2D5+1/2, 1.0 MHz), (-1/2, 5+/2, 2.0 MHz)], calculates the magnetic field
+        try:
+            transition1, transition2 = transitions
+        except ValueError:
+            raise Exception ("Wrong number of inputs in energies_to_magnetic_field")
+        ms1,md1 = self.str_to_fractions(transition1[0])
+        ms2,md2 = self.str_to_fractions(transition2[0])
+        en1,en2 = transition1[1], transition2[1]
+        if abs(md1 - ms1) not in self.allowed_transitions or abs(md2 - ms2) not in self.allowed_transitions:
+            raise Exception ("Such transitions are not allowed")
+        s_scale = self.S.energy_scale
+        d_scale = self.D.energy_scale
+        B = (en2 - en1) / ( d_scale * ( md2 - md1) - s_scale * (ms2 - ms1) )
+        B = B.inUnitsOf('gauss')
+        offset = en2 - (md2 * d_scale - ms1 * s_scale) * B
+        return B, offset
         
-        
+    def str_to_fractions(self, inp):
+        #takes S-1/2D5+1/2 and converts to Fraction(-1/2), Fraction(1/2)
+        return Fraction(inp[1:5]), Fraction(inp[6:10])
 
-transitions = Transitions_SD()
-transitions.set_magnetic_field(T.Value(100, 'uT'))
-ans = transitions.get_transition_energies()
-print ans
+class double_pass(object):
+    
+    passes = 2
+    direction = -1 #1 means add frequencies, -1 subtracts
+    
+    def reading_to_offset(self, dp_freq):
+        #i.e dp_freq set to 220 mhz, -1 direction -> output is -440
+        offset = self.direction * self.passes * dp_freq
+        return offset
+    
+    def offset_to_reading(self, offset):
+        #returns dp frequency corresponding to the offset
+        freq = offset / float( self.direction * self.passes )
+        return freq
+    
+SD = Transitions_SD()
+dp = double_pass()
+
+#print SD.get_transition_energies(WithUnit(1.20, 'gauss'), WithUnit(0 ,'MHz'))
+#print SD.energies_to_magnetic_field([('S-1/2D-5/2', WithUnit(-3.359095928925048, 'MHz')), ('S-1/2D-3/2', WithUnit(-1.3436383715700189, 'MHz'))])
+
+dp_offset = dp.reading_to_offset(WithUnit(227.257 ,'MHz'))
+result =  SD.get_transition_energies(WithUnit(1.19, 'gauss'), dp_offset)
+for name,freq in result:
+    print name, dp.offset_to_reading(freq)
+
+b,freq = SD.energies_to_magnetic_field([('S+1/2D-3/2', WithUnit(dp.reading_to_offset(229.588772424), 'MHz')), ('S+1/2D-1/2', WithUnit(dp.reading_to_offset(228.589441385), 'MHz'))])
+print b,dp.offset_to_reading(freq)
