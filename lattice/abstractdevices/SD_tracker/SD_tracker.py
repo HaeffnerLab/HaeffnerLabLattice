@@ -64,7 +64,6 @@ class SDTracker(LabradServer):
         self.t_measure = numpy.append(self.t_measure , t_measure)
         self.B_field = numpy.append(self.B_field , B['gauss'])
         self.line_center = numpy.append(self.line_center , freq['MHz'])
-        #print 'Found B field {0:.2f} gauss, line center {1:.2f} MHz'.format(B['gauss'], freq['MHz'])
         self.do_fit()
     
     @setting(3, "Get Measurements", returns = '*(vsv[MHz])')
@@ -110,13 +109,11 @@ class SDTracker(LabradServer):
         except KeyError:
             raise Exception ("Requested line not found")
     
-    @setting(7, 'Remove Measurement', point = 'w')
+    @setting(7, 'Remove Measurement', point = 'i')
     def remove_measurement(self, c, point):
         '''removes the point w, can also be negative to count from the end'''
         try:
-            print self.t_measure
             self.t_measure = numpy.delete(self.t_measure, point)
-            print self.t_measure
             self.B_field = numpy.delete(self.B_field, point)
             self.line_center = numpy.delete(self.line_center, point)
             del self.measurements[2 * point]
@@ -124,6 +121,13 @@ class SDTracker(LabradServer):
         except ValueError or IndexError:
             raise Exception("Point not found")
         self.do_fit()
+    
+    @setting(8, 'Get Fit History', returns = '*(v[s]v[gauss]v[MHz])')
+    def get_fit_history(self, c):
+        history = []
+        for t,b_field,freq in zip(self.t_measure, self.B_field, self.line_center):
+            history.append((WithUnit(t,'s'),WithUnit(b_field,'gauss'),WithUnit(freq, 'MHz')))
+        return history
     
     def do_fit(self):
         self.remove_old_measurements()

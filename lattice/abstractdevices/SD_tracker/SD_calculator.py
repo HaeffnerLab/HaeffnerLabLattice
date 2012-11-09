@@ -87,6 +87,8 @@ class Transitions_SD(object):
             raise Exception ("Wrong number of inputs in energies_to_magnetic_field")
         ms1,md1 = self.str_to_fractions(transition1[0])
         ms2,md2 = self.str_to_fractions(transition2[0])
+        print ms1,md1
+        print ms2,md2
         en1,en2 = transition1[1], transition2[1]
         if abs(md1 - ms1) not in self.allowed_transitions or abs(md2 - ms2) not in self.allowed_transitions:
             raise Exception ("Such transitions are not allowed")
@@ -94,7 +96,7 @@ class Transitions_SD(object):
         d_scale = self.D.energy_scale
         B = (en2 - en1) / ( d_scale * ( md2 - md1) - s_scale * (ms2 - ms1) )
         B = B.inUnitsOf('gauss')
-        offset = en2 - (md2 * d_scale - ms1 * s_scale) * B
+        offset = en1 - (md1 * d_scale - ms1 * s_scale) * B
         return B, offset
         
     def str_to_fractions(self, inp):
@@ -104,10 +106,11 @@ class Transitions_SD(object):
 class double_pass(object):
     
     passes = conf.double_pass_passes
-    direction = conf.double_pass_passes
+    direction = conf.double_pass_direction
     
     def reading_to_offset(self, dp_freq):
         #i.e dp_freq set to 220 mhz, -1 direction -> output is -440
+        print self.direction * self.passes * dp_freq
         offset = self.direction * self.passes * dp_freq
         return offset
     
@@ -138,17 +141,19 @@ if __name__ == '__main__':
     dp = double_pass()
     fit = fitter()
  
-#    print SD.get_transition_energies(WithUnit(1.20, 'gauss'), WithUnit(0 ,'MHz'))
-#    print SD.energies_to_magnetic_field([('S-1/2D-5/2', WithUnit(-3.359095928925048, 'MHz')), ('S-1/2D-3/2', WithUnit(-1.3436383715700189, 'MHz'))])
+#    result = SD.get_transition_energies(WithUnit(1.19, 'gauss'), WithUnit(0 ,'MHz'))
+#    for name,freq in result:
+#        print name,freq
+#    print SD.energies_to_magnetic_field([('S+1/2D-3/2', WithUnit(-4.663544847990941, 'MHz')), ('S-1/2D-3/2', WithUnit(-1.33244138514, 'MHz'))])
 #    
 #    dp_offset = dp.reading_to_offset(WithUnit(227.257 ,'MHz'))
+#    print dp_offset
 #    result =  SD.get_transition_energies(WithUnit(1.19, 'gauss'), dp_offset)
 #    for name,freq in result:
 #        print name, dp.offset_to_reading(freq)
 #    
-    b,freq = SD.energies_to_magnetic_field([('S+1/2D-3/2', WithUnit(dp.reading_to_offset(226.091113788), 'MHz')), ('S+1/2D-1/2', WithUnit(dp.reading_to_offset(226.590779307), 'MHz'))])
-    print b,dp.offset_to_reading(freq)
-    x = numpy.arange(1)
-    y = 2 * x + 1
-    fit.fit(x, y)
-    
+#    b,freq = SD.energies_to_magnetic_field([('S-1/2D+3/2', WithUnit(dp.reading_to_offset(229.581), 'MHz')), ('S+1/2D+5/2', WithUnit(dp.reading_to_offset(228.917), 'MHz'))])
+#    print b,dp.offset_to_reading(freq)
+#    x = numpy.arange(1)
+#    y = 2 * x + 1
+#    fit.fit(x, y)

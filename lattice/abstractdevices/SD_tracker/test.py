@@ -2,7 +2,7 @@ import labrad
 from labrad.units import WithUnit
 with labrad.connect() as cxn:
     tracker = cxn.sd_tracker
-    lines = [('S+1/2D-3/2', WithUnit(226.091113788, 'MHz')), ('S+1/2D-1/2', WithUnit(226.590779307, 'MHz'))]
+    lines = [('S-1/2D+3/2', WithUnit(229.226, 'MHz')), ('S+1/2D+5/2', WithUnit(228.58, 'MHz'))]
     tracker.set_measurements( lines)
     print tracker.get_measurements()
     print tracker.get_fit_parameters('linecenter')

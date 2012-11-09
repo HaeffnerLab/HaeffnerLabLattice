@@ -66,3 +66,9 @@ class config_729_state_preparation(object):
     optical_pumping_pulsed_duration_between_pulses = ['729Experiments','optical_pumping_pulsed_duration_between_pulses']
     #heating
     background_heating_duration = ['729Experiments','background_heating_time']
+
+class config_729_tracker(object):
+    
+    ID = 99992
+    
+    frequency_limit = (190, 250)

@@ -4,7 +4,8 @@ class connection(object):
     
     servers = {
                 'Data Vault':None,
-                'Semaphore':None
+                'Semaphore':None,
+                'SD Tracker':None,
                 }
     
     def __init__(self):
