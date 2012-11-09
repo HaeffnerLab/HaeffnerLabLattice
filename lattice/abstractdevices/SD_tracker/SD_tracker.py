@@ -90,9 +90,12 @@ class SDTracker(LabradServer):
         '''get the frequency of the current line specified by name. if name is not provided, get all lines'''
         lines = []
         current_time = time.time() - self.start_time
-        B = self.fitter.evalate(current_time, self.B_fit)
+        try:
+            B = self.fitter.evaluate(current_time, self.B_fit)
+            center = self.fitter.evaluate(current_time, self.line_center_fit)
+        except TypeError:
+            raise Exception ("Fit is not available")
         B = WithUnit(B, 'gauss')
-        center = self.fitter.evalate(current_time, self.line_center_fit)
         center = WithUnit(center, 'MHz')
         offset = self.dp.reading_to_offset(center)
         result = self.tr.get_transition_energies(B, offset)
@@ -128,6 +131,12 @@ class SDTracker(LabradServer):
         for t,b_field,freq in zip(self.t_measure, self.B_field, self.line_center):
             history.append((WithUnit(t,'s'),WithUnit(b_field,'gauss'),WithUnit(freq, 'MHz')))
         return history
+    
+    @setting(9, 'History Duration', duration = 'v[s]', returns = 'v[s]')
+    def get_history_duration(self, c, duration = None):
+        if duration is not None:
+            self.keep_measurements = duration['s']
+        return WithUnit(self.keep_measurements,'s')
     
     def do_fit(self):
         self.remove_old_measurements()

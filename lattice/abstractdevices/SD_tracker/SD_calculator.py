@@ -87,8 +87,6 @@ class Transitions_SD(object):
             raise Exception ("Wrong number of inputs in energies_to_magnetic_field")
         ms1,md1 = self.str_to_fractions(transition1[0])
         ms2,md2 = self.str_to_fractions(transition2[0])
-        print ms1,md1
-        print ms2,md2
         en1,en2 = transition1[1], transition2[1]
         if abs(md1 - ms1) not in self.allowed_transitions or abs(md2 - ms2) not in self.allowed_transitions:
             raise Exception ("Such transitions are not allowed")
@@ -110,7 +108,6 @@ class double_pass(object):
     
     def reading_to_offset(self, dp_freq):
         #i.e dp_freq set to 220 mhz, -1 direction -> output is -440
-        print self.direction * self.passes * dp_freq
         offset = self.direction * self.passes * dp_freq
         return offset
     
@@ -133,7 +130,7 @@ class fitter(object):
         ans[(self.order - fit_order):] = fit
         return ans
     
-    def evalate(self, x, fit):
+    def evaluate(self, x, fit):
         return numpy.polyval(fit, x)
     
 if __name__ == '__main__':

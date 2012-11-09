@@ -4,20 +4,22 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.threads import deferToThread
+from twisted.internet.task import LoopingCall
 from helper_widgets import saved_frequencies, saved_frequencies_dropdown
 import numpy
 from configuration import config_729_tracker as c
 
 
-class readout_histgram(QtGui.QWidget):
+class drift_tracker(QtGui.QWidget):
     def __init__(self, reactor, cxn = None, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.reactor = reactor
         self.cxn = cxn
         self.subscribed = False
+        self.updater = LoopingCall(self.update_lines)
         self.create_layout()
         self.connect_labrad()
+        
     
     def create_layout(self):
         layout = QtGui.QGridLayout()
@@ -81,10 +83,14 @@ class readout_histgram(QtGui.QWidget):
         self.remove_button = QtGui.QPushButton("Remove")
         self.remove_count = QtGui.QSpinBox()
         self.remove_count.setRange(-20,20)
-        self.tosemaphore = QtGui.QCheckBox()
-        self.tosemaphore_rate = QtGui.QDoubleSpinBox()
-        self.track_duration = QtGui.QDoubleSpinBox()
-        self.keep = QtGui.QDoubleSpinBox()
+        self.update_enable = QtGui.QCheckBox()
+        self.update_rate = QtGui.QSpinBox()
+        self.update_rate.setSuffix('sec')
+        self.update_rate.setKeyboardTracking(False)
+        self.update_rate.setRange(3,60)
+        self.track_duration = QtGui.QSpinBox()
+        self.track_duration.setKeyboardTracking(False)
+        self.track_duration.setSuffix('min')
         layout.addWidget(self.frequency_table, 0, 0, 2, 1)
         layout.addWidget(self.entry_table, 0, 1 , 1 , 1)
         layout.addWidget(self.entry_button, 1, 1, 1, 1)
@@ -92,13 +98,13 @@ class readout_histgram(QtGui.QWidget):
         remove_layout.addWidget(self.remove_count)
         remove_layout.addWidget(self.remove_button)    
         update_layout = QtGui.QHBoxLayout()
-        update_layout.addWidget(QtGui.QLabel("Update Semaphore"))
-        update_layout.addWidget(self.tosemaphore)
+        update_layout.addWidget(QtGui.QLabel("Live Update"))
+        update_layout.addWidget(self.update_enable)
         update_layout.addWidget(QtGui.QLabel("Rate (sec)"))
-        update_layout.addWidget(self.tosemaphore_rate)
+        update_layout.addWidget(self.update_rate)
         keep_layout = QtGui.QHBoxLayout()
         keep_layout.addWidget(QtGui.QLabel("Tracking Duration"))
-        keep_layout.addWidget(self.keep)
+        keep_layout.addWidget(self.track_duration)
         layout.addLayout(update_layout, 2, 1, 1, 1)
         layout.addLayout(remove_layout, 2, 0, 1, 1)
         layout.addLayout(keep_layout, 3, 1, 1, 1)
@@ -107,34 +113,72 @@ class readout_histgram(QtGui.QWidget):
     def connect_layout(self):
         self.remove_button.clicked.connect(self.on_remove)
         self.entry_button.clicked.connect(self.on_entry)
-        #connect remove button
-        #connect submit
-        #connect update semahore
-        #connect tracking duration
+        self.track_duration.valueChanged.connect(self.on_new_track_duration)
+        self.update_enable.toggled.connect(self.on_update_enable)
+        self.update_rate.valueChanged.connect(self.on_update_rate_change)
     
     @inlineCallbacks
     def initialize_layout(self):
         server = self.cxn.servers['SD Tracker']
         transitions = yield server.get_transition_names()
         self.entry_table.fill_out(transitions)
+        duration = yield server.history_duration()
+        self.track_duration.blockSignals(True)
+        self.track_duration.setValue(duration['min'])
+        self.track_duration.blockSignals(False)
+        try:
+            yield self.on_new_fit(None, None)
+        except Exception as e:
+            #print 'No Data Available'
+            pass
     
+    def on_update_enable(self, enable):
+        rate = self.update_rate.value()
+        if enable:
+            self.updater.start(rate, now = True)
+        else:
+            self.updater.stop()
+    
+    def on_update_rate_change(self, rate):
+        if self.updater.running:
+            self.updater.stop()
+            self.updater.start(rate, now = True)
+            
     @inlineCallbacks
     def on_remove(self, clicked):
         to_remove = self.remove_count.value()
         server = self.cxn.servers['SD Tracker']
-        yield server.remove_measurement(to_remove)
+        try:
+            yield server.remove_measurement(to_remove)
+        except self.Error as e:
+            message = QtGui.QMessageBox()
+            message.setText(e.msg)
+            message.exec_()
     
     @inlineCallbacks
     def on_entry(self, clicked):
         server = self.cxn.servers['SD Tracker']
         info = self.entry_table.get_info()
         with_units = [(name, self.WithUnit(val, 'MHz')) for name,val in info]
-        yield server.set_measurements(with_units)
+        try:
+            yield server.set_measurements(with_units)
+        except self.Error as e:
+            message = QtGui.QMessageBox()
+            message.setText(e.msg)
+            message.exec_()
     
+    @inlineCallbacks
+    def on_new_track_duration(self, value):
+        server = self.cxn.servers['SD Tracker']
+        rate = self.WithUnit(value, 'min')
+        yield server.history_duration(rate)
+        
     @inlineCallbacks
     def connect_labrad(self):
         from labrad.units import WithUnit
+        from labrad.types import Error
         self.WithUnit = WithUnit
+        self.Error = Error
         if self.cxn is None:
             from connection import connection
             self.cxn = connection()
@@ -147,13 +191,13 @@ class readout_histgram(QtGui.QWidget):
             self.setDisabled(True)
         self.cxn.on_connect['SD Tracker'].append( self.reinitialize_tracker)
         self.cxn.on_disconnect['SD Tracker'].append( self.disable)
-        yield self.initialize_layout()
         self.connect_layout()
         
     @inlineCallbacks
     def subscribe_tracker(self):
         yield self.cxn.servers['SD Tracker'].signal__new_fit(c.ID, context = self.context)
         yield self.cxn.servers['SD Tracker'].addListener(listener = self.on_new_fit, source = None, ID = c.ID, context = self.context)
+        yield self.initialize_layout()
         self.subscribed = True
     
     @inlineCallbacks
@@ -162,15 +206,13 @@ class readout_histgram(QtGui.QWidget):
         yield self.cxn.servers['SD Tracker'].signal__new_fit(c.ID, context = self.context)
         if not self.subscribed:
             yield self.cxn.servers['SD Tracker'].addListener(listener = self.on_new_fit, source = None, ID = c.ID, context = self.context)
+            yield self.initialize_layout()
             self.subscribed = True
     
     @inlineCallbacks
     def on_new_fit(self, x, y):
+        yield self.update_lines()
         server = self.cxn.servers['SD Tracker']
-        lines = yield server.get_current_lines()
-        self.update_spectrum(lines)
-        self.update_listing(lines)
-        #update measurements and fit
         history = yield server.get_fit_history()
         inunits_b = [(t['min'], b['mgauss']) for (t,b,freq) in history]
         inunits_f = [(t['min'], freq['kHz']) for (t,b,freq) in history]
@@ -180,6 +222,13 @@ class readout_histgram(QtGui.QWidget):
         fit_f = yield server.get_fit_parameters('linecenter')
         self.plot_fit(fit_b, self.b_drift, self.b_drift_fit_line, 1000)
         self.plot_fit(fit_f, self.line_drift, self.line_drift_fit_line, 1000)       
+    
+    @inlineCallbacks
+    def update_lines(self):
+        server = self.cxn.servers['SD Tracker']
+        lines = yield server.get_current_lines()
+        self.update_spectrum(lines)
+        self.update_listing(lines)
     
     def update_track(self, meas, axes, lines):
         #clear
@@ -218,8 +267,6 @@ class readout_histgram(QtGui.QWidget):
             self.spectral_lines.append(line)
             label = self.spec.annotate(name, xy = (freq['MHz'], 0.9 - i * 0.7 / num), xycoords = 'data', fontsize = 13.0)
             self.spectral_lines.append(label)
-        self.spec.set_xlim(xmin = srt[0][1]['MHz'] - 1.0)
-        self.spec.set_xlim(xmax = srt[num - 1][1]['MHz'] + 1.0)
         self.spec_canvas.draw()
 
     def update_listing(self, lines):
@@ -238,6 +285,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = readout_histgram(reactor)
+    widget = drift_tracker(reactor)
     widget.show()
     reactor.run()
