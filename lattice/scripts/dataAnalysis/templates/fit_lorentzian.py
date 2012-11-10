@@ -46,13 +46,13 @@ print x_0_err,b_err,a_err
 
 pyplot.plot(x,y, 'ko')
 x_fit = np.linspace(x.min(), x.max(), 5000)
-pyplot.plot(x_fit,f(x_fit,x_0,b,a),'r-',linewidth=2.0)
+pyplot.plot(x_fit,f(x_fit,x_0,b,a),'r-',linewidth=3.0)
 
 pyplot.annotate('FWHM = {0:.1f} kHz'.format(b), xy=(0.60, 0.8), xycoords='axes fraction',fontsize=20)
 
-pyplot.xlabel( 'Frequency (kHz)',fontsize=20)
-pyplot.ylabel('Excitation probability',fontsize=20)
-pyplot.title('Excitation spectrum of 729 nm transition',fontsize=20)
+#pyplot.xlabel( 'Frequency (kHz)',fontsize=20)
+#pyplot.ylabel('Excitation probability',fontsize=20)
+#pyplot.title('Excitation spectrum of 729 nm transition',fontsize=20)
 pyplot.ylim([0,0.7])
 pyplot.xlim([-10,10])
 pyplot.show()
