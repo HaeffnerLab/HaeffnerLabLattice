@@ -1,4 +1,5 @@
 from twisted.internet.defer import inlineCallbacks
+from PyQt4 import QtCore
 
 class Parameter(object):
     def __init__(self, path, setValue, updateSignal, setRange = None, units = ''):
@@ -13,8 +14,10 @@ class async_semaphore(object):
     
     @inlineCallbacks
     def connect_labrad(self):
-        from labrad import types as T
-        self.T = T
+        from labrad.units import WithUnit
+        from labrad.types import FlatteningError
+        self.FlatteningError = FlatteningError
+        self.WithUnit = WithUnit
         if self.cxn is None:
             from connection import connection
             self.cxn = connection()
@@ -68,7 +71,6 @@ class async_semaphore(object):
             try:
                 params.updateSignal.connect(self.set_labrad_parameter(params.path, params.units))
             except AttributeError:
-                #if a list
                 for p in params:
                     p.updateSignal.connect(self.set_labrad_parameter(p.path, p.units))
                 
@@ -82,14 +84,19 @@ class async_semaphore(object):
             except:
                 #if unitless number
                 pass
+            r_min,r_max = val[0],val[1]
+            val = [val[i] for i in range(2,len(val))]
+            if len(val) == 1:
+                #flatten length 1 lists
+                val = val[0]
             try:
-                param.setRange(val[0],val[1])
-                param.setValue(val[2])
+                param.setRange(r_min,r_max)
+                param.setValue(val)
             except AttributeError:
-                #a list
+                #a list of parameters
                 for p in param:
-                    p.setRange(val[0],val[1])
-                    p.setValue(val[2])
+                    p.setRange(r_min,r_max)
+                    p.setValue(val)
     
     def set_labrad_parameter(self, path, units):
         @inlineCallbacks
@@ -101,14 +108,18 @@ class async_semaphore(object):
                     cur = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
                     update = []
                     update.extend(cur[0:2])
-                    new_val  = [self.T.Value(el, units) for el in new_val]
+                    new_val  = [self.WithUnit(el, units) for el in new_val]
                     update.extend(new_val)
                     yield self.cxn.servers['Semaphore'].set_parameter(path, update, context = self.context)
                 else:
-                    new_val = self.T.Value(new_val, units)
+                    try:
+                        new_val = self.WithUnit(new_val, units)
+                    except TypeError:
+                        if isinstance(new_val, QtCore.QString):
+                            new_val = str(new_val)
                     minim,maxim,cur = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
                     yield self.cxn.servers['Semaphore'].set_parameter(path, [minim,maxim,new_val], context = self.context)
             except Exception,e:
-                print e
+                raise e
         return( func)        
     

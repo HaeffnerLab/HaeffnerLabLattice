@@ -5,7 +5,7 @@ from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import LoopingCall
-from helper_widgets import saved_frequencies, saved_frequencies_dropdown
+from helper_widgets import saved_frequencies_table, saved_frequencies_dropdown
 import numpy
 from configuration import config_729_tracker as c
 
@@ -19,7 +19,6 @@ class drift_tracker(QtGui.QWidget):
         self.updater = LoopingCall(self.update_lines)
         self.create_layout()
         self.connect_labrad()
-        
     
     def create_layout(self):
         layout = QtGui.QGridLayout()
@@ -77,7 +76,7 @@ class drift_tracker(QtGui.QWidget):
     
     def create_widget_layout(self):
         layout = QtGui.QGridLayout()
-        self.frequency_table = saved_frequencies(self.reactor, limits = c.frequency_limit, suffix = ' MHz', sig_figs = 4)
+        self.frequency_table = saved_frequencies_table(self.reactor, suffix = ' MHz', sig_figs = 4)
         self.entry_table = saved_frequencies_dropdown(self.reactor, limits = c.frequency_limit, suffix = ' MHz', sig_figs = 4)
         self.entry_button = QtGui.QPushButton("Submit")
         self.remove_button = QtGui.QPushButton("Remove")
@@ -91,6 +90,7 @@ class drift_tracker(QtGui.QWidget):
         self.track_duration = QtGui.QSpinBox()
         self.track_duration.setKeyboardTracking(False)
         self.track_duration.setSuffix('min')
+        self.track_duration.setRange(1, 1000)
         layout.addWidget(self.frequency_table, 0, 0, 2, 1)
         layout.addWidget(self.entry_table, 0, 1 , 1 , 1)
         layout.addWidget(self.entry_button, 1, 1, 1, 1)
@@ -187,7 +187,6 @@ class drift_tracker(QtGui.QWidget):
         try:
             yield self.subscribe_tracker()
         except Exception as e:
-            print e
             self.setDisabled(True)
         self.cxn.on_connect['SD Tracker'].append( self.reinitialize_tracker)
         self.cxn.on_disconnect['SD Tracker'].append( self.disable)
@@ -220,8 +219,46 @@ class drift_tracker(QtGui.QWidget):
         self.update_track(inunits_f, self.line_drift, self.line_drift_lines)
         fit_b = yield server.get_fit_parameters('bfield')
         fit_f = yield server.get_fit_parameters('linecenter')
-        self.plot_fit(fit_b, self.b_drift, self.b_drift_fit_line, 1000)
-        self.plot_fit(fit_f, self.line_drift, self.line_drift_fit_line, 1000)       
+        self.plot_fit_b(fit_b)
+        self.plot_fit_f(fit_f)
+    
+    def plot_fit_b(self, p):
+        for i in range(len(self.b_drift_fit_line)):
+            l = self.b_drift_fit_line.pop()
+            l.remove()
+        xmin,xmax = self.b_drift.get_xlim()
+        xmin-= 10
+        xmax+= 10
+        points = 1000
+        x = numpy.linspace(xmin, xmax, points) 
+        y = 1000 * numpy.polyval(p, 60*x)
+        l = self.b_drift.plot(x, y, '-r')[0]
+        self.b_drift_fit_line.append(l)
+        b_in_units = p[1] * 1000.0 * 60.0
+        a_in_units = p[0] * 1000* (60.0)**2
+        c_in_units = p[2] * 1000
+        label = self.b_drift.annotate('fit a*x**2 + b*x + c, a: {0:.1f} mgauss/min**2 b: {1:.1f} mgauss/min, c: {2:.1f} mgauss'.format(a_in_units, b_in_units, c_in_units), xy = (0.1, 0.9), xycoords = 'axes fraction', fontsize = 11.0)
+        self.b_drift_fit_line.append(label)
+        self.drift_canvas.draw()
+    
+    def plot_fit_f(self, p):
+        for i in range(len(self.line_drift_fit_line)):
+            l = self.line_drift_fit_line.pop()
+            l.remove()
+        xmin,xmax = self.b_drift.get_xlim()
+        xmin-= 10
+        xmax+= 10
+        points = 1000
+        x = numpy.linspace(xmin, xmax, points) 
+        y = 1000 * numpy.polyval(p, 60*x)
+        l = self.line_drift.plot(x, y, '-r')[0]
+        self.line_drift_fit_line.append(l)
+        b_in_units = p[1] * 1000.0 * 60.0
+        a_in_units = p[0] * (1000.0 * 60.0)**2
+        label = self.line_drift.annotate('fit a*x**2 + b*x + c, a: {0:.1f} KHz/min**2 b: {1:.1f} KHz/min, c: {2:.4f} MHz'.format(a_in_units, b_in_units, p[2]), xy = (0.1, 0.9), xycoords = 'axes fraction', fontsize = 11.0)
+        self.line_drift_fit_line.append(label)
+        self.drift_canvas.draw()
+    
     
     @inlineCallbacks
     def update_lines(self):
@@ -239,20 +276,6 @@ class drift_tracker(QtGui.QWidget):
         y = [m[1] for m in meas]
         line = axes.plot(x,y, 'b*')[0]
         lines.append(line)
-        self.drift_canvas.draw()
-    
-    def plot_fit(self, p, axes, line, m = 1):
-        for i in range(len(line)):
-            l = line.pop()
-            l.remove()
-        xmin,xmax = axes.get_xlim()
-        xmin-= 10
-        xmax+= 10
-        points = 1000
-        x = numpy.linspace(xmin, xmax, points) 
-        y = m * numpy.polyval(p, 60*x)
-        l = axes.plot(x, y, '-r')[0]
-        line.append(l)
         self.drift_canvas.draw()
         
     def update_spectrum(self, lines):

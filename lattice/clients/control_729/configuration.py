@@ -29,9 +29,13 @@ class config_729_spectrum(object):
     spectrum_frequencies = ['729Experiments','Spectrum','frequencies']
     spectrum_amplitude_729 = ['729Experiments','Spectrum','spectrum_amplitude_729']
     #rabi flop
+    saved_lines_729 = ['729Experiments','saved_lines_729']
+    
     rabi_frequency = ['729Experiments','RabiFlopping','frequency']
     rabi_excitation_times = ['729Experiments','RabiFlopping','excitation_times']
     rabi_amplitude_729 = ['729Experiments','RabiFlopping','rabi_amplitude_729']
+    rabi_use_saved = ['729Experiments','RabiFlopping','rabi_flopping_use_saved_frequency']
+    rabi_saved_freq = ['729Experiments','RabiFlopping','rabi_flopping_saved_frequency']
 
 class config_729_state_preparation(object):
     #IDs for signaling
@@ -64,6 +68,9 @@ class config_729_state_preparation(object):
     optical_pumping_pulsed_duration_repumps = ['729Experiments','optical_pumping_pulsed_duration_repumps']
     optical_pumping_pulsed_duration_additional_866 = ['729Experiments','optical_pumping_pulsed_duration_additional_866']
     optical_pumping_pulsed_duration_between_pulses = ['729Experiments','optical_pumping_pulsed_duration_between_pulses']
+    optical_pumping_use_saved = ['729Experiments','optical_pumping_use_saved']
+    optical_pumping_use_saved_line =  ['729Experiments','optical_pumping_use_saved_line']
+    saved_lines_729 = ['729Experiments','saved_lines_729']
     #heating
     background_heating_duration = ['729Experiments','background_heating_time']
 

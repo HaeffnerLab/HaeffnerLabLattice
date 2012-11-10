@@ -1,5 +1,5 @@
 from PyQt4 import QtGui,QtCore
-from helper_widgets import durationWdiget, limitsWidget#, saved_frequencies_dropdown
+from helper_widgets import durationWdiget, limitsWidget, frequency_wth_dropdown
 from configuration import config_729_spectrum as c
 from async_semaphore import async_semaphore, Parameter
 
@@ -50,26 +50,19 @@ class rabi(QtGui.QFrame):
         title_label = QtGui.QLabel("Rabi Flopping", font = large_font)
         title_label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
         layout.addWidget(title_label, 0, 0, 1, 1)
-        self.freq = QtGui.QDoubleSpinBox()
-        self.freq.setSuffix('MHz')
-        self.freq.setDecimals(4)
-        self.freq.setSingleStep(10**-3)
-        self.freq.setKeyboardTracking(False)
-        self.freq.setFont(large_font)
-        self.ampl_729 = QtGui.QDoubleSpinBox()
-        self.ampl_729.setSuffix('dBm')
-        self.ampl_729.setDecimals(1)
-        self.ampl_729.setSingleStep(0.1)
-        self.ampl_729.setKeyboardTracking(False)
-        self.ampl_729.setFont(font)
-        label = QtGui.QLabel("Rabi Frequency 729", font = font)
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
-        layout.addWidget(label, 0, 1, 1, 1)
-        layout.addWidget(self.freq, 1, 1, 1, 1)
+        self.freq729 = frequency_wth_dropdown(self.reactor, parameter_name = 'Rabi Frequency 729', font = font, suffix = 'MHz', sig_figs = 4)
+        self.freq729.layout().setContentsMargins(0,0,0,0)
+        self.ampl729 = QtGui.QDoubleSpinBox()
+        self.ampl729.setSuffix('dBm')
+        self.ampl729.setDecimals(1)
+        self.ampl729.setSingleStep(0.1)
+        self.ampl729.setKeyboardTracking(False)
+        self.ampl729.setFont(font)
+        layout.addWidget(self.freq729, 0, 1, 2, 1)
         label = QtGui.QLabel("Rabi Amplitude 729", font = font)
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
         layout.addWidget(label, 0, 2, 1, 1)
-        layout.addWidget(self.ampl_729, 1, 2, 1, 1)
+        layout.addWidget(self.ampl729, 1, 2, 1, 1)
         self.lim = limitsWidget(self.reactor, '\265s')
         layout.addWidget(self.lim, 2, 0, 1, 4)
         self.setLayout(layout)
@@ -121,17 +114,24 @@ class scans_connection(scans, async_semaphore):
         def do_nothing(*args):
             pass
         
+        class no_signal(object):
+            @staticmethod
+            def connect(*args):
+                pass
+        
         self.d = {
                 #spin boxes
                 tuple(c.spectrum_excitation_time): Parameter(c.spectrum_excitation_time, self.spectrum.duration.setNewDuration_blocking, self.spectrum.duration.new_duration, self.spectrum.duration.duration.setRange, 'us'),
                 tuple(c.spectrum_amplitude_729): Parameter(c.spectrum_amplitude_729, setValueBlocking(self.spectrum.ampl_729), self.spectrum.ampl_729.valueChanged, self.spectrum.ampl_729.setRange, 'dBm'),
                 #list
                 tuple(c.spectrum_frequencies):Parameter(c.spectrum_frequencies, do_nothing, self.spectrum.limitWidget.new_list_signal, self.spectrum.limitWidget.setRange, 'MHz'),
-                tuple(c.rabi_frequency): Parameter(c.rabi_frequency, setValueBlocking(self.rabi.freq), self.rabi.freq.valueChanged, self.rabi.freq.setRange, 'MHz'),
-                tuple(c.rabi_amplitude_729): Parameter(c.rabi_amplitude_729, setValueBlocking(self.rabi.ampl_729), self.rabi.ampl_729.valueChanged, self.rabi.ampl_729.setRange, 'dBm'),
+                tuple(c.rabi_frequency): Parameter(c.rabi_frequency, self.rabi.freq729.set_freq_value_no_signals, self.rabi.freq729.valueChanged, self.rabi.freq729.setRange, 'MHz'),
+                tuple(c.rabi_amplitude_729): Parameter(c.rabi_amplitude_729, setValueBlocking(self.rabi.ampl729), self.rabi.ampl729.valueChanged, self.rabi.ampl729.setRange, 'dBm'),
                 #list
                 tuple(c.rabi_excitation_times):Parameter(c.rabi_excitation_times, do_nothing, self.rabi.lim.new_list_signal, self.rabi.lim.setRange, 'us'),
-                  
+                tuple(c.saved_lines_729):Parameter(c.saved_lines_729, self.rabi.freq729.set_dropdown, no_signal, do_nothing, None), 
+                tuple(c.rabi_saved_freq):Parameter(c.rabi_saved_freq, self.rabi.freq729.set_selected, self.rabi.freq729.useSavedLine, do_nothing, None), 
+                tuple(c.rabi_use_saved):Parameter(c.rabi_use_saved, self.rabi.freq729.set_use_saved, updateSignal = self.rabi.freq729.useSaved),
                   }
         
 if __name__=="__main__":

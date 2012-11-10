@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from readout_histogram import readout_histgram
 from scans import scans_connection
 from state_preparation import state_preparation_connection
+from drift_tracker import drift_tracker
 from twisted.internet.defer import inlineCallbacks
 
 class control_729(QtGui.QWidget):
@@ -29,7 +30,9 @@ class control_729(QtGui.QWidget):
         tab.addTab(histogram_tab, 'State Readout')
         self.state_prep_index = tab.addTab(self.state_preparation_tab, 'State Preparation')
         tab.addTab(scans_tab, 'Scans')
-        layout.addWidget(tab, 1, 0)
+        drift_tracker_tab = drift_tracker(self.reactor, self.cxn)
+        tab.addTab(drift_tracker_tab, 'Drift Tracker')
+        layout.addWidget(tab)
         self.setLayout(layout)
     
     def connect_tab_signals(self):

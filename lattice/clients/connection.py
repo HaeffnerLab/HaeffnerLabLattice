@@ -6,6 +6,7 @@ class connection(object):
                 'Data Vault':None,
                 'Semaphore':None,
                 'Pulser':None,
+                'SD Tracker':None,
                 }
     
     def __init__(self):

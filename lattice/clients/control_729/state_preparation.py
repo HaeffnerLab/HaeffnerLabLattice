@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from configuration import config_729_state_preparation as c
 from async_semaphore import async_semaphore, Parameter
+from helper_widgets import frequency_wth_dropdown
 
 class optical_pumping_frame(QtGui.QFrame):
     def __init__(self, reactor, title, font, large_font):
@@ -39,12 +40,7 @@ class optical_pumping_frame(QtGui.QFrame):
         layout.addWidget(self.pulsed, 4, 3)
         bg.setExclusive(True)
         #frequencies and amplitudes
-        self.freq = QtGui.QDoubleSpinBox()
-        self.freq.setSuffix('MHz')
-        self.freq.setDecimals(4)
-        self.freq.setSingleStep(10**-3)
-        self.freq.setKeyboardTracking(False)
-        self.freq.setFont(large_font)
+        self.freq729 = frequency_wth_dropdown(self.reactor, parameter_name = 'Frequency 729', suffix = 'MHz', sig_figs = 4, font = font)
         self.freq854 = QtGui.QDoubleSpinBox()
         self.freq866 = QtGui.QDoubleSpinBox()
         self.ampl729 = QtGui.QDoubleSpinBox()
@@ -62,13 +58,7 @@ class optical_pumping_frame(QtGui.QFrame):
             w.setSingleStep(0.1)
             w.setKeyboardTracking(False)
             w.setFont(font)
-#        self.dropdown = saved_frequencies_dropdown(self.reactor)
-        label = QtGui.QLabel("Frequency 729")
-        label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        label.setFont(font)
-        layout.addWidget(label, 1, 0, 1, 1)
-        layout.addWidget(self.freq, 1, 1, 1, 1)
-#        layout.addWidget(self.dropdown, 1, 2, 1, 1)
+        layout.addWidget(self.freq729, 1, 1, 1, 1)
         label = QtGui.QLabel("Amplitude 729")
         label.setFont(font)
         label.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
@@ -339,6 +329,11 @@ class state_preparation_connection(state_preparation, async_semaphore):
         def do_nothing(*args):
             pass
         
+        class no_signal(object):
+            @staticmethod
+            def connect(*args):
+                pass
+        
         self.d = {
                 #repump d5/2
                 tuple(c.repump_d_duration): Parameter(c.repump_d_duration, setValueBlocking(self.repump_d_duration), self.repump_d_duration.valueChanged, self.repump_d_duration.setRange, 'us'),
@@ -354,7 +349,7 @@ class state_preparation_connection(state_preparation, async_semaphore):
                 tuple(c.optical_pumping_continuous):Parameter(c.optical_pumping_continuous, setValueBlocking_cb(self.optical_pumping_frame.continous), updateSignal = self.optical_pumping_frame.continous.toggled),
                 tuple(c.optical_pumping_pulsed):Parameter(c.optical_pumping_pulsed, setValueBlocking_cb(self.optical_pumping_frame.pulsed), updateSignal = self.optical_pumping_frame.pulsed.toggled),
                 tuple(c.optical_pumping_pulsed_cycles):Parameter(c.optical_pumping_pulsed_cycles, setValueBlocking(self.optical_pumping_frame.pulses), self.optical_pumping_frame.pulses.valueChanged, self.optical_pumping_frame.pulses.setRange, None),
-                tuple(c.optical_pumping_frequency_729):Parameter(c.optical_pumping_frequency_729, setValueBlocking(self.optical_pumping_frame.freq), self.optical_pumping_frame.freq.valueChanged, self.optical_pumping_frame.freq.setRange, 'MHz'),
+                tuple(c.optical_pumping_frequency_729):Parameter(c.optical_pumping_frequency_729, self.optical_pumping_frame.freq729.set_freq_value_no_signals, self.optical_pumping_frame.freq729.valueChanged, self.optical_pumping_frame.freq729.setRange, 'MHz'),
                 tuple(c.optical_pumping_amplitude_729): Parameter(c.optical_pumping_amplitude_729, setValueBlocking(self.optical_pumping_frame.ampl729), self.optical_pumping_frame.ampl729.valueChanged, self.optical_pumping_frame.ampl729.setRange, 'dBm'),
                 tuple(c.optical_pumping_amplitude_854): Parameter(c.optical_pumping_amplitude_854, setValueBlocking(self.optical_pumping_frame.ampl854), self.optical_pumping_frame.ampl854.valueChanged, self.optical_pumping_frame.ampl854.setRange, 'dBm'),
                 tuple(c.optical_pumping_amplitude_866): Parameter(c.optical_pumping_amplitude_866, setValueBlocking(self.optical_pumping_frame.ampl866), self.optical_pumping_frame.ampl866.valueChanged, self.optical_pumping_frame.ampl866.setRange, 'dBm'),
@@ -364,6 +359,9 @@ class state_preparation_connection(state_preparation, async_semaphore):
                 tuple(c.optical_pumping_pulsed_duration_repumps):Parameter(c.optical_pumping_pulsed_duration_repumps, setValueBlocking(self.optical_pumping_frame.pulse_repumps), self.optical_pumping_frame.pulse_repumps.valueChanged, self.optical_pumping_frame.pulse_repumps.setRange, 'us'),
                 tuple(c.optical_pumping_pulsed_duration_additional_866):Parameter(c.optical_pumping_pulsed_duration_additional_866, setValueBlocking(self.optical_pumping_frame.pulse_866_additional), self.optical_pumping_frame.pulse_866_additional.valueChanged, self.optical_pumping_frame.pulse_866_additional.setRange, 'us'), 
                 tuple(c.optical_pumping_pulsed_duration_between_pulses):Parameter(c.optical_pumping_pulsed_duration_between_pulses, setValueBlocking(self.optical_pumping_frame.between_pulses), self.optical_pumping_frame.between_pulses.valueChanged, self.optical_pumping_frame.between_pulses.setRange, 'us'), 
+                tuple(c.saved_lines_729):Parameter(c.saved_lines_729, self.optical_pumping_frame.freq729.set_dropdown, no_signal, do_nothing, None), 
+                tuple(c.optical_pumping_use_saved_line):Parameter(c.optical_pumping_use_saved_line, self.optical_pumping_frame.freq729.set_selected, self.optical_pumping_frame.freq729.useSavedLine, do_nothing, None), 
+                tuple(c.optical_pumping_use_saved):Parameter(c.optical_pumping_use_saved, self.optical_pumping_frame.freq729.set_use_saved, updateSignal = self.optical_pumping_frame.freq729.useSaved),
                 #heating
                 tuple(c.background_heating_duration): Parameter(c.background_heating_duration, setValueBlocking(self.heating), self.heating.valueChanged, self.heating.setRange, 'ms'),
                 #multiple keys connected to same widgets
