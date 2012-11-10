@@ -277,7 +277,6 @@ class saved_frequencies_table(QtGui.QTableWidget):
         self.setColumnCount(2)
     
     def fill_out_widget(self, info):
-        self.clearContents()
         self.setRowCount(len(info))
         form = '{' + '0:.{}f'.format(self.sig_figs) + '}' + ' {}'.format( self.suffix)
         for enum,tup in enumerate(info):
@@ -371,6 +370,87 @@ class saved_frequencies_dropdown(QtGui.QTableWidget):
     def closeEvent(self, x):
         self.reactor.stop()
 
+class lineinfo_table(QtGui.QTableWidget):
+    
+    info_updated = QtCore.pyqtSignal(list)
+    
+    def __init__(self, reactor, limits = (0,500), sig_figs = 4, column_names = ['line', 'parameter'], suffix = 'MHz', info = [('a',1)], parent=None):
+        super(lineinfo_table, self).__init__(parent)
+        self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        self.limits = limits
+        self.sig_figs = sig_figs
+        self.column_names = column_names
+        self.parameter_name = column_names[1]
+        self.suffix = suffix
+        self.info = info
+        self.reactor = reactor
+        self.initializeGUI()
+        
+    def initializeGUI(self):
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setColumnCount(len(self.column_names))
+        self.setHorizontalHeaderLabels(self.column_names)
+        self.set_info()
+    
+    def set_info(self, info = None):
+        if info is not None:
+            self.info = info
+        self.setRowCount(len(self.info))
+        for enum,(name,val) in enumerate(self.info): 
+            try:
+                label = self.cellWidget(enum, 0)
+                label.setText(name)
+                spin = self.cellWidget(enum, 1)
+                spin.blockSignals(True)
+                spin.setValue(val)
+                spin.blockSignals(False)
+            except AttributeError:            
+                label = QtGui.QLabel(name)
+                label.setFont(self.font)
+                self.setCellWidget(enum ,0 , label)
+                spin = QtGui.QDoubleSpinBox()
+                spin.setFont(self.font)
+                spin.setRange(*self.limits)
+                spin.setDecimals(self.sig_figs)
+                spin.setSingleStep(10**-self.sig_figs)
+                spin.setSuffix(' ' + self.suffix)
+                spin.blockSignals(True)
+                spin.setValue(val)
+                spin.blockSignals(False)
+                spin.valueChanged.connect(self.on_new_info)
+                self.setCellWidget(enum, 1, spin)
+    
+    def on_new_info(self, val):
+        print 'new info', val
+        info = self.get_info()
+        self.info_updated.emit(info)
+    
+    def set_range(self, r_min, r_max):
+        for enum in range( self.rowCount() ):
+            try:
+                spin = self.cellWidget(enum, 1)
+            except AttributeError:
+                pass
+            else:
+                spin.blockSignals(True)
+                spin.setRange(r_min[1],r_max[1])
+                spin.blockSignals(False)
+
+    def get_info(self):
+        info = []
+        for enum in range( self.rowCount() ):
+            label = self.cellWidget(enum, 0)
+            name = label.text()
+            name = str(name)  
+            spin =  self.cellWidget( enum, 1)
+            val = spin.value()
+            info.append((name, val))
+        return info
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
+
 class frequency_wth_dropdown(QtGui.QWidget):
     
     valueChanged = QtCore.pyqtSignal(float)
@@ -449,28 +529,10 @@ class frequency_wth_dropdown(QtGui.QWidget):
     
     def setRange(self, r_min, r_max):
         self.freq.setRange(r_min,r_max)
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
 
-class line_listing(QtGui.QTableWidget):
-    
-    def __init__(self, font = None, names = [], parent = None):
-        super(line_listing, self).__init__(parent)  
-        self.font = font
-        self.info_dict = {}.fromkeys(names)
-    
-    def set_names(self, names):
-        #update the known names, copying common information over from the previous dictionary
-        new_dict = {}.fromkeys(names)
-        for key in new_dict.keys():
-            if key in self.info_dict.keys():
-                new_dict[key] = self.info_dict[key]
-        self.info_dict = new_dict
-    
-    def set_info(self, info):
-        new_info = dict(info)
-        for key in self.info_dict.keys():
-            if key in self.new_info.keys():
-                self.info_dict[key] = new_info[key]     
-        
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     import qt4reactor
@@ -480,6 +542,6 @@ if __name__=="__main__":
 #    widget = durationWdiget(reactor)
 #    widget = saved_frequencies(reactor)
 #    widget = saved_frequencies_table(reactor)
-    widget = line_listing(reactor)
+    widget = lineinfo_table(reactor)
     widget.show()
     reactor.run()

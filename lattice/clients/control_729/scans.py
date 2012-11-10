@@ -1,7 +1,28 @@
 from PyQt4 import QtGui,QtCore
-from helper_widgets import durationWdiget, limitsWidget, frequency_wth_dropdown
+from helper_widgets import durationWdiget, limitsWidget, frequency_wth_dropdown, lineinfo_table
 from configuration import config_729_spectrum as c
 from async_semaphore import async_semaphore, Parameter
+
+class line_info(QtGui.QFrame):
+    
+    def __init__(self, reactor, font):
+        super(line_info, self).__init__()
+        self.reactor = reactor
+        self.setFrameStyle(QtGui.QFrame.Panel  | QtGui.QFrame.Sunken)
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.widgets = {}
+        self.initializeGUI(font)
+        
+    def initializeGUI(self, font):
+        layout = QtGui.QHBoxLayout()
+        for parameter, suffix, sig_fig in c.line_parameters:
+            widget = lineinfo_table(self.reactor, sig_figs = sig_fig, column_names = ['Line', parameter], suffix = suffix)
+            self.widgets[parameter] = widget
+            layout.addWidget(widget)
+        self.setLayout(layout)
+    
+    def closeEvent(self, x):
+        self.reactor.stop()
 
 class spectrum(QtGui.QFrame):
     def __init__(self, reactor, font, large_font):
@@ -81,8 +102,10 @@ class scans(QtGui.QWidget):
         
     def initializeGUI(self):
         layout = QtGui.QVBoxLayout()
+        self.lineinfo = line_info(self.reactor, self.font)
         self.spectrum = spectrum(self.reactor, self.font, self.large_font)
         self.rabi = rabi(self.reactor, self.font, self.large_font)
+        layout.addWidget(self.lineinfo)
         layout.addWidget(self.spectrum)
         layout.addWidget(self.rabi)
         self.setLayout(layout)
@@ -132,6 +155,8 @@ class scans_connection(scans, async_semaphore):
                 tuple(c.saved_lines_729):Parameter(c.saved_lines_729, self.rabi.freq729.set_dropdown, no_signal, do_nothing, None), 
                 tuple(c.rabi_saved_freq):Parameter(c.rabi_saved_freq, self.rabi.freq729.set_selected, self.rabi.freq729.useSavedLine, do_nothing, None), 
                 tuple(c.rabi_use_saved):Parameter(c.rabi_use_saved, self.rabi.freq729.set_use_saved, updateSignal = self.rabi.freq729.useSaved),
+                #saved lines
+                tuple(c.line_parameters_center):Parameter(c.line_parameters_center, self.lineinfo.widgets['Center'].set_info, self.lineinfo.widgets['Center'].info_updated, self.lineinfo.widgets['Center'].set_range, 'MHz'),
                   }
         
 if __name__=="__main__":

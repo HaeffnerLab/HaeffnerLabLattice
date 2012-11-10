@@ -2,7 +2,7 @@
 ### BEGIN NODE INFO
 [info]
 name = SD Tracker
-version = 0.1
+version = 1.0
 description = 
 
 [startup]
@@ -16,7 +16,7 @@ timeout = 5
 """
 from labrad.server import setting, LabradServer, Signal
 from labrad.units import WithUnit
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import returnValue
 import time
 from SD_tracker_config import config as conf
 from SD_calculator import double_pass, Transitions_SD, fitter

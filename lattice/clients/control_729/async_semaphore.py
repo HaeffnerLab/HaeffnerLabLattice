@@ -105,10 +105,15 @@ class async_semaphore(object):
                 if type(new_val) == bool:
                     yield self.cxn.servers['Semaphore'].set_parameter(path, new_val, context = self.context)
                 elif type(new_val) == list:
+                    print 'list'
                     cur = yield self.cxn.servers['Semaphore'].get_parameter(path, context = self.context)
                     update = []
                     update.extend(cur[0:2])
-                    new_val  = [self.WithUnit(el, units) for el in new_val]
+                    if isinstance(new_val[0], tuple) and len(new_val[0]) == 2:
+                        #put units on the 2nd argument
+                        new_val = [(name, self.WithUnit(el, units)) for (name,el) in new_val]
+                    else:
+                        new_val  = [self.WithUnit(el, units) for el in new_val]
                     update.extend(new_val)
                     yield self.cxn.servers['Semaphore'].set_parameter(path, update, context = self.context)
                 else:

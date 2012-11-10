@@ -36,6 +36,9 @@ class config_729_spectrum(object):
     rabi_amplitude_729 = ['729Experiments','RabiFlopping','rabi_amplitude_729']
     rabi_use_saved = ['729Experiments','RabiFlopping','rabi_flopping_use_saved_frequency']
     rabi_saved_freq = ['729Experiments','RabiFlopping','rabi_flopping_saved_frequency']
+    #saved freq
+    line_parameters = [('Center', 'MHz', 4), ('Scan Span', 'KHz', 1), ('Scan Points','',0), ('Scan Amplitude', 'dBm', 1), ('Scan Excitation Duration', '\265s', 0)]
+    line_parameters_center = ['729Experiments','saved_lines_729_frequencies']
 
 class config_729_state_preparation(object):
     #IDs for signaling
