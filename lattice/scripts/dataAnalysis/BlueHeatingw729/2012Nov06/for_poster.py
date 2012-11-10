@@ -106,25 +106,30 @@ flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_
 #heating times in ms
 fig_title = ''
 info = [
-(0, 0.0, ('2012Nov06','1522_49'), 150e-6, {'nbar': Parameter(30.0), 'delta': 0.0, 'T_Rabi' : Parameter(30.4e-6)})       
-#(0, 50.0, ('2012Sep28','2107_33'), 50e-6, {'nbar': 400, 'delta': Parameter(0.0), 'T_Rabi' : 15.4e-6}),
-#(0, 25.0, ('2012Aug29','1857_48'), 15e-6, {'nbar': Parameter(59.0), 'delta': 0.0, 'T_Rabi' : Parameter(4.7e-6)}),
-#(0, 100.0, ('2012Aug29','1903_45'), 20e-6, {'nbar': Parameter(116.0), 'delta': 0.0, 'T_Rabi' : Parameter(4.7e-6)}),
+(0, 0.0, ('2012Nov06','1934_39'), 100e-6, {'nbar': 22, 'delta': 0.0, 'T_Rabi' : Parameter(30.4e-6)},'green'), 
+(0, 50.0, ('2012Nov06','1936_01'), 60e-6, {'nbar': 73, 'delta': 0.0, 'T_Rabi' : Parameter(30.4e-6)},'red'),
+(0, 100.0, ('2012Nov06','1937_34'), 100e-6, {'nbar': 258, 'delta' : 0.4, 'T_Rabi' : Parameter(30.4e-6)},'blue'),
 ]
 num_figures = len(info)
+
+#define heating rate data
+nbar_for_plot = np.zeros(len(info))
+heating_time_for_plot = np.zeros(len(info))
+
+
 
 fig = pyplot.figure()
 #pyplot.subplots_adjust(top = 0.95, bottom = 0, hspace = 0.15)
 plots = []
-ax1 = pyplot.subplot(num_figures, 1, 1)
+ax1 = pyplot.subplot(1, 1, 1)
 pyplot.title(fig_title)
 plots.append(ax1)
 
 for number,trace in enumerate(info):
-    if number > 0:
-        ax = pyplot.subplot(num_figures,1,number + 1, sharex = ax1)
-        plots.append(ax)
-    order,wait_time,dataset,fit_region_max,kwargs = trace
+#    if number > 0:
+#        ax = pyplot.subplot(num_figures,1,number + 1, sharex = ax1)
+#        plots.append(ax)
+    order,wait_time,dataset,fit_region_max,kwargs,trace_color = trace
     date,datasetName = dataset
     nbar = kwargs['nbar']
     delta = kwargs['delta']
@@ -153,10 +158,10 @@ for number,trace in enumerate(info):
     detailed_times = np.linspace(tmin, tmax, 1000) 
     evolution = f(detailed_times  - offset_time)
     #plotting
-    pyplot.plot(10**6 * detailed_times , evolution, 'b',linewidth=4)
-    pyplot.plot(10**6 * times, prob, 'or')
+    pyplot.plot(10**6 * detailed_times , evolution, '-',linewidth=2, color=trace_color)
+    pyplot.plot(10**6 * times, prob, 'o',color=trace_color)
 #    pyplot.suptitle('Heating {} ms'.format(wait_time))
-#    pyplot.ylabel('D5/2 Occupation')
+    #pyplot.ylabel('D5/2 Occupation')
     #get the final values
     values = []
     for param in [nbar, delta, T_Rabi]:
@@ -166,20 +171,34 @@ for number,trace in enumerate(info):
             values.append( param )
     nbar_value, delta_value, T_Rabi_value = values
     #add the values to the plot
-    print wait_time
-    #pyplot.annotate('heating time = {:.0f}ms'.format(wait_time), xy=(0.75, 0.8), xycoords='axes fraction')
-    #pyplot.annotate('nbar = {:.0f}'.format(nbar_value).format(nbar_value), xy=(0.75, 0.7), xycoords='axes fraction')
-    #pyplot.annotate('Detuning = {0}'.format(delta_value), xy=(0.75, 0.6), xycoords='axes fraction')
-    #pyplot.annotate('Rabi Time = {:.1f} us'.format(10**6 * T_Rabi_value), xy=(0.75, 0.5), xycoords='axes fraction')
+#    print wait_time
+#    pyplot.annotate('heating time = {:.0f}us'.format(wait_time), xy=(0.75, 0.8), xycoords='axes fraction')
+#    pyplot.annotate('nbar = {:.0f}'.format(nbar_value).format(nbar_value), xy=(0.75, 0.7), xycoords='axes fraction')
+#    pyplot.annotate('Detuning = {0}'.format(delta_value), xy=(0.75, 0.6), xycoords='axes fraction')
+#    pyplot.annotate('Rabi Time = {:.1f} us'.format(10**6 * T_Rabi_value), xy=(0.75, 0.5), xycoords='axes fraction')
 
     #set plot limits and show
     pyplot.ylim([0,1])
+    
+    print nbar_value
+    print number
+    nbar_for_plot[number] = nbar_value
+    heating_time_for_plot[number] = wait_time
     
 for ax in plots[0:-1]:
     pyplot.setp(ax.get_xticklabels(), visible = False)
 
 #rescaling x so we can see the label clearly
 xmin,xmax = pyplot.xlim()
-pyplot.xlim([0,150])
+pyplot.xlim([0,110])
 #pyplot.xlabel('Time us')
+
+#fig1 = pyplot.figure()
+#ax0 = fig1.add_subplot(111)
+#ax0.plot(heating_time_for_plot,nbar_for_plot,'o-')
+#ax0.set_xlabel('Heating time (us)')
+#ax0.set_ylabel('nbar')
+#ax0.set_title('Heating rate from blue laser')
+
+
 pyplot.show()
