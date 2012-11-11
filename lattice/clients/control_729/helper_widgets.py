@@ -299,8 +299,9 @@ class saved_frequencies_table(QtGui.QTableWidget):
         self.reactor.stop()
         
 class dropdown(QtGui.QComboBox):
-    def __init__(self, font = None, names = [], parent = None ):
+    def __init__(self, font = None, names = [], info_position = None, parent = None ):
         super(dropdown, self).__init__(parent)
+        self.info_position = info_position
         self.selected = None
         if font is not None:
             self.setFont(font)
@@ -316,9 +317,13 @@ class dropdown(QtGui.QComboBox):
             self.setCurrentIndex(item)
             self.blockSignals(False)
     
-    def set_dropdown(self, names):
+    def set_dropdown(self, info):
         self.blockSignals(True)
-        for name in names:
+        for values in info:
+            if self.info_position is not None:
+                name = values[self.info_position]
+            else:
+                name = values
             self.addItem(name)
         if self.selected is not None:
             self.set_selected(self.selected)
@@ -374,15 +379,15 @@ class lineinfo_table(QtGui.QTableWidget):
     
     info_updated = QtCore.pyqtSignal(list)
     
-    def __init__(self, reactor, limits = (0,500), sig_figs = 4, column_names = ['line', 'parameter'], suffix = 'MHz', info = [('a',1)], parent=None):
+    def __init__(self, reactor, sig_figs = 4, column_names = ['line', 'parameter'], suffix = ['MHz'], parent=None):
         super(lineinfo_table, self).__init__(parent)
         self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
-        self.limits = limits
         self.sig_figs = sig_figs
         self.column_names = column_names
         self.parameter_name = column_names[1]
         self.suffix = suffix
-        self.info = info
+        self.r_min = None
+        self.r_max = None
         self.reactor = reactor
         self.initializeGUI()
         
@@ -391,61 +396,68 @@ class lineinfo_table(QtGui.QTableWidget):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setColumnCount(len(self.column_names))
         self.setHorizontalHeaderLabels(self.column_names)
-        self.set_info()
     
-    def set_info(self, info = None):
-        if info is not None:
-            self.info = info
-        self.setRowCount(len(self.info))
-        for enum,(name,val) in enumerate(self.info): 
+    def set_info(self, info):
+        self.setRowCount(len(info))
+        for enum, tup in enumerate(info):
+            name = tup[0] 
             try:
                 label = self.cellWidget(enum, 0)
                 label.setText(name)
-                spin = self.cellWidget(enum, 1)
-                spin.blockSignals(True)
-                spin.setValue(val)
-                spin.blockSignals(False)
             except AttributeError:            
                 label = QtGui.QLabel(name)
                 label.setFont(self.font)
                 self.setCellWidget(enum ,0 , label)
-                spin = QtGui.QDoubleSpinBox()
-                spin.setFont(self.font)
-                spin.setRange(*self.limits)
-                spin.setDecimals(self.sig_figs)
-                spin.setSingleStep(10**-self.sig_figs)
-                spin.setSuffix(' ' + self.suffix)
-                spin.blockSignals(True)
-                spin.setValue(val)
-                spin.blockSignals(False)
-                spin.valueChanged.connect(self.on_new_info)
-                self.setCellWidget(enum, 1, spin)
+            for col in range(1,self.columnCount()):
+                try:
+                    spin = self.cellWidget(enum, col)
+                    spin.blockSignals(True)
+                    spin.setValue(tup[col])
+                    spin.blockSignals(False)
+                except AttributeError: 
+                    spin = QtGui.QDoubleSpinBox()
+                    spin.setFont(self.font)
+                    spin.setDecimals(self.sig_figs[col - 1])
+                    spin.setSingleStep(10**-self.sig_figs[col - 1])
+                    spin.setSuffix(' ' + self.suffix[col - 1])
+                    spin.blockSignals(True)
+                    if self.r_min is not None and self.r_max is not None:
+                        spin.setRange(self.r_min[col -1 ],self.r_max[col -1 ])
+                    spin.setValue(tup[col])
+                    spin.blockSignals(False)
+                    spin.valueChanged.connect(self.on_new_info)
+                    self.setCellWidget(enum, col, spin)
     
     def on_new_info(self, val):
-        print 'new info', val
         info = self.get_info()
         self.info_updated.emit(info)
     
     def set_range(self, r_min, r_max):
+        self.r_min = r_min
+        self.r_max = r_max
         for enum in range( self.rowCount() ):
-            try:
-                spin = self.cellWidget(enum, 1)
-            except AttributeError:
-                pass
-            else:
-                spin.blockSignals(True)
-                spin.setRange(r_min[1],r_max[1])
-                spin.blockSignals(False)
+            for col in range(1,self.columnCount()):
+                try:
+                    spin = self.cellWidget(enum, col)
+                except AttributeError:
+                    pass
+                else:
+                    spin.blockSignals(True)
+                    spin.setRange(r_min[col - 1],r_max[col -1])
+                    spin.blockSignals(False)
 
     def get_info(self):
         info = []
         for enum in range( self.rowCount() ):
+            l = []
             label = self.cellWidget(enum, 0)
             name = label.text()
-            name = str(name)  
-            spin =  self.cellWidget( enum, 1)
-            val = spin.value()
-            info.append((name, val))
+            l.append(str(name))
+            for col in range(1,self.columnCount()):
+                spin =  self.cellWidget( enum, col)
+                val = spin.value()
+                l.append(val)
+            info.append(tuple(l))
         return info
     
     def closeEvent(self, x):
@@ -494,7 +506,7 @@ class frequency_wth_dropdown(QtGui.QWidget):
         self.select_freq.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         layout.addWidget(self.select_freq, 1, 0)
         layout.addWidget(self.select_line, 1, 2)
-        self.dropdown = dropdown(font = self.font, names = self.names)
+        self.dropdown = dropdown(font = self.font, names = self.names, info_position = 0)
         label = QtGui.QLabel(self.parameter_name)
         label.setFont(self.font)
         label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)

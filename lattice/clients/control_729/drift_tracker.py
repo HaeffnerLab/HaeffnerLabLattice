@@ -121,6 +121,7 @@ class drift_tracker(QtGui.QWidget):
     def initialize_layout(self):
         server = self.cxn.servers['SD Tracker']
         transitions = yield server.get_transition_names()
+        print transitions
         self.entry_table.fill_out(transitions)
         duration = yield server.history_duration()
         self.track_duration.blockSignals(True)

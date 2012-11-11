@@ -5,7 +5,6 @@ from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 import numpy
-from state_readout_parameters import general_parameters_connection
 from configuration import config_729_hist as c
 
 class readout_histgram(QtGui.QWidget):
@@ -24,7 +23,6 @@ class readout_histgram(QtGui.QWidget):
         layout = QtGui.QVBoxLayout()
         plot_layout = self.create_plot_layout()
         layout.addLayout(plot_layout)
-        layout.addWidget(general_parameters_connection(self.reactor, self.cxn))
         self.setLayout(layout)
    
     def create_plot_layout(self):

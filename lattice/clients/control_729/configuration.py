@@ -37,8 +37,10 @@ class config_729_spectrum(object):
     rabi_use_saved = ['729Experiments','RabiFlopping','rabi_flopping_use_saved_frequency']
     rabi_saved_freq = ['729Experiments','RabiFlopping','rabi_flopping_saved_frequency']
     #saved freq
-    line_parameters = [('Center', 'MHz', 4), ('Scan Span', 'KHz', 1), ('Scan Points','',0), ('Scan Amplitude', 'dBm', 1), ('Scan Excitation Duration', '\265s', 0)]
-    line_parameters_center = ['729Experiments','saved_lines_729_frequencies']
+    line_parameter_names = ['Name', 'Center', 'Scan Span','Scan Resolution','Scan Amplitude', 'Scan Excitation Duration']
+    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']
+    line_parameter_sig_figs = [4, 1, 1 , 1 , 1]
+    saved_lines_729 = ['729Experiments','saved_lines_729']
 
 class config_729_state_preparation(object):
     #IDs for signaling
@@ -76,9 +78,11 @@ class config_729_state_preparation(object):
     saved_lines_729 = ['729Experiments','saved_lines_729']
     #heating
     background_heating_duration = ['729Experiments','background_heating_time']
+    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']
 
 class config_729_tracker(object):
     
     ID = 99992
     
     frequency_limit = (190, 250)
+    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']

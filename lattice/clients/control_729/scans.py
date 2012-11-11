@@ -1,5 +1,5 @@
 from PyQt4 import QtGui,QtCore
-from helper_widgets import durationWdiget, limitsWidget, frequency_wth_dropdown, lineinfo_table
+from helper_widgets import durationWdiget, limitsWidget, frequency_wth_dropdown, lineinfo_table, dropdown
 from configuration import config_729_spectrum as c
 from async_semaphore import async_semaphore, Parameter
 
@@ -9,16 +9,13 @@ class line_info(QtGui.QFrame):
         super(line_info, self).__init__()
         self.reactor = reactor
         self.setFrameStyle(QtGui.QFrame.Panel  | QtGui.QFrame.Sunken)
-        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.widgets = {}
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.initializeGUI(font)
         
     def initializeGUI(self, font):
+        self.lineinfo = lineinfo_table(self.reactor, sig_figs = c.line_parameter_sig_figs, column_names = c.line_parameter_names, suffix = c.line_parameter_units)
         layout = QtGui.QHBoxLayout()
-        for parameter, suffix, sig_fig in c.line_parameters:
-            widget = lineinfo_table(self.reactor, sig_figs = sig_fig, column_names = ['Line', parameter], suffix = suffix)
-            self.widgets[parameter] = widget
-            layout.addWidget(widget)
+        layout.addWidget(self.lineinfo)
         self.setLayout(layout)
     
     def closeEvent(self, x):
@@ -53,7 +50,24 @@ class spectrum(QtGui.QFrame):
         layout.addWidget(self.ampl_729, 1, 3, 1, 1)
         self.limitWidget = limitsWidget(self.reactor, 'MHz', sigfigs = 4)
         layout.addWidget(self.limitWidget, 4, 0, 1, 4)
+        label = QtGui.QLabel("Use Saved Line Info", font = font)
+        self.use_saved_line = QtGui.QCheckBox()
+        self.dropdown = dropdown(font, info_position = 0)
         self.setLayout(layout)
+        layout.addWidget(label, 0, 5, 1, 1)
+        layout.addWidget(self.use_saved_line, 0, 6, 1, 1)
+        layout.addWidget(self.dropdown, 1, 5, 1, 2)
+        self.use_saved_line.toggled.connect(self.on_use_saved)
+        self.setLayout(layout)
+    
+    def on_use_saved(self, use_saved):
+        to_disable = [self.limitWidget, self.ampl_729, self.duration]
+        if use_saved:
+            for w in to_disable:
+                w.setDisabled(True)
+        else:
+            for w in to_disable:
+                w.setDisabled(False)
     
     def closeEvent(self, x):
         self.reactor.stop()
@@ -87,7 +101,7 @@ class rabi(QtGui.QFrame):
         self.lim = limitsWidget(self.reactor, '\265s')
         layout.addWidget(self.lim, 2, 0, 1, 4)
         self.setLayout(layout)
-    
+        
     def closeEvent(self, x):
         self.reactor.stop()
    
@@ -152,11 +166,13 @@ class scans_connection(scans, async_semaphore):
                 tuple(c.rabi_amplitude_729): Parameter(c.rabi_amplitude_729, setValueBlocking(self.rabi.ampl729), self.rabi.ampl729.valueChanged, self.rabi.ampl729.setRange, 'dBm'),
                 #list
                 tuple(c.rabi_excitation_times):Parameter(c.rabi_excitation_times, do_nothing, self.rabi.lim.new_list_signal, self.rabi.lim.setRange, 'us'),
-                tuple(c.saved_lines_729):Parameter(c.saved_lines_729, self.rabi.freq729.set_dropdown, no_signal, do_nothing, None), 
                 tuple(c.rabi_saved_freq):Parameter(c.rabi_saved_freq, self.rabi.freq729.set_selected, self.rabi.freq729.useSavedLine, do_nothing, None), 
                 tuple(c.rabi_use_saved):Parameter(c.rabi_use_saved, self.rabi.freq729.set_use_saved, updateSignal = self.rabi.freq729.useSaved),
                 #saved lines
-                tuple(c.line_parameters_center):Parameter(c.line_parameters_center, self.lineinfo.widgets['Center'].set_info, self.lineinfo.widgets['Center'].info_updated, self.lineinfo.widgets['Center'].set_range, 'MHz'),
+                tuple(c.saved_lines_729):[
+                                          Parameter(c.saved_lines_729, self.rabi.freq729.set_dropdown, no_signal, do_nothing, c.line_parameter_units),
+                                          Parameter(c.saved_lines_729, self.lineinfo.lineinfo.set_info,  self.lineinfo.lineinfo.info_updated, self.lineinfo.lineinfo.set_range, c.line_parameter_units),
+                                          ], 
                   }
         
 if __name__=="__main__":

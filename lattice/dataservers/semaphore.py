@@ -23,7 +23,7 @@ class Semaphore(LabradServer):
     """Houses the Blocking Function"""
     name = "Semaphore"
     registryDirectory = ['','Servers', 'Semaphore']
-    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)', '(*s, *s)'])
+    onParameterChange = Signal(222222, 'signal: parameter change', ['(*s, *v)', '(*s, b)', '(*s, s)', '(*s, v)', '*s*(sv)', '(*s, *s)','?'])
 
     @inlineCallbacks
     def initServer(self):
@@ -133,7 +133,7 @@ class Semaphore(LabradServer):
         reactor.callLater(seconds, d.callback, result)
         return d
 
-    @setting(0, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s'], returns = '')
+    @setting(0, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s', '?'], returns = '')
     def setParameter(self, c, path, value):
         """Set Parameter"""
         key = path.astuple
@@ -143,7 +143,7 @@ class Semaphore(LabradServer):
         notified = self.getOtherListeners(c)
         self.onParameterChange((list(path), value), notified)
 
-    @setting(1, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s'])
+    @setting(1, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s', '?'])
     def getParameter(self, c, path):
         """Get Parameter Value"""
         key = path.astuple

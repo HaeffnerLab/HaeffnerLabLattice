@@ -19,7 +19,6 @@ class connection(object):
     
     @inlineCallbacks
     def connect(self):
-        print 'Connecting'
         from labrad.wrappers import connectAsync
         self.cxn = yield connectAsync()
         for server_name in self.servers.keys():
@@ -28,7 +27,6 @@ class connection(object):
             except Exception, e:
                 print '{} Not Available'.format(e)
         yield self.setupListeners()
-        print 'Connected'
         returnValue(self)
             
     @inlineCallbacks

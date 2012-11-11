@@ -4,6 +4,7 @@ from scans import scans_connection
 from state_preparation import state_preparation_connection
 from drift_tracker import drift_tracker
 from twisted.internet.defer import inlineCallbacks
+from state_readout_parameters import general_parameters_connection
 
 class control_729(QtGui.QWidget):
     def __init__(self, reactor, cxn = None, parent=None):
@@ -24,7 +25,11 @@ class control_729(QtGui.QWidget):
     def create_layout(self):
         layout = QtGui.QGridLayout()
         self.tab = tab = QtGui.QTabWidget()
-        histogram_tab = readout_histgram(self.reactor, self.cxn)
+        histogram_tab = QtGui.QWidget()
+        histogram_layout = QtGui.QVBoxLayout() 
+        histogram_layout.addWidget(readout_histgram(self.reactor, self.cxn))
+        histogram_layout.addWidget(general_parameters_connection(self.reactor, self.cxn))
+        histogram_tab.setLayout(histogram_layout)
         self.state_preparation_tab = state_preparation_connection(self.reactor, self.cxn)
         scans_tab =  scans_connection(self.reactor, self.cxn)
         tab.addTab(histogram_tab, 'State Readout')
