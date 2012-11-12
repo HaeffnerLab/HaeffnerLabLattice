@@ -160,10 +160,14 @@ class scans_connection(scans, async_semaphore):
                 #spin boxes
                 tuple(c.spectrum_excitation_time): Parameter(c.spectrum_excitation_time, self.spectrum.duration.setNewDuration_blocking, self.spectrum.duration.new_duration, self.spectrum.duration.duration.setRange, 'us'),
                 tuple(c.spectrum_amplitude_729): Parameter(c.spectrum_amplitude_729, setValueBlocking(self.spectrum.ampl_729), self.spectrum.ampl_729.valueChanged, self.spectrum.ampl_729.setRange, 'dBm'),
+                tuple(c.spectrum_use_saved):Parameter(c.spectrum_use_saved, self.spectrum.use_saved_line.setChecked, updateSignal = self.spectrum.use_saved_line.toggled),
+                tuple(c.spectrum_saved_freq):Parameter(c.spectrum_saved_freq, self.spectrum.dropdown.set_selected, self.spectrum.dropdown.currentIndexChanged[QtCore.QString], do_nothing, None), 
                 #list
                 tuple(c.spectrum_frequencies):Parameter(c.spectrum_frequencies, do_nothing, self.spectrum.limitWidget.new_list_signal, self.spectrum.limitWidget.setRange, 'MHz'),
                 tuple(c.rabi_frequency): Parameter(c.rabi_frequency, self.rabi.freq729.set_freq_value_no_signals, self.rabi.freq729.valueChanged, self.rabi.freq729.setRange, 'MHz'),
                 tuple(c.rabi_amplitude_729): Parameter(c.rabi_amplitude_729, setValueBlocking(self.rabi.ampl729), self.rabi.ampl729.valueChanged, self.rabi.ampl729.setRange, 'dBm'),
+
+
                 #list
                 tuple(c.rabi_excitation_times):Parameter(c.rabi_excitation_times, do_nothing, self.rabi.lim.new_list_signal, self.rabi.lim.setRange, 'us'),
                 tuple(c.rabi_saved_freq):Parameter(c.rabi_saved_freq, self.rabi.freq729.set_selected, self.rabi.freq729.useSavedLine, do_nothing, None), 
@@ -172,6 +176,7 @@ class scans_connection(scans, async_semaphore):
                 tuple(c.saved_lines_729):[
                                           Parameter(c.saved_lines_729, self.rabi.freq729.set_dropdown, no_signal, do_nothing, c.line_parameter_units),
                                           Parameter(c.saved_lines_729, self.lineinfo.lineinfo.set_info,  self.lineinfo.lineinfo.info_updated, self.lineinfo.lineinfo.set_range, c.line_parameter_units),
+                                          Parameter(c.saved_lines_729, self.spectrum.dropdown.set_dropdown, no_signal, do_nothing, c.line_parameter_units),
                                           ], 
                   }
         

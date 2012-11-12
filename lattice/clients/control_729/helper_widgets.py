@@ -358,6 +358,7 @@ class saved_frequencies_dropdown(QtGui.QTableWidget):
             sample.setFont(self.font)
             sample.setRange(*self.limits)
             sample.setDecimals(self.sig_figs)
+            sample.setSingleStep(10**-self.sig_figs)
             sample.setSuffix(self.suffix)
             self.setCellWidget(i, 1, sample)
     

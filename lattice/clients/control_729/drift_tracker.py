@@ -3,7 +3,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import LoopingCall
 from helper_widgets import saved_frequencies_table, saved_frequencies_dropdown
 import numpy
@@ -16,7 +16,7 @@ class drift_tracker(QtGui.QWidget):
         self.reactor = reactor
         self.cxn = cxn
         self.subscribed = False
-        self.updater = LoopingCall(self.update_lines)
+        self.updater = LoopingCall(self.looping_update)
         self.create_layout()
         self.connect_labrad()
     
@@ -83,6 +83,7 @@ class drift_tracker(QtGui.QWidget):
         self.remove_count = QtGui.QSpinBox()
         self.remove_count.setRange(-20,20)
         self.update_enable = QtGui.QCheckBox()
+        self.send_to_semaphroe = QtGui.QCheckBox()
         self.update_rate = QtGui.QSpinBox()
         self.update_rate.setSuffix('sec')
         self.update_rate.setKeyboardTracking(False)
@@ -100,6 +101,8 @@ class drift_tracker(QtGui.QWidget):
         update_layout = QtGui.QHBoxLayout()
         update_layout.addWidget(QtGui.QLabel("Live Update"))
         update_layout.addWidget(self.update_enable)
+        update_layout.addWidget(QtGui.QLabel("Send To Semaphore"))
+        update_layout.addWidget(self.send_to_semaphroe)
         update_layout.addWidget(QtGui.QLabel("Rate (sec)"))
         update_layout.addWidget(self.update_rate)
         keep_layout = QtGui.QHBoxLayout()
@@ -121,17 +124,12 @@ class drift_tracker(QtGui.QWidget):
     def initialize_layout(self):
         server = self.cxn.servers['SD Tracker']
         transitions = yield server.get_transition_names()
-        print transitions
         self.entry_table.fill_out(transitions)
         duration = yield server.history_duration()
         self.track_duration.blockSignals(True)
         self.track_duration.setValue(duration['min'])
         self.track_duration.blockSignals(False)
-        try:
-            yield self.on_new_fit(None, None)
-        except Exception as e:
-            #print 'No Data Available'
-            pass
+        yield self.on_new_fit(None, None)
     
     def on_update_enable(self, enable):
         rate = self.update_rate.value()
@@ -212,16 +210,25 @@ class drift_tracker(QtGui.QWidget):
     @inlineCallbacks
     def on_new_fit(self, x, y):
         yield self.update_lines()
-        server = self.cxn.servers['SD Tracker']
-        history = yield server.get_fit_history()
-        inunits_b = [(t['min'], b['mgauss']) for (t,b,freq) in history]
-        inunits_f = [(t['min'], freq['kHz']) for (t,b,freq) in history]
-        self.update_track(inunits_b, self.b_drift, self.b_drift_lines)
-        self.update_track(inunits_f, self.line_drift, self.line_drift_lines)
-        fit_b = yield server.get_fit_parameters('bfield')
-        fit_f = yield server.get_fit_parameters('linecenter')
-        self.plot_fit_b(fit_b)
-        self.plot_fit_f(fit_f)
+        yield self.update_fit()
+    
+    @inlineCallbacks
+    def update_fit(self):
+        try:
+            server = self.cxn.servers['SD Tracker']
+            history = yield server.get_fit_history()
+            fit_b = yield server.get_fit_parameters('bfield')
+            fit_f = yield server.get_fit_parameters('linecenter')
+        except Exception as e:
+            #no fit available
+            pass
+        else:
+            inunits_b = [(t['min'], b['mgauss']) for (t,b,freq) in history]
+            inunits_f = [(t['min'], freq['kHz']) for (t,b,freq) in history]
+            self.update_track(inunits_b, self.b_drift, self.b_drift_lines)
+            self.update_track(inunits_f, self.line_drift, self.line_drift_lines)
+            self.plot_fit_b(fit_b)
+            self.plot_fit_f(fit_f)
     
     def plot_fit_b(self, p):
         for i in range(len(self.b_drift_fit_line)):
@@ -263,10 +270,50 @@ class drift_tracker(QtGui.QWidget):
     
     @inlineCallbacks
     def update_lines(self):
-        server = self.cxn.servers['SD Tracker']
-        lines = yield server.get_current_lines()
-        self.update_spectrum(lines)
-        self.update_listing(lines)
+        try:
+            server = self.cxn.servers['SD Tracker']
+            lines = yield server.get_current_lines()
+        except Exception as e:
+            #no lines available
+            returnValue(None)
+        else:
+            self.update_spectrum(lines)
+            self.update_listing(lines)
+            returnValue(lines)
+    
+    @inlineCallbacks
+    def looping_update(self):
+        new_lines = yield self.update_lines()
+        if self.send_to_semaphroe.isChecked() and new_lines is not None:
+            try:
+                #try changing the center frequency of the lines stored in the semaphore
+                have_update = False
+                new_lines = dict(new_lines)
+                semaphore = self.cxn.servers['Semaphore']
+                known_info = yield semaphore.get_parameter(c.saved_lines_729)
+                min_freq = known_info[0][1]
+                max_freq = known_info[1][1]
+                for i in range(2, len(known_info)):
+                    name = known_info[i][0]
+                    try:
+                        new_freq = new_lines[name]
+                    except KeyError:
+                        pass
+                    else:
+                        if min_freq <= new_freq <= max_freq and new_freq != known_info[i][1]:
+                            #if within range, and not the same as the old one
+                            l = list(known_info[i])
+                            l[1] = new_freq
+                            known_info[i] = tuple(l)
+                            have_update = True
+                if have_update:
+                    yield semaphore.set_parameter(c.saved_lines_729, known_info)
+            except self.Error as e:
+                message = QtGui.QMessageBox()
+                message.setText(e.msg)
+                message.exec_()
+            
+            
     
     def update_track(self, meas, axes, lines):
         #clear

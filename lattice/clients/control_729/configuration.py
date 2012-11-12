@@ -28,6 +28,8 @@ class config_729_spectrum(object):
     spectrum_excitation_time = ['729Experiments','Spectrum','excitation_time']
     spectrum_frequencies = ['729Experiments','Spectrum','frequencies']
     spectrum_amplitude_729 = ['729Experiments','Spectrum','spectrum_amplitude_729']
+    spectrum_use_saved = ['729Experiments','Spectrum','spectrum_use_saved_frequency']
+    spectrum_saved_freq = ['729Experiments','Spectrum','spectrum_saved_frequency']
     #rabi flop
     saved_lines_729 = ['729Experiments','saved_lines_729']
     
@@ -85,4 +87,4 @@ class config_729_tracker(object):
     ID = 99992
     
     frequency_limit = (190, 250)
-    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']
+    saved_lines_729 = ['729Experiments','saved_lines_729']
