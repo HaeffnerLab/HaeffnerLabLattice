@@ -8,52 +8,32 @@ from activeexperimentslist import ActiveExperimentsListWidget
 from parameterswidget import ParametersWidget
 from scheduler import Scheduler
 from queuedexperimentslist import QueuedExperimentsListWidget
+from configuration import config as c
 import sys
+import reloader
+
 
 class ScriptControl(QtGui.QWidget):
-    
-    #dictionary in the form semaphore_path: (import_part, name)
-    ExperimentInfo = {
-     ('Test', 'Exp1'):  ('clients.guiscriptcontrol.experiments.Test', 'Test'),
-     ('Test', 'Exp2'):  ('clients.guiscriptcontrol.experiments.Test2', 'Test2'),
-     ('Test', 'Exp3'):  ('clients.guiscriptcontrol.experiments.Test3', 'Test3'),
-     ('SimpleMeasurements', 'ADCPowerMonitor'):  ('scripts.simpleMeasurements.ADCpowerMonitor', 'ADCPowerMonitor'),
-     ('729Experiments','Spectrum'):  ('scripts.experiments.Experiments729.spectrum', 'spectrum'),
-     ('729Experiments','RabiFlopping'):  ('scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping'),
-     ('729Experiments','BlueHeating'):  ('scripts.experiments.Experiments729.blue_rabi', 'blue_rabi'),
-     ('BranchingRatio',):  ('scripts.experiments.BranchingRatio.branching_ratio', 'branching_ratio')
-     }
-    #conflicting experiments, every experiment conflicts with itself
-    conflictingExperiments = {
-    ('Test', 'Exp1'): [('Test', 'Exp1'), ('Test', 'Exp2')],
-    ('Test', 'Exp2'): [('Test', 'Exp2')],
-    ('Test', 'Exp3'): [('Test', 'Exp3')],
-    ('SimpleMeasurements', 'ADCPowerMonitor'):  [('SimpleMeasurements', 'ADCPowerMonitor')],
-    ('729Experiments','Spectrum'):  [('729Experiments','Spectrum')],
-    ('729Experiments','RabiFlopping'):  [('729Experiments','RabiFlopping')],
-    ('729Experiments','BlueHeating'):[('729Experiments','BlueHeating')],
-    ('BranchingRatio',):[('BranchingRatio',)]
-    }
-    
     def __init__(self, reactor, parent):
         QtGui.QWidget.__init__(self)
         self.reactor = reactor
         self.parent = parent
-        
         #import all experiments
+        reloader.enable(blacklist=['labrad', 'labrad.units']) #reloading these gives errors
         self.experiments = {}
-        for semaphore_path,value in self.ExperimentInfo.iteritems():
+        for semaphore_path,value in c.ExperimentInfo.iteritems():
             local_path,name = value
             try:
                 __import__(local_path)
-                self.experiments[semaphore_path] = (sys.modules[local_path], name)
             except ImportError as e:
-                print 'Script Control: ', e
+                print 'Script Control Error importing: ', e
+            else:
+                self.experiments[semaphore_path] = (local_path, name)
         
         self.setupExperimentProgressDict() #MR, is this dictionary necessary or is it enough to use semaphore?
         self.connect()
         self.experimentParametersWidget = ParametersWidget(self)
-        self.schedulerWidget = Scheduler(self, self.conflictingExperiments)
+        self.schedulerWidget = Scheduler(self, c.conflictingExperiments)
         self.setupMainWidget()
 
     def getWidgets(self):
@@ -72,11 +52,9 @@ class ScriptControl(QtGui.QWidget):
         yield self.cxn.connect()
         self.cxn.on_connect['Semaphore'].append( self.reinitialize_semaphore)
         self.cxn.on_disconnect['Semaphore'].append( self.disable)        
-  
-
         try:
             self.server = self.cxn.servers['Semaphore']
-            test = yield self.cxn.servers['Semaphore'].test_connection() #not sure why this is necessary
+            test = yield self.cxn.servers['Semaphore'].test_connection() #MR: why this is necessary?
             self.createContexts()
         except Exception, e:
             print 'Not Initially Connected to Semaphore', e
@@ -237,14 +215,17 @@ class ScriptControl(QtGui.QWidget):
     # Returns a different widget depending on the type of value provided by the semaphore 
     def typeCheckerWidget(self, Value):
         # boolean
-        if (type(Value) == bool):
+        t = type(Value)
+        if t == bool:
             checkbox = QtGui.QCheckBox()
-            if (Value == True):
-                checkbox.toggle()
+            checkbox.setChecked(Value)
             return checkbox
+        elif t == str:
+            lineEdit = QtGui.QLineEdit()       
+            lineEdit.setText(Value)
+            return lineEdit
         else:
             value = Value.aslist
-
         from labrad.units import Value as labradValue
         if ((type(value) == list) and (len(value) == 3) and (type(value[2]) == labradValue)):
             doubleSpinBox = QtGui.QDoubleSpinBox()
@@ -268,9 +249,11 @@ class ScriptControl(QtGui.QWidget):
     @inlineCallbacks
     def startExperiment(self, experiment):
         try:
-            reload(self.experiments[experiment][0])
-            class_ = getattr(self.experiments[experiment][0], self.experiments[experiment][1])
-            instance = class_()
+            local_path, name = self.experiments[experiment]
+            module = sys.modules[local_path]
+            reloader.reload(module)
+            experiment = getattr(module, name)
+            instance = experiment()
             yield deferToThread(instance.run)
         except Exception as e:
             raise

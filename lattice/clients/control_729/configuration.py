@@ -40,8 +40,8 @@ class config_729_spectrum(object):
     rabi_saved_freq = ['729Experiments','RabiFlopping','rabi_flopping_saved_frequency']
     #saved freq
     line_parameter_names = ['Name', 'Center', 'Scan Span','Scan Resolution','Scan Amplitude', 'Scan Excitation Duration']
-    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']
-    line_parameter_sig_figs = [4, 1, 1 , 1 , 1]
+    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'us']
+    line_parameter_sig_figs = [4, 2, 2 , 1 , 1]
     saved_lines_729 = ['729Experiments','saved_lines_729']
 
 class config_729_state_preparation(object):
@@ -60,7 +60,7 @@ class config_729_state_preparation(object):
     doppler_cooling_repump_additional = ['doppler_cooling_repump_additional']
     #optical pumping
     optical_pumping_enable = ['729Experiments','optical_pumping_enable']
-    optical_pumping_frequency_729 = ['729Experiments','optical_pumping_frequency_729']
+    optical_pumping_frequency_729 = ['729Experiments','optical_pumping_user_selected_frequency_729']
     optical_pumping_amplitude_729 = ['729Experiments','optical_pumping_amplitude_729']
     optical_pumping_frequency_854 = ['frequency_854']
     optical_pumping_amplitude_854 = ['729Experiments','optical_pumping_amplitude_854']
@@ -80,11 +80,11 @@ class config_729_state_preparation(object):
     saved_lines_729 = ['729Experiments','saved_lines_729']
     #heating
     background_heating_duration = ['729Experiments','background_heating_time']
-    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'mus']
+    line_parameter_units = ['MHz', 'kHz', 'kHz', 'dBm', 'us']
 
 class config_729_tracker(object):
     
     ID = 99992
     
-    frequency_limit = (190, 250)
+    frequency_limit = (150, 250) #MHz
     saved_lines_729 = ['729Experiments','saved_lines_729']

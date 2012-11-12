@@ -2,6 +2,7 @@ from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
 from scripts.PulseSequences.spectrum_rabi import spectrum_rabi as sequence
 from scripts.PulseSequences.spectrum_rabi import sample_parameters
 from scripts.scriptLibrary import dvParameters
+from scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 import time
 import numpy
        
@@ -72,16 +73,27 @@ class rabi_flopping(SemaphoreExperiment):
         sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        
-        sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
+    
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
-
         return sequence_parameters
         
     def program_pulser(self, duration):
         self.sequence_parameters['rabi_excitation_duration'] = duration
-        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
+        if self.p.rabi_flopping_use_saved_frequency:
+            info = self.p.saved_lines_729
+            line_name = self.p.rabi_flopping_saved_frequency
+            self.sequence_parameters['rabi_excitation_frequency'] = cm.saved_line_info_to_frequency(info, line_name)
+        else:
+            self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    
+        #optical pumping can track line drift
+        if self.p.optical_pumping_use_saved:
+            info = self.p.saved_lines_729
+            line_name = self.p.optical_pumping_use_saved_line
+            self.sequence_parameters['optical_pumping_frequency_729'] = cm.saved_line_info_to_frequency(info, line_name)
+        else:
+            self.sequence_parameters['optical_pumping_frequency_729'] = self.check_parameter(self.p.optical_pumping_user_selected_frequency_729)
+#        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
+#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 

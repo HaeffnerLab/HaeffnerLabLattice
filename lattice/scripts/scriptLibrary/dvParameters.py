@@ -7,10 +7,10 @@ def measureParameters(cxn, cxnlab, specified = None):
     """Measures parameters in the list and returns the dictionary containing these"""
     d = {}
     local = {
-            'trapdrive':measure_trapdrive,
+#            'trapdrive':measure_trapdrive,
             'endcaps':measure_endcaps,
             'compensation':measure_compensation,
-            'dcoffsetonrf':measure_dcoffsetonrf,
+#            'dcoffsetonrf':measure_dcoffsetonrf,
             }
     lab = {
             'cavity397':measure_cavity('397'),
@@ -41,11 +41,10 @@ def measure_endcaps(cxn , d):
     d['endcap2'] = server.get_voltage('endcap2')
     
 def measure_compensation(cxn , d):
-    server = cxn.compensation_box
-    [comp1, comp2] = [server.getcomp('comp1'), server.getcomp('comp2')]
-    d['comp1'] = comp1
-    d['comp2'] = comp2
-
+    server = cxn.dac
+    d['comp1'] = server.get_voltage('comp1')
+    d['comp2'] = server.get_voltage('comp2')
+    
 def measure_dcoffsetonrf(cxn , d):
     server = cxn.dac
     d['dconrf1'] = server.get_voltage('dconrf1')

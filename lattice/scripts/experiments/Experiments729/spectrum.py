@@ -2,6 +2,7 @@ from scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
 from scripts.PulseSequences.spectrum_rabi import spectrum_rabi as sequence
 from scripts.PulseSequences.spectrum_rabi import sample_parameters
 from scripts.scriptLibrary import dvParameters
+from scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 import time
 import numpy
        
@@ -67,29 +68,40 @@ class spectrum(SemaphoreExperiment):
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
         sequence_parameters.update(common_values)
-        sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
-        sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-
-        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.spectrum_amplitude_729)
-        sequence_parameters['rabi_excitation_duration'] = self.check_parameter(self.p.excitation_time)
-        
+        sequence_parameters['doppler_cooling_frequency_866'] = check(self.p.frequency_866)
+        sequence_parameters['state_readout_frequency_866'] = check(self.p.frequency_866)
+        sequence_parameters['optical_pumping_frequency_866'] = check(self.p.frequency_866)        
+        sequence_parameters['optical_pumping_frequency_854'] = check(self.p.frequency_854)
+        sequence_parameters['repump_d_frequency_854'] = check(self.p.frequency_854)
         return sequence_parameters
         
-    def program_pulser(self, frequency_729, amplitude_729 = None):
-        if amplitude_729 is not None:
-            print 'overwriting', amplitude_729
-            self.sequence_parameters['rabi_excitation_amplitude'] = amplitude_729
+    def program_pulser(self, frequency_729, ampl = None, duration = None):
+        if ampl is None:
+            ampl = self.check_parameter(self.p.spectrum_amplitude_729)
+        if duration is None:
+            duration = self.check_parameter(self.p.excitation_time)
+        self.sequence_parameters['rabi_excitation_amplitude'] = ampl
         self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
-        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
+        self.sequence_parameters['rabi_excitation_duration'] = duration
+        #optical pumping can track line drift
+        if self.p.optical_pumping_use_saved:
+            info = self.p.saved_lines_729
+            line_name = self.p.optical_pumping_use_saved_line
+            self.sequence_parameters['optical_pumping_frequency_729'] = cm.saved_line_info_to_frequency(info, line_name)
+        else:
+            self.sequence_parameters['optical_pumping_frequency_729'] = self.check_parameter(self.p.optical_pumping_user_selected_frequency_729)
+#        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
+#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan = self.check_parameters(self.p.frequencies)
+        if self.p.spectrum_use_saved_frequency:
+            scan, ampl, duration = cm.saved_line_info_to_scan( self.p.saved_lines_729, self.p.spectrum_saved_frequency)
+        else:
+            scan = self.check_parameters(self.p.frequencies)
+            ampl = None
+            duration = None
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, freq in enumerate(scan):
@@ -101,7 +113,7 @@ class spectrum(SemaphoreExperiment):
                 return
             else:
                 #program pulser, run sequence, and get readouts
-                self.program_pulser(freq)
+                self.program_pulser(freq, ampl, duration)
                 self.pulser.start_number(repeatitions)
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()

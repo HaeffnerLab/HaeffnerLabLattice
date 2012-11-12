@@ -22,6 +22,5 @@ class state_readout(PulseSequence):
                    'doppler_cooling_amplitude_866':self.p.state_readout_amplitude_866,
                    'doppler_cooling_duration':self.p.state_readout_duration,
                    }
-        
         self.addSequence(doppler_cooling, **replace)
         self.ttl_pulses.append(('ReadoutCount', self.start, self.p.state_readout_duration))
