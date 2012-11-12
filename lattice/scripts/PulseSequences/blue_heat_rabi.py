@@ -5,14 +5,14 @@ from subsequences.OpticalPumping import optical_pumping
 from subsequences.RabiExcitation import rabi_excitation
 from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
-from subsequences.GlobalBlueHeating import global_blue_heating
+from subsequences.BlueHeating import global_blue_heating, local_blue_heating
 from labrad.units import WithUnit
 
 class blue_heat_rabi(PulseSequence):
     
     def configuration(self):
         config = [
-                  'optical_pumping_enable','global_blue_heating_delay_before','global_blue_heating_delay_after'
+                  'optical_pumping_enable','blue_heating_delay_before','blue_heating_delay_after', 'use_local_blue_heating'
                   ]
         return config
     
@@ -20,9 +20,15 @@ class blue_heat_rabi(PulseSequence):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.global_blue_heating_delay_before})
-        self.addSequence(global_blue_heating)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.global_blue_heating_delay_after})
+        self.start_record_timetags = self.end
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_before})
+        if self.p.use_local_blue_heating:
+            self.addSequence(local_blue_heating)
+        else:
+            self.addSequence(global_blue_heating)
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_after})
+        self.timetag_record_duration = self.end - self.start_record_timetags
+        self.ttl_pulses.append( ('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration))
         if self.p.optical_pumping_enable:
             self.addSequence(optical_pumping)
         self.addSequence(rabi_excitation)
@@ -73,13 +79,22 @@ class sample_parameters(object):
               'state_readout_amplitude_866':WithUnit(-11.0, 'dBm'),
               'state_readout_duration':WithUnit(1.0,'ms'),
               
-              'global_blue_heating_delay_before':WithUnit(0.1,'ms'),
+              'use_local_blue_heating': False,
+              
+              'blue_heating_delay_before':WithUnit(1.0,'ms'),
+              'blue_heating_duration':WithUnit(1.0,'ms'),
+              'blue_heating_delay_after':WithUnit(1.0,'ms'),
+              
               'global_blue_heating_frequency_397':WithUnit(130.0, 'MHz'),
+              'local_blue_heating_frequency_397':WithUnit(220.0, 'MHz'),
               'global_blue_heating_amplitude_397':WithUnit(-11.0, 'dBm'),
-              'global_blue_heating_frequency_866':WithUnit(80.0, 'MHz'),
-              'global_blue_heating_amplitude_866':WithUnit(-11.0, 'dBm'),
-              'global_blue_heating_duration':WithUnit(0.0,'ms'),
-              'global_blue_heating_delay_after':WithUnit(0.1,'ms'),
+              'local_blue_heating_amplitude_397':WithUnit(-11.0, 'dBm'),
+              'blue_heating_frequency_866':WithUnit(80.0, 'MHz'),
+              'blue_heating_amplitude_866':WithUnit(-11.0, 'dBm'),
+
+              
+              'blue_heating_frequency_866':WithUnit(80.0, 'MHz'),
+              'blue_heating_amplitude_866':WithUnit(-11.0, 'dBm'),
               }
 
 if __name__ == '__main__':

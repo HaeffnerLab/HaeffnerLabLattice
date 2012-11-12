@@ -127,8 +127,8 @@ class SequencePlotter():
             pyplot.axvline(x, alpha = '0.3', color = '0.35', linestyle = '--')
 
 if __name__ == '__main__':
-    from spectrum_rabi import sample_parameters, spectrum_rabi as seq
-#    from blue_heat_rabi import sample_parameters, blue_heat_rabi as seq
+#    from spectrum_rabi import sample_parameters, spectrum_rabi as seq
+    from blue_heat_rabi import sample_parameters, blue_heat_rabi as seq
     import labrad
     with labrad.connect() as cxn:
         pulser = cxn.pulser

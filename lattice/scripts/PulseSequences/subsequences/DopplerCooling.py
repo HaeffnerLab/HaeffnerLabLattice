@@ -15,8 +15,6 @@ class doppler_cooling(PulseSequence):
         return config
     
     def sequence(self):
-        print 'in dop'
-        print self.p.doppler_cooling_frequency_397
         
         pulses = self.dds_pulses
         repump_duration = self.p.doppler_cooling_duration + self.p.doppler_cooling_repump_additional
