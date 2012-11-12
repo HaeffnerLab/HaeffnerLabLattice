@@ -64,7 +64,7 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
     def setup_pulser(self):
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_auto('axial', True) #high TTL corresponds to light ON
+        self.pulser.switch_auto('radial', True) #high TTL corresponds to light ON
         self.pulser.switch_manual('crystallization',  False) #switch off far red beam
         #switch off 729 at the beginning
         self.pulser.output('729DP', False) #make sure 729 is off in the beginning
@@ -83,6 +83,8 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
         sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866) 
         sequence_parameters['blue_heating_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
+        sequence_parameters['blue_heating_amplitude_866'] = self.check_parameter(self.p.doppler_cooling_amplitude_866)
+        
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
         return sequence_parameters

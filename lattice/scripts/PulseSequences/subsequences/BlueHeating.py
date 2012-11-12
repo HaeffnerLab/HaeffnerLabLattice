@@ -44,6 +44,7 @@ class local_blue_heating(PulseSequence):
         ttl = self.ttl_pulses
         repump_duration = self.p.blue_heating_duration + self.p.doppler_cooling_repump_additional
         dds.append( ('radial',self.start, self.p.blue_heating_duration, self.p.local_blue_heating_frequency_397, self.p.local_blue_heating_amplitude_397) )
-        ttl.append( ('radial', self.start, self.b.blue_heating_duration))
+        if self.p.blue_heating_duration.value > 40e-9:
+            ttl.append( ('radial', self.start, self.p.blue_heating_duration))
         dds.append( ('866DP',self.start, repump_duration, self.p.blue_heating_frequency_866, self.p.blue_heating_amplitude_866) )
         self.end = self.start + repump_duration
