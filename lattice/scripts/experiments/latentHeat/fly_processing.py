@@ -3,11 +3,12 @@ numpy.seterr(divide='raise')
 
 class Binner():
     '''Helper class for binning received timetags'''
-    def __init__(self, totalWidth, binWidth):
+    def __init__(self, totalWidth, binWidth, offset = 0):
         self.averaged = 0
+        self.offset = offset
         self.binWidth = binWidth
         binNumber = int(totalWidth / binWidth)
-        self.binArray = binWidth * numpy.arange(binNumber + 1)
+        self.binArray = self.offset + binWidth * numpy.arange(binNumber + 1)
         self.binned = numpy.zeros(binNumber)
     
     def add(self, newData, added = 1):

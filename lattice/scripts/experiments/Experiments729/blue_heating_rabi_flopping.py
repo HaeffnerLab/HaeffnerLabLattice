@@ -3,6 +3,7 @@ from scripts.PulseSequences.blue_heat_rabi import blue_heat_rabi as sequence
 from scripts.PulseSequences.blue_heat_rabi import sample_parameters
 from scripts.scriptLibrary import dvParameters
 from scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+from fly_processing import Binner
 import time
 import numpy
        
@@ -29,6 +30,7 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
         self.sequence_parameters = self.setup_sequence_parameters()
         self.setup_pulser()
         self.total_readouts = []
+        self.binner = None
     
     def import_labrad(self):
         import labrad
@@ -37,6 +39,7 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
         self.dv = self.cxn.data_vault
         self.readout_save_context = self.cxn.context()
         self.histogram_save_context = self.cxn.context()
+        self.timetag_bin_save_context = self.cxn.context()
         self.pulser = self.cxn.pulser
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
@@ -55,14 +58,17 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
         self.dv.add_parameter('Window', self.p.window_name)
         self.dv.add_parameter('plotLive',self.p.plot_live_parameter)
         self.dv.cd(directory , context = self.readout_save_context)
+        self.dv.cd(directory , context = self.timetag_bin_save_context)
         self.dv.new('Readout {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Readout Counts','Arb','Arb')], context = self.readout_save_context )
     
     def setup_pulser(self):
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False)
+        self.pulser.switch_auto('axial', True) #high TTL corresponds to light ON
+        self.pulser.switch_manual('crystallization',  False) #switch off far red beam
         #switch off 729 at the beginning
-        self.pulser.output('729DP', False)
+        self.pulser.output('729DP', False) #make sure 729 is off in the beginning
+        self.pulser.output('854DP', False) #make sure 854 is off in the beginning
     
     def setup_sequence_parameters(self):
         #update the sequence parameters with our values
@@ -70,16 +76,14 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
         check = self.check_parameter
         common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
         common_values_heat = dict([(key,check(value)) for key,value in self.p_heat.iteritems() if key in sequence_parameters])
-        print common_values_heat
         sequence_parameters.update(common_values)
         sequence_parameters.update(common_values_heat)
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866) 
-        sequence_parameters['global_blue_heating_frequency_866'] = self.check_parameter(self.p.frequency_866)        
+        sequence_parameters['blue_heating_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
         return sequence_parameters
         
@@ -102,6 +106,8 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
 #        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
+        if not self.binner:
+            self.binner = Binner(seq.timetag_record_duration['s'], 5.0e-6, offset = seq.start_record_timetags['s'])
 
     def sequence(self):
         scan = self.check_parameters(self.p.excitation_times)
@@ -121,6 +127,8 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()
                 readouts = self.pulser.get_readout_counts().asarray
+                timetags = self.pulser.get_timetags().asarray
+                self.binner.add(timetags, repeatitions)
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 self.dv.add(duration, perc_excited)
@@ -130,6 +138,7 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
                 self.total_readouts.extend(readouts)
                 self.save_histogram()
         self.percentDone = 100.0
+        self.save_binned()
                 
     def save_histogram(self, force = False):
         if (len(self.total_readouts) >= 500) or force:
@@ -139,6 +148,13 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
             self.dv.add_parameter('Histogram729', True, context = self.histogram_save_context )
             self.total_readouts = []
     
+    def save_binned(self):
+        binned_x, binned_y = self.binner.getBinned(normalize = True)
+        print binned_x, binned_y
+        self.dv.new('Binned Timetags {}'.format(self.datasetNameAppend),[('Time', 'sec')],[('Occurence','Arb','Arb')], context = self.timetag_bin_save_context )
+        self.dv.add_parameter('plotLive', True,  context = self.timetag_bin_save_context)
+        self.dv.add(numpy.vstack((binned_x,binned_y)).transpose(), context = self.timetag_bin_save_context )
+        
     def save_parameters(self):
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
         dvParameters.saveParameters(self.dv, measuredDict)
