@@ -85,6 +85,7 @@ def _deepcopy_module_dict(m):
 def _reload(m, visited):
     """Internal module reloading routine."""
     name = m.__name__
+    print 'reloader working on', name
 
     # If this module's name appears in our blacklist, skip its entire
     # dependency hierarchy.
@@ -99,6 +100,7 @@ def _reload(m, visited):
     # Start by reloading all of our dependencies in reverse order.  Note that
     # we recursively call ourself to perform the nested reloads.
     deps = _dependencies.get(name, None)
+    print 'keys', sorted(_dependencies.keys())
     if deps is not None:
         for dep in reversed(deps):
             if dep not in visited:
@@ -151,7 +153,8 @@ def _import(name, globals=None, locals=None, fromlist=None, level=-1):
 
     # Perform the actual import using the base import function.
     base = _baseimport(name, globals, locals, fromlist, level)
-
+    'reloader importing', name
+    'parent is', parent
     # If this is a nested import for a reloadable (source-based) module, we
     # append ourself to our parent's dependency list.
     if parent is not None:
@@ -162,6 +165,7 @@ def _import(name, globals=None, locals=None, fromlist=None, level=-1):
         if m is not None and hasattr(m, '__file__'):
             l = _dependencies.setdefault(parent, [])
             l.append(m)
+#            print 'adding to dependency', parent,  m
 
     # Lastly, we always restore our global _parent pointer.
     _parent = parent
