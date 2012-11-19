@@ -29,7 +29,7 @@ dv.cd(c.datavault_dir)
 dv.open(1)
 #start_recording_timetags = dv.get_parameter('start_recording_timetags')
 #cycle_time = dv.get_parameter('timetag_record_cycle')
-start_recording_timetags = 0.00526
+start_recording_timetags = 0.00528
 cycle_time = 0.00012
 bin_size = 10e-9
 timetags = (timetags - start_recording_timetags) % cycle_time
