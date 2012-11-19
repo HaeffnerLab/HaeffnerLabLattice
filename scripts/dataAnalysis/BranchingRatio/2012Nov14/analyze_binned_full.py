@@ -4,10 +4,12 @@ from constants import constants as c
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
+#load binned information from the file
 f = np.load(c.bin_filename)
 bins = f[:,0]
 hist = f[:,1]
 bins = bins*1e6 #time now in mus
+
 #find the background level
 background_domain = (83.0, 101.0)
 background_where = np.where((background_domain[0] <= bins) * (bins <= background_domain[1]))
@@ -18,7 +20,7 @@ background_level_sigma = np.sqrt(np.sum(background_total)) /  float(background_b
 print 'Calculated background level to be {0:.2f} with sigma of {1:.2f}, relative uncertainty {2:.2e}'.format(background_level, background_level_sigma, background_level_sigma / background_level)
 
 #calculate the area of 866 peak
-peak_866 = (101.0, 105.0)
+peak_866 = (101.0, 108.0)
 peak_866_where = np.where((peak_866[0] <= bins) * (bins <= peak_866[1]))
 peak_866_bins,peak_866_counts = bins[peak_866_where], hist[peak_866_where]
 area_866_sigma = np.sqrt(np.sum(peak_866_counts))
@@ -34,18 +36,21 @@ summary_866 = 'Area 866:  {0:.1e}, relative uncertainty {4:.1e}'
 print toprint.format(background_subtrated_866_area, background_subtrated_866_sigma, area_866_sigma, total_uncertainty_of_background, background_subtrated_866_sigma / background_subtrated_866_area)
 summary_866 = summary_866.format(background_subtrated_866_area, background_subtrated_866_sigma, area_866_sigma, total_uncertainty_of_background, background_subtrated_866_sigma / background_subtrated_866_area)
 
-completed_sequences = 527 *  1000 * 84
-collection_efficiency = background_subtrated_866_area / (c.ion_number * completed_sequences)
-collection_str = 'Collection efficiency {:.1e} per ion'.format(collection_efficiency)
+
+##finds collection efficiency, here needs access to completed sequences, ion number
+#completed_sequences = 527 *  1000 * 84
+#collection_efficiency = background_subtrated_866_area / (c.ion_number * completed_sequences)
+#collection_str = 'Collection efficiency {:.1e} per ion'.format(collection_efficiency)
 
 #computing the area of the 397 peak
-peak_397_domain = (21.5, 30.0)
+peak_397_domain = (21.5, 35.0)
 peak_397_where = np.where((peak_397_domain[0] <= bins) * (bins <= peak_397_domain[1]))
 peak_397_bins,peak_397_counts = bins[peak_397_where], hist[peak_397_where]
 peak_397_area = np.sum(peak_397_counts)
 peak_397_area_sigma = np.sqrt(peak_397_area)
-#background of area of the 397 peak
-background_397_domain = (61.5, 70.0)
+
+#corresponding background of area of the 397 peak
+background_397_domain = (61.5, 75.0)
 background_397_domain_where = np.where((background_397_domain[0] <= bins) * (bins <= background_397_domain[1]))
 background_397_bins, background_397_counts = bins[background_397_domain_where], hist[background_397_domain_where]
 background_397_area = np.sum(background_397_counts)
@@ -58,12 +63,12 @@ summary_397 = 'Area 397:  {0:.1e}, relative uncertainty {2:.1e}'.format(backgrou
 z = (background_subtracted_397_area / background_subtrated_866_area)
 branching = z / (z + 1)
 branching_error = branching * np.sqrt( (background_subtracted_397_area_sigma / background_subtracted_397_area)**2  + (background_subtrated_866_sigma / background_subtrated_866_area)**2  )
-branching_str = u'Branching: {0:.3f} \261 {1:.3f}'.format(  branching, branching_error) 
+branching_str = u'Branching: {0:.4f} \261 {1:.4f}'.format(  branching, branching_error) 
 
 
 pyplot.plot(bins, hist, '.k', markersize=0.7)
 pyplot.annotate(branching_str, xy=(0.55, 0.80), xycoords='axes fraction')
-pyplot.annotate(collection_str, xy=(0.55, 0.85), xycoords='axes fraction')
+#pyplot.annotate(collection_str, xy=(0.55, 0.85), xycoords='axes fraction')
 pyplot.annotate(summary_866, xy=(0.55, 0.95), xycoords='axes fraction')
 pyplot.annotate(summary_397, xy=(0.55, 0.90), xycoords='axes fraction')
 
