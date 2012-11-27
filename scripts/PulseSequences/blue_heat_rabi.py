@@ -79,10 +79,11 @@ class sample_parameters(object):
               'state_readout_amplitude_866':WithUnit(-11.0, 'dBm'),
               'state_readout_duration':WithUnit(1.0,'ms'),
               
-              'use_local_blue_heating': False,
+              'use_local_blue_heating': True,
               
               'blue_heating_delay_before':WithUnit(1.0,'ms'),
               'blue_heating_duration':WithUnit(1.0,'ms'),
+              'blue_heating_repump_additional':WithUnit(3.0, 'us'),
               'blue_heating_delay_after':WithUnit(1.0,'ms'),
               
               'global_blue_heating_frequency_397':WithUnit(130.0, 'MHz'),

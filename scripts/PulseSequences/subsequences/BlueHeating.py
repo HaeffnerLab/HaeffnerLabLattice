@@ -1,6 +1,5 @@
 from lattice.scripts.PulseSequences.PulseSequence import PulseSequence
 from lattice.scripts.PulseSequences.subsequences.DopplerCooling import doppler_cooling
-from labrad.units import WithUnit
 
 class global_blue_heating(PulseSequence):
     
@@ -12,6 +11,7 @@ class global_blue_heating(PulseSequence):
                 'blue_heating_frequency_866', 
                 'blue_heating_amplitude_866', 
                 'blue_heating_duration',
+                'blue_heating_repump_additional'
                 ]
         return config
     
@@ -22,6 +22,7 @@ class global_blue_heating(PulseSequence):
                    'doppler_cooling_frequency_866':self.p.blue_heating_frequency_866,
                    'doppler_cooling_amplitude_866':self.p.blue_heating_amplitude_866,
                    'doppler_cooling_duration':self.p.blue_heating_duration,
+                   'doppler_cooling_repump_additional':self.p.blue_heating_repump_additional
                    }
         self.addSequence(doppler_cooling, **replace)
 
@@ -35,7 +36,7 @@ class local_blue_heating(PulseSequence):
                   'blue_heating_frequency_866', 
                   'blue_heating_amplitude_866', 
                   'blue_heating_duration',
-                  'doppler_cooling_repump_additional'
+                  'blue_heating_repump_additional'
                   ]
         return config
     
@@ -43,7 +44,7 @@ class local_blue_heating(PulseSequence):
         
         dds = self.dds_pulses
         ttl = self.ttl_pulses
-        repump_duration = self.p.blue_heating_duration + WithUnit(2.5, 'us')
+        repump_duration = self.p.blue_heating_duration + self.p.blue_heating_repump_additional
         dds.append( ('radial',self.start, self.p.blue_heating_duration, self.p.local_blue_heating_frequency_397, self.p.local_blue_heating_amplitude_397) )
         if self.p.blue_heating_duration.value > 40e-9:
             ttl.append( ('radial', self.start, self.p.blue_heating_duration))
