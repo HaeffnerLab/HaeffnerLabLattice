@@ -1,10 +1,10 @@
 from PulseSequence import PulseSequence
-#from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
-#from subsequences.EmptySequence import empty_sequence
-#from subsequences.OpticalPumping import optical_pumping
-#from subsequences.RabiExcitation import rabi_excitation
-#from subsequences.StateReadout import state_readout
-#from subsequences.TurnOffAll import turn_off_all
+from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
+from subsequences.EmptySequence import empty_sequence
+from subsequences.OpticalPumping import optical_pumping
+from subsequences.RabiExcitation import rabi_excitation
+from subsequences.StateReadout import state_readout
+from subsequences.TurnOffAll import turn_off_all
 from labrad.units import WithUnit
 
 class spectrum_rabi(PulseSequence):
