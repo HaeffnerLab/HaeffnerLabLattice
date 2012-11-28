@@ -3,7 +3,7 @@ from lattice.scripts.PulseSequences.blue_heat_rabi import blue_heat_rabi as sequ
 from lattice.scripts.PulseSequences.blue_heat_rabi import sample_parameters
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
-from fly_processing import Binner
+from lattice.scripts.scriptLibrary.fly_processing import Binner
 import time
 import numpy
        
@@ -130,7 +130,7 @@ class blue_heating_rabi_flopping(SemaphoreExperiment):
                 self.pulser.stop_sequence()
                 readouts = self.pulser.get_readout_counts().asarray
                 timetags = self.pulser.get_timetags().asarray
-                self.binner.add(timetags, repeatitions)
+                self.binner.add(timetags)
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 self.dv.add(duration, perc_excited)

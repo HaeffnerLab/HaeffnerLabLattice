@@ -1,4 +1,4 @@
-from LatentHeatGlobal import LatentHeat
+from MeltingHeat import MeltingHeat
 from labrad import types as T
 
 for delay in [1000e-3, 2500e-3, 5000e-3]:#, 7500e-3, 10000e-3, 15000e-3, 20000e-3, 30000e-3]:

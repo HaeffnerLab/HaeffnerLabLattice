@@ -49,7 +49,6 @@ class SequencePlotter():
     def makePlot(self):
         advance,reset = self.drawTTL()
         self.drawDDS(advance,reset)
-        pyplot.legend()
         pyplot.xlabel('Time (sec)')
         pyplot.show()
         
@@ -62,13 +61,15 @@ class SequencePlotter():
             if channel.any(): #ignore empty channels
                 x,y = self.getCoords(times, channel)
                 y = 3 * y + self.offset #offset the y coordinates
-                self.offset += 4
                 label = nameDict[str(number)]
                 if label == 'AdvanceDDS':
                     advanceDDS = x,y
                 if label == 'ResetDDS':
                     resetDDS = x,y
-                pyplot.plot(x, y, label = 'TTL ' + label)
+                label = 'TTL ' + label
+                pyplot.plot(x, y)
+                pyplot.annotate(label, xy = (0,  self.offset + 1.5), horizontalalignment = 'right')
+                self.offset += 4
         return advanceDDS,resetDDS
     
     def drawDDS(self, advance, reset):
@@ -106,8 +107,10 @@ class SequencePlotter():
         #each x coordiante appears twice except for the first one and last one
         x, y = self.getDDSCoordinates(advance, ampls)
         y = (np.array(y)  + 63.0) / 20.0 + self.offset #normalizes the amplitude -63 to -3 to height between 0 and 3
+        label =  'DDS: ' + channel + ' Amplitude '
+        pyplot.plot(x, y)
+        pyplot.annotate(label, xy = (0,  self.offset + 1.5), horizontalalignment = 'right')
         self.offset += 4
-        pyplot.plot(x, y, label = 'DDS Ampl' + channel )
 #        x, y = self.getDDSCoordinates(advance, freqs)
 #        y = np.array(y) / 220.0 + self.offset #normalizes the amplitude 0 to 220 to height between 0 and 3
 #        self.offset += 4
@@ -128,7 +131,8 @@ class SequencePlotter():
 
 if __name__ == '__main__':
 #    from spectrum_rabi import sample_parameters, spectrum_rabi as seq
-    from blue_heat_rabi import sample_parameters, blue_heat_rabi as seq
+#    from blue_heat_rabi import sample_parameters, blue_heat_rabi as seq
+    from melting_heat import sample_parameters, melting_heat as seq
     import labrad
     with labrad.connect() as cxn:
         pulser = cxn.pulser

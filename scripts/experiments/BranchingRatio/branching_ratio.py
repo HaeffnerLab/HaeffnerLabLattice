@@ -2,7 +2,7 @@ from lattice.scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
 from lattice.scripts.PulseSequences.branching_ratio import branching_ratio as sequence
 from lattice.scripts.PulseSequences.branching_ratio import sample_parameters
 from lattice.scripts.scriptLibrary import dvParameters
-from fly_processing import Binner
+from lattice.scripts.scriptLibrary.fly_processing import Binner
 import time
 import numpy
        
