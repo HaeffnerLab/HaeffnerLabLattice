@@ -1,36 +1,60 @@
 from twisted.internet import protocol
+from twisted.internet.defer import Deferred
 
 class ExperimentProtocol(protocol.ProcessProtocol):
+    '''
+    Protocol for running an experimental script
+    
+    @var self.on_exit: a Deferred which will be calledback when the process exits. True on error-free completion, False otherwise.
+    '''
 
     def __init__(self, name):
         self.name = name
+        self.on_exit = Deferred()
     
     def connectionMade(self):
-        print 'connection made:', self.transport.pid
+        print '{0} started'.format(self.name)
     
-    def processExited(self, reason):
-        failure =  reason.value
-        print 'error', failure.exitCode
+    def processEnded(self, reason):
+        '''
+        called when the process is ended
+        '''
+        failure = reason.value
+        code = failure.exitCode
+        if not code:
+            print '{0} finished with no errors'.format(self.name)
+            self.on_exit.callback(True)
+        else:
+            print '{0} finished with an error'.format(self.name)
+            self.on_exit.callback(False)
     
-    def childDataReceived(self, childFD, data):
-        print 'child data Received', childFD
-        print 'my name is', self.name
-        print data.rstrip('\n')
-        print 'over'
-
     def outReceived(self, data):
-        print 'out received', self.name, data, 'over'
-
+        '''
+        print the stdout from the running process
+        '''
+        print '{0}: {1}'.format(self.name, data.rstrip('\n'))
+    
+    def errReceived(self, data):
+        '''
+        print the errout from the running process
+        '''
+        print 'ERROR in {0}: {1}'.format(self.name, data.rstrip('\n'))
+    
+    def kill(self):
+        '''
+        kills the process
+        '''
+        self.transport.signalProcess('KILL')
 
 from twisted.internet import reactor
-prot = ExperimentProtocol('one')
 
-def rename():
-    prot.name = 'two'
+def finished(a):
+    print 'finished', a
+
+protocol = ExperimentProtocol('experiment_name')
+on_protocol_exit = protocol.on_exit
+on_protocol_exit.addCallback(finished)
 #-u enable line buffering
-reactor.spawnProcess(prot, 'python', ['python','-u', '/Users/micramm/Documents/LabRAD/lattice/devel/ScriptLauncher/experiment.py',],
-                     )
-#                     childFDs = { 0: 0, 1: 1, 2: 2})
+reactor.spawnProcess(protocol, 'python', ['python','-u', '/Users/micramm/Documents/LabRAD/lattice/devel/ScriptLauncher/experiment.py',])
 
-reactor.callLater(2, rename)
 reactor.run()
