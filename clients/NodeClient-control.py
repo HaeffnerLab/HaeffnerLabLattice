@@ -4,7 +4,7 @@ import time
 
 nodeDict = {'node_lattice_control':
 					['Serial Server','Data Vault', 'DAC', 'Pulser', 'NormalPMTFlow',
-					'ADCserver',  'HighVoltA','Semaphore', 'SD Tracker'],
+					'ADCserver',  'HighVoltA','Semaphore', 'SD Tracker','GPIB Device Manager'],
 		}
 
 #connect to LabRAD
@@ -13,12 +13,10 @@ try:
 	cxn = labrad.connect()
 except Exception:
 	print 'Please start LabRAD Manager'
-	errors = True
 else:
 	nodes = nodeDict.keys()
 	if not len(nodes):
 		print "No Nodes Running"
-		errors = True
 	for node in nodeDict.keys():
 		#make sure all node servers are up
 		if not node in cxn.servers:'{} is not running'.format(node)
@@ -36,7 +34,4 @@ else:
 						cxn.servers[node].start(server)
 					except Exception as e:
 						print 'ERROR with ' + server
-						errors = True
-	
-if errors:
-	time.sleep(10)
+print 'DONE'	
