@@ -30,6 +30,7 @@ class branching_ratio(SemaphoreExperiment):
         self.binner = Binner(self.timetag_record_cycle, 100e-9)
         self.timetags_since_last_binsave = 0
         self.save_timetags_every = 25000
+        self.save_parameters()
     
     def import_labrad(self):
         import labrad
@@ -133,7 +134,6 @@ class branching_ratio(SemaphoreExperiment):
         dvParameters.saveParameters(self.dv, self.p.toDict())
     
     def finalize(self):
-        self.save_parameters()
         self.sem.finish_experiment(self.experimentPath, self.percentDone)
         self.cxn.disconnect()
         self.cxnlab.disconnect()
