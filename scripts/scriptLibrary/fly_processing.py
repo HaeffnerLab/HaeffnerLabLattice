@@ -19,11 +19,11 @@ class Binner():
     def getBinned(self, normalize = True):
         if normalize:
             try:
-                self.binned = self.binned / float(self.averaged)
-                self.binned = self.binned / float(self.binWidth)
+                binned = self.binned / float(self.averaged)
+                binned = binned / float(self.binWidth)
             except FloatingPointError:
                 raise Exception ("BINNER: Can't normalize since no data has been added")
-        return (self.binArray[0:-1], self.binned)
+        return (self.binArray[0:-1], binned)
 
 class Splicer():
     '''Helper class for maintaining a list of timetags during a readout period'''
