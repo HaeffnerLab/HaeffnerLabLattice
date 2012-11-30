@@ -1,9 +1,9 @@
 import numpy
-numpy.seterr(divide='raise')
 
 class Binner():
     '''Helper class for binning received timetags'''
     def __init__(self, totalWidth, binWidth, offset = 0):
+        assert binWidth > 0.0, "Bin width must be positive"
         self.averaged = 0
         self.offset = offset
         self.binWidth = binWidth
@@ -18,11 +18,9 @@ class Binner():
     
     def getBinned(self, normalize = True):
         if normalize:
-            try:
-                binned = self.binned / float(self.averaged)
-                binned = binned / float(self.binWidth)
-            except FloatingPointError:
-                raise Exception ("BINNER: Can't normalize since no data has been added")
+            binned = self.binned / float(self.binWidth)
+            if not self.averaged == 0:
+                binned = binned / float(self.averaged)
         return (self.binArray[0:-1], binned)
 
 class Splicer():

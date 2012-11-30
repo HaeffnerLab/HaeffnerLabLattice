@@ -36,7 +36,7 @@ class Crystallizer(object):
     def get_initial_rate(self):
         signal = self._get_ion_signal()
         self.crystal_threshold = self.thresholdPercentage * signal
-#        assert self.crystal_threshold > 0, "Crystallize r: No Ion Signal"
+#        assert self.crystal_threshold > 0, "Crystalize r: No Ion Signal"
         print 'Crystallizer: Initial Ion Signal {0:.2f} => Threshold {1:.2f}'.format(signal, self.crystal_threshold) 
     
     def _get_ion_signal(self):
@@ -72,6 +72,7 @@ class Crystallizer(object):
                 attempt_counter += 1
                 self._do_crystallize()
         print 'Crystallized on attempt', attempt_counter + 1
+        return True
         
     def _do_crystallize(self):
         '''

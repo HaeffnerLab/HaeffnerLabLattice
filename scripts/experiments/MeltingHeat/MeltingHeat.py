@@ -30,6 +30,8 @@ class MeltingHeat(SemaphoreExperiment):
         self.sequence_parameters = self.setup_sequence_parameters()
         self.setup_pulser()
         self.total_readouts = []
+        self.crystallizer = Crystallizer(self.pulser, self.pmtflow)
+        self.binner = None
     
     def import_labrad(self):
         import labrad
@@ -39,8 +41,10 @@ class MeltingHeat(SemaphoreExperiment):
         self.binned_save_context = self.cxn.context()
         self.histogram_save_context = self.cxn.context()
         self.pulser = self.cxn.pulser
+        self.pulser.clear_dds_lock()
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
+        self.pmtflow = cxn.normalpmtflow
         self.p = self.populate_parameters(self.sem, self.experimentPath)
         self.p_heat = self.populate_parameters(self.sem, self.experimentPath_heating)
     
@@ -50,7 +54,6 @@ class MeltingHeat(SemaphoreExperiment):
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
-        self.program_pulser()
     
     def setup_sequence_parameters(self):
         #update the sequence parameters with our values
@@ -85,7 +88,8 @@ class MeltingHeat(SemaphoreExperiment):
 #        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
-        self.binner = Binner(seq.timetag_record_duration['s'], 100.0e-6, offset = seq.start_record_timetags['s'])
+        if self.binner is None:
+            self.binner = Binner(seq.timetag_record_duration['s'], 100.0e-6, offset = seq.start_record_timetags['s'])
     
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -115,6 +119,7 @@ class MeltingHeat(SemaphoreExperiment):
     
     def sequence(self):
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
+        self.crystallizer.get_initial_rate()
         for repeat in range(repeatitions):
             print 'Repeatition {}'.format(repeat)
             self.percentDone = 100.0 * repeat / float(repeatitions)
@@ -124,9 +129,12 @@ class MeltingHeat(SemaphoreExperiment):
                 return
             else:
                 #run sequence, and get readouts
+                self.program_pulser()
                 self.pulser.start_number(1)
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()
+                if not self.crystallizer.auto_crystallize():
+                    raise Exception("Can't Crystalize")
                 readouts = self.pulser.get_readout_counts().asarray
                 timetags = self.pulser.get_timetags().asarray
                 self.binner.add(timetags, 1)
@@ -141,6 +149,7 @@ class MeltingHeat(SemaphoreExperiment):
         self.dv.add(numpy.vstack((binned_x,binned_y)).transpose(), context = self.binned_save_context)
     
     def save_histogram(self):
+        if not len(self.total_readouts): return 
         readouts = numpy.array(self.total_readouts)
         perc_excited = numpy.count_nonzero(readouts <= self.threshold) / float(len(readouts))
         print '{0:.1f}% of samples are Melted, below threshold of {1} '.format(100 * perc_excited, self.threshold)
