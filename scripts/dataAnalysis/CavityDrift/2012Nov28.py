@@ -24,6 +24,7 @@ x_axis = x_axis[2:] / 60.0
 x_axis = x_axis - x_axis.min()
 
 y_axis = data[:,1][2:] * 1000.0
+y_axis = 2 * y_axis #doubline for double pass
 ymin = y_axis.min()
 y_axis = y_axis - ymin
 
@@ -39,7 +40,7 @@ m,b = p
 pyplot.plot(x_axis,y_axis, 'k*')
 pyplot.plot(x_axis, f(x_axis, m, b), 'r', label = 'Slope of {0:.1f} KHz / min'.format(abs(m)))
 pyplot.xlabel( 'Time (min)')
-pyplot.ylabel('Frequency kHz + {0:.0f} kHz'.format(ymin))
+pyplot.ylabel('Frequency kHz + 2 * {0:.0f} kHz'.format(ymin/2.0))
 pyplot.legend()
 pyplot.title(filename)
 pyplot.show()
