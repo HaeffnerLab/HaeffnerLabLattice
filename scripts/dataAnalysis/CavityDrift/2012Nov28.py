@@ -4,7 +4,7 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 import numpy as np
 from scipy.optimize import curve_fit
-from scipy.stats import chi2
+
 #get access to servers
 cxn = labrad.connect()
 dv = cxn.data_vault
@@ -16,7 +16,6 @@ filename = '00007 - Cavity Drift 2012Nov28_1758_57'
 figure = pyplot.figure()
 
 dv.cd(directory)
-print dv.dir()
 dv.open(filename)
 data = dv.get().asarray
 x_axis = data[:,0]
