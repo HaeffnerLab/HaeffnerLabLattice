@@ -18,7 +18,7 @@ timeout = 20
 #written by Michael Ramm, Haeffner lab, Nov 2011
 from common.serialdevices.serialdeviceserver import SerialDeviceServer, setting, inlineCallbacks, SerialDeviceError, SerialConnectionError, PortRegError
 from twisted.internet.defer import returnValue
-from labrad import types as T
+from labrad.units import WithUnit
 
 PREC_BITS = 10.
 DAC_MAX = 1023.#mV
@@ -33,7 +33,7 @@ class ADCServer( SerialDeviceServer ):
     regKey = 'ADC'
     port = None
     serNode = 'lattice_control'
-    timeout = T.Value(1.0, 's')
+    timeout = WithUnit(1.0, 's')
 
     @inlineCallbacks
     def initServer( self ):
@@ -98,7 +98,7 @@ class ADCServer( SerialDeviceServer ):
         if channel not in self.d.keys(): raise Exception("Incorrect Channel")
         chanNumber = self.d[channel]
         voltage = yield self.getVoltage(chanNumber)
-        voltage = T.Value(voltage, 'mV')
+        voltage = WithUnit(voltage, 'mV')
         returnValue(voltage)
 
 if __name__ == "__main__":
