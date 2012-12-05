@@ -1,31 +1,29 @@
-from sequence import Sequence
+from PulseSequence import PulseSequence
+from labrad.units import WithUnit
 
-class sampleReadout(Sequence):
-    #dictionary of variable: (type, min, max, default)
-    requiredVars = {
-                    }
+class sampleReadout(PulseSequence):
 
-    def defineSequence(self):
-        pulser = self.pulser
-        for i in range(10):
-            pulser.add_ttl_pulse('ReadoutCount', 0.0+i/10.0, 0.05)
-
+    def sequence(self):
+        start =  WithUnit(100, 'us')
+        duration = WithUnit(10, 'ms')
+        self.ttl_pulses.append(('ReadoutCount', start, duration))
+        self.ttl_pulses.append(('TimeResolvedCount',start, duration))
         
         
 if __name__ == '__main__':
+    
     import labrad
+    import numpy as np
     cxn = labrad.connect()
     pulser = cxn.pulser
-    seq = sampleReadout(pulser)
-    pulser.new_sequence()
-    seq.defineSequence()
-    pulser.program_sequence()
-    pulser.reset_readout_counts()
-    #pulser.start_single()
-    pulser.start_number(1)
-    pulser.wait_sequence_done()
-    pulser.stop_sequence()
-    counts = pulser.get_readout_counts().asarray
-    print counts
-    print counts.size
-    print 'done'
+    cs = sampleReadout(**{})
+    cs.programSequence(cxn.pulser)
+    
+    cxn.pulser.start_number(1000)
+    cxn.pulser.wait_sequence_done()
+    cxn.pulser.stop_sequence()
+    readout = cxn.pulser.get_readout_counts().asarray
+#    timetags = pulser.get_timetags().asarray
+    print np.average(readout)
+#    print timetags
+#    print timetags.size
