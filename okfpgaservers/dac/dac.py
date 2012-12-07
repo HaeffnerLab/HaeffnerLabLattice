@@ -18,10 +18,11 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting, Signal
-from labrad import types as T
+from labrad.units import WithUnit
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
 from twisted.internet.threads import deferToThread
 from api_dac import api_dac
+
 
 class dac_channel(object):
     def __init__(self, name, channel_number, min_voltage, vpp = 20.0, voltage = None):
@@ -99,10 +100,15 @@ class DAC(LabradServer):
         yield self.inCommunication.acquire()
         try:
             yield deferToThread(self.api_dac.setVoltage, channel_number, value)
+            confirmation = yield deferToThread(self.api_dac.getVoltage, channel_number)
+            print 'setting value', value
+            if not value == confirmation:
+                raise Exception("Board did not set the voltage not set properly")
+        except Exception as e:
+            raise e
         finally:
             self.inCommunication.release()
         
-    
     def voltage_to_val(self, voltage, minim, total, prec = 16):
         '''converts voltage of a channel to FPGA-understood sequential value'''
         value = int((voltage - minim) / total * (2 ** prec  - 1) )
@@ -115,7 +121,7 @@ class DAC(LabradServer):
             voltage = self.d[channel].voltage
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
-        return T.Value(voltage, 'V')
+        return WithUnit(voltage, 'V')
     
     @setting(2, "Get Range", channel = 's', returns = '(v[V]v[V])')
     def getRange(self, c, channel):
@@ -124,7 +130,7 @@ class DAC(LabradServer):
             minim,maxim = chan.min_voltage,chan.max_voltage
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
-        return (T.Value(minim,'V'), T.Value(maxim), 'V')
+        return (WithUnit(minim,'V'), WithUnit(maxim), 'V')
     
     def notifyOtherListeners(self, context, message, f):
         """

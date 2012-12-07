@@ -17,10 +17,10 @@ class api_dac():
             serial = fp.GetDeviceListSerial(i)
             tmp = ok.FrontPanel()
             tmp.OpenBySerial(serial)
-            id = tmp.GetDeviceID()
-            if id == self.okDeviceID:
+            dev_id = tmp.GetDeviceID()
+            if dev_id == self.okDeviceID:
                 self.xem = tmp
-                print 'Connected to {}'.format(id)
+                print 'Connected to {}'.format(dev_id)
                 self.programOKBoard()
                 return True
         return False
@@ -34,7 +34,6 @@ class api_dac():
         self.xem.SetPLL22150Configuration(pll)
         
     def setVoltage(self, channel, value):
-        ## 32621 is mid-way ##
         self.xem.SetWireInValue(channel,value)
         self.xem.UpdateWireIns()
   
