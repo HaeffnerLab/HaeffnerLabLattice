@@ -6,7 +6,7 @@ from matplotlib import pyplot
 class correlator(object):
     
     @staticmethod
-    def g2_differences(arr):
+    def element_differences(arr, bins):
         '''
         computes differences between all pairs of elements from an array of timetags
         
@@ -33,19 +33,21 @@ class correlator(object):
                     diff = correlate_window[i] - all_timetags[j]
                     if abs(diff) < max_correlation_length:
                         differences.append(diff)
-        return np.array(differences)             
+        bins = np.linspace(-max_correlation_length, max_correlation_length , 2*bins)
+        hist,bins =  np.histogram(differences, bins=bins)
+        hist = hist / ( float(correlate_window.size)
+        return hist,bins
 
 if __name__ == '__main__':
     #g2 for a poisonnian process
     count_rate = 0.1
-    samples = 30000.0
+    samples = 3000.0
     photon_numbers = np.random.poisson(lam = count_rate, size = samples) #photon number is poisonian
     timetags = []
     for i,num in enumerate(photon_numbers):
         if num > 0:
             timetags.extend(num * [i])
-    diffs = correlator.element_differences(timetags)
-    pyplot.hist(diffs, 50)
+    hist,bins = correlator.element_differences(timetags, 50)
+    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
     pyplot.show()
     #g2 for a poisonnian process with 
-    
