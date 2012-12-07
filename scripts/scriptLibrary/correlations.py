@@ -6,12 +6,13 @@ from matplotlib import pyplot
 class correlator(object):
     
     @staticmethod
-    def element_differences(arr):
+    def g2_differences(arr):
         '''
-        computes differences between all pairs of elements
-        returns 
+        computes differences between pairs of elements
+         
         '''
         differences = []
+        
         for i in range(len(arr)):
             for j in range(len(arr)):
                 if not i == j:
