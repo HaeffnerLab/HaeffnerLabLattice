@@ -1,0 +1,288 @@
+
+****** PlanAhead v14.3 (64-bit)
+  **** Build 209282 by xbuild on Thu Oct 18 20:50:53 MDT 2012
+    ** Copyright 1986-1999, 2001-2012 Xilinx, Inc. All Rights Reserved.
+
+INFO: [Common 17-78] Attempting to get a license: PlanAhead
+INFO: [Common 17-290] Got license for PlanAhead
+INFO: [Device 21-36] Loading parts and site information from C:/Xilinx/14.3/ISE_DS/PlanAhead/data/parts/arch.xml
+Parsing RTL primitives file [C:/Xilinx/14.3/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
+Finished parsing RTL primitives file [C:/Xilinx/14.3/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
+start_gui
+source C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pa.fromNetlist.tcl
+# create_project -name photon -dir "C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/planAhead_run_1" -part xc6slx45fgg484-2
+create_project: Time (s): elapsed = 00:00:07 . Memory (MB): peak = 405.789 ; gain = 62.273
+# set_property design_mode GateLvl [get_property srcset [current_run -impl]]
+# set_property edif_top_file "C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/photon.ngc" [ get_property srcset [ current_run ] ]
+# add_files -norecurse { {C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon} {ipcore_dir} }
+# add_files [list {C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pulser_ram.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/dds_fifo.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/fifo_photon.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/normal_pmt_fifo.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/pulser_ram.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/pulse_fifo.ncf}] -fileset [get_property constrset [current_run]]
+# add_files [list {ipcore_dir/readout_count_fifo.ncf}] -fileset [get_property constrset [current_run]]
+# set_property target_constrs_file "xem6010.ucf" [current_fileset -constrset]
+Adding file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/xem6010.ucf' to fileset 'constrs_1'
+# add_files [list {xem6010.ucf}] -fileset [get_property constrset [current_run]]
+# link_design
+Design is defaulting to srcset: sources_1
+Design is defaulting to constrset: constrs_1
+Design is defaulting to project part: xc6slx45fgg484-2
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design photon.ngc ...
+WARNING:NetListWriters:298 - No output is written to photon.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus ep40wire[7 : 0] on block photon is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus master_logic[31 : 0] on block photon is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus ram_data_out_2[61 : 0] on block photon
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus ram_data_out_1[31 : 0] on block photon
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus pulser_ram_doutb[61 : 0] on block photon
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus _n0849[31 : 0] on block photon is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   Madd_ram_read_address[9]_GND_8_o_add_33_OUT_cy[7 : 4] on block photon is not
+   reconstructed, because there are some missing bus signals.
+  finished :Prep
+Writing EDIF netlist file photon.edif ...
+ngc2edif: Total memory usage is 82576 kilobytes
+
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/photon_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/photon_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okWireIn.ngc ...
+WARNING:NetListWriters:298 - No output is written to okWireIn.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okWireIn.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okWireIn.ngc' for (cell view 'okWireIn', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okWireIn_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okWireIn_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okWireOut.ngc ...
+WARNING:NetListWriters:298 - No output is written to okWireOut.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okWireOut.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okWireOut.ngc' for (cell view 'okWireOut', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okWireOut_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okWireOut_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okCoreHarness.ngc ...
+WARNING:NetListWriters:298 - No output is written to okCoreHarness.xncf,
+   ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okCoreHarness.edif ...
+ngc2edif: Total memory usage is 80528 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okCoreHarness.ngc' for (cell view 'okCoreHarness', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okCoreHarness_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okCoreHarness_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design TFIFO64x8a_64x8b.ngc ...
+WARNING:NetListWriters:298 - No output is written to TFIFO64x8a_64x8b.xncf,
+   ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus
+   U0/grf.rf/rstblk/ngwrdrst.grst.rd_rst_reg<2 : 0> on block
+   TFIFO64x8a_64x8b_fifo_generator_v6_2_xst_1 is not reconstructed, because
+   there are some missing bus signals.
+  finished :Prep
+Writing EDIF netlist file TFIFO64x8a_64x8b.edif ...
+ngc2edif: Total memory usage is 79184 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/TFIFO64x8a_64x8b.ngc' for (cell view 'TFIFO64x8a_64x8b', library 'okCoreHarness_lib', file 'okCoreHarness.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/TFIFO64x8a_64x8b_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/TFIFO64x8a_64x8b_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okTriggerIn.ngc ...
+WARNING:NetListWriters:298 - No output is written to okTriggerIn.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okTriggerIn.edif ...
+ngc2edif: Total memory usage is 79568 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okTriggerIn.ngc' for (cell view 'okTriggerIn', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okTriggerIn_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okTriggerIn_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okBTPipeIn.ngc ...
+WARNING:NetListWriters:298 - No output is written to okBTPipeIn.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okBTPipeIn.edif ...
+ngc2edif: Total memory usage is 79952 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okBTPipeIn.ngc' for (cell view 'okBTPipeIn', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okBTPipeIn_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okBTPipeIn_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design okBTPipeOut.ngc ...
+WARNING:NetListWriters:298 - No output is written to okBTPipeOut.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file okBTPipeOut.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/okBTPipeOut.ngc' for (cell view 'okBTPipeOut', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/okBTPipeOut_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/okBTPipeOut_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design fifo_photon.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_photon.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_photon.edif ...
+ngc2edif: Total memory usage is 82704 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/fifo_photon.ngc' for (cell view 'fifo_photon', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/fifo_photon_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/fifo_photon_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design pulse_fifo.ngc ...
+WARNING:NetListWriters:298 - No output is written to pulse_fifo.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file pulse_fifo.edif ...
+ngc2edif: Total memory usage is 79824 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pulse_fifo.ngc' for (cell view 'pulse_fifo', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/pulse_fifo_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/pulse_fifo_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design normal_pmt_fifo.ngc ...
+WARNING:NetListWriters:298 - No output is written to normal_pmt_fifo.xncf,
+   ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file normal_pmt_fifo.edif ...
+ngc2edif: Total memory usage is 78864 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/normal_pmt_fifo.ngc' for (cell view 'normal_pmt_fifo', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/normal_pmt_fifo_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/normal_pmt_fifo_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design dds_fifo.ngc ...
+WARNING:NetListWriters:298 - No output is written to dds_fifo.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file dds_fifo.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/dds_fifo.ngc' for (cell view 'dds_fifo', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/dds_fifo_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/dds_fifo_ngc_f6ad583a.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design readout_count_fifo.ngc ...
+WARNING:NetListWriters:298 - No output is written to readout_count_fifo.xncf,
+   ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file readout_count_fifo.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/readout_count_fifo.ngc' for (cell view 'readout_count_fifo', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/readout_count_fifo_ngc_e6a3a41.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/readout_count_fifo_ngc_e6a3a41.edif]
+Release 14.3 - ngc2edif P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+Reading design pulser_ram.ngc ...
+WARNING:NetListWriters:298 - No output is written to pulser_ram.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file pulser_ram.edif ...
+ngc2edif: Total memory usage is 79504 kilobytes
+
+Reading core file 'C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pulser_ram.ngc' for (cell view 'pulser_ram', library 'photon_lib', file 'photon.ngc')
+Parsing EDIF File [./planAhead_run_1/photon.data/cache/pulser_ram_ngc_f6ad583a.edif]
+Finished Parsing EDIF File [./planAhead_run_1/photon.data/cache/pulser_ram_ngc_f6ad583a.edif]
+INFO: [Netlist 29-17] Analyzing 83 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+Loading clock regions from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx45/ClockRegion.xml
+Loading clock buffers from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx45/ClockBuffers.xml
+Loading package pin functions from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/PinFunctions.xml...
+Loading package from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx45/fgg484/Package.xml
+Loading io standards from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\./parts/xilinx/spartan6/IOStandards.xml
+Loading device configuration modes from C:/Xilinx/14.3/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/ConfigModes.xml
+Loading list of drcs for the architecture : C:/Xilinx/14.3/ISE_DS/PlanAhead/data\./parts/xilinx/spartan6/drc.xml
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pulser_ram.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pulser_ram.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/dds_fifo.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/dds_fifo.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/fifo_photon.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/fifo_photon.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/normal_pmt_fifo.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/normal_pmt_fifo.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/pulser_ram.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/pulser_ram.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/pulse_fifo.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/pulse_fifo.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/readout_count_fifo.ncf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/ipcore_dir/readout_count_fifo.ncf]
+Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/xem6010.ucf]
+Finished Parsing UCF File [C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/xem6010.ucf]
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 83 instances were transformed.
+  IOBUF => IOBUF (OBUFT, IBUF): 17 instances
+  LUT6_2 => LUT6_2 (LUT6, LUT5): 50 instances
+  RAM128X1S => RAM128X1S (RAMS64E, RAMS64E, MUXF7): 8 instances
+  RAM32M => RAM32M (RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMS32, RAMS32): 4 instances
+  RAM64M => RAM64M (RAMD64E, RAMD64E, RAMD64E, RAMD64E): 2 instances
+  RAM64X1D => RAM64X1D (RAMD64E, RAMD64E): 2 instances
+
+Phase 0 | Netlist Checksum: 0ff458a7
+link_design: Time (s): elapsed = 00:00:47 . Memory (MB): peak = 632.594 ; gain = 225.469
+exit
+INFO: [Common 17-206] Exiting PlanAhead at Sun Dec 02 20:44:50 2012...
+INFO: [Common 17-83] Releasing license: PlanAhead

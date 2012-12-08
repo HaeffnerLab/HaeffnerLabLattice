@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# PlanAhead v14.3 (64-bit)
+# Build 209282 by xbuild on Thu Oct 18 20:50:53 MDT 2012
+# Start of session at: Sun Dec 02 20:38:08 2012
+# Process ID: 984
+# Log file: C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/planAhead_run_1/planAhead.log
+# Journal file: C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/planAhead_run_1/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/pa.fromNetlist.tcl

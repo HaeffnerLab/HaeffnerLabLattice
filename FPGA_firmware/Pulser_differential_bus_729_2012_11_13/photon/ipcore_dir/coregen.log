@@ -1,0 +1,63 @@
+INFO:sim:172 - Generating IP...
+Applying current project options...
+Finished applying current project options.
+WARNING:sim - A core named 'clk_pll_100_in_200_out' already exists in the
+   project. Output products for this core may be overwritten.
+Resolving generics for 'clk_pll_100_in_200_out'...
+WARNING:sim - A core named 'clk_pll_100_in_200_out' already exists in the
+   project. Output products for this core may be overwritten.
+Applying external generics to 'clk_pll_100_in_200_out'...
+Delivering associated files for 'clk_pll_100_in_200_out'...
+WARNING:sim - Component clk_wiz_v3_6 does not have a valid model name for VHDL
+   synthesis
+Delivering EJava files for 'clk_pll_100_in_200_out'...
+Delivered 3 files into directory
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out
+Delivered 1 file into directory
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out
+Generating ASY schematic symbol...
+Loading device for application Rf_Device from file '6slx45.nph' in environment
+C:\Xilinx\14.3\ISE_DS\ISE\.
+INFO:sim:949 - Finished generation of ASY schematic symbol.
+Generating SYM schematic symbol for 'clk_pll_100_in_200_out'...
+Generating ISE project...
+XCO file found: clk_pll_100_in_200_out.xco
+XMDF file found: clk_pll_100_in_200_out_xmdf.tcl
+Adding
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out/example_design/clk_pll_100_in_200_out_
+exdes.ucf -view all -origin_type created
+Adding
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out/example_design/clk_pll_100_in_200_out_
+exdes.vhd -view all -origin_type created
+INFO:HDLCompiler:1061 - Parsing VHDL file
+   "C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/pho
+   ton/ipcore_dir/tmp/_cg/clk_pll_100_in_200_out/example_design/clk_pll_100_in_2
+   00_out_exdes.vhd" into library work
+INFO:ProjectMgmt - Parsing design hierarchy completed successfully.
+Adding
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out.asy -view all -origin_type imported
+Adding
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out.vhd -view all -origin_type created
+INFO:HDLCompiler:1061 - Parsing VHDL file
+   "C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/pho
+   ton/ipcore_dir/tmp/_cg/clk_pll_100_in_200_out.vhd" into library work
+INFO:ProjectMgmt - Parsing design hierarchy completed successfully.
+Adding
+C:/Users/lattice/Desktop/NEW_DDS_WORK/Pulser_differential_bus_2012_11_13/photon/
+ipcore_dir/tmp/_cg/clk_pll_100_in_200_out.vho -view all -origin_type imported
+WARNING:coreutil - WARNING: This core does not have a top level called
+   "/clk_pll_100_in_200_out"
+   WARNING: Top level has been set to "/clk_pll_100_in_200_out_exdes"
+Generating README file...
+Generating FLIST file...
+INFO:sim:948 - Finished FLIST file generation.
+Launching README viewer...
+Moving files to output directory...
+Finished moving files to output directory
+Wrote CGP file for project 'clk_pll_100_in_200_out'.

@@ -1,0 +1,164 @@
+Release 14.3 Drc P.40xd (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+
+Sun Dec 02 22:58:00 2012
+
+drc -z photon.ncd photon.pcf
+
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst>. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> and
+DESKEW(5). 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
+no EXTERN driver in CLKFB path. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
+non-EXTERN block <BUFG> in CLKFB path. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
+NO extern 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm>. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> and
+DESKEW(5). 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found no
+EXTERN driver in CLKFB path. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found
+non-EXTERN block <BUFG> in CLKFB path. 
+Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found NO
+extern 
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   normal_pmt_count_trigger_inv is sourced by a combinatorial pin. This is not
+   good design practice. Use the CE pin to control the loading of data into the
+   flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[10]_AND_636_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[11]_AND_634_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[12]_AND_632_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[20]_AND_616_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[13]_AND_630_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[21]_AND_614_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[14]_AND_628_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[22]_AND_612_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[30]_AND_596_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[15]_AND_626_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[23]_AND_610_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[16]_AND_624_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[24]_AND_608_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[17]_AND_622_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[25]_AND_606_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[18]_AND_620_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[26]_AND_604_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[19]_AND_618_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[27]_AND_602_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[28]_AND_600_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[29]_AND_598_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[0]_AND_656_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[1]_AND_654_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[2]_AND_652_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[3]_AND_650_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[4]_AND_648_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[5]_AND_646_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[6]_AND_644_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[7]_AND_642_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[8]_AND_640_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   readout_should_count_pmt_readout_count[9]_AND_638_o is sourced by a
+   combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:367 - The signal
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
+   incomplete. The signal does not drive any load pins in the design.
+WARNING:PhysDesignRules:367 - The signal
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
+   incomplete. The signal does not drive any load pins in the design.
+INFO:PhysDesignRules:1861 - To achieve optimal frequency synthesis performance
+   with the CLKFX and CLKFX180 outputs of the DCM comp pll/dcm_sp_inst, consult
+   the device Data Sheet.
+DRC detected 0 errors and 34 warnings.  Please see the previously displayed
+individual error or warning messages for more details.
