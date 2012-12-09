@@ -29,25 +29,36 @@ class correlator(object):
         differences = []
         for i in range(len(correlate_window)):
             for j in range(len(all_timetags)):
-                if not i == j:
-                    diff = correlate_window[i] - all_timetags[j]
-                    if abs(diff) < max_correlation_length:
-                        differences.append(diff)
-        bins = np.linspace(-max_correlation_length, max_correlation_length , 2*bins)
-        hist,bins =  np.histogram(differences, bins=bins)
-        hist = hist / ( float(correlate_window.size)
-        return hist,bins
+                diff = correlate_window[i] - all_timetags[j]
+                if 0 <= diff < max_correlation_length:
+                    differences.append(diff)
+        return differences
 
 if __name__ == '__main__':
     #g2 for a poisonnian process
-    count_rate = 0.1
-    samples = 3000.0
+    count_rate = 0.01
+    samples = 30000.0
     photon_numbers = np.random.poisson(lam = count_rate, size = samples) #photon number is poisonian
+    
     timetags = []
     for i,num in enumerate(photon_numbers):
         if num > 0:
             timetags.extend(num * [i])
-    hist,bins = correlator.element_differences(timetags, 50)
-    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
+    differences = correlator.element_differences(timetags, 500)
+    
+
+    
+    from correlations_2 import correlator as corr2
+    
+    ks, result =  corr2.g2(photon_numbers, compute_range = None)
+    
+
+    pyplot.figure()
+    pyplot.plot(ks, result)
+    ct = np.bincount(differences)
+    pyplot.plot(ct / np.mean(ct))
     pyplot.show()
+#    hist,bins = correlator.element_differences(timetags, 500)
+#    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
+#    pyplot.show()
     #g2 for a poisonnian process with 
