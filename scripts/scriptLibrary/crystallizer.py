@@ -103,5 +103,5 @@ if __name__ == '__main__':
     cxn = labrad.connect()
     cr = Crystallizer(cxn.pulser, cxn.normalpmtflow)
     cr.get_initial_rate()
-    cr.is_crystallized()
+#    print cr.is_crystallized()
     cr.auto_crystallize()

@@ -46,7 +46,11 @@ if __name__ == '__main__':
             timetags.extend(num * [i])
     differences = correlator.element_differences(timetags, 500)
     
-
+#    average =  np.mean(photon_numbers)
+#    print np.bincount(photon_numbers)
+#    print 'average', average
+#    
+#    print np.mean(photon_numbers**2) / float(np.mean(photon_numbers)**2)
     
     from correlations_2 import correlator as corr2
     
@@ -58,7 +62,7 @@ if __name__ == '__main__':
     ct = np.bincount(differences)
     pyplot.plot(ct / np.mean(ct))
     pyplot.show()
-#    hist,bins = correlator.element_differences(timetags, 500)
-#    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
-#    pyplot.show()
-    #g2 for a poisonnian process with 
+    hist,bins = correlator.element_differences(timetags, 500)
+    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
+    pyplot.show()
+#    g2 for a poisonnian process with 
