@@ -18,7 +18,7 @@ class measureFFT():
         self.savePlot = savePlot
     
     def getCenterFreq(self):
-        rffreq = WithUnit(30.8, 'MHz')
+        rffreq = WithUnit(30.66, 'MHz')
         rffreq = rffreq['Hz']
         #rffreq = float(self.trap_drive.frequency())*10.0**6 #in Hz
         return rffreq
