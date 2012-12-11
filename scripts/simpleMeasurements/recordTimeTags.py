@@ -5,8 +5,8 @@ from labrad.units import WithUnit
 import numpy
 from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags as sequence
 #parameters
-iterations = 30
-iteration_duration = WithUnit(1, 's')
+iterations = 2000
+iteration_duration = WithUnit(0.20, 's')
 #connect to servers
 cxn = labrad.connect()
 pulser = cxn.pulser
@@ -19,6 +19,7 @@ directory = ['','SimpleMeasurements','Timetags']
 directory.extend(dirappend)
 dv.cd(directory, True)
 dv.new('Timetags {}'.format(datasetNameAppend),[('Iterations', 'Arb')],[('Timetags','sec','sec')] )
+
 #program pulser
 sequence_parameters = {'record_timetags_duration':iteration_duration}
 seq = sequence(**sequence_parameters)
