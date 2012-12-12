@@ -45,12 +45,12 @@ class Crystallizer(object):
         '''
         pmt_resolution = self.pmt.get_time_length()
         self.pmt.set_mode('Differential')
-        time.sleep(2 * pmt_resolution['s'])
+#        time.sleep(2 * pmt_resolution['s'])
         count_num = int(math.ceil(self.detect_time['s'] / pmt_resolution['s']))
         background = self.pmt.get_next_counts('OFF', count_num , True)
         total = self.pmt.get_next_counts('ON', count_num , True)
         self.pmt.set_mode('Normal')
-        time.sleep(2 * pmt_resolution['s'])
+#        time.sleep(2 * pmt_resolution['s'])
         return total - background
         
     def is_crystallized(self):
