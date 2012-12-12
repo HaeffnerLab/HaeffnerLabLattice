@@ -18,21 +18,20 @@ dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localt
 directory = ['','SimpleMeasurements','Timetags']
 directory.extend(dirappend)
 dv.cd(directory, True)
-dv.new('Timetags {}'.format(datasetNameAppend),[('Iterations', 'Arb')],[('Timetags','sec','sec')] )
 
 #program pulser
 sequence_parameters = {'record_timetags_duration':iteration_duration}
 seq = sequence(**sequence_parameters)
 seq.programSequence(pulser)
 
-print directory
-
 for itr in range(iterations):
+    print itr
     pulser.start_number(1)
     pulser.wait_sequence_done()
     pulser.stop_sequence()
     timetags = pulser.get_timetags().asarray
     print 'Got {} timetags'.format(timetags.size)
     iters = numpy.ones_like(timetags) * itr
+    dv.new('Timetags {0}, {1}'.format(datasetNameAppend, itr),[('Iterations', 'Arb')],[('Timetags','sec','sec')] )
     dv.add(numpy.vstack((iters, timetags)).transpose())
 print 'DONE'

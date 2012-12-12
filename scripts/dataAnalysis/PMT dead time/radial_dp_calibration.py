@@ -37,8 +37,4 @@ pyplot.figure()
 pyplot.plot(counts / 1000.0, y_values, 'x')
 pyplot.xlabel("KiloCounts / Sec")
 pyplot.ylabel("Deviation from linear count rate")
-pyplot.show()
-
-                                                          
-                                                          
-                                                          
+pyplot.show()                                          
