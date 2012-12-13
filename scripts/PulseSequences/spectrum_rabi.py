@@ -40,7 +40,7 @@ class sample_parameters(object):
               'doppler_cooling_duration':WithUnit(1.0,'ms'),
               
               
-              'optical_pumping_enable':True,
+              'optical_pumping_enable':False,
               
               'optical_pumping_continuous_duration':WithUnit(1, 'ms'),
               'optical_pumping_continuous_repump_additional':WithUnit(200, 'us'),
