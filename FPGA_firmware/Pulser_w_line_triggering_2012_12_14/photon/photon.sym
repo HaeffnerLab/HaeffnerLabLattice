@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<symbol version="7" name="photon">
+    <symboltype>BLOCK</symboltype>
+    <timestamp>2012-7-24T19:2:24</timestamp>
+    <pin polarity="Input" x="0" y="-864" name="clk1" />
+    <pin polarity="Input" x="0" y="-704" name="pmt_input" />
+    <pin polarity="Input" x="0" y="-544" name="dds_logic_fifo_rd_clk" />
+    <pin polarity="Input" x="0" y="-384" name="dds_logic_fifo_rd_en" />
+    <pin polarity="Input" x="0" y="-224" name="hi_in(7:0)" />
+    <pin polarity="Input" x="0" y="-64" name="logic_in(3:0)" />
+    <pin polarity="Output" x="656" y="-864" name="hi_muxsel" />
+    <pin polarity="Output" x="656" y="-800" name="i2c_sda" />
+    <pin polarity="Output" x="656" y="-736" name="i2c_scl" />
+    <pin polarity="Output" x="656" y="-672" name="dds_logic_fifo_empty" />
+    <pin polarity="Output" x="656" y="-608" name="dds_logic_ram_reset" />
+    <pin polarity="Output" x="656" y="-544" name="dds_logic_step_to_next_value" />
+    <pin polarity="Output" x="656" y="-480" name="dds_logic_reset_dds_chip" />
+    <pin polarity="Output" x="656" y="-416" name="hi_out(1:0)" />
+    <pin polarity="Output" x="656" y="-352" name="logic_out(31:0)" />
+    <pin polarity="Output" x="656" y="-288" name="led(7:0)" />
+    <pin polarity="Output" x="656" y="-224" name="dds_logic_data_out(15:0)" />
+    <pin polarity="Output" x="656" y="-160" name="dds_logic_address(2:0)" />
+    <pin polarity="BiDirectional" x="656" y="-96" name="hi_aa" />
+    <pin polarity="BiDirectional" x="656" y="-32" name="hi_inout(15:0)" />
+    <graph>
+        <rect width="528" x="64" y="-896" height="896" />
+        <attrtext style="alignment:BCENTER;fontsize:56;fontname:Arial" attrname="SymbolName" x="328" y="-904" type="symbol" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-864" type="pin clk1" />
+        <line x2="0" y1="-864" y2="-864" x1="64" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-704" type="pin pmt_input" />
+        <line x2="0" y1="-704" y2="-704" x1="64" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-544" type="pin dds_logic_fifo_rd_clk" />
+        <line x2="0" y1="-544" y2="-544" x1="64" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-384" type="pin dds_logic_fifo_rd_en" />
+        <line x2="0" y1="-384" y2="-384" x1="64" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-224" type="pin hi_in(7:0)" />
+        <rect width="64" x="0" y="-236" height="24" />
+        <line x2="0" y1="-224" y2="-224" x1="64" />
+        <attrtext style="fontsize:24;fontname:Arial" attrname="PinName" x="72" y="-64" type="pin logic_in(3:0)" />
+        <rect width="64" x="0" y="-76" height="24" />
+        <line x2="0" y1="-64" y2="-64" x1="64" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-864" type="pin hi_muxsel" />
+        <line x2="656" y1="-864" y2="-864" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-800" type="pin i2c_sda" />
+        <line x2="656" y1="-800" y2="-800" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-736" type="pin i2c_scl" />
+        <line x2="656" y1="-736" y2="-736" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-672" type="pin dds_logic_fifo_empty" />
+        <line x2="656" y1="-672" y2="-672" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-608" type="pin dds_logic_ram_reset" />
+        <line x2="656" y1="-608" y2="-608" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-544" type="pin dds_logic_step_to_next_value" />
+        <line x2="656" y1="-544" y2="-544" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-480" type="pin dds_logic_reset_dds_chip" />
+        <line x2="656" y1="-480" y2="-480" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-416" type="pin hi_out(1:0)" />
+        <rect width="64" x="592" y="-428" height="24" />
+        <line x2="656" y1="-416" y2="-416" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-352" type="pin logic_out(31:0)" />
+        <rect width="64" x="592" y="-364" height="24" />
+        <line x2="656" y1="-352" y2="-352" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-288" type="pin led(7:0)" />
+        <rect width="64" x="592" y="-300" height="24" />
+        <line x2="656" y1="-288" y2="-288" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-224" type="pin dds_logic_data_out(15:0)" />
+        <rect width="64" x="592" y="-236" height="24" />
+        <line x2="656" y1="-224" y2="-224" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-160" type="pin dds_logic_address(2:0)" />
+        <rect width="64" x="592" y="-172" height="24" />
+        <line x2="656" y1="-160" y2="-160" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-96" type="pin hi_aa" />
+        <line x2="656" y1="-96" y2="-96" x1="592" />
+        <attrtext style="alignment:RIGHT;fontsize:24;fontname:Arial" attrname="PinName" x="584" y="-32" type="pin hi_inout(15:0)" />
+        <rect width="64" x="592" y="-44" height="24" />
+        <line x2="656" y1="-32" y2="-32" x1="592" />
+    </graph>
+</symbol>
