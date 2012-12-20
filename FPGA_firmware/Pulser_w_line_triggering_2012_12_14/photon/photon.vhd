@@ -202,6 +202,8 @@ architecture arch of photon is
 	signal clk_200         : STD_LOGIC;
 	--- clk 20 MHz from PLL. Not used for anything right now ----
 	signal clk_20          : STD_LOGIC; 
+	--- slow clock at 1 MHz self-generated ---
+	signal clk_1			  : STD_LOGIC;
 
 	---- fifo photon signal ----
 	
@@ -317,7 +319,7 @@ architecture arch of photon is
 	signal line_triggering_enabled: STD_LOGIC := '0'; ----- 1 means trigger with line
 	signal line_triggering_pulse: STD_LOGIC := '0'; ------ line triggering pulse from some input
 	
-	--------------------aux logic for dds -----
+	--------------------aux logic for 	-----
 
 
 begin
@@ -342,8 +344,9 @@ pipe_in_ready_dds <= '1'; ---- enable pipe in. The only pipe in used in this des
 fifo_dds_rst <= ep40wire(7); -------- this fifo never gets reset because if there's anything in the fifo, it will get written into the ram right away
 led(7) <= not fifo_dds_empty;
 led(6 downto 4) <= not ep04wire(2 downto 0);
-led(3 downto 1) <= ep00wire(7 downto 5);
-led(0) <= '0';
+led(3 downto 2) <= ep00wire(7 downto 6);
+led(1) <= not line_triggering_pulse;
+led(0) <= not logic_in(0);
 
 ---------------------------------------------------------
 ---------- condition read clk ---------------------------
@@ -480,6 +483,51 @@ ram1: pulser_ram port map (
 			end case;
 		end if;
 	end process;
+	
+	
+------- generate slow clock at 1 MHz ------
+
+	process (clk_20)
+		variable count: integer range 0 to 21 :=0;
+	begin
+		if (rising_edge(clk_20)) then
+			count := count + 1;
+			if (count <= 10) then
+				clk_1 <= '1';
+			elsif (count <= 20) then
+				clk_1 <= '0';
+			elsif (count=21) then
+				count :=0;
+			end if;
+		end if;
+	end process;
+	
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+----- line triggering generation --------------
+
+	process (clk_1, logic_in(0))	
+		variable duration_count: integer range 0 to 65535:=0;
+		variable delay_count: integer range 0 to 65535:=0;
+	begin 
+		if (logic_in(0) = '0') then
+			duration_count := 0;
+			delay_count := 0;
+			line_triggering_pulse <= '0';
+		elsif (rising_edge(clk_1)) then
+			if (delay_count < 10000) then
+				delay_count := delay_count + 1;
+			elsif (delay_count >= 2000) then
+				if (duration_count < 5000) then
+					duration_count := duration_count + 1;
+					line_triggering_pulse <= '1';
+				elsif (duration_count >= 5000) then
+					line_triggering_pulse <= '0';
+				end if;
+			end if;
+		end if;
+	end process;
+
 ------------------------------- pulser module -------------------------------
 ----- There is a main counter that go through each step in the RAM data. -----
 ----- The array of data of 64 bit has two portion. Time stamp and logic. -----
@@ -728,10 +776,6 @@ line_triggering_enabled <= ep00wire(3);
 pulser_flag_register(0) <= pulser_sequence_done;
 
 
----------- generate line triggering pulse -----------
-
-line_triggering_pulse <= logic_in(0); ---- leftmost opto receiver in on the pulser breakout
------------------------------------------------------
 
 
 ---------- this is to configure what to display on ep21wire ----
@@ -961,7 +1005,7 @@ wi02 : okWireIn    port map (ok1=>ok1,                                  ep_addr=
 wi03 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"03", ep_dataout=>ep03wire);
 wi04 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"04", ep_dataout=>ep04wire);
 wi05 : okWireIn    port map (ok1=>ok1,                                  ep_addr=>x"05", ep_dataout=>ep05wire);
-ep40 : okTriggerIn  port map (ok1=>ok1,                                  ep_addr=>x"40", ep_clk=>clk_20, ep_trigger=>ep40wire);
+ep40 : okTriggerIn  port map (ok1=>ok1,                                  ep_addr=>x"40", ep_clk=>clk_1, ep_trigger=>ep40wire);
 wo21 : okWireOut   port map (ok1=>ok1, ok2=>ok2s( 1*17-1 downto 0*17 ), ep_addr=>x"21", ep_datain=>ep21wire);
 wo22 : okWireOut   port map (ok1=>ok1, ok2=>ok2s( 4*17-1 downto 3*17 ), ep_addr=>x"22", ep_datain=>ep22wire);
 ep80 : okBTPipeIn  port map (ok1=>ok1, ok2=>ok2s( 2*17-1 downto 1*17 ), ep_addr=>x"80", 
