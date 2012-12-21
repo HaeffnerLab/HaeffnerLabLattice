@@ -111,10 +111,12 @@ class SequencePlotter():
         pyplot.plot(x, y)
         pyplot.annotate(label, xy = (0,  self.offset + 1.5), horizontalalignment = 'right')
         self.offset += 4
-#        x, y = self.getDDSCoordinates(advance, freqs)
-#        y = np.array(y) / 220.0 + self.offset #normalizes the amplitude 0 to 220 to height between 0 and 3
-#        self.offset += 4
-#        pyplot.plot(x, y, label = 'DDS Freq' + channel )
+        x, y = self.getDDSCoordinates(advance, freqs)
+        y = np.array(y) / 250.0 + self.offset #normalizes the amplitude 0 to 250 to height between 0 and 3
+        pyplot.plot(x, y, label = 'DDS Freq' + channel )
+        label =  'DDS: ' + channel + ' Frequency '
+        pyplot.annotate(label, xy = (0,  self.offset + 1.5), horizontalalignment = 'right')
+        self.offset += 4
     
     def getDDSCoordinates(self, advance, ampls):
         x = [0]
@@ -132,7 +134,8 @@ class SequencePlotter():
 if __name__ == '__main__':
 #    from spectrum_rabi import sample_parameters, spectrum_rabi as seq
 #    from blue_heat_rabi import sample_parameters, blue_heat_rabi as seq
-    from melting_heat import sample_parameters, melting_heat as seq
+#    from melting_heat import sample_parameters, melting_heat as seq
+    from ramsey_dephase import sample_parameters, ramsey_dephase as seq
     import labrad
     with labrad.connect() as cxn:
         pulser = cxn.pulser

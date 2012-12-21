@@ -135,6 +135,7 @@ class MeltingHeat(SemaphoreExperiment):
                 self.pulser.stop_sequence()
                 readouts = self.pulser.get_readout_counts().asarray
                 timetags = self.pulser.get_timetags().asarray
+                print readouts
                 if not self.crystallizer.auto_crystallize():
                     raise Exception("Can't Crystalize")
                 self.binner.add(timetags, 1)

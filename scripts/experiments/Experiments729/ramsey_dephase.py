@@ -1,14 +1,17 @@
 from lattice.scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
-from lattice.scripts.PulseSequences.spectrum_blue_dephase import spectrum_blue_dephase as sequence
-from lattice.scripts.PulseSequences.spectrum_rabi import sample_parameters
+from lattice.scripts.PulseSequences.ramsey_dephase import ramsey_dephase as sequence
+from lattice.scripts.PulseSequences.ramsey_dephase import sample_parameters
 from lattice.scripts.scriptLibrary import dvParameters
+from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 import time
 import numpy
+from labrad.units import WithUnit
        
-class rabi_flopping(SemaphoreExperiment):
+class ramsey_dephase(SemaphoreExperiment):
     
     def __init__(self):
-        self.experimentPath = ['729Experiments','RabiFlopping']
+        self.experimentPath = ['729Experiments','RamseyDephase']
+        self.experimentPath_flop = ['729Experiments','RabiFlopping']
 
     def run(self):
         self.initialize()
@@ -38,7 +41,8 @@ class rabi_flopping(SemaphoreExperiment):
         self.pulser = self.cxn.pulser
         self.sem = cxn.semaphore
         self.dv = cxn.data_vault
-        self.p = self.populate_parameters(self.sem, self.experimentPath)
+        self.p_ramsey = self.populate_parameters(self.sem, self.experimentPath)
+        self.p = self.populate_parameters(self.sem, self.experimentPath_flop)
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -65,37 +69,46 @@ class rabi_flopping(SemaphoreExperiment):
         #update the sequence parameters with our values
         sequence_parameters = {}.fromkeys(sample_parameters.parameters)
         check = self.check_parameter
-        common_values = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
-        sequence_parameters.update(common_values)        
+        common_values_ramsey = dict([(key,check(value)) for key,value in self.p_ramsey.iteritems() if key in sequence_parameters])
+        common_values_flop = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
+        sequence_parameters.update(common_values_flop)
+        sequence_parameters.update(common_values_ramsey)        
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        
-        sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
+    
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
-        sp = sequence_parameters
-        from labrad import types as T
-        sp['pulse_gap'] = T.Value(50.0, 'us')
-        sp['dephasing_duration_729'] = T.Value(40, 'us')
-        
-        sp['dephasing_frequency_729'] = T.Value(228.729, 'MHz')
-        sp['dephasing_amplitude_729'] = T.Value(-3.0, 'dBm')
-        
-        sp['preparation_pulse_duration_729'] = T.Value(12.0, 'us')
-        
         return sequence_parameters
         
     def program_pulser(self, duration):
-        self.sequence_parameters['rabi_excitation_duration'] = duration
-        #filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-        #unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
+        self.sequence_parameters['total_excitation_duration'] = duration
+        if self.p.rabi_flopping_use_saved_frequency:
+            info = self.p.saved_lines_729
+            line_name = self.p.rabi_flopping_saved_frequency
+            self.sequence_parameters['rabi_excitation_frequency'] = cm.saved_line_info_to_frequency(info, line_name)
+        else:
+            self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    
+        #optical pumping can track line drift
+        if self.p.optical_pumping_use_saved:
+            info = self.p.saved_lines_729
+            line_name = self.p.optical_pumping_use_saved_line
+            self.sequence_parameters['optical_pumping_frequency_729'] = cm.saved_line_info_to_frequency(info, line_name)
+        else:
+            self.sequence_parameters['optical_pumping_frequency_729'] = self.check_parameter(self.p.optical_pumping_user_selected_frequency_729)
+#        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
+#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan = self.check_parameters(self.p.excitation_times)
+        cp = self.check_parameter
+        scan_range =  cp(self.p_ramsey.preparation_pulse_duration, False, 'us') + cp(self.p_ramsey.second_pulse_duration, False, 'us')
+        scan_start = cp(self.p_ramsey.preparation_pulse_duration, False, 'us')
+        scan_steps = int(cp(self.p_ramsey.scan_steps))
+        scan = numpy.linspace(0.0, scan_range, scan_steps)
+        scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, duration in enumerate(scan):
@@ -138,10 +151,11 @@ class rabi_flopping(SemaphoreExperiment):
     def finalize(self):
         self.save_parameters()
         self.sem.finish_experiment(self.experimentPath, self.percentDone)
+        self.pulser.clear_dds_lock()
         self.cxn.disconnect()
         self.cxnlab.disconnect()
         print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)
 
 if __name__ == '__main__':
-    exprt = rabi_flopping()
+    exprt = ramsey_dephase()
     exprt.run()
