@@ -6,44 +6,44 @@ ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2
 photon.ngc photon.ngd
 
 Reading NGO file
-"Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_14/photon/phot
+"Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/phot
 on.ngc" ...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/dds_
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/dds_
 fifo.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okWi
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okWi
 reIn.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okTr
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okTr
 iggerIn.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okWi
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okWi
 reOut.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okBT
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okBT
 PipeIn.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okBT
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okBT
 PipeOut.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/puls
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/puls
 e_fifo.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/fifo
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/fifo
 _photon.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/norm
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/norm
 al_pmt_fifo.ngc"...
 Loading design module "ipcore_dir/readout_count_fifo.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/puls
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/puls
 er_ram.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/okCo
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okCo
 reHarness.ngc"...
 Loading design module
-"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_14\photon/TFIF
+"Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/TFIF
 O64x8a_64x8b.ngc"...
 Gathering constraint information from source properties...
 Done.
@@ -100,10 +100,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   3
 
-Total memory usage is 136448 kilobytes
+Total memory usage is 136576 kilobytes
 
 Writing NGD file "photon.ngd" ...
-Total REAL time to NGDBUILD completion:  6 sec
+Total REAL time to NGDBUILD completion:  7 sec
 Total CPU time to NGDBUILD completion:   6 sec
 
 Writing NGDBUILD log file "photon.bld"...

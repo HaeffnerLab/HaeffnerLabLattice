@@ -5,14 +5,14 @@
     The structure and the elements are likely to change over the next few releases.
     This means code written to parse this file will need to be revisited each subsequent release.-->
 
-  <application stringID="par" timeStamp="Wed Dec 19 18:03:24 2012">
+  <application stringID="par" timeStamp="Fri Dec 21 15:12:15 2012">
     <section stringID="User_Env">
       <table stringID="User_EnvVar">
         <column stringID="variable"/>
         <column stringID="value"/>
         <row stringID="row" value="0">
           <item stringID="variable" value="Path"/>
-          <item stringID="value" value="C:\Xilinx\14.3\ISE_DS\ISE\\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\..\..\..\DocNav;C:\Xilinx\14.3\ISE_DS\PlanAhead\bin;C:\Xilinx\14.3\ISE_DS\EDK\bin\nt;C:\Xilinx\14.3\ISE_DS\EDK\lib\nt;C:\Xilinx\14.3\ISE_DS\EDK\gnu\microblaze\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\powerpc-eabi\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\arm\nt\bin;C:\Xilinx\14.3\ISE_DS\common\bin\nt;C:\Xilinx\14.3\ISE_DS\common\lib\nt;C:\Program Files\Parallels\Parallels Tools\Applications;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\"/>
+          <item stringID="value" value="C:\Xilinx\14.3\ISE_DS\ISE\\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\..\..\..\DocNav;C:\Xilinx\14.3\ISE_DS\PlanAhead\bin;C:\Xilinx\14.3\ISE_DS\EDK\bin\nt;C:\Xilinx\14.3\ISE_DS\EDK\lib\nt;C:\Xilinx\14.3\ISE_DS\EDK\gnu\microblaze\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\powerpc-eabi\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\arm\nt\bin;C:\Xilinx\14.3\ISE_DS\common\bin\nt;C:\Xilinx\14.3\ISE_DS\common\lib\nt;C:\Program Files\Parallels\Parallels Tools\Applications;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Altium Designer Summer 09\System"/>
         </row>
         <row stringID="row" value="1">
           <item stringID="variable" value="PATHEXT"/>
@@ -4192,14 +4192,14 @@
     </task>
   </application>
 
-  <application stringID="Par" timeStamp="Wed Dec 19 18:03:25 2012">
+  <application stringID="Par" timeStamp="Fri Dec 21 15:12:16 2012">
     <section stringID="User_Env">
       <table stringID="User_EnvVar">
         <column stringID="variable"/>
         <column stringID="value"/>
         <row stringID="row" value="0">
           <item stringID="variable" value="Path"/>
-          <item stringID="value" value="C:\Xilinx\14.3\ISE_DS\ISE\\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\..\..\..\DocNav;C:\Xilinx\14.3\ISE_DS\PlanAhead\bin;C:\Xilinx\14.3\ISE_DS\EDK\bin\nt;C:\Xilinx\14.3\ISE_DS\EDK\lib\nt;C:\Xilinx\14.3\ISE_DS\EDK\gnu\microblaze\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\powerpc-eabi\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\arm\nt\bin;C:\Xilinx\14.3\ISE_DS\common\bin\nt;C:\Xilinx\14.3\ISE_DS\common\lib\nt;C:\Program Files\Parallels\Parallels Tools\Applications;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\"/>
+          <item stringID="value" value="C:\Xilinx\14.3\ISE_DS\ISE\\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\bin\nt;C:\Xilinx\14.3\ISE_DS\ISE\lib\nt;C:\Xilinx\14.3\ISE_DS\ISE\..\..\..\DocNav;C:\Xilinx\14.3\ISE_DS\PlanAhead\bin;C:\Xilinx\14.3\ISE_DS\EDK\bin\nt;C:\Xilinx\14.3\ISE_DS\EDK\lib\nt;C:\Xilinx\14.3\ISE_DS\EDK\gnu\microblaze\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\powerpc-eabi\nt\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnuwin\bin;C:\Xilinx\14.3\ISE_DS\EDK\gnu\arm\nt\bin;C:\Xilinx\14.3\ISE_DS\common\bin\nt;C:\Xilinx\14.3\ISE_DS\common\lib\nt;C:\Program Files\Parallels\Parallels Tools\Applications;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Altium Designer Summer 09\System"/>
         </row>
         <row stringID="row" value="1">
           <item stringID="variable" value="PATHEXT"/>

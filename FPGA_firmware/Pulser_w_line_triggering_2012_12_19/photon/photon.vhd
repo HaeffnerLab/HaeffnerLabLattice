@@ -165,7 +165,7 @@ architecture arch of photon is
 	------ Number of loops wanted in the infinite loop ---------------------
 	signal ep05wire		  : STD_LOGIC_VECTOR(15 downto 0);
 	------ number of us delay in the line triggering ---------------------
-	signal ep06wire		  : STD_LOGIC_VECTOR(15 downto 0);
+	signal ep06wire		  : STD_LOGIC_VECTOR(15 downto 0):="0000000000000000";
 	
 	------ output data to PC ------
 	signal ep21wire		  : STD_LOGIC_VECTOR(15 downto 0):="0000000000000000";

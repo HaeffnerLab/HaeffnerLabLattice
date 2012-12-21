@@ -12,13 +12,13 @@
          <ClosedNode>/photon - arch C:|Users|lattice|Hong_DB|Dropbox|WORK|VHDL|XEM6010|Photon_sd_ram_2012_06_20|Photon_sd_ram_2012_05_10|photon|photon.vhd/okHI - okHost - archHost</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>photon - arch (Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_14/photon/photon.vhd)</SelectedItem>
+         <SelectedItem>photon - arch (Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/photon.vhd)</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >13</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000020200000001000000010000006400000250000000020000000000000000000000000200000064ffffffff000000810000000300000002000002500000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>photon - arch (Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_14/photon/photon.vhd)</CurrentItem>
+      <CurrentItem>photon - arch (Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/photon.vhd)</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
       <ClosedNodes>
@@ -74,7 +74,7 @@
       <SelectedItems>
          <SelectedItem>Generate Programming File</SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >14</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >10</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000000e7000000010000000100000000000000000000000064ffffffff000000810000000000000001000000e70000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
@@ -119,6 +119,6 @@
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem/>
    </ItemView>
-   <SourceProcessView>000000ff000000000000000200000138000000ea01000000050100000002</SourceProcessView>
+   <SourceProcessView>000000ff0000000000000002000000b70000010f01000000050100000002</SourceProcessView>
    <CurrentView>Implementation</CurrentView>
 </Project>

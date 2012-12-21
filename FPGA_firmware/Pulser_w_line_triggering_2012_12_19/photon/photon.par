@@ -1,7 +1,7 @@
 Release 14.3 par P.40xd (nt)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-THANEDPRUTTA60B::  Wed Dec 19 18:03:20 2012
+THANEDPRUTTA60B::  Fri Dec 21 15:12:11 2012
 
 par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
 
@@ -134,13 +134,13 @@ Phase  4  : 4945 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     
 
 Updating file: photon.ncd with current fully routed design.
 
-Phase  5  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 36 secs 
+Phase  5  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 37 secs 
 
-Phase  6  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 36 secs 
+Phase  6  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 37 secs 
 
-Phase  7  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 36 secs 
+Phase  7  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 37 secs 
 
-Phase  8  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 36 secs 
+Phase  8  : 0 unrouted; (Setup:0, Hold:157, Component Switching Limit:0)     REAL time: 37 secs 
 
 Phase  9  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 37 secs 
 
@@ -444,7 +444,7 @@ WARNING:Par:283 - There are 5 loadless signals in this design. This design will 
 Total REAL time to PAR completion: 41 secs 
 Total CPU time to PAR completion: 41 secs 
 
-Peak Memory Usage:  377 MB
+Peak Memory Usage:  381 MB
 
 Placer: Placement generated during map.
 Routing: Completed - No errors found.

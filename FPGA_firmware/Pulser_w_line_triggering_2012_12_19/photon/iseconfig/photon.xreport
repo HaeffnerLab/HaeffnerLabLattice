@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2012-12-19T16:16:47</DateModified>
+  <DateModified>2012-12-21T15:09:36</DateModified>
   <ModuleName>photon</ModuleName>
   <SummaryTimeStamp>2012-02-23T23:26:25</SummaryTimeStamp>
-  <SavedFilePath>Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_14/photon/iseconfig/photon.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_14/photon\</ImplementationReportsDirectory>
+  <SavedFilePath>Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/iseconfig/photon.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon\</ImplementationReportsDirectory>
   <DateInitialized>2012-02-15T16:27:09</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>
