@@ -25,7 +25,7 @@ if __name__ == '__main__':
     cxn = labrad.connect()
     cs = sampleDDS(**{})
     cs.programSequence(cxn.pulser)
-    cxn.pulser.start_number(1000)
+    cxn.pulser.start_number(10)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     print 'DONE'

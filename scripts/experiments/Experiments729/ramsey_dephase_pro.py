@@ -83,7 +83,9 @@ class ramsey_dephase(SemaphoreExperiment):
         return sequence_parameters
         
     def program_pulser(self, duration):
-        self.sequence_parameters['total_excitation_duration'] = duration
+        self.sequence_parameters['pulse_gap'] = duration
+        cp = self.check_parameter
+        self.sequence_parameters['total_excitation_duration'] = cp(self.p_ramsey.preparation_pulse_duration) + cp(self.p_ramsey.second_pulse_duration)
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency
@@ -103,12 +105,13 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        cp = self.check_parameter
-        scan_range =  cp(self.p_ramsey.preparation_pulse_duration, False, 'us') + cp(self.p_ramsey.second_pulse_duration, False, 'us')
-        scan_start = cp(self.p_ramsey.preparation_pulse_duration, False, 'us')
-        scan_steps = int(cp(self.p_ramsey.scan_steps))
-        scan = numpy.linspace(0.0, scan_range, scan_steps)
+        
+#        scan_range =  cp(self.p_ramsey.preparation_pulse_duration, False, 'us') + cp(self.p_ramsey.second_pulse_duration, False, 'us')
+#        scan_steps = int(cp(self.p_ramsey.scan_steps))
+        scan_steps = 20
+        scan = numpy.linspace(0.0, 100.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
+        print scan
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, duration in enumerate(scan):
