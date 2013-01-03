@@ -8,7 +8,40 @@
 <!-- Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.    -->
 
 <messages>
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/clk_pll_100_in_200_out.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/dds_fifo.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/fifo_photon.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/ipcore_dir/clk_pll_100_in_200_out.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/ipcore_dir/fifo_photon.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/ipcore_dir/pulse_fifo.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/ipcore_dir/pulser_ram.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/normal_pmt_fifo.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/okLibrary.vhd&quot; into library work</arg>
+</msg>
+
 <msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/photon.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/pulse_fifo.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_w_line_triggering_2012_12_19/photon/pulser_ram.vhd&quot; into library work</arg>
 </msg>
 
 </messages>
