@@ -19,5 +19,6 @@ for dataset,dephasing in sorted(info, key = lambda x: x[1]):
     
 pyplot.ylabel('Excitation Probability')
 pyplot.xlabel(r'Excitation Time, $\mu s$')
+pyplot.ylim([0,1])
 pyplot.legend()
 pyplot.show()
