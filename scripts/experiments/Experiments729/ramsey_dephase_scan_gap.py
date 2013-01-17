@@ -82,7 +82,7 @@ class ramsey_dephase(SemaphoreExperiment):
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
         return sequence_parameters
         
-    def program_pulser(self, pulse_gap = None, dephasing_duration = None):
+    def program_pulser(self, pulse_gap = None, dephasing_duration = None, second_pulse_duration = None):
         if pulse_gap is not None:
             self.sequence_parameters['pulse_gap'] = pulse_gap
         else:
@@ -92,6 +92,11 @@ class ramsey_dephase(SemaphoreExperiment):
         else:
             print 'dephasing enable',  self.sequence_parameters['dephasing_enable']
             print 'dephasing duration', self.sequence_parameters['dephasing_duration']
+        if second_pulse_duration is None:
+            self.sequence_parameters['second_pulse_duration'] = self.check_parameter(self.p_ramsey.rabi_pi_time) / 2.0
+            print 'duration of second pulse is pi/2', self.sequence_parameters['second_pulse_duration']
+        else:
+            self.sequence_parameters['second_pulse_duration'] = second_pulse_duration
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency

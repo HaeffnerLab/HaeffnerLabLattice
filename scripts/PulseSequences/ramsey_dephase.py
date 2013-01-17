@@ -13,7 +13,8 @@ class ramsey_dephase(PulseSequence):
     def configuration(self):
         config = [
                   'optical_pumping_enable','rabi_pi_time','pulse_gap',
-                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866'
+                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866',
+                  'second_pulse_duration',
                   ]
         return config
     
@@ -39,7 +40,7 @@ class ramsey_dephase(PulseSequence):
                                                 'blue_heating_repump_additional': WithUnit(2, 'us')
                                                     }) 
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.rabi_pi_time / 2.0})
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.second_pulse_duration})
         self.addSequence(state_readout)
 
 class sample_parameters(object):
@@ -85,6 +86,7 @@ class sample_parameters(object):
               'pulse_gap':WithUnit(100.0, 'us'),
 
               'rabi_pi_time':WithUnit(100.0, 'us'),
+              'second_pulse_duration':WithUnit(50.0, 'us'),
               
               'dephasing_enable' : True,
               'dephasing_frequency':WithUnit(220.0, 'MHz'),
@@ -93,6 +95,7 @@ class sample_parameters(object):
               
               'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
               'rabi_excitation_amplitude':WithUnit(-11.0, 'dBm'),
+              
               }
 
 if __name__ == '__main__':
