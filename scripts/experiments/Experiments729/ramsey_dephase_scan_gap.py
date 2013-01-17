@@ -52,7 +52,7 @@ class ramsey_dephase(SemaphoreExperiment):
         directory.extend(self.experimentPath)
         directory.extend(self.dirappend)
         self.dv.cd(directory ,True )
-        self.dv.new('Rabi Flopping {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
+        self.dv.new('Ramsey Dephase {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
         self.dv.add_parameter('Window', self.p.window_name)
         self.dv.add_parameter('plotLive',self.p.plot_live_parameter)
         self.dv.cd(directory , context = self.readout_save_context)
@@ -82,8 +82,16 @@ class ramsey_dephase(SemaphoreExperiment):
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
         return sequence_parameters
         
-    def program_pulser(self, duration):
-        self.sequence_parameters['total_excitation_duration'] = duration
+    def program_pulser(self, pulse_gap = None, dephasing_duration = None):
+        if pulse_gap is not None:
+            self.sequence_parameters['pulse_gap'] = pulse_gap
+        else:
+            print 'pulse gap', self.sequence_parameters['pulse_gap']
+        if dephasing_duration is not None:
+            self.sequence_parameters['dephasing_duration'] = dephasing_duration
+        else:
+            print 'dephasing enable',  self.sequence_parameters['dephasing_enable']
+            print 'dephasing duration', self.sequence_parameters['dephasing_duration']
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency
@@ -103,16 +111,13 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        cp = self.check_parameter
-        scan_range =  cp(self.p_ramsey.preparation_pulse_duration, False, 'us') + cp(self.p_ramsey.second_pulse_duration, False, 'us')
-        scan_start = cp(self.p_ramsey.preparation_pulse_duration, False, 'us')
-        scan_steps = int(cp(self.p_ramsey.scan_steps))
-        scan = numpy.linspace(0.0, scan_range, scan_steps)
+        scan_steps = 5
+        scan = numpy.linspace(0.0, 100.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, duration in enumerate(scan):
-            print 'Excitation {}'.format(duration)
+            print 'pulse gap is now {}'.format(duration)
             self.percentDone = 100.0 * index / len(scan)
             should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
             if not should_continue:
@@ -120,16 +125,16 @@ class ramsey_dephase(SemaphoreExperiment):
                 return
             else:
                 #program pulser, run sequence, and get readouts
-                self.program_pulser(duration)
+                self.program_pulser(pulse_gap = duration)
                 self.pulser.start_number(repeatitions)
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()
                 readouts = self.pulser.get_readout_counts().asarray
                 #save frequency scan
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-                self.dv.add(duration, perc_excited)
+                self.dv.add(duration['s'], perc_excited)
                 #save readout counts
-                durations = numpy.ones_like(readouts) * duration
+                durations = numpy.ones_like(readouts) * duration['s']
                 self.dv.add(numpy.vstack((durations, readouts)).transpose(), context = self.readout_save_context)       
                 self.total_readouts.extend(readouts)
                 self.save_histogram()
@@ -147,6 +152,12 @@ class ramsey_dephase(SemaphoreExperiment):
         measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
         dvParameters.saveParameters(self.dv, measuredDict)
         dvParameters.saveParameters(self.dv, self.p.toDict())
+        #remove common parameters and save the remainign
+        ramsey_pars = dict(self.p_ramsey.toDict())
+        for par in self.p.toDict():
+            if par in ramsey_pars.keys():
+                del ramsey_pars[par]
+        dvParameters.saveParameters(self.dv, ramsey_pars)
     
     def finalize(self):
         self.save_parameters()

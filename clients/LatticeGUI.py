@@ -18,7 +18,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         lightControlTab = self.makeLightWidget(reactor)
         voltageControlTab = self.makeVoltageWidget(reactor)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor, cxn)
-        translationStageWidget = self.makeTranslationStageWidget(reactor)
+#        translationStageWidget = self.makeTranslationStageWidget(reactor)
         control729Widget =  self.makecontrol729Widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         grid = QtGui.QGridLayout()
@@ -26,7 +26,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
         self.tabWidget.addTab(tableOpticsWidget,'&Optics')
-        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
+#        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(control729Widget,'&Control 729')
         self.createGrapherTab()
         scriptControl = self.makeScriptControl(reactor)
@@ -112,10 +112,12 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.PMT_CONTROL import pmtWidget
         from common.clients.SWITCH_CONTROL import switchWidget
         from common.clients.DDS_CONTROL import DDS_CONTROL#RS_CONTROL_LAB, RS_CONTROL_LOCAL, 
+        from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
         #from doublePassWidget import doublePassWidget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(pmtWidget(reactor),0, 0, 1, 1, alignment = QtCore.Qt.AlignRight)
-        gridLayout.addWidget(switchWidget(reactor, cxn),1,0, 1, 1)#, 1, 2)
+        gridLayout.addWidget(pmtWidget(reactor),0, 1, 1, 1, alignment = QtCore.Qt.AlignRight)
+        gridLayout.addWidget(switchWidget(reactor, cxn),1,0, 1, 2)
+        gridLayout.addWidget(linetriggerWidget(reactor, cxn), 0, 0, 1, 1)#, 1, 2)
         gridLayout.addWidget(DDS_CONTROL(reactor, cxn),2, 0, 1, 2)#, 1, 2)
 #        gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
 #        gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)

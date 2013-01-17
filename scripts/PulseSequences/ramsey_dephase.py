@@ -7,50 +7,13 @@ from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.BlueHeating import local_blue_heating
 from labrad.units import WithUnit
-
-
-class dephasing_subsequence(PulseSequence):
-    
-    def configuration(self):
-        config = [
-                  'dephasing_enable',
-                  'total_excitation_duration', 'preparation_pulse_duration','rabi_excitation_frequency', 'rabi_excitation_amplitude',
-                  'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','pulse_gap',
-                  'doppler_cooling_frequency_866','doppler_cooling_amplitude_866'
-                  
-                  ]
-        return config
-    
-    def sequence(self):
-        total_excite_dur = self.p.total_excitation_duration
-        if total_excite_dur <= self.p.preparation_pulse_duration:
-            self.addSequence(rabi_excitation, **{'rabi_excitation_duration':total_excite_dur}) 
-        else:
-            self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.preparation_pulse_duration}) 
-            if self.p.dephasing_enable:
-                spacing = (self.p.pulse_gap - self.p.dephasing_duration) / 2.0
-                self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing})
-                self.addSequence(local_blue_heating, **{
-                                                        'local_blue_heating_frequency_397': self.p.dephasing_frequency,
-                                                        'local_blue_heating_amplitude_397': self.p.dephasing_amplitude,
-                                                        'blue_heating_frequency_866': self.p.doppler_cooling_frequency_866,
-                                                        'blue_heating_amplitude_866': self.p.doppler_cooling_amplitude_866,
-                                                        'blue_heating_duration': self.p.dephasing_duration,
-                                                        'blue_heating_repump_additional': WithUnit(2, 'us')
-                                                    } 
-                                 )
-                self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-            else:
-                self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.pulse_gap}) 
-            remaining_excite_dur = total_excite_dur - self.p.preparation_pulse_duration
-            self.dds_pulses.append(('729DP', self.end, remaining_excite_dur, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
-            self.end += remaining_excite_dur
-            
+           
 class ramsey_dephase(PulseSequence):
     
     def configuration(self):
         config = [
-                  'optical_pumping_enable',
+                  'optical_pumping_enable','rabi_pi_time','pulse_gap',
+                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866'
                   ]
         return config
     
@@ -60,7 +23,23 @@ class ramsey_dephase(PulseSequence):
         self.addSequence(doppler_cooling_after_repump_d)
         if self.p.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        self.addSequence(dephasing_subsequence)
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.rabi_pi_time / 2.0})
+        if not self.p.dephasing_enable:
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.pulse_gap}) 
+        else:
+            spacing = (self.p.pulse_gap - self.p.dephasing_duration) / 2.0
+            if spacing < WithUnit(5.0, 'us'): raise Exception("Ramsey Dephase, gap is too short to accomodate dephasing")
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
+            self.addSequence(local_blue_heating, **{
+                                                'local_blue_heating_frequency_397': self.p.dephasing_frequency,
+                                                'local_blue_heating_amplitude_397': self.p.dephasing_amplitude,
+                                                'blue_heating_frequency_866': self.p.doppler_cooling_frequency_866,
+                                                'blue_heating_amplitude_866': self.p.doppler_cooling_amplitude_866,
+                                                'blue_heating_duration': self.p.dephasing_duration,
+                                                'blue_heating_repump_additional': WithUnit(2, 'us')
+                                                    }) 
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.rabi_pi_time / 2.0})
         self.addSequence(state_readout)
 
 class sample_parameters(object):
@@ -76,7 +55,6 @@ class sample_parameters(object):
               'doppler_cooling_amplitude_866':WithUnit(-11.0, 'dBm'),
               'doppler_cooling_repump_additional':WithUnit(100, 'us'),
               'doppler_cooling_duration':WithUnit(1.0,'ms'),
-              
               
               'optical_pumping_enable':True,
               
@@ -104,9 +82,10 @@ class sample_parameters(object):
               'state_readout_amplitude_866':WithUnit(-11.0, 'dBm'),
               'state_readout_duration':WithUnit(3.0,'ms'),
               
-              'pulse_gap':WithUnit(30.0, 'us'),
+              'pulse_gap':WithUnit(100.0, 'us'),
 
-              'preparation_pulse_duration':WithUnit(10.0, 'us'),
+              'rabi_pi_time':WithUnit(100.0, 'us'),
+              
               'dephasing_enable' : True,
               'dephasing_frequency':WithUnit(220.0, 'MHz'),
               'dephasing_amplitude':WithUnit(-11.0, 'dBm'),
@@ -114,9 +93,6 @@ class sample_parameters(object):
               
               'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
               'rabi_excitation_amplitude':WithUnit(-11.0, 'dBm'),
-              
-              'total_excitation_duration':WithUnit(20, 'us'),
-              
               }
 
 if __name__ == '__main__':
@@ -128,7 +104,7 @@ if __name__ == '__main__':
     cs = ramsey_dephase(**params)
     cs.programSequence(cxn.pulser)
     print 'to program', time.time() - tinit
-    cxn.pulser.start_number(100)
+    cxn.pulser.start_number(10)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray

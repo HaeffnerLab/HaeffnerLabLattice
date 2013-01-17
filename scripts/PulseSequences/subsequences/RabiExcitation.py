@@ -13,7 +13,7 @@ class rabi_excitation(PulseSequence):
     
     
     def sequence(self):
-        #this hack will be  not neede with the new dds parsing methods
+        #this hack will be not needed with the new dds parsing methods
         frequency_advance_duration = WithUnit(5, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
         self.end = self.start + frequency_advance_duration + self.p.rabi_excitation_duration
