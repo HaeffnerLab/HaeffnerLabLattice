@@ -1,0 +1,15 @@
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon\photon.ngc 1356131456
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/dds_fifo.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okWireIn.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okTriggerIn.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okWireOut.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okBTPipeIn.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okBTPipeOut.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/pulse_fifo.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/fifo_photon.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/normal_pmt_fifo.ngc 1354931437
+ipcore_dir/readout_count_fifo.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/pulser_ram.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/okCoreHarness.ngc 1354931437
+Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon/TFIFO64x8a_64x8b.ngc 1354931437
+OK

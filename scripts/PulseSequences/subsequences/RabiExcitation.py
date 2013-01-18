@@ -1,4 +1,5 @@
 from lattice.scripts.PulseSequences.PulseSequence import PulseSequence
+from labrad.units import WithUnit
 
 class rabi_excitation(PulseSequence):
     
@@ -12,7 +13,11 @@ class rabi_excitation(PulseSequence):
     
     
     def sequence(self):
-        self.end = self.start + self.p.rabi_excitation_duration
-        #from labrad import types as T
-        #self.p.rabi_excitation_duration = T.Value(100,'s')
-        self.dds_pulses.append(('729DP', self.start, self.p.rabi_excitation_duration, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
+        #this hack will be not needed with the new dds parsing methods
+        frequency_advance_duration = WithUnit(5, 'us')
+        ampl_off = WithUnit(-63.0, 'dBm')
+        self.end = self.start + frequency_advance_duration + self.p.rabi_excitation_duration
+        #first advance the frequency but keep amplitude low        
+        self.dds_pulses.append(('729DP', self.start, frequency_advance_duration, self.p.rabi_excitation_frequency, ampl_off))
+        #turn on
+        self.dds_pulses.append(('729DP', self.start + frequency_advance_duration, self.p.rabi_excitation_duration, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))

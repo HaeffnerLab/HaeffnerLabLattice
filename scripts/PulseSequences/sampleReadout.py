@@ -19,11 +19,12 @@ if __name__ == '__main__':
     cs = sampleReadout(**{})
     cs.programSequence(cxn.pulser)
     
-    cxn.pulser.start_number(1000)
+    cxn.pulser.start_number(10)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray
-#    timetags = pulser.get_timetags().asarray
-    print np.average(readout)
+    timetags = pulser.get_timetags().asarray
+    print timetags.size
+    print readout
 #    print timetags
 #    print timetags.size

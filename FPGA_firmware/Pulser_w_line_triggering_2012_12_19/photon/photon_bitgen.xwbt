@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon\photon.ncd
+OUTFILE=Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon\photon.bit
+FAMILY=Spartan6
+PART=xc6slx45-2fgg484
+WORKINGDIR=Y:\LabRad\lattice\FPGA_firmware\Pulser_w_line_triggering_2012_12_19\photon
+LICENSE=WebPack
+USER_INFO=206763184_0_0_219

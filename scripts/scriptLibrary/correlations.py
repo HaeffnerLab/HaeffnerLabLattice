@@ -4,61 +4,47 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 class correlator(object):
-    
+      
     @staticmethod
-    def element_differences(arr, bins):
+    def g2(intensity, compute_range = None):
         '''
-        computes differences between all pairs of elements from an array of timetags
-        
-        maximum correlation is one third of the timetag duration. 
-        this way, time differences are computed from the the middle third of timetags never lie outside the given range. 
+        computes g2 from the intensity array
+        @var arr is the intensity array of photon counts per unit time, such as [1, 0, 3, 4 ,...]
         '''
-        arr = np.array(arr)
-        arr_length = arr.max() - arr.min()
-        arr_center = arr.min() + arr_length / 2.0
-        max_correlation_length = arr_length / 3.0
-        #correlate_window are timetags with which all differences are computed. 
-        #correlate_window is max_correlation_length-wide. centered in the middle of timetags
-        start_correlate_window = (arr_center - max_correlation_length/2.0)
-        stop_correlate_window = (arr_center + max_correlation_length/2.0)
-        correlate_where = (arr >= start_correlate_window) * (arr <= stop_correlate_window)
-        correlate_window = arr[correlate_where]
-        #rearangeing all timetags so that they start with timteags from correlate_window. this helps with indexing.
-        all_timetags = list(correlate_window)
-        all_timetags.extend(arr[np.logical_not(correlate_where)])
-        differences = []
-        for i in range(len(correlate_window)):
-            for j in range(len(all_timetags)):
-                diff = correlate_window[i] - all_timetags[j]
-                if 0 <= diff < max_correlation_length:
-                    differences.append(diff)
-        return differences
-
+        intensity = np.array(intensity)
+        N = intensity.size
+        max_correlation_length = np.floor_divide(N , 2)
+        correlate_window = intensity[ : max_correlation_length]
+        g2 = []
+        kk = []
+        if compute_range == None:
+            range_k = range(0, max_correlation_length + 1)
+        else:
+            range_k = range(0, compute_range)
+        for k in range_k:
+            print k
+            #for each correlation length, offset the array and compute the product
+            moving_window = intensity[k : max_correlation_length + k]
+            product = np.mean(moving_window * correlate_window)
+            normalized = product / (np.mean(correlate_window) * np.mean(moving_window))
+            g2.append(normalized)
+            kk.append(k)
+        #special case for k = 0:
+        g2[0] = np.mean(correlate_window * (correlate_window - 1)) / (np.mean(correlate_window)**2)
+        return np.array(kk), np.array(g2)
+                
 if __name__ == '__main__':
     #g2 for a poisonnian process
-    count_rate = 0.01
-    samples = 30000.0
-    photon_numbers = np.random.poisson(lam = count_rate, size = samples) #photon number is poisonian
-    
-    timetags = []
-    for i,num in enumerate(photon_numbers):
-        if num > 0:
-            timetags.extend(num * [i])
-    differences = correlator.element_differences(timetags, 500)
-    
-
-    
-    from correlations_2 import correlator as corr2
-    
-    ks, result =  corr2.g2(photon_numbers, compute_range = None)
-    
-
-    pyplot.figure()
+    count_rate = 1 / 500.0
+    samples = 1.0 / count_rate * 30000
+    average = 100
+    max_k = 10
+    result = np.zeros(max_k)
+    for i in range(average):
+        print 'average', i
+        photon_numbers = np.random.poisson(lam = count_rate, size = samples) #photon number is poisonian
+        ks, res =  correlator.g2(photon_numbers, max_k)
+        result += res
+    result = result / average
     pyplot.plot(ks, result)
-    ct = np.bincount(differences)
-    pyplot.plot(ct / np.mean(ct))
     pyplot.show()
-#    hist,bins = correlator.element_differences(timetags, 500)
-#    pyplot.bar(bins[:-1], hist, width = bins[1]-bins[0])
-#    pyplot.show()
-    #g2 for a poisonnian process with 

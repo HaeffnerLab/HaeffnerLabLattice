@@ -41,7 +41,7 @@ set_global_assignment -name DEVICE EP2C5T144C6
 set_global_assignment -name TOP_LEVEL_ENTITY DDS
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "11.1 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:51:56  JANUARY 20, 2012"
-set_global_assignment -name LAST_QUARTUS_VERSION "11.1 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION 12.1
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1

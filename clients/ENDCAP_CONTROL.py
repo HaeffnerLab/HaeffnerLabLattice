@@ -30,7 +30,7 @@ class ENDCAP_CONTROL(QCustomLevelTilt):
             yield self.initializeGUI()
             yield self.setupListeners()
         except Exception, e:
-            print 'ENDCAP_CONTROL: Pulser not available'
+            print 'ENDCAP_CONTROL: DAC not available'
             self.setDisabled(True)
         self.cxn.on_connect['DAC'].append( self.reinitialize)
         self.cxn.on_disconnect['DAC'].append( self.disable)

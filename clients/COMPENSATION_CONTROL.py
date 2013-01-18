@@ -30,7 +30,7 @@ class COMPENSATION_CONTROL(QCustomLevelTilt):
             yield self.initializeGUI()
             yield self.setupListeners()
         except Exception, e:
-            print 'Compensation control: Pulser not available'
+            print 'Compensation control: DAC not available'
             self.setDisabled(True)
         self.cxn.on_connect['DAC'].append( self.reinitialize)
         self.cxn.on_disconnect['DAC'].append( self.disable)

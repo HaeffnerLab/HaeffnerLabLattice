@@ -1,6 +1,6 @@
 from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags  
 import labrad
-from labrad import types as T
+from labrad.units import WithUnit
 import numpy as np
 from processFFT import processFFT
 
@@ -18,7 +18,8 @@ class measureFFT():
         self.savePlot = savePlot
     
     def getCenterFreq(self):
-        rffreq = 37.983*10**6
+        rffreq = WithUnit(30.64, 'MHz')
+        rffreq = rffreq['Hz']
         #rffreq = float(self.trap_drive.frequency())*10.0**6 #in Hz
         return rffreq
 
@@ -29,7 +30,7 @@ class measureFFT():
     
     def programPulseSequence(self, recordTime):
         params = {
-                  'record_timetags_duration': T.Value(recordTime, 's')
+                  'record_timetags_duration': WithUnit(recordTime, 's')
                   }
         seq = record_timetags(**params)
         seq.programSequence(self.pulser)
@@ -76,7 +77,7 @@ if  __name__ == '__main__':
     recordTime = 0.5 #seconds
     average = 4
     freqSpan = 500.0 #Hz 
-    freqOffset = -740.0 #Hz, the offset between the counter clock and the rf synthesizer clock
+    freqOffset = -640.0 #Hz, the offset between the counter clock and the rf synthesizer clock
     fft = measureFFT(cxn, recordTime, average, freqSpan, freqOffset, savePlot = True)
     #totalPower = fft.getTotalPower()
     peakArea = fft.getPeakArea(ptsAround = 3)

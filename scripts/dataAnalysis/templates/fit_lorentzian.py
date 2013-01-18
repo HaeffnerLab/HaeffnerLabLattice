@@ -35,14 +35,6 @@ print x_0,b,a
 print x_0_err,b_err,a_err
 
 
-### two current sources ###
-#thorlabs = data[0,7660]
-#ilx = data[76701:116194]
-
-##normalize
-
-#thorlabs_i = thorlabs[:,1]-np.average(thorlabs[:,1])
-#ilx_i = ilx[:,1]-np.average(ilx[:,1])
 
 pyplot.plot(x,y, 'ko')
 x_fit = np.linspace(x.min(), x.max(), 5000)
