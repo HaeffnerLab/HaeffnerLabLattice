@@ -1,4 +1,4 @@
-from PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
@@ -8,28 +8,33 @@ from subsequences.TurnOffAll import turn_off_all
 from subsequences.BlueHeating import global_blue_heating, local_blue_heating
 from labrad.units import WithUnit
 
-class blue_heat_rabi(PulseSequence):
+class blue_heat_rabi(pulse_sequence):
     
-    def configuration(self):
+    @classmethod
+    def required_parameters(cls):
         config = [
                   'optical_pumping_enable','blue_heating_delay_before','blue_heating_delay_after', 'use_local_blue_heating'
                   ]
         return config
+    
+    @classmethod
+    def required_subsequences(cls):
+        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, global_blue_heating, local_blue_heating]
     
     def sequence(self):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
         self.start_record_timetags = self.end
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_before})
-        if self.p.use_local_blue_heating:
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.blue_heating_delay_before})
+        if self.use_local_blue_heating:
             self.addSequence(local_blue_heating)
         else:
             self.addSequence(global_blue_heating)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_after})
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.blue_heating_delay_after})
         self.timetag_record_duration = self.end - self.start_record_timetags
         self.ttl_pulses.append( ('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration))
-        if self.p.optical_pumping_enable:
+        if self.optical_pumping_enable:
             self.addSequence(optical_pumping)
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)

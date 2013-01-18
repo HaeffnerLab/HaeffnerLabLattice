@@ -1,9 +1,9 @@
-from scripts.PulseSequences.PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 
-class empty_sequence(PulseSequence):
+class empty_sequence(pulse_sequence):
     
     @classmethod
-    def required_parameters(self):
+    def required_parameters(cls):
         config = [
                   'empty_sequence_duration'
                   ]

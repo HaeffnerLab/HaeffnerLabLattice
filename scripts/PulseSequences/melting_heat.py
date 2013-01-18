@@ -1,14 +1,15 @@
-from PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.DopplerCooling import doppler_cooling
-from labrad.units import WithUnit
 from subsequences.EmptySequence import empty_sequence
 from subsequences.BlueHeating import global_blue_heating, local_blue_heating
 from subsequences.StateReadout import state_readout
+from labrad.units import WithUnit
 
-class melting_heat(PulseSequence):
-
-    def configuration(self):
+class melting_heat(pulse_sequence):
+    
+    @classmethod
+    def required_parameters(cls):
         config = [
                   'blue_heating_delay_before',
                   'blue_heating_delay_after', 
@@ -17,21 +18,25 @@ class melting_heat(PulseSequence):
                   ]
         return config
     
+    @classmethod
+    def required_subsequences(cls):
+        return [turn_off_all, doppler_cooling, empty_sequence, global_blue_heating, local_blue_heating, state_readout]
+    
     def sequence(self):
         self.start_record_timetags = self.end
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_before})
-        if self.p.use_local_blue_heating:
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.blue_heating_delay_before})
+        if self.use_local_blue_heating:
             self.addSequence(local_blue_heating)
         else:
             self.addSequence(global_blue_heating)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.blue_heating_delay_after})
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.blue_heating_delay_after})
         self.begin_state_readout = self.end
         self.addSequence(state_readout)
         self.state_readout_duration = self.end - self.begin_state_readout
-        self.addSequence(doppler_cooling, **{'doppler_cooling_duration':self.p.crystallization_duration})
+        self.addSequence(doppler_cooling, **{'doppler_cooling_duration':self.crystallization_duration})
         #record timetags the whole time
         self.timetag_record_duration = self.end - self.start_record_timetags
         self.ttl_pulses.append( ('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration))
