@@ -87,7 +87,7 @@ if __name__ == '__main__':
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
     print 'to program', time.time() - tinit
-    cxn.pulser.start_number(1)
+    cxn.pulser.start_number(100)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray
