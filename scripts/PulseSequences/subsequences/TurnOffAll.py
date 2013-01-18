@@ -1,4 +1,4 @@
-from lattice.scripts.PulseSequences.PulseSequence import PulseSequence
+from scripts.PulseSequences.PulseSequence import PulseSequence
 from labrad.units import WithUnit
 
 class turn_off_all(PulseSequence):
