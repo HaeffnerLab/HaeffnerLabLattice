@@ -116,15 +116,16 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan_steps = 5
-        scan = numpy.linspace(0.0, 100.0, scan_steps)
+        scan_steps = 20
+        scan = numpy.linspace(200.0, 400.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
         for index, duration in enumerate(scan):
             print 'pulse gap is now {}'.format(duration)
             self.percentDone = 100.0 * index / len(scan)
-            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
+#            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
+            should_continue = True
             if not should_continue:
                 print 'Not Continuing'
                 return
