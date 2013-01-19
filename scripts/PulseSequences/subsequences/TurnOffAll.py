@@ -1,7 +1,7 @@
-from scripts.PulseSequences.PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class turn_off_all(PulseSequence):
+class turn_off_all(pulse_sequence):
     
     def sequence(self):
         pulses = self.dds_pulses

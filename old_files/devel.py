@@ -1,10 +1,10 @@
-from PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence 
 from subsequences.DopplerCooling import doppler_cooling
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.EmptySequence import empty_sequence
 from labrad.units import WithUnit
 
-class branching_ratio(PulseSequence):
+class branching_ratio(pulse_sequence):
     
     @classmethod
     def required_parameters(cls):
@@ -68,6 +68,7 @@ if __name__ == '__main__':
 #    import labrad
 #    cxn = labrad.connect()
     params = sample_parameters.parameters
+    print branching_ratio.required_parameters()
     print branching_ratio.all_variables()
     
     cs = branching_ratio(**params)

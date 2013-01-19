@@ -1,10 +1,11 @@
-from lattice.scripts.PulseSequences.PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from OpticalPumpingContinuous import optical_pumping_continuous
 from OpticalPumpingPulsed import optical_pumping_pulsed
 
-class optical_pumping(PulseSequence):
+class optical_pumping(pulse_sequence):
     
-    def configuration(self):
+    @classmethod
+    def required_parameters(cls):
         config = [
                   'optical_pumping_continuous',
                   'optical_pumping_pulsed',
@@ -17,26 +18,30 @@ class optical_pumping(PulseSequence):
                   ]
         return config
     
+    @classmethod
+    def required_subsequences(cls):
+        return [optical_pumping_continuous, optical_pumping_pulsed]
+    
     def sequence(self):
-        if (self.p.optical_pumping_continuous == self.p.optical_pumping_pulsed):
+        if (self.optical_pumping_continuous == self.optical_pumping_pulsed):
             raise Exception("Incorrectly Selected Optical Pumping Type") 
-        if self.p.optical_pumping_continuous:
+        if self.optical_pumping_continuous:
             replace = {
-                       'optical_pumping_continuous_frequency_854':self.p.optical_pumping_frequency_854,
-                       'optical_pumping_continuous_amplitude_854':self.p.optical_pumping_amplitude_854,
-                       'optical_pumping_continuous_frequency_729':self.p.optical_pumping_frequency_729,
-                       'optical_pumping_continuous_amplitude_729':self.p.optical_pumping_amplitude_729,
-                       'optical_pumping_continuous_frequency_866':self.p.optical_pumping_frequency_866,
-                       'optical_pumping_continuous_amplitude_866':self.p.optical_pumping_amplitude_866,
+                       'optical_pumping_continuous_frequency_854':self.optical_pumping_frequency_854,
+                       'optical_pumping_continuous_amplitude_854':self.optical_pumping_amplitude_854,
+                       'optical_pumping_continuous_frequency_729':self.optical_pumping_frequency_729,
+                       'optical_pumping_continuous_amplitude_729':self.optical_pumping_amplitude_729,
+                       'optical_pumping_continuous_frequency_866':self.optical_pumping_frequency_866,
+                       'optical_pumping_continuous_amplitude_866':self.optical_pumping_amplitude_866,
                        }
             self.addSequence(optical_pumping_continuous, **replace)
-        elif self.p.optical_pumping_pulsed:
+        elif self.optical_pumping_pulsed:
             replace = {
-                       'optical_pumping_pulsed_frequency_854':self.p.optical_pumping_frequency_854,
-                       'optical_pumping_pulsed_amplitude_854':self.p.optical_pumping_amplitude_854,
-                       'optical_pumping_pulsed_frequency_729':self.p.optical_pumping_frequency_729,
-                       'optical_pumping_pulsed_amplitude_729':self.p.optical_pumping_amplitude_729,
-                       'optical_pumping_pulsed_frequency_866':self.p.optical_pumping_frequency_866,
-                       'optical_pumping_pulsed_amplitude_866':self.p.optical_pumping_amplitude_866,
+                       'optical_pumping_pulsed_frequency_854':self.optical_pumping_frequency_854,
+                       'optical_pumping_pulsed_amplitude_854':self.optical_pumping_amplitude_854,
+                       'optical_pumping_pulsed_frequency_729':self.optical_pumping_frequency_729,
+                       'optical_pumping_pulsed_amplitude_729':self.optical_pumping_amplitude_729,
+                       'optical_pumping_pulsed_frequency_866':self.optical_pumping_frequency_866,
+                       'optical_pumping_pulsed_amplitude_866':self.optical_pumping_amplitude_866,
                        }
             self.addSequence(optical_pumping_pulsed, **replace)

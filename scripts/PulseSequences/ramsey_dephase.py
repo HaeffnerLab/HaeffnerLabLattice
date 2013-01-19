@@ -1,4 +1,4 @@
-from PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
@@ -8,9 +8,10 @@ from subsequences.TurnOffAll import turn_off_all
 from subsequences.BlueHeating import local_blue_heating
 from labrad.units import WithUnit
            
-class ramsey_dephase(PulseSequence):
+class ramsey_dephase(pulse_sequence):
     
-    def configuration(self):
+    @classmethod
+    def required_parameters(cls):
         config = [
                   'optical_pumping_enable','rabi_pi_time','pulse_gap',
                   'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866',
@@ -18,29 +19,33 @@ class ramsey_dephase(PulseSequence):
                   ]
         return config
     
+    @classmethod
+    def required_subsequences(cls):
+        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, local_blue_heating]
+    
     def sequence(self):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
-        if self.p.optical_pumping_enable:
+        if self.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.rabi_pi_time / 2.0})
-        if not self.p.dephasing_enable:
-            self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.pulse_gap}) 
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.rabi_pi_time / 2.0})
+        if not self.dephasing_enable:
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':self.pulse_gap}) 
         else:
-            spacing = (self.p.pulse_gap - self.p.dephasing_duration) / 2.0
+            spacing = (self.pulse_gap - self.dephasing_duration) / 2.0
             if spacing < WithUnit(5.0, 'us'): raise Exception("Ramsey Dephase, gap is too short to accomodate dephasing")
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
             self.addSequence(local_blue_heating, **{
-                                                'local_blue_heating_frequency_397': self.p.dephasing_frequency,
-                                                'local_blue_heating_amplitude_397': self.p.dephasing_amplitude,
-                                                'blue_heating_frequency_866': self.p.doppler_cooling_frequency_866,
-                                                'blue_heating_amplitude_866': self.p.doppler_cooling_amplitude_866,
-                                                'blue_heating_duration': self.p.dephasing_duration,
+                                                'local_blue_heating_frequency_397': self.dephasing_frequency,
+                                                'local_blue_heating_amplitude_397': self.dephasing_amplitude,
+                                                'blue_heating_frequency_866': self.doppler_cooling_frequency_866,
+                                                'blue_heating_amplitude_866': self.doppler_cooling_amplitude_866,
+                                                'blue_heating_duration': self.dephasing_duration,
                                                 'blue_heating_repump_additional': WithUnit(2, 'us')
                                                     }) 
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.second_pulse_duration})
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.second_pulse_duration})
         self.addSequence(state_readout)
 
 class sample_parameters(object):

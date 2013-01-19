@@ -1,6 +1,6 @@
-from scripts.PulseSequences.PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence 
 
-class doppler_cooling(PulseSequence):
+class doppler_cooling(pulse_sequence):
     
     
     @classmethod

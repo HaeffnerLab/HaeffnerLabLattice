@@ -1,4 +1,4 @@
-from PulseSequence import PulseSequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
@@ -7,21 +7,26 @@ from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
 from labrad.units import WithUnit
 
-class spectrum_rabi(PulseSequence):
+class spectrum_rabi(pulse_sequence):
     
-    def configuration(self):
+    @classmethod
+    def required_parameters(cls):
         config = [
                   'background_heating_time','optical_pumping_enable'
                   ]
         return config
     
+    @classmethod
+    def required_subsequences(cls):
+        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all]
+    
     def sequence(self):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
-        if self.p.optical_pumping_enable:
+        if self.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.background_heating_time})
+        self.addSequence(empty_sequence, **{'empty_sequence_duration':self.background_heating_time})
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
 
@@ -82,7 +87,7 @@ if __name__ == '__main__':
     cs = spectrum_rabi(**params)
     cs.programSequence(cxn.pulser)
     print 'to program', time.time() - tinit
-    cxn.pulser.start_number(1)
+    cxn.pulser.start_number(100)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray
