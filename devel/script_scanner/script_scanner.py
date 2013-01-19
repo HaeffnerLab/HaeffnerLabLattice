@@ -23,7 +23,6 @@ from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
 from twisted.internet.task import LoopingCall
 #from twisted.internet.threads import deferToThread
 from labrad.units import WithUnit
-from numpy import linspace
 #configuration file
 from configuration import config
 import scan_methods
@@ -70,6 +69,7 @@ class ScriptScanner(LabradServer):
     def get_available_scripts(self, c):
         return self.script_parameters.keys()
     
+    #scheduled = None
     @setting(1, "Get Script Parameters", script = 's', returns = '*s')
     def get_script_parameters(self, c, script):
         if script not in self.script_parameters.keys():
@@ -82,40 +82,39 @@ class ScriptScanner(LabradServer):
         yield None
         returnValue ( ( WithUnit(1.0,'s'), WithUnit(2.0, 's') ) )
     
-    @setting(10, 'New Script', script = 's', returns = 'w')
-    def new_script(self, c, script):
+    @setting(10, 'New Script', script_name = 's', returns = 'w')
+    def new_script(self, c, script_name):
         '''
         Launch the script. Returns ID of the queued scan.
         '''
-        if script not in self.script_parameters.keys():
-            raise Exception ("Script {} Not Found".format(script))
-        single_launch = scan_methods.repeat_script(script, repeatitions = 1)
+        if script_name not in self.script_parameters.keys():
+            raise Exception ("Script {} Not Found".format(script_name))
+        script = self.script_parameters[script_name]
+        single_launch = scan_methods.repeat_script(script.cls, repeatitions = 1)
+        #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(single_launch)
         return scan_id
     
-    @setting(11, "New Script Repeat", script = 's', repeat = 'w')
-    def new_script_repeat(self, c, script, repeat):
-        #error checking that it's a valid script and parameter
-        #same as scan but with no setting of parameter
-        yield None
+    @setting(11, "New Script Repeat", script_name = 's', repeat = 'w')
+    def new_script_repeat(self, c, script_name, repeat):
+        if script_name not in self.script_parameters.keys():
+            raise Exception ("Script {} Not Found".format(script_name))
+        script = self.script_parameters[script_name]
+        repeat_launch = scan_methods.repeat_script(script.cls, repeatitions = repeat)
+        #will be passing signals for firing
+        scan_id = self.scheduler.add_scan_to_queue(repeat_launch)
+        return scan_id
     
-    @setting(12, "New Script Scan", script = 's', parameter = 's', minim = 'v', maxim = 'v', units = 's', steps = 'w')
-    def new_scan(self, c, script, parameter, minim, maxim, units, steps):
-        from test_experiment import test1
-        #error checking that it's a valid script and parameter
-        scan_points = linspace(minim, maxim, steps)
-        inst = test1()
-        inst.initialize()
-        for pt in scan_points:
-            #if should continue
-            inst.set_parameter(WithUnit(pt, units))
-            inst.run()
-        inst.stop()
-    
-    @setting(13, "New Scheduled Script", script = 's', duration = 'v[s]')
-    def new_scheduled_script(self, c, script, duration):
-        #error checking that valid script and valid duration
-        duration = duration['s']
+    @setting(12, "New Script Scan", script_name = 's', parameter = 's', minim = 'v', maxim = 'v', steps = 'w', units = 's')
+    def new_scan(self, c, script_name, parameter, minim, maxim, steps, units):
+        #need error checking that parmaters are valid
+        if script_name not in self.script_parameters.keys():
+            raise Exception ("Script {} Not Found".format(script_name))
+        script = self.script_parameters[script_name]
+        scan_launch = scan_methods.scan_script_1D(script.cls, parameter, minim, maxim, steps, units)
+        #will be passing signals for firing
+        scan_id = self.scheduler.add_scan_to_queue(scan_launch)
+        return scan_id
     
     @setting(14, "Pause Script", script_ID = 'w', should_pause = 'b')
     def pause_script(self, c, script_ID, should_pause):

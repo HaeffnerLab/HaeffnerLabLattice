@@ -2,6 +2,9 @@ import time
 
 class test1(object):
     
+    def __init__(self):
+        self.param = 3.0
+    
     @classmethod
     def required_parameters(cls):
         return ['parameter']
@@ -10,7 +13,7 @@ class test1(object):
         print 'initializing', time.time()
         self.param = None
         
-    def set_parameter(self, param):
+    def set_parameter(self, param_name, param):
         self.param = param
         
     def run(self):
