@@ -18,7 +18,6 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting, Signal
-#from labrad.units import WithUnit
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
 from twisted.internet.task import LoopingCall
 #from twisted.internet.threads import deferToThread
@@ -69,18 +68,17 @@ class ScriptScanner(LabradServer):
     def get_available_scripts(self, c):
         return self.script_parameters.keys()
     
-    #scheduled = None
     @setting(1, "Get Script Parameters", script = 's', returns = '*s')
     def get_script_parameters(self, c, script):
         if script not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script))
         return self.script_parameters[script].parameters
     
-    @setting(2, "Get Parameter Limits", script = 's', parameter = 's', returns = 'vv')
-    def get_parameter_limits(self, c, script, parameter):
-        #this somehow involves semaphore lookup and a lookup table.
-        yield None
-        returnValue ( ( WithUnit(1.0,'s'), WithUnit(2.0, 's') ) )
+#    @setting(2, "Get Parameter Limits", script = 's', parameter = 's', returns = 'vv')
+#    def get_parameter_limits(self, c, script, parameter):
+#        #this somehow involves semaphore lookup and a lookup table.
+#        yield None
+#        returnValue ( ( WithUnit(1.0,'s'), WithUnit(2.0, 's') ) )
     
     @setting(10, 'New Script', script_name = 's', returns = 'w')
     def new_script(self, c, script_name):
@@ -116,16 +114,21 @@ class ScriptScanner(LabradServer):
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
     
-    @setting(14, "Pause Script", script_ID = 'w', should_pause = 'b')
+    @setting(20, "Pause Script", script_ID = 'w', should_pause = 'b')
     def pause_script(self, c, script_ID, should_pause):
-        pass
-        #check that script running
+        self.scheduler.pause_running(script_ID, should_pause)
         
-    @setting(15, "Stop Script", script_ID = 'w')
+    @setting(21, "Stop Script", script_ID = 'w')
     def stop_script(self, c, script_ID):
-        #check that it's running or paused
-        pass
-    
+        self.scheduler.stop_running(script_ID)
+
+#settings:
+#get running
+#scheduled duration
+#set scheduled
+#cancel scheduled
+#parameter lookup
+
     def notifyOtherListeners(self, context, message, f):
         """
         Notifies all listeners except the one in the given context, executing function f
@@ -140,7 +143,7 @@ class ScriptScanner(LabradServer):
     
     def expireContext(self, c):
         self.listeners.remove(c.ID)
-    
+
 #    @inlineCallbacks
 #    def stopServer(self):
 #        '''save the latest voltage information into registry'''
