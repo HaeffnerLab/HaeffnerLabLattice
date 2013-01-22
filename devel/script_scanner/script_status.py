@@ -15,7 +15,6 @@ class script_semaphore(object):
     
     def launch_confirmed(self):
         self.status = 'Running'
-        print self.status
     
     @inlineCallbacks
     def pause(self, should_pause):
@@ -28,7 +27,6 @@ class script_semaphore(object):
                 raise Exception ("Trying to unpause script that was not paused")
             self.pause_lock.release()
             self.status = 'Running'
-            print self.status
     
     def stop(self):
         self.should_stop = True
@@ -36,19 +34,18 @@ class script_semaphore(object):
         #if was paused, unpause:
         if self.pause_lock.locked:
             self.pause_lock.release()
-        print self.status
     
     def stop_confirmed(self):
         self.should_stop = False
         self.status = 'Stopped'
-        print self.status
     
     def checking_for_pause(self):
         if self.pause_lock.locked:
             self.status = 'Paused'
-            print self.status
     
     def finish_confirmed(self):
         self.percentage_complete = 100.0
         self.status = 'Finished'
-        print self.status
+    
+    def error_finish_confirmed(self, error):
+        self.status = 'Error {}'.format(error)
