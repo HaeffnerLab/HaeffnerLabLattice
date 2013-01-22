@@ -100,7 +100,14 @@ class ramsey_dephase(SemaphoreExperiment):
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency
-            self.sequence_parameters['rabi_excitation_frequency'] = cm.saved_line_info_to_frequency(info, line_name)
+            frequency = cm.saved_line_info_to_frequency(info, line_name) + self.check_parameter(self.p_ramsey.detuning)
+            sideband_frequencies = [self.check_parameter(self.p.radial_frequency_1),
+                                    self.check_parameter(self.p.radial_frequency_2),
+                                    self.check_parameter(self.p.axial_frequency),
+                                    self.check_parameter(self.p.rf_drive_frequency),
+                                    ]
+            frequency = frequency + cm.sideband_addition(self.p.sideband_selection, sideband_frequencies)
+            self.sequence_parameters['rabi_excitation_frequency'] = frequency
         else:
             self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    
         #optical pumping can track line drift
