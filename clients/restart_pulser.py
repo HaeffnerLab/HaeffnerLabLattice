@@ -23,6 +23,7 @@ else:
 		for dds_channel in pulser.get_dds_channels():
 			channel_state = [pulser.frequency(dds_channel), pulser.amplitude(dds_channel) , pulser.output(dds_channel)]
 			dds_state[dds_channel] = channel_state
+		line_trig_state = pulser.line_trigger_state()
 		print 'restarting pulser'
 		cxn.servers[pulser_node].restart(pulser_name)
 		print 'done'
@@ -32,3 +33,4 @@ else:
 		for channel, (freq, ampl, output) in dds_state.iteritems():
 			print channel, ampl
 			[pulser.frequency(channel, freq), pulser.amplitude(channel, ampl) , pulser.output(channel, output)]
+		pulser.line_trigger_state(line_trig_state)

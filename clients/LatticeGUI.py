@@ -16,7 +16,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     
     def create_layout(self, cxn):
         lightControlTab = self.makeLightWidget(reactor)
-        voltageControlTab = self.makeVoltageWidget(reactor)
+        voltageControlTab = self.makeVoltageWidget(reactor, cxn)
         tableOpticsWidget = self.makeTableOpticsWidget(reactor, cxn)
 #        translationStageWidget = self.makeTranslationStageWidget(reactor)
         control729Widget =  self.makecontrol729Widget(reactor, cxn)
@@ -87,7 +87,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget.setLayout(gridLayout)
         return widget
     
-    def makeVoltageWidget(self, reactor):
+    def makeVoltageWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
 #        from TRAPDRIVE_CONTROL import TRAPDRIVE_CONTROL as trapDriveWidget
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
@@ -97,8 +97,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #from COMPENSATION_LINESCAN import COMPENSATION_LINESCAN_CONTROL as compLineWidget
         from HV_CONTROL import hvWidget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(endcapWidget(reactor),0,0,1,2)
-        gridLayout.addWidget(compensationWidget(reactor),1,0,1,2)
+        gridLayout.addWidget(endcapWidget(reactor, cxn),0,0,1,2)
+        gridLayout.addWidget(compensationWidget(reactor, cxn),1,0,1,2)
         #gridLayout.addWidget(compLineWidget(reactor),2,0)
         gridLayout.addWidget(hvWidget(reactor),2,1)
 #        gridLayout.addWidget(trapDriveWidget(reactor),3,0)
