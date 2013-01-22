@@ -17,12 +17,12 @@ class test1(object):
         self.param = param
         
     def run(self):
-        print 'running'
+        print 'running', time.time()
         print self.param
+        time.sleep(1)
     
     def exit(self):
         print 'exiting'
-
 
 if __name__ == '__main__':
     required = test1.required_parameters()

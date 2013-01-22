@@ -1,10 +1,11 @@
 from twisted.internet.threads import deferToThread
+from twisted.internet.defer import inlineCallbacks
 from configuration import config 
 
 class scheduler(object):
     
     def __init__(self):
-        self.running = []
+        self.running = {}#dictionary in the form running experiment : deferredlock for that experiment
         self.queue = {}
         self.scheduled = {}
         self.scheduled_ID_counter = 0
@@ -12,6 +13,18 @@ class scheduler(object):
 
     def are_scans_running(self):
         return bool(self.running)
+    
+    def pause_running(self, ident, pause):
+        status = self.running.get(ident, None)
+        if status is None:
+            raise Exception ("Trying to pause script with ID {} but it was not running".format(ident))
+        status.pause(pause)
+    
+    def stop_running(self, ident):
+        status = self.running.get(ident, None)
+        if status is None:
+            raise Exception ("Trying to pause script with ID {} but it was not running".format(ident))
+        status.stop()
     
     def add_scan_to_queue(self, scan):
         scan_id= self.queue_ID_counter
@@ -24,7 +37,7 @@ class scheduler(object):
         del self.queue[queue_ID]
     
     def remove_from_running(self, deferred_result, running_id):
-        self.running.remove(running_id)
+        del self.running[running_id]
      
     def new_scheduled_scan(self, scan, period):
         '''
@@ -66,7 +79,7 @@ class scheduler(object):
         earliest_id,scan = sorted(self.queue.iteritems())[0]
         if scan.script in non_conflicting or not self.are_scans_running():
             del self.queue[earliest_id]
-            self.running.append(earliest_id)
+            self.running[earliest_id] = scan.status
             d = deferToThread(scan.execute)
             d.addCallback(self.remove_from_running, running_id = earliest_id) 
             d.addCallback(self.launch_scripts)

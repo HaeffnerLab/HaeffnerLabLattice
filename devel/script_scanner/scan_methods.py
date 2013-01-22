@@ -25,6 +25,7 @@ class repeat_script(scan_method):
     def execute(self):
         self.status.launch_confirmed()
         for i in range(self.repeatitions):
+            self.status.checking_for_pause()
             blockingCallFromThread(reactor, self.status.pause_lock.acquire)
             self.status.pause_lock.release()
             if self.status.should_stop:
@@ -48,6 +49,7 @@ class scan_script_1D(scan_method):
     def execute(self):
         self.status.launch_confirmed()
         for i in range(len(self.scan_points)):
+            self.status.checking_for_pause()
             blockingCallFromThread(reactor, self.status.pause_lock.acquire)
             self.status.pause_lock.release()
             if self.status.should_stop:
