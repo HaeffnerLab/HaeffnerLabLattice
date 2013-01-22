@@ -43,3 +43,18 @@ class common_methods_729(object):
             center = line_info[1]
             assert min_freq<=center<=max_freq, "Some frequency points are beyond allowed range"
         return center
+    
+    @staticmethod
+    def sideband_addition(sideband_info, (wr1, wr2, wz, wmm)):
+        sideband_name_map = {'radial 1': wr1, 
+                             'radial 2': wr2,
+                             'axial': wz,
+                             'micromotion': wmm,
+                             }
+        d = dict(sideband_info)
+        del d['min']
+        del d['max']
+        detuning = WithUnit(0,'MHz')
+        for name, sideband in d.iteritems():
+            detuning += int(round(sideband.value)) * sideband_name_map[name]
+        return  detuning
