@@ -20,7 +20,7 @@ class scan_method(object):
             self.script.initialize(ident)
             self.status.launch_confirmed()
             self.execute_scan()
-            self.script.exit()
+            self.script.finalize()
         except Exception as e:
             print e
             self.status.error_finish_confirmed(e)
@@ -39,20 +39,29 @@ class scan_method(object):
     def execute_scan(self):
         '''
         implemented by the subclass
-        '''    
+        '''
+
+class single_run(scan_method):
+    '''
+    Used to perform a single measurement
+    '''
+    def __init__(self, scan_name, script):
+        super(repeat_script,self).__init__(scan_name, script)
+    
+    def execute_scan(self):
+        self.script.run()
 
 class repeat_script(scan_method):
-    
+    '''
+    Used to repeat a measurement multiple times
+    '''
     def __init__(self, scan_name, script, repeatitions):
         self.repeatitions = repeatitions
         scan_name = self.name_format(scan_name)
         super(repeat_script,self).__init__(scan_name, script)
 
     def name_format(self, name):
-        if self.repeatitions == 1:
-            return name
-        else:
-            return 'Repeat {0} {1} times'.format(name, self.repeatitions)
+        return 'Repeat {0} {1} times'.format(name, self.repeatitions)
     
     def execute_scan(self):
         for i in range(self.repeatitions):
@@ -61,6 +70,9 @@ class repeat_script(scan_method):
             self.status.set_percentage( (i + 1.0) / self.repeatitions)
 
 class scan_script_1D(scan_method):
+    '''
+    Used to Scan a Parameter of a measurement
+    '''
     def __init__(self, scan_name, script, parameter, minim, maxim, steps, units):
         scan_name = self.name_format(scan_name)
         super(scan_script_1D,self).__init__(scan_name, script)

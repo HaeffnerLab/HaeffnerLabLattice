@@ -120,7 +120,7 @@ class ScriptScanner(LabradServer):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.repeat_script(script_name, script.cls, repeatitions = 1)
+        single_launch = scan_methods.single_run(script_name, script.cls)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(single_launch)
         return scan_id
@@ -180,7 +180,14 @@ class ScriptScanner(LabradServer):
     def stop_script(self, c, script_ID):
         self.scheduler.stop_running(script_ID)
 
+    #@setting(31, "Script Set Progress ")
+    #@setting(31, "Script Set Progress ")
+    
+    #@setting(30, "Register External Launch")
+    
 
+    
+    
 ##external launch
 #finishconfirmed
 #stopconfirmed
