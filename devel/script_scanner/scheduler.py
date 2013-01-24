@@ -4,22 +4,34 @@ from twisted.internet.defer import Deferred
 from configuration import config 
 from twisted.internet.task import LoopingCall
 
+class running_script(object):
+    '''holds information about a script that is currently running'''
+    def __init__(self, scan, defer_on_done, externally_launched = False):
+        self.scan = scan
+        self.name = scan.scan_name
+        self.status = scan.status
+        self.defer_on_done = defer_on_done
+        self.externally_launched = externally_launched
+
 class scheduler(object):
     
     def __init__(self):
-        self.running = {}
-        self.queue = {}
+        self.running = {} #dictionary in the form identification : running_script_instance
+        self.queue = {} #dictionary in the form identification : scan to launch
         self.scheduled = {}
         self.scheduled_ID_counter = 0
-        self.queue_ID_counter = 0
+        self.scan_ID_counter = 0
     
     def running_deferred_list(self):
-        return [x[2] for x in self.running.itervalues()]
+        return [script.defer_on_done for script in self.running.itervalues() if not script.externally_launched]
+    
+    def get_running_external(self):
+        return [ident for (ident, script) in self.running.iteritems() if script.externally_launched]
         
     def get_running(self):
         running = []
-        for ident, (scan_name, lock, d) in self.running.iteritems():
-            running.append((ident, scan_name))
+        for ident, script in self.running.iteritems():
+            running.append((ident, script.name))
         return running
     
     def get_scheduled(self):
@@ -36,41 +48,51 @@ class scheduler(object):
     
     def clear_queue(self):
         for item in self.queue.keys():
-            del self.queue[item]
+            self.remove_scan_from_queue(item)
     
     def get_progress(self, ident):
-        name, status, d = self.running.get(ident, (None,None, None))
-        if status is None:
+        script = self.running.get(ident, None)
+        if script is None:
             raise Exception ("Trying to pause script with ID {0} but it was not running".format(ident))
-        return (status.status, status.percentage_complete)
+        return (script.status, script.status.percentage_complete)
     
     def are_scans_running(self):
         return bool(self.running)
     
     def pause_running(self, ident, pause):
-        name, status, d = self.running.get(ident, (None,None))
-        if status is None:
+        script = self.running.get(ident, None)
+        if script is None:
             raise Exception ("Trying to pause script with ID {0} but it was not running".format(ident))
-        status.pause(pause)
+        script.status.pause(pause)
     
     def stop_running(self, ident):
-        name, status, d = self.running.get(ident, (None,None))
-        if status is None:
+        script = self.running.get(ident, None)
+        if script is None:
             raise Exception ("Trying to stop script with ID {0} but it was not running".format(ident))
-        status.stop()
-    
+        script.stop()
+        
     def add_scan_to_queue(self, scan):
-        scan_id= self.queue_ID_counter
+        scan_id= self.scan_ID_counter
         self.queue[scan_id] = scan
-        self.queue_ID_counter += 1
+        self.scan_ID_counter += 1
         self.launch_scripts()
         return scan_id
     
+    def add_external_scan(self, scan):
+        scan_id= self.scan_ID_counter
+        self.scan_ID_counter += 1
+        d = Deferred()
+        d.addCallback(self.remove_from_running, scan_id)
+        self.running[scan_id] = running_script(scan, d, externally_launched = True)
+        return scan_id
+        
     def remove_scan_from_queue(self, queue_ID):
         del self.queue[queue_ID]
+        #need signal
     
     def remove_from_running(self, deferred_result, running_id):
         del self.running[running_id]
+        #need signal
      
     def new_scheduled_scan(self, scan, period):
         '''
@@ -92,6 +114,7 @@ class scheduler(object):
         else:
             lc.stop()
             lc.start(period)
+        #signal
     
     def cancel_scheduled_script(self, scheduled_ID):
         try:
@@ -115,7 +138,7 @@ class scheduler(object):
         if scan.script in non_conflicting or not self.are_scans_running():
             del self.queue[earliest_id]
             d = Deferred()
-            self.running[earliest_id] = (scan.scan_name, scan.status, d)
+            self.running[earliest_id] = running_script(scan, d)
             d.addCallback(self.launch_in_thread, scan, earliest_id)
             d.addCallback(self.remove_from_running, running_id = earliest_id) 
             d.addCallback(self.launch_scripts)

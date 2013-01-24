@@ -1,17 +1,21 @@
 from twisted.internet.defer import inlineCallbacks, DeferredLock
+from signals import Signals
 
 class script_semaphore(object):
     '''class for storing information about runtime behavior script'''
-    #need signal for notifications
+###this class needs identification for signaling
     def __init__(self):
         self.pause_lock = DeferredLock()
         self.status = 'Ready'
         self.percentage_complete = 0.0
         self.should_stop = False
+        self.on_new_status = Signals.on_new_status
+        self.on_new_status(self.status, self.percentage_complete)
     
     def set_percentage(self, perc):
         if not 0.0 <= perc <= 100.0: raise Exception ("Incorrect Percentage of Completion")
         self.percentage_complete = perc
+        #signal on new percentage
     
     def launch_confirmed(self):
         self.status = 'Running'

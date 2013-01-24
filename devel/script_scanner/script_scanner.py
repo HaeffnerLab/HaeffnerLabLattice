@@ -17,15 +17,17 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-from labrad.server import LabradServer, setting, Signal
+from labrad.server import LabradServer, setting
 from twisted.internet.defer import inlineCallbacks, DeferredList#, returnValue, DeferredLock
 #from twisted.internet.threads import deferToThread
 #from labrad.units import WithUnit
 #configuration file
+from signals import Signals
 from configuration import config
 import scan_methods
 from scheduler import scheduler
 from labrad.units import WithUnit
+
 
 class script_class_parameters(object):
     '''
@@ -36,9 +38,9 @@ class script_class_parameters(object):
         self.cls = cls
         self.parameters = parameters
         
-class ScriptScanner(LabradServer):
+class ScriptScanner(LabradServer, Signals):
     
-    name = 'ScriptScanner'
+    name = 'ScriptScanner7'
 #    onNewVoltage = Signal(123556, 'signal: new voltage', '(sv)')
     
     def initServer(self):
@@ -49,7 +51,7 @@ class ScriptScanner(LabradServer):
     
     def load_scripts(self):
         '''
-        loads script information from th configuration file
+        loads script information from the configuration file
         '''
         for name, (import_path, class_name) in config.scripts.iteritems():
             try:
@@ -130,7 +132,7 @@ class ScriptScanner(LabradServer):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        repeat_launch = scan_methods.repeat_script(script_name, script.cls, repeatitions = repeat)
+        repeat_launch = scan_methods.repeat_measurement(script_name, script.cls, repeatitions = repeat)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(repeat_launch)
         return scan_id
@@ -141,7 +143,7 @@ class ScriptScanner(LabradServer):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        scan_launch = scan_methods.scan_script_1D(script_name, script.cls, parameter, minim, maxim, steps, units)
+        scan_launch = scan_methods.scan_measurement_1D(script_name, script.cls, parameter, minim, maxim, steps, units)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
@@ -154,7 +156,7 @@ class ScriptScanner(LabradServer):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.repeat_script(script_name, script.cls, repeatitions = 1)
+        single_launch = scan_methods.repeat_measurement(script_name, script.cls, repeatitions = 1)
         schedule_id = self.scheduler.new_scheduled_scan(single_launch, duration['s'])
         return schedule_id
     
@@ -180,14 +182,26 @@ class ScriptScanner(LabradServer):
     def stop_script(self, c, script_ID):
         self.scheduler.stop_running(script_ID)
 
-    #@setting(31, "Script Set Progress ")
-    #@setting(31, "Script Set Progress ")
+    @setting(30, "Register External Scan", name = 's', returns = 'w')
+    def register_external_scan(self, c, name):
+        '''
+        Issues a running ID to a script that is launched externally and not through this server. The external script
+        can then update its status, be paused or stopped.
+        '''
+        external_scan = scan_methods.scan_info(name)
+        ident = self.scheduler.add_external_scan(external_scan)
+        return ident
     
-    #@setting(30, "Register External Launch")
-    
+    @setting(31, "Script Set Progress", ident = 'w', progress = 'v')
+    def script_set_progress(self, c, ident, progress):
+        if ident not in self.scheduler.get_external_script(ident):
+            raise Exception ("Script with ID {} was not launched externally".format(ident))
+        if not 0.0 <= progress <= 100.0: raise Exception ("Incorrect Progress value of {}".format(progress))
+        status.s
+        
+        pass
+        #external set progress
 
-    
-    
 ##external launch
 #finishconfirmed
 #stopconfirmed
@@ -195,11 +209,12 @@ class ScriptScanner(LabradServer):
 #set progress percentage
 #should_stop
 #should pause
-##register script
+
 
 ##parameter lookup
 ##signaling
-##killer gui - long time
+##data saving
+##killer gui
 
     def notifyOtherListeners(self, context, message, f):
         """
