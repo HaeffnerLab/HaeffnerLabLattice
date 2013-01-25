@@ -28,7 +28,6 @@ import scan_methods
 from scheduler import scheduler
 from labrad.units import WithUnit
 
-
 class script_class_parameters(object):
     '''
     storage class for information about the launchable script
@@ -40,7 +39,7 @@ class script_class_parameters(object):
         
 class ScriptScanner(LabradServer, Signals):
     
-    name = 'ScriptScanner7'
+    name = 'ScriptScanner'
 #    onNewVoltage = Signal(123556, 'signal: new voltage', '(sv)')
     
     def initServer(self):
@@ -80,6 +79,7 @@ class ScriptScanner(LabradServer, Signals):
 #        #this somehow involves semaphore lookup and a lookup table.
 #        yield None
 #        returnValue ( ( WithUnit(1.0,'s'), WithUnit(2.0, 's') ) )
+
     @setting(3, "Get Running", returns = '*(ws)')
     def get_running(self, c):
         '''
@@ -210,10 +210,15 @@ class ScriptScanner(LabradServer, Signals):
 #should_stop
 #should pause
 
+##data saving
+
+##signaling
 
 ##parameter lookup
-##signaling
-##data saving
+
+##testing
+#pause after stop
+
 ##killer gui
 
     def notifyOtherListeners(self, context, message, f):
