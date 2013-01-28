@@ -75,11 +75,15 @@ class running_scans_list(QtGui.QListWidget):
         super(running_scans_list, self).__init__(parent)
         self.reactor = reactor
         self.parent = parent
-        self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        self.font = font
         if self.font is None:
-            self.font = QtGui.QFont()
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.test_item()
-        
+        self.itemDoubleClicked.connect(self.on_double_click)
+    
+    def on_double_click(self, widgetitem):
+        widgetitem.setBackgroundColor(QtCore.Qt.lightGray)
     
     def test_item(self):
         new_scan = script_status_widget(self.reactor, self.parent)
@@ -91,11 +95,11 @@ class running_scans_list(QtGui.QListWidget):
         self.setItemWidget(widgetitem, new_scan)
         
         new_scan = script_status_widget(self.reactor, self.parent)
-#        widgetitem = QtGui.QListWidgetItem()
-#        widgetitem.setSizeHint(new_scan.sizeHint())
-#        widgetitem.setSizeHint(QtCore.QSize(0, 20))
-#        self.addItem(widgetitem)
-#        self.setItemWidget(widgetitem, new_scan)
+        widgetitem = QtGui.QListWidgetItem()
+        widgetitem.setSizeHint(new_scan.sizeHint())
+
+        self.addItem(widgetitem)
+        self.setItemWidget(widgetitem, new_scan)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
 
     def closeEvent(self, x):
@@ -106,12 +110,18 @@ class running_scans(QtGui.QWidget):
         super(running_scans, self).__init__(parent)
         self.reactor = reactor
         self.parent = parent
+        self.font = font
+        if self.font is None:
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         self.setupLayout()
     
     def setupLayout(self):
         layout = QtGui.QGridLayout()
-        title = QtGui.QLabel("Running")
+        title = QtGui.QLabel("Running Experiments", font = self.font)
         scans_list = running_scans_list(self.reactor, self.parent)
+        clear_finished = QtGui.QPushButton("Clear Finished")
+        layout.addWidget(title, 0, 0, 1, 2 )
+        layout.addWidget(clear_finished, 0, 2, 1, 1 )
         layout.addWidget(scans_list, 1, 0, 3, 3 )
         self.setLayout(layout)
     
