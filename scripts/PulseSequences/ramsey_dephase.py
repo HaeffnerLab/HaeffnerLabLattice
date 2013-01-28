@@ -2,7 +2,7 @@ from PulseSequence import PulseSequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
-from subsequences.RabiExcitation import rabi_excitation
+from subsequences.RabiExcitation import rabi_excitation, rabi_excitation_no_offset
 from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.BlueHeating import local_blue_heating
@@ -40,7 +40,10 @@ class ramsey_dephase(PulseSequence):
                                                 'blue_heating_repump_additional': WithUnit(2, 'us')
                                                     }) 
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.p.second_pulse_duration})
+        #sigh, hack to fix the fact that the second pulse seems to be ~.8 microseconds longer than the first   
+        self.p.second_pulse_duration = self.p.second_pulse_duration - WithUnit(0.8, 'us')
+        print 'actual second pulse', self.p.second_pulse_duration
+        self.addSequence(rabi_excitation_no_offset, **{'rabi_excitation_duration':self.p.second_pulse_duration})
         self.addSequence(state_readout)
 
 class sample_parameters(object):
@@ -57,7 +60,7 @@ class sample_parameters(object):
               'doppler_cooling_repump_additional':WithUnit(100, 'us'),
               'doppler_cooling_duration':WithUnit(1.0,'ms'),
               
-              'optical_pumping_enable':True,
+              'optical_pumping_enable':False,
               
               'optical_pumping_continuous_duration':WithUnit(1, 'ms'),
               'optical_pumping_continuous_repump_additional':WithUnit(200, 'us'),
@@ -85,8 +88,8 @@ class sample_parameters(object):
               
               'pulse_gap':WithUnit(100.0, 'us'),
 
-              'rabi_pi_time':WithUnit(100.0, 'us'),
-              'second_pulse_duration':WithUnit(50.0, 'us'),
+              'rabi_pi_time':WithUnit(20.0, 'us'),
+              'second_pulse_duration':WithUnit(10.0, 'us'),
               
               'dephasing_enable' : True,
               'dephasing_frequency':WithUnit(220.0, 'MHz'),
@@ -94,7 +97,7 @@ class sample_parameters(object):
               'dephasing_duration':WithUnit(5.0, 'us'),
               
               'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
-              'rabi_excitation_amplitude':WithUnit(-11.0, 'dBm'),
+              'rabi_excitation_amplitude':WithUnit(-3.0, 'dBm'),
               
               }
 
@@ -107,7 +110,7 @@ if __name__ == '__main__':
     cs = ramsey_dephase(**params)
     cs.programSequence(cxn.pulser)
     print 'to program', time.time() - tinit
-    cxn.pulser.start_number(10)
+    cxn.pulser.start_number(1000)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
     readout = cxn.pulser.get_readout_counts().asarray

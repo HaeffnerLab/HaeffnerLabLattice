@@ -88,7 +88,7 @@ class rabi_flopping(SemaphoreExperiment):
                                     self.check_parameter(self.p.axial_frequency),
                                     self.check_parameter(self.p.rf_drive_frequency),
                                     ]
-            frequency = frequency + cm.sideband_addition(self.p.sideband_selection, sideband_frequencies)          
+            frequency = frequency + cm.sideband_addition(self.p.sideband_selection, sideband_frequencies)
             self.sequence_parameters['rabi_excitation_frequency'] = frequency
         else:
             self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    

@@ -85,18 +85,21 @@ class ramsey_dephase(SemaphoreExperiment):
     def program_pulser(self, pulse_gap = None, dephasing_duration = None, second_pulse_duration = None):
         if pulse_gap is not None:
             self.sequence_parameters['pulse_gap'] = pulse_gap
+
         else:
-            print 'pulse gap', self.sequence_parameters['pulse_gap']
+            print 'setting pulse gap', pulse_gap
+            self.sequence_parameters['pulse_gap']
         if dephasing_duration is not None:
             self.sequence_parameters['dephasing_duration'] = dephasing_duration
         else:
-            print 'dephasing enable',  self.sequence_parameters['dephasing_enable']
-            print 'dephasing duration', self.sequence_parameters['dephasing_duration']
+            print 'setting dephasing enable',  self.sequence_parameters['dephasing_enable']
+            print 'setting dephasing duration', self.sequence_parameters['dephasing_duration']
         if second_pulse_duration is None:
+            print 'should not be here'
             self.sequence_parameters['second_pulse_duration'] = self.check_parameter(self.p_ramsey.rabi_pi_time) / 2.0
-            print 'duration of second pulse is pi/2', self.sequence_parameters['second_pulse_duration']
         else:
             self.sequence_parameters['second_pulse_duration'] = second_pulse_duration
+            print 'setting duration of second pulse to', second_pulse_duration
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency
@@ -123,8 +126,8 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan_steps = 16
-        scan = numpy.linspace(0.0, 16.0, scan_steps)
+        scan_steps = 20
+        scan = numpy.linspace(10.0, 200.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))

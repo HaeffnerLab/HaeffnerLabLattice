@@ -123,8 +123,8 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan_steps = 20
-        scan = numpy.linspace(200.0, 400.0, scan_steps)
+        scan_steps = 15
+        scan = numpy.linspace(350.0, 450.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
