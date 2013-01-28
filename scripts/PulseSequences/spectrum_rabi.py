@@ -62,14 +62,14 @@ class sample_parameters(object):
               'optical_pumping_pulsed_duration_additional_866':WithUnit(20, 'us'),
               'optical_pumping_pulsed_duration_between_pulses':WithUnit(5, 'us'),
               
-              'optical_pumping_continuous':False,
-              'optical_pumping_pulsed':True,
+              'optical_pumping_continuous':True,
+              'optical_pumping_pulsed':False,
               
               'background_heating_time':WithUnit(0.0, 'ms'),
               
               'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
-              'rabi_excitation_amplitude':WithUnit(-8.0, 'dBm'),
-              'rabi_excitation_duration':WithUnit(40.0, 'us'),
+              'rabi_excitation_amplitude':WithUnit(-3.0, 'dBm'),
+              'rabi_excitation_duration':WithUnit(10.0, 'us'),
               
               'state_readout_frequency_397':WithUnit(110.0, 'MHz'),
               'state_readout_amplitude_397':WithUnit(-11.0, 'dBm'),
