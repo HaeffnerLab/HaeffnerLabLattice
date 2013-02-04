@@ -23,7 +23,6 @@ class spectrum_rabi(PulseSequence):
             self.addSequence(optical_pumping)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.p.background_heating_time})
         self.addSequence(rabi_excitation)
-#        self.addSequence(optical_pumping, **{'optical_pumping_frequency_729':})
         self.addSequence(state_readout)
 
 class sample_parameters(object):

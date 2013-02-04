@@ -9,16 +9,12 @@ class sampleReadout(PulseSequence):
         self.ttl_pulses.append(('ReadoutCount', start, duration))
         self.ttl_pulses.append(('TimeResolvedCount',start, duration))
         
-        
 if __name__ == '__main__':
-    
     import labrad
-    import numpy as np
     cxn = labrad.connect()
     pulser = cxn.pulser
     cs = sampleReadout(**{})
     cs.programSequence(cxn.pulser)
-    
     cxn.pulser.start_number(10)
     cxn.pulser.wait_sequence_done()
     cxn.pulser.stop_sequence()
@@ -26,5 +22,3 @@ if __name__ == '__main__':
     timetags = pulser.get_timetags().asarray
     print timetags.size
     print readout
-#    print timetags
-#    print timetags.size

@@ -40,9 +40,6 @@ class ramsey_dephase(PulseSequence):
                                                 'blue_heating_repump_additional': WithUnit(2, 'us')
                                                     }) 
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-        #sigh, hack to fix the fact that the second pulse seems to be ~.8 microseconds longer than the first   
-        self.p.second_pulse_duration = self.p.second_pulse_duration - WithUnit(0.8, 'us')
-        print 'actual second pulse', self.p.second_pulse_duration
         self.addSequence(rabi_excitation_no_offset, **{'rabi_excitation_duration':self.p.second_pulse_duration})
         self.addSequence(state_readout)
 
