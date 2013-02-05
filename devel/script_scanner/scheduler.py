@@ -1,26 +1,32 @@
 from twisted.internet.threads import deferToThread
-#from twisted.internet.defer import inlineCallbacks
 from twisted.internet.defer import Deferred
 from configuration import config 
 from twisted.internet.task import LoopingCall
+from script_status import script_semaphore 
 
 class running_script(object):
     '''holds information about a script that is currently running'''
     def __init__(self, scan, defer_on_done, externally_launched = False):
         self.scan = scan
-        self.name = scan.scan_name
-        self.status = scan.status
+        self.name = scan.name
+        self.status = script_semaphore()
         self.defer_on_done = defer_on_done
         self.externally_launched = externally_launched
 
 class scheduler(object):
     
-    def __init__(self):
+    def __init__(self, signal_on_new_status):
         self.running = {} #dictionary in the form identification : running_script_instance
         self.queue = {} #dictionary in the form identification : scan to launch
+        self.launch_history = []
         self.scheduled = {}
         self.scheduled_ID_counter = 0
         self.scan_ID_counter = 0
+        self.signal_on_new_status = signal_on_new_status
+        self.signal_on_new_status(1, 'hi', 50.0)
+    
+    def are_scans_running(self):
+        return bool(self.running)
     
     def running_deferred_list(self):
         return [script.defer_on_done for script in self.running.itervalues() if not script.externally_launched]
@@ -33,6 +39,13 @@ class scheduler(object):
         for ident, script in self.running.iteritems():
             running.append((ident, script.name))
         return running
+    
+    def get_running_status(self, ident):
+        script = self.running.get(ident, None)
+        if script is None:
+            return None
+        else:
+            return script.status
     
     def get_scheduled(self):
         scheduled = []
@@ -50,26 +63,14 @@ class scheduler(object):
         for item in self.queue.keys():
             self.remove_scan_from_queue(item)
     
-    def get_progress(self, ident):
-        script = self.running.get(ident, None)
-        if script is None:
-            raise Exception ("Trying to pause script with ID {0} but it was not running".format(ident))
-        return (script.status, script.status.percentage_complete)
-    
-    def are_scans_running(self):
-        return bool(self.running)
-    
-    def pause_running(self, ident, pause):
-        script = self.running.get(ident, None)
-        if script is None:
-            raise Exception ("Trying to pause script with ID {0} but it was not running".format(ident))
-        script.status.pause(pause)
-    
-    def stop_running(self, ident):
-        script = self.running.get(ident, None)
-        if script is None:
-            raise Exception ("Trying to stop script with ID {0} but it was not running".format(ident))
-        script.stop()
+    def restart_script(self, ident):
+        d = dict(self.launch_history)
+        scan = d.get(ident, None)
+        if scan is None:
+            raise Exception ("Can not restart script that is not in the launch history")
+        else:
+            scan_id = self.add_scan_to_queue(scan)
+            return scan_id
         
     def add_scan_to_queue(self, scan):
         scan_id= self.scan_ID_counter
@@ -136,13 +137,21 @@ class scheduler(object):
         #launch the scan if no conflicts or if no scans are running
         earliest_id,scan = sorted(self.queue.iteritems())[0]
         if scan.script in non_conflicting or not self.are_scans_running():
+            #launching the script:
+            #firt add to history of launches
+            self.launch_history.append((earliest_id, scan))
+            if len(self.launch_history) > config.launch_history:
+                self.launch_history.pop(0)
+            #remove from queue
             del self.queue[earliest_id]
+            #make a deferred, and starts things moving
             d = Deferred()
             self.running[earliest_id] = running_script(scan, d)
             d.addCallback(self.launch_in_thread, scan, earliest_id)
             d.addCallback(self.remove_from_running, running_id = earliest_id) 
             d.addCallback(self.launch_scripts)
             d.callback(True)
+            #see of any other script can be launched
             self.launch_scripts()
     
     def launch_in_thread(self, result, scan, ident):

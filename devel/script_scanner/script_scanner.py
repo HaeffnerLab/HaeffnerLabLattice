@@ -1,5 +1,3 @@
-#Created on Feb 22, 2012
-#@author: Hong, Mike Haeffner Lab
 '''
 ### BEGIN NODE INFO
 [info]
@@ -18,15 +16,12 @@ timeout = 20
 ### END NODE INFO
 '''
 from labrad.server import LabradServer, setting
-from twisted.internet.defer import inlineCallbacks, DeferredList#, returnValue, DeferredLock
-#from twisted.internet.threads import deferToThread
-#from labrad.units import WithUnit
-#configuration file
+from labrad.units import WithUnit
+from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
 from signals import Signals
 from configuration import config
 import scan_methods
 from scheduler import scheduler
-from labrad.units import WithUnit
 
 class script_class_parameters(object):
     '''
@@ -40,11 +35,10 @@ class script_class_parameters(object):
 class ScriptScanner(LabradServer, Signals):
     
     name = 'ScriptScanner'
-#    onNewVoltage = Signal(123556, 'signal: new voltage', '(sv)')
     
     def initServer(self):
         self.script_parameters = {}
-        self.scheduler = scheduler()
+        self.scheduler = scheduler(Signals.on_new_status)
         self.load_scripts()
         self.listeners = set()
     
@@ -52,7 +46,7 @@ class ScriptScanner(LabradServer, Signals):
         '''
         loads script information from the configuration file
         '''
-        for name, (import_path, class_name) in config.scripts.iteritems():
+        for import_path, class_name in config.scripts:
             try:
                 module = __import__(import_path)
                 cls = getattr(module, class_name)
@@ -61,8 +55,13 @@ class ScriptScanner(LabradServer, Signals):
             except AttributeError:
                 print 'There is no class {0} in module {1}'.format(class_name, module) 
             else:
-                parameters = cls.required_parameters()
-                self.script_parameters[name] = script_class_parameters(name, cls, parameters)
+                try:
+                    name = cls.name()
+                    parameters = cls.required_parameters()
+                except AttributeError:
+                    print 'Name is not provided for class {0} in module {1}'.format(class_name, module) 
+                else:
+                    self.script_parameters[name] = script_class_parameters(name, cls, parameters)
             
     @setting(0, "Get Available Scripts", returns = '*s')
     def get_available_scripts(self, c):
@@ -73,21 +72,15 @@ class ScriptScanner(LabradServer, Signals):
         if script not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script))
         return self.script_parameters[script].parameters
-    
-#    @setting(2, "Get Parameter Limits", script = 's', parameter = 's', returns = 'vv')
-#    def get_parameter_limits(self, c, script, parameter):
-#        #this somehow involves semaphore lookup and a lookup table.
-#        yield None
-#        returnValue ( ( WithUnit(1.0,'s'), WithUnit(2.0, 's') ) )
 
-    @setting(3, "Get Running", returns = '*(ws)')
+    @setting(2, "Get Running", returns = '*(ws)')
     def get_running(self, c):
         '''
         Returns the list of currently running scripts and their IDs.
         '''
         return self.scheduler.get_running()
     
-    @setting(4, "Get Scheduled", returns ='*(wsv[s])')
+    @setting(3, "Get Scheduled", returns ='*(wsv[s])')
     def get_scheduled(self, c):
         '''
         Returns the list of currently scheduled scans with their IDs and durtation
@@ -96,23 +89,26 @@ class ScriptScanner(LabradServer, Signals):
         scheduled = [(ident, name, WithUnit(dur,'s') ) for (ident, name, dur) in scheduled]
         return scheduled
     
-    @setting(5, "Get Queue", returns = '*(ws)')
+    @setting(4, "Get Queue", returns = '*(ws)')
     def get_queue(self, c):
         '''
         Returns the current queue of scans
         '''
         return self.scheduler.get_queue()
     
-    @setting(6, "Clear Queue")
+    @setting(5, "Clear Queue")
     def clear_queue(self, c):
         self.scheduler.clear_queue()
     
-    @setting(7, "Get Progress", running_id = 'w', returns = 'sv')
-    def get_progress(self, c, running_id):
+    @setting(6, "Get Progress", script_ID = 'w', returns = 'sv')
+    def get_progress(self, c, script_ID):
         '''
         Get progress of a currently running experiment
         '''
-        return self.scheduler.get_progress(running_id)
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to get progress of script with ID {0} but it was not running".format(script_ID))
+        return status.get_progress()
     
     @setting(10, 'New Script', script_name = 's', returns = 'w')
     def new_script(self, c, script_name):
@@ -122,7 +118,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.single_run(script_name, script.cls)
+        single_launch = scan_methods.single_run(script.cls)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(single_launch)
         return scan_id
@@ -132,7 +128,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        repeat_launch = scan_methods.repeat_measurement(script_name, script.cls, repeatitions = repeat)
+        repeat_launch = scan_methods.repeat_measurement(script.cls, repeatitions = repeat)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(repeat_launch)
         return scan_id
@@ -143,7 +139,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        scan_launch = scan_methods.scan_measurement_1D(script_name, script.cls, parameter, minim, maxim, steps, units)
+        scan_launch = scan_methods.scan_measurement_1D(script.cls, parameter, minim, maxim, steps, units)
         #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
@@ -156,7 +152,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.repeat_measurement(script_name, script.cls, repeatitions = 1)
+        single_launch = scan_methods.repeat_measurement(script.cls, repeatitions = 1)
         schedule_id = self.scheduler.new_scheduled_scan(single_launch, duration['s'])
         return schedule_id
     
@@ -176,14 +172,25 @@ class ScriptScanner(LabradServer, Signals):
     
     @setting(20, "Pause Script", script_ID = 'w', should_pause = 'b')
     def pause_script(self, c, script_ID, should_pause):
-        self.scheduler.pause_running(script_ID, should_pause)
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to pause script with ID {0} but it was not running".format(script_ID))
+        status.set_pausing(should_pause)
         
     @setting(21, "Stop Script", script_ID = 'w')
     def stop_script(self, c, script_ID):
-        self.scheduler.stop_running(script_ID)
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to stop script with ID {0} but it was not running".format(script_ID))
+        status.set_stopping()
+    
+    @setting(22, "Restart Script", script_ID = 'w')
+    def restart_script(self, c, script_ID):
+        ident = self.scheduler.restart_script(script_ID)
+        return ident
 
-    @setting(30, "Register External Scan", name = 's', returns = 'w')
-    def register_external_scan(self, c, name):
+    @setting(30, "Register External Launch", name = 's', returns = 'w')
+    def register_external_launch(self, c, name):
         '''
         Issues a running ID to a script that is launched externally and not through this server. The external script
         can then update its status, be paused or stopped.
@@ -192,34 +199,57 @@ class ScriptScanner(LabradServer, Signals):
         ident = self.scheduler.add_external_scan(external_scan)
         return ident
     
-    @setting(31, "Script Set Progress", ident = 'w', progress = 'v')
-    def script_set_progress(self, c, ident, progress):
-        if ident not in self.scheduler.get_external_script(ident):
-            raise Exception ("Script with ID {} was not launched externally".format(ident))
-        if not 0.0 <= progress <= 100.0: raise Exception ("Incorrect Progress value of {}".format(progress))
-        status.s
-        
-        pass
-        #external set progress
+    @setting(31, "Script Set Progress", script_ID = 'w', progress = 'v')
+    def script_set_progress(self, c, script_ID, progress):
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to set progress of script with ID {0} but it was not running".format(script_ID))
+        status.set_percentage(progress)
+    
+    @setting(32, "Launch Confirmed", script_ID = 'w')
+    def launch_confirmed(self, c, script_ID):
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to confirm launch of script with ID {0} but it was not running".format(script_ID))
+        status.launch_confirmed()
+    
+    @setting(33, "Finish Confirmed", script_ID = 'w')
+    def finish_confirmed(self, c, script_ID):
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to confirm Finish of script with ID {0} but it was not running".format(script_ID))
+        status.finish_confirmed()
+    
+    @setting(34, "Stop Confirmed", script_ID = 'w')
+    def stop_confiromed(self, c, script_ID):
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to confirm Stop of script with ID {0} but it was not running".format(script_ID))
+        status.stop_confirmed()
 
-##external launch
-#finishconfirmed
-#stopconfirmed
-#checkingforpause
-#set progress percentage
-#should_stop
-#should pause
+    @setting(35,"Pause Or Stop", script_ID = 'w', returns = 'b')
+    def pause_or_stop(self, c, script_ID):
+        '''
+        Returns the boolean whether or not the script should be stopped. This request blocks while the script is to be paused.
+        '''
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to confirm Pause/Stop of script with ID {0} but it was not running".format(script_ID))
+        yield status.pause()
+        returnValue(status.should_stop)
+    
+    @setting(36, "Error Finish Confirmed", script_ID = 'w', error_message = 's')
+    def error_finish_confirmed(self, c, script_ID, error_message):
+        status = self.scheduler.get_running_status(script_ID)
+        if status is None:
+            raise Exception ("Trying to confirm error finish of script with ID {0} but it was not running".format(script_ID))
+        status.error_finish_confirmed(error_message)
 
 ##data saving
-
+##parameter list return
+##stackable scan_methods
 ##signaling
-
-##parameter lookup
-
 ##testing
-#pause after stop
-#restart a script
-
 ##killer gui
 
     def notifyOtherListeners(self, context, message, f):

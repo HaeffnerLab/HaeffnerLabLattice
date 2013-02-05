@@ -7,10 +7,14 @@ class script_semaphore(object):
     def __init__(self):
         self.pause_lock = DeferredLock()
         self.status = 'Ready'
+        print self.status
         self.percentage_complete = 0.0
         self.should_stop = False
-        self.on_new_status = Signals.on_new_status
-        self.on_new_status(self.status, self.percentage_complete)
+#        self.on_new_status = Signals.on_new_status
+#        self.on_new_status(self.status, self.percentage_complete)
+    
+    def get_progress(self):
+        return (self.status, self.percentage_complete)
     
     def set_percentage(self, perc):
         if not 0.0 <= perc <= 100.0: raise Exception ("Incorrect Percentage of Completion")
@@ -19,37 +23,52 @@ class script_semaphore(object):
     
     def launch_confirmed(self):
         self.status = 'Running'
+        print self.status
     
     @inlineCallbacks
-    def pause(self, should_pause):
-        if should_pause:
-            self.status = 'Pausing'
+    def pause(self):
+        if self.pause_lock.locked:
+            self.status = 'Paused'
             print self.status
-            yield self.pause_lock.acquire()
+        yield self.pause_lock.acquire()
+        self.pause_lock.release()
+        if self.status == 'Paused':
+            self.status = 'Running'
+            print self.status
+
+    def set_stopping(self):
+        self.should_stop = True
+        self.status = 'Stopping'
+        print self.status
+        #if was paused, unpause:
+        if self.pause_lock.locked:
+            self.pause_lock.release()
+    
+    def set_pausing(self, should_pause):
+        self.should_pause = should_pause
+        if self.should_pause:
+            self.status = 'Pausing'
+            d = self.pause_lock.acquire()
         else:
             if not self.pause_lock.locked:
                 raise Exception ("Trying to unpause script that was not paused")
-            self.pause_lock.release()
-            self.status = 'Running'
-    
-    def stop(self):
-        self.should_stop = True
-        self.status = 'Stopping'
-        #if was paused, unpause:
-        if self.pause_lock.locked:
             self.pause_lock.release()
     
     def stop_confirmed(self):
         self.should_stop = False
         self.status = 'Stopped'
+        print self.status
     
     def checking_for_pause(self):
         if self.pause_lock.locked:
             self.status = 'Paused'
+            print self.status
     
     def finish_confirmed(self):
         self.percentage_complete = 100.0
         self.status = 'Finished'
+        print self.status
     
     def error_finish_confirmed(self, error):
         self.status = 'Error {}'.format(error)
+        print self.status

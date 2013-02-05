@@ -70,7 +70,7 @@ class script_status_widget(QtGui.QWidget):
     def closeEvent(self, x):
         self.reactor.stop()
 
-class running_scans_list(QtGui.QTableWidget):
+class running_scans_list(QtGui.QListWidget):
     def __init__(self, reactor, font = None, parent = None):
         super(running_scans_list, self).__init__(parent)
         self.reactor = reactor
@@ -80,39 +80,28 @@ class running_scans_list(QtGui.QTableWidget):
             self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.test_item()
-        self.cellDoubleClicked.connect(self.on_double_click)
+        self.itemDoubleClicked.connect(self.on_double_click)
     
-    def on_double_click(self, row, column):
-        widget = self.cellWidget(row, column)
-        item = self.item(row, column)
-        self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
-        self.selectRow(row)
-        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
-#        widget.setStyleSheet("background-color:lightgray")
-
+    def on_double_click(self, widgetitem):
+        widgetitem.setBackgroundColor(QtCore.Qt.lightGray)
     
     def test_item(self):
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-        self.setColumnCount(1)
-        self.setRowCount(3)
-        self.horizontalHeader().hide()
-        self.verticalHeader().hide()
-        self.setShowGrid(False)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        new_scan = script_status_widget(self.reactor, self.parent)
+
+        widgetitem = QtGui.QListWidgetItem()
+        widgetitem.setSizeHint(new_scan.sizeHint())
+        self.setMinimumWidth(new_scan.sizeHint().width() + 20)
+        self.addItem(widgetitem)
+        self.setItemWidget(widgetitem, new_scan)
         
-        for i in range(3):
-            new_scan = script_status_widget(self.reactor, self.parent)
-            self.setCellWidget(i, 0, new_scan)
-            self.resizeColumnsToContents()
-            self.adjustSize()
-#        self.removeRow(0)
-    
-    def sizeHint(self):
-        width = 0
-        for i in range(self.columnCount()):
-            width += self.columnWidth(i)
-        return QtCore.QSize(width, self.height())
-    
+        new_scan = script_status_widget(self.reactor, self.parent)
+        widgetitem = QtGui.QListWidgetItem()
+        widgetitem.setSizeHint(new_scan.sizeHint())
+
+        self.addItem(widgetitem)
+        self.setItemWidget(widgetitem, new_scan)
+        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+
     def closeEvent(self, x):
         self.reactor.stop()
         
@@ -136,7 +125,7 @@ class running_scans(QtGui.QWidget):
         layout.addWidget(scans_list, 1, 0, 3, 3 )
         self.setLayout(layout)
     
-    def closeEvent(self, x):
+    def closeEvent(self, event):
         self.reactor.stop()
 
 if __name__=="__main__":

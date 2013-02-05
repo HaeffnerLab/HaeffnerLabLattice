@@ -1,7 +1,3 @@
-from script_status import script_semaphore
-#from twisted.internet.defer import inlineCallbacks
-from twisted.internet.threads import blockingCallFromThread
-from twisted.internet import reactor
 from numpy import linspace
 import labrad
 from labrad.units import WithUnit
@@ -10,43 +6,40 @@ class scan_info(object):
     '''
     holds informaton about the scan or measurement
     '''
-    def __init__(self, scan_name):
-        self.scan_name = scan_name
-        self.status = script_semaphore()
+    def __init__(self, name):
+        self.name = name
 
 class scan_method(scan_info):
     
-    def __init__(self, scan_name, script_cls):
-        super(scan_method, self).__init__(scan_name)
+    def __init__(self, name, script_cls):
+        super(scan_method, self).__init__(name)
         self.script = script_cls()
 
     def execute(self, ident):
         '''
         Executes the scan method
         '''
+        self.ident = ident
         cxn = labrad.connect()
+        self.sc = cxn.servers['ScriptScanner']
         context = cxn.context()
         try:
             self.script.initialize(cxn, ident)
-            self.status.launch_confirmed()
+            self.sc.launch_confirmed(ident)
             self.execute_scan(cxn, context)
             self.script.finalize()
         except Exception as e:
-            print e
-            self.status.error_finish_confirmed(e)
+            self.sc.error_finish_confirmed(self.ident, str(e))
             cxn.disconnect()
         else:
-            self.status.finish_confirmed()
+            self.sc.finish_confirmed(self.ident)
             cxn.disconnect()
             return True
     
-    #move this to script status
     def pause_or_stop(self):
-        self.status.checking_for_pause()
-        blockingCallFromThread(reactor, self.status.pause_lock.acquire)
-        self.status.pause_lock.release()
-        if self.status.should_stop:
-            self.status.stop_confirmed()
+        should_stop = self.sc.pause_or_stop(self.ident)
+        if should_stop:
+            self.sc.stop_confirmed(self.ident)
             return True
     
     def execute_scan(self, cxn, context):
@@ -58,8 +51,8 @@ class single_run(scan_method):
     '''
     Used to perform a single measurement
     '''
-    def __init__(self, scan_name, script):
-        super(single_run,self).__init__(scan_name, script)
+    def __init__(self, script):
+        super(single_run,self).__init__(script.name, script)
     
     def execute_scan(self, cxn, context):
         self.script.run()
@@ -68,9 +61,9 @@ class repeat_measurement(scan_method):
     '''
     Used to repeat a measurement multiple times
     '''
-    def __init__(self, scan_name, script, repeatitions):
+    def __init__(self, script, repeatitions):
         self.repeatitions = repeatitions
-        scan_name = self.name_format(scan_name)
+        scan_name = self.name_format(script.name)
         super(repeat_measurement,self).__init__(scan_name, script)
 
     def name_format(self, name):
@@ -82,14 +75,14 @@ class repeat_measurement(scan_method):
         for i in range(self.repeatitions):
             if self.pause_or_stop(): return
             self.script.run()
-            self.status.set_percentage( (i + 1.0) / self.repeatitions)
+            self.sc.script_set_progress(self.ident,  (i + 1.0) / self.repeatitions)
 
 class scan_measurement_1D(scan_method):
     '''
     Used to Scan a Parameter of a measurement
     '''
-    def __init__(self, scan_name, script, parameter, minim, maxim, steps, units):
-        scan_name = self.name_format(scan_name)
+    def __init__(self, script, parameter, minim, maxim, steps, units):
+        scan_name = self.name_format(script.name)
         super(scan_measurement_1D,self).__init__(scan_name, script)
         self.parameter = parameter
         self.scan_points = linspace(minim, maxim, steps)

@@ -7,12 +7,16 @@ class test1(object):
         self.param = 3.0
     
     @classmethod
+    def name(cls):
+        return 'test1'
+    
+    @classmethod
     def required_parameters(cls):
         return ['parameter']
    
     def initialize(self, connection, launch_id):
-#        import labrad
-        print launch_id, connection._ctx
+        print 'in initialize'
+        print launch_id, connection
 #        print 's    import labradtarting {}'.format(self.__class__)
 #        print 'launch_id {}'.format(launch_id)
 #        cxn = labrad.connect()
@@ -35,8 +39,9 @@ class test1(object):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    script_id = scanner.register_external_launch()
-    exprt = test1()
-    exprt.initialize(script_id)
-    exprt.run()
-    exprt.finalize() 
+    from scan_methods import single_run, repeat_measurement
+    ident = scanner.register_external_launch(test1.name())
+    print ident
+#    exprt = single_run(test1)
+    exprt = repeat_measurement(test1, 1000)
+    exprt.execute(ident)
