@@ -70,7 +70,7 @@ class script_status_widget(QtGui.QWidget):
     def closeEvent(self, x):
         self.reactor.stop()
 
-class running_scans_list(QtGui.QListWidget):
+class running_scans_list(QtGui.QTableWidget):
     def __init__(self, reactor, font = None, parent = None):
         super(running_scans_list, self).__init__(parent)
         self.reactor = reactor
@@ -80,28 +80,38 @@ class running_scans_list(QtGui.QListWidget):
             self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.test_item()
-        self.itemDoubleClicked.connect(self.on_double_click)
+        self.cellDoubleClicked.connect(self.on_double_click)
     
-    def on_double_click(self, widgetitem):
-        widgetitem.setBackgroundColor(QtCore.Qt.lightGray)
+    def on_double_click(self, row, column):
+        widget = self.cellWidget(row, column)
+        widget.setBackgroundRole(True)
+        pal = widget.palette();
+        pal.setColor(widget.backgroundRole(), QtCore.Qt.blue);
+        widget.setPalette(pal);
+
     
     def test_item(self):
-        new_scan = script_status_widget(self.reactor, self.parent)
-
-        widgetitem = QtGui.QListWidgetItem()
-        widgetitem.setSizeHint(new_scan.sizeHint())
-        self.setMinimumWidth(new_scan.sizeHint().width() + 10)
-        self.addItem(widgetitem)
-        self.setItemWidget(widgetitem, new_scan)
-        
-        new_scan = script_status_widget(self.reactor, self.parent)
-        widgetitem = QtGui.QListWidgetItem()
-        widgetitem.setSizeHint(new_scan.sizeHint())
-
-        self.addItem(widgetitem)
-        self.setItemWidget(widgetitem, new_scan)
+        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.setColumnCount(1)
+        self.setRowCount(100)
+        self.horizontalHeader().hide()
+        self.verticalHeader().hide()
+        self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
 
+        
+        for i in range(3):
+            new_scan = script_status_widget(self.reactor, self.parent)
+            self.setCellWidget(i, 0, new_scan)
+            self.resizeColumnsToContents()
+            self.adjustSize()
+    
+    def sizeHint(self):
+        width = 0
+        for i in range(self.columnCount()):
+            width += self.columnWidth(i)
+        return QtCore.QSize(width, self.height())
+    
     def closeEvent(self, x):
         self.reactor.stop()
         
@@ -135,7 +145,7 @@ if __name__=="__main__":
     from twisted.internet import reactor
 #    widget = progress_bar(reactor).
 #    widget = script_status_widget(reactor)
-#    widget = running_scans_list(reactor)
-    widget = running_scans(reactor)
+    widget = running_scans_list(reactor)
+#    widget = running_scans(reactor)
     widget.show()
     reactor.run()

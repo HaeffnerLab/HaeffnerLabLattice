@@ -218,6 +218,7 @@ class ScriptScanner(LabradServer, Signals):
 
 ##testing
 #pause after stop
+#restart a script
 
 ##killer gui
 
