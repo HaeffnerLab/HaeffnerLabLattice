@@ -84,27 +84,28 @@ class running_scans_list(QtGui.QTableWidget):
     
     def on_double_click(self, row, column):
         widget = self.cellWidget(row, column)
-        widget.setBackgroundRole(True)
-        pal = widget.palette();
-        pal.setColor(widget.backgroundRole(), QtCore.Qt.blue);
-        widget.setPalette(pal);
+        item = self.item(row, column)
+        self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
+        self.selectRow(row)
+        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+#        widget.setStyleSheet("background-color:lightgray")
 
     
     def test_item(self):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.setColumnCount(1)
-        self.setRowCount(100)
+        self.setRowCount(3)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
-
         
         for i in range(3):
             new_scan = script_status_widget(self.reactor, self.parent)
             self.setCellWidget(i, 0, new_scan)
             self.resizeColumnsToContents()
             self.adjustSize()
+#        self.removeRow(0)
     
     def sizeHint(self):
         width = 0
@@ -145,7 +146,7 @@ if __name__=="__main__":
     from twisted.internet import reactor
 #    widget = progress_bar(reactor).
 #    widget = script_status_widget(reactor)
-    widget = running_scans_list(reactor)
-#    widget = running_scans(reactor)
+#    widget = running_scans_list(reactor)
+    widget = running_scans(reactor)
     widget.show()
     reactor.run()
