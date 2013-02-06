@@ -26,7 +26,6 @@ class ramsey_dephase(SemaphoreExperiment):
         print 'Started: {}'.format(self.experimentPath)
         self.percentDone = 0.0
         self.import_labrad()
-        self.setup_data_vault()
         self.sequence_parameters = self.setup_sequence_parameters()
         self.setup_pulser()
         self.total_readouts = []
@@ -85,18 +84,21 @@ class ramsey_dephase(SemaphoreExperiment):
     def program_pulser(self, pulse_gap = None, dephasing_duration = None, second_pulse_duration = None):
         if pulse_gap is not None:
             self.sequence_parameters['pulse_gap'] = pulse_gap
+
         else:
-            print 'pulse gap', self.sequence_parameters['pulse_gap']
+            print 'setting pulse gap', pulse_gap
+            self.sequence_parameters['pulse_gap']
         if dephasing_duration is not None:
             self.sequence_parameters['dephasing_duration'] = dephasing_duration
         else:
-            print 'dephasing enable',  self.sequence_parameters['dephasing_enable']
-            print 'dephasing duration', self.sequence_parameters['dephasing_duration']
+            print 'setting dephasing enable',  self.sequence_parameters['dephasing_enable']
+            print 'setting dephasing duration', self.sequence_parameters['dephasing_duration']
         if second_pulse_duration is None:
+            print 'should not be here'
             self.sequence_parameters['second_pulse_duration'] = self.check_parameter(self.p_ramsey.rabi_pi_time) / 2.0
-            print 'duration of second pulse is pi/2', self.sequence_parameters['second_pulse_duration']
         else:
             self.sequence_parameters['second_pulse_duration'] = second_pulse_duration
+            print 'setting duration of second pulse to', second_pulse_duration
         if self.p.rabi_flopping_use_saved_frequency:
             info = self.p.saved_lines_729
             line_name = self.p.rabi_flopping_saved_frequency
@@ -123,34 +125,40 @@ class ramsey_dephase(SemaphoreExperiment):
         seq.programSequence(self.pulser)
 
     def sequence(self):
-        scan_steps = 40
-        scan = numpy.linspace(0.0, 200.0, scan_steps)
+        scan_dephasing_duration_steps = 10
+        scan_dephasing_duration = numpy.linspace(4.1, 9.7, scan_dephasing_duration_steps)
+        scan_dephasing_duration = [WithUnit(s, 'us') for s in scan_dephasing_duration]
+        scan_steps = 10
+        scan = numpy.linspace(1.0, 50.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
-        for index, duration in enumerate(scan):
-            print 'pulse gap is now {}'.format(duration)
-            self.percentDone = 100.0 * index / len(scan)
-#            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
-            should_continue = True
-            if not should_continue:
-                print 'Not Continuing'
-                return
-            else:
-                #program pulser, run sequence, and get readouts
-                self.program_pulser(pulse_gap = duration)
-                self.pulser.start_number(repeatitions)
-                self.pulser.wait_sequence_done()
-                self.pulser.stop_sequence()
-                readouts = self.pulser.get_readout_counts().asarray
-                #save frequency scan
-                perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-                self.dv.add(duration['s'], perc_excited)
-                #save readout counts
-                durations = numpy.ones_like(readouts) * duration['s']
-                self.dv.add(numpy.vstack((durations, readouts)).transpose(), context = self.readout_save_context)       
-                self.total_readouts.extend(readouts)
-                self.save_histogram()
+        for dephasing_index, dephasing_duration in enumerate(scan_dephasing_duration):
+            self.setup_data_vault()
+            for index, duration in enumerate(scan):
+                print 'dephasing duration is now {}'.format(dephasing_duration)
+                print 'second pulse is now {}'.format(duration)
+                self.percentDone = 100.0 * dephasing_index / len(scan_dephasing_duration)
+    #            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
+                should_continue = True
+                if not should_continue:
+                    print 'Not Continuing'
+                    return
+                else:
+                    #program pulser, run sequence, and get readouts
+                    self.program_pulser(dephasing_duration = dephasing_duration, second_pulse_duration = duration)
+                    self.pulser.start_number(repeatitions)
+                    self.pulser.wait_sequence_done()
+                    self.pulser.stop_sequence()
+                    readouts = self.pulser.get_readout_counts().asarray
+                    #save frequency scan
+                    perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+                    self.dv.add(duration['s'], perc_excited)
+                    #save readout counts
+                    durations = numpy.ones_like(readouts) * duration['s']
+                    self.dv.add(numpy.vstack((durations, readouts)).transpose(), context = self.readout_save_context)       
+                    self.total_readouts.extend(readouts)
+                    self.save_histogram()
         self.percentDone = 100.0
                 
     def save_histogram(self, force = False):
