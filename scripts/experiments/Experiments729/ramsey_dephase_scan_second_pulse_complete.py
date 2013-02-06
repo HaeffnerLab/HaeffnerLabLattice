@@ -26,7 +26,6 @@ class ramsey_dephase(SemaphoreExperiment):
         print 'Started: {}'.format(self.experimentPath)
         self.percentDone = 0.0
         self.import_labrad()
-        self.setup_data_vault()
         self.sequence_parameters = self.setup_sequence_parameters()
         self.setup_pulser()
         self.total_readouts = []
@@ -127,14 +126,15 @@ class ramsey_dephase(SemaphoreExperiment):
 
     def sequence(self):
         scan_dephasing_duration_steps = 10
-        scan_dephasing_duration = numpy.linspace(0.0, 10.0, scan_dephasing_duration_steps)
+        scan_dephasing_duration = numpy.linspace(4.1, 9.7, scan_dephasing_duration_steps)
         scan_dephasing_duration = [WithUnit(s, 'us') for s in scan_dephasing_duration]
-        scan_steps = 20
-        scan = numpy.linspace(0.0, 20.0, scan_steps)
+        scan_steps = 10
+        scan = numpy.linspace(1.0, 50.0, scan_steps)
         scan = [WithUnit(s, 'us') for s in scan]
         repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
         threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
-        for dephasing_index, dephasing_duration in scan_dephasing_duration:
+        for dephasing_index, dephasing_duration in enumerate(scan_dephasing_duration):
+            self.setup_data_vault()
             for index, duration in enumerate(scan):
                 print 'dephasing duration is now {}'.format(dephasing_duration)
                 print 'second pulse is now {}'.format(duration)
