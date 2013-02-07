@@ -9,17 +9,9 @@ from labrad.units import WithUnit
 
 class spectrum_rabi(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'background_heating_time','optical_pumping_enable'
-                  ]
-        return config
-    
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all]
-    
+    required_parameters =  ['background_heating_time','optical_pumping_enable']
+    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all]
+
     def sequence(self):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
