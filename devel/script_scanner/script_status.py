@@ -3,43 +3,43 @@ from signals import Signals
 
 class script_semaphore(object):
     '''class for storing information about runtime behavior script'''
-###this class needs identification for signaling
-    def __init__(self):
+    def __init__(self, ident, signals):
         self.pause_lock = DeferredLock()
         self.status = 'Ready'
-        print self.status
         self.percentage_complete = 0.0
         self.should_stop = False
-#        self.on_new_status = Signals.on_new_status
-#        self.on_new_status(self.status, self.percentage_complete)
-    
+        self.ident = ident
+        self.signals = signals
+        
     def get_progress(self):
         return (self.status, self.percentage_complete)
     
     def set_percentage(self, perc):
         if not 0.0 <= perc <= 100.0: raise Exception ("Incorrect Percentage of Completion")
         self.percentage_complete = perc
-        #signal on new percentage
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
     
     def launch_confirmed(self):
         self.status = 'Running'
-        print self.status
-    
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+        
     @inlineCallbacks
     def pause(self):
         if self.pause_lock.locked:
             self.status = 'Paused'
-            print self.status
+            self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+            self.signals.on_running_scipt_paused((self.ident, True))
         yield self.pause_lock.acquire()
         self.pause_lock.release()
         if self.status == 'Paused':
             self.status = 'Running'
-            print self.status
+            self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+            self.signals.on_running_scipt_paused((self.ident, False))
 
     def set_stopping(self):
         self.should_stop = True
         self.status = 'Stopping'
-        print self.status
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
         #if was paused, unpause:
         if self.pause_lock.locked:
             self.pause_lock.release()
@@ -48,6 +48,7 @@ class script_semaphore(object):
         self.should_pause = should_pause
         if self.should_pause:
             self.status = 'Pausing'
+            self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
             d = self.pause_lock.acquire()
         else:
             if not self.pause_lock.locked:
@@ -57,18 +58,21 @@ class script_semaphore(object):
     def stop_confirmed(self):
         self.should_stop = False
         self.status = 'Stopped'
-        print self.status
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+        self.on_running_script_stopped(self.ident)
     
     def checking_for_pause(self):
         if self.pause_lock.locked:
             self.status = 'Paused'
-            print self.status
+            self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
     
     def finish_confirmed(self):
         self.percentage_complete = 100.0
         self.status = 'Finished'
-        print self.status
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+        self.signals.on_running_sciprt_finished(self.ident)
     
     def error_finish_confirmed(self, error):
-        self.status = 'Error {}'.format(error)
-        print self.status
+        self.status = 'Error'
+        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+        self.signals.on_running_sciprt_finished_error((self.ident, error))

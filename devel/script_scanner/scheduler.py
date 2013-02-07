@@ -6,25 +6,24 @@ from script_status import script_semaphore
 
 class running_script(object):
     '''holds information about a script that is currently running'''
-    def __init__(self, scan, defer_on_done, externally_launched = False):
+    def __init__(self, scan, defer_on_done, status, externally_launched = False):
         self.scan = scan
         self.name = scan.name
-        self.status = script_semaphore()
+        self.status = status
         self.defer_on_done = defer_on_done
         self.externally_launched = externally_launched
 
 class scheduler(object):
     
-    def __init__(self, signal_on_new_status):
+    def __init__(self, signals):
+        self.signals = signals
         self.running = {} #dictionary in the form identification : running_script_instance
         self.queue = {} #dictionary in the form identification : scan to launch
         self.launch_history = []
         self.scheduled = {}
         self.scheduled_ID_counter = 0
         self.scan_ID_counter = 0
-        self.signal_on_new_status = signal_on_new_status
-        self.signal_on_new_status(1, 'hi', 50.0)
-    
+        
     def are_scans_running(self):
         return bool(self.running)
     
@@ -59,9 +58,12 @@ class scheduler(object):
             queue.append((ident, scan.scan_name))
         return queue
     
-    def clear_queue(self):
-        for item in self.queue.keys():
-            self.remove_scan_from_queue(item)
+    def remove_queued_script(self, script_ID):
+        if script_ID in self.queue.keys():
+            del self.queue[script_ID]
+            self.signals.on_queued_removed(script_ID)
+        else:
+            raise Exception("Tring to remove scirpt ID {0} from queue but it's not in the queue")
     
     def restart_script(self, ident):
         d = dict(self.launch_history)
@@ -70,12 +72,14 @@ class scheduler(object):
             raise Exception ("Can not restart script that is not in the launch history")
         else:
             scan_id = self.add_scan_to_queue(scan)
+            self.signals.on_running_sciprt_restarted((ident, scan_id))
             return scan_id
         
     def add_scan_to_queue(self, scan):
         scan_id= self.scan_ID_counter
         self.queue[scan_id] = scan
         self.scan_ID_counter += 1
+        self.signals.on_queued_new_script((scan_id, scan.name))
         self.launch_scripts()
         return scan_id
     
@@ -84,16 +88,13 @@ class scheduler(object):
         self.scan_ID_counter += 1
         d = Deferred()
         d.addCallback(self.remove_from_running, scan_id)
-        self.running[scan_id] = running_script(scan, d, externally_launched = True)
+        status = script_semaphore(self.signals)
+        self.running[scan_id] = running_script(scan, d, status , externally_launched = True)
         return scan_id
         
-    def remove_scan_from_queue(self, queue_ID):
-        del self.queue[queue_ID]
-        #need signal
-    
     def remove_from_running(self, deferred_result, running_id):
         del self.running[running_id]
-        #need signal
+        self.signals.on_running_sciprt_finished(running_id)
      
     def new_scheduled_scan(self, scan, period):
         '''
@@ -104,8 +105,8 @@ class scheduler(object):
         self.scheduled[new_schedule_id] = (scan.scan_name, lc)
         self.scheduled_ID_counter += 1
         lc.start(period, now = True)
+        self.signals.on_scheduled_new_script((new_schedule_id, scan.name, period))
         return new_schedule_id
-        #signal on new scheduled script
     
     def change_period_scheduled_script(self, scheduled_ID, period):
         try:
@@ -115,7 +116,7 @@ class scheduler(object):
         else:
             lc.stop()
             lc.start(period)
-        #signal
+            self.signals.on_scheduled_new_duration((scheduled_ID, period))
     
     def cancel_scheduled_script(self, scheduled_ID):
         try:
@@ -125,6 +126,7 @@ class scheduler(object):
         else:
             lc.stop()
             del self.scheduled[scheduled_ID]
+            self.signals.on_scheduled_removed(scheduled_ID)
 
     def launch_scripts(self, result = None):
         if not self.queue:
@@ -146,11 +148,13 @@ class scheduler(object):
             del self.queue[earliest_id]
             #make a deferred, and starts things moving
             d = Deferred()
-            self.running[earliest_id] = running_script(scan, d)
+            status = script_semaphore(earliest_id, self.signals)
+            self.running[earliest_id] = running_script(scan, d, status)
             d.addCallback(self.launch_in_thread, scan, earliest_id)
             d.addCallback(self.remove_from_running, running_id = earliest_id) 
             d.addCallback(self.launch_scripts)
             d.callback(True)
+            self.signals.on_running_new_script((earliest_id, scan.name))
             #see of any other script can be launched
             self.launch_scripts()
     

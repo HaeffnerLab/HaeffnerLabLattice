@@ -15,13 +15,25 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 from labrad.units import WithUnit
 from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
 from signals import Signals
 from configuration import config
 import scan_methods
 from scheduler import scheduler
+
+##data saving
+##parameter list return
+##stackable scan_methods
+#----
+##killer gui
+##testing all together with the test script
+#----
+##convert frequency scale of 729 everywhere
+##sideband cooling script
+##new experiment of scanning __ as a function of sideband cooling in repeat, scan
+##set up branches, demo
 
 class script_class_parameters(object):
     '''
@@ -35,12 +47,12 @@ class script_class_parameters(object):
 class ScriptScanner(LabradServer, Signals):
     
     name = 'ScriptScanner'
+    test_signal = Signal(234927, 'sameple')
     
     def initServer(self):
         self.script_parameters = {}
-        self.scheduler = scheduler(Signals.on_new_status)
+        self.scheduler = scheduler(Signals)
         self.load_scripts()
-        self.listeners = set()
     
     def load_scripts(self):
         '''
@@ -96,9 +108,9 @@ class ScriptScanner(LabradServer, Signals):
         '''
         return self.scheduler.get_queue()
     
-    @setting(5, "Clear Queue")
-    def clear_queue(self, c):
-        self.scheduler.clear_queue()
+    @setting(5, "Remove Queued Script", script_ID = 'w')
+    def remove_queued_script(self, c, script_ID):
+        self.scheduler.remove_queued_script(script_ID)
     
     @setting(6, "Get Progress", script_ID = 'w', returns = 'sv')
     def get_progress(self, c, script_ID):
@@ -119,7 +131,6 @@ class ScriptScanner(LabradServer, Signals):
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
         single_launch = scan_methods.single_run(script.cls)
-        #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(single_launch)
         return scan_id
     
@@ -129,7 +140,6 @@ class ScriptScanner(LabradServer, Signals):
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
         repeat_launch = scan_methods.repeat_measurement(script.cls, repeatitions = repeat)
-        #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(repeat_launch)
         return scan_id
     
@@ -140,7 +150,6 @@ class ScriptScanner(LabradServer, Signals):
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
         scan_launch = scan_methods.scan_measurement_1D(script.cls, parameter, minim, maxim, steps, units)
-        #will be passing signals for firing
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
     
@@ -244,28 +253,6 @@ class ScriptScanner(LabradServer, Signals):
         if status is None:
             raise Exception ("Trying to confirm error finish of script with ID {0} but it was not running".format(script_ID))
         status.error_finish_confirmed(error_message)
-
-##data saving
-##parameter list return
-##stackable scan_methods
-##signaling
-##testing
-##killer gui
-
-    def notifyOtherListeners(self, context, message, f):
-        """
-        Notifies all listeners except the one in the given context, executing function f
-        """
-        notified = self.listeners.copy()
-        notified.remove(context.ID)
-        f(message,notified)
-    
-    def initContext(self, c):
-        """Initialize a new context object."""
-        self.listeners.add(c.ID)
-    
-    def expireContext(self, c):
-        self.listeners.remove(c.ID)
 
     @inlineCallbacks
     def stopServer(self):

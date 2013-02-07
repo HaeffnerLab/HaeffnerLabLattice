@@ -1,11 +1,11 @@
 class config(object):
 
     #list in the format (import_path, class_name)
-    scripts = [('test_experiment', 'test1')]
+    scripts = [('sample_experiment', 'sample_experiment')]
 
     #experiments are allowed to run together
     allowed_concurrent = {
-        ('test_experiment', 'test1'): None
+        ('sample_experiment', 'sample_experiment'): None
     }
     
     launch_history = 1000               

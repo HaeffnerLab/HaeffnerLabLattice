@@ -52,7 +52,7 @@ class single_run(scan_method):
     Used to perform a single measurement
     '''
     def __init__(self, script):
-        super(single_run,self).__init__(script.name, script)
+        super(single_run,self).__init__(script.name(), script)
     
     def execute_scan(self, cxn, context):
         self.script.run()
@@ -63,7 +63,7 @@ class repeat_measurement(scan_method):
     '''
     def __init__(self, script, repeatitions):
         self.repeatitions = repeatitions
-        scan_name = self.name_format(script.name)
+        scan_name = self.name_format(script.name())
         super(repeat_measurement,self).__init__(scan_name, script)
 
     def name_format(self, name):
@@ -75,14 +75,14 @@ class repeat_measurement(scan_method):
         for i in range(self.repeatitions):
             if self.pause_or_stop(): return
             self.script.run()
-            self.sc.script_set_progress(self.ident,  (i + 1.0) / self.repeatitions)
-
+            self.sc.script_set_progress(self.ident,  100 * float(i + 1) / self.repeatitions)
+            
 class scan_measurement_1D(scan_method):
     '''
     Used to Scan a Parameter of a measurement
     '''
     def __init__(self, script, parameter, minim, maxim, steps, units):
-        scan_name = self.name_format(script.name)
+        scan_name = self.name_format(script.name())
         super(scan_measurement_1D,self).__init__(scan_name, script)
         self.parameter = parameter
         self.scan_points = linspace(minim, maxim, steps)
@@ -96,4 +96,4 @@ class scan_measurement_1D(scan_method):
             if self.pause_or_stop(): return
             self.script.set_parameter(self.parameter, self.scan_points[i])
             self.script.run()
-            self.status.set_percentage( (i + 1.0) / len(self.scan_points))
+            self.sc.script_set_progress(self.ident,  100 * float(i + 1) / self.scan_points)

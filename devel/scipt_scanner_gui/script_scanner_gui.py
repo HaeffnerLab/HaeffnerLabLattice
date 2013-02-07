@@ -19,7 +19,6 @@ class script_scanner_gui(QtGui.QWidget):
         layout.addWidget(running)
         self.setLayout(layout)
         
-    
     def closeEvent(self, event):
         self.reactor.stop()
 
