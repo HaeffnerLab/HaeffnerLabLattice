@@ -23,12 +23,10 @@ from configuration import config
 import scan_methods
 from scheduler import scheduler
 
-##data saving
 ##parameters
 #----
 ##killer gui
-##testing all together with the test script
-#----
+##testing all together with the test script, parameters
 ##convert frequency scale of 729 everywhere
 ##sideband cooling script
 ##new experiment of scanning __ as a function of sideband cooling in repeat, scan
@@ -122,7 +120,7 @@ class ScriptScanner(LabradServer, Signals):
             raise Exception ("Trying to get progress of script with ID {0} but it was not running".format(script_ID))
         return status.get_progress()
     
-    @setting(10, 'New Script', script_name = 's', returns = 'w')
+    @setting(10, 'New Experiment', script_name = 's', returns = 'w')
     def new_script(self, c, script_name):
         '''
         Launch script. Returns ID of the queued scan.
@@ -130,7 +128,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.single_run(script.cls)
+        single_launch = scan_methods.single(script.cls)
         scan_id = self.scheduler.add_scan_to_queue(single_launch)
         return scan_id
     
@@ -139,7 +137,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        repeat_launch = scan_methods.repeat_measurement(script.cls, repeatitions = repeat)
+        repeat_launch = scan_methods.repeat_reload(script.cls, repeatitions = repeat)
         scan_id = self.scheduler.add_scan_to_queue(repeat_launch)
         return scan_id
     
@@ -149,7 +147,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        scan_launch = scan_methods.scan_measurement_1D(script.cls, parameter, minim, maxim, steps, units)
+        scan_launch = scan_methods.scan_experiment_1D(script.cls, parameter, minim, maxim, steps, units)
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
     
@@ -161,7 +159,7 @@ class ScriptScanner(LabradServer, Signals):
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
         script = self.script_parameters[script_name]
-        single_launch = scan_methods.repeat_measurement(script.cls, repeatitions = 1)
+        single_launch = scan_methods.single(script.cls)
         schedule_id = self.scheduler.new_scheduled_scan(single_launch, duration['s'])
         return schedule_id
     
@@ -204,7 +202,7 @@ class ScriptScanner(LabradServer, Signals):
         Issues a running ID to a script that is launched externally and not through this server. The external script
         can then update its status, be paused or stopped.
         '''
-        external_scan = scan_methods.scan_info(name)
+        external_scan = scan_methods.experiment_info(name)
         ident = self.scheduler.add_external_scan(external_scan)
         return ident
     
@@ -228,6 +226,7 @@ class ScriptScanner(LabradServer, Signals):
         if status is None:
             raise Exception ("Trying to confirm Finish of script with ID {0} but it was not running".format(script_ID))
         status.finish_confirmed()
+        self.scheduler.remove_if_external(script_ID)
     
     @setting(34, "Stop Confirmed", script_ID = 'w')
     def stop_confiromed(self, c, script_ID):
@@ -253,6 +252,7 @@ class ScriptScanner(LabradServer, Signals):
         if status is None:
             raise Exception ("Trying to confirm error finish of script with ID {0} but it was not running".format(script_ID))
         status.error_finish_confirmed(error_message)
+        self.scheduler.remove_if_external(script_ID)
 
     @inlineCallbacks
     def stopServer(self):

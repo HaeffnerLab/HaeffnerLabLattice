@@ -1,7 +1,8 @@
 import time
 import labrad
+from scan_methods import experiment, repeat_reload
 
-class sample_experiment(object):
+class sample_experiment(experiment):
     
     def __init__(self):
         self.param = 3.0
@@ -14,27 +15,21 @@ class sample_experiment(object):
     def required_parameters(cls):
         return ['parameter']
    
-    def initialize(self, connection, launch_id):
-        print 'in initialize', self.name(), launch_id
+    def initialize(self, cxn, context, ident):
+        print 'in initialize', self.name(), ident
         
-    def set_parameter(self, param_name, param):
-        self.param = param
-        
-    def run(self):
+    def run(self, cxn, context):
         print 'in running', self.name()
         for i in range(1):
             print i
             time.sleep(1)
             
-    def finalize(self):
+    def finalize(self, cxn, context):
         print 'exiting', self.name()
 
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    from scan_methods import single_run, repeat_measurement
     ident = scanner.register_external_launch(sample_experiment.name())
-    print ident
-#    exprt = single_run(test1)
-    exprt = repeat_measurement(sample_experiment, 1000)
+    exprt = repeat_reload(sample_experiment, 1000)
     exprt.execute(ident)

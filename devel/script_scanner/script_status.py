@@ -59,7 +59,7 @@ class script_semaphore(object):
         self.should_stop = False
         self.status = 'Stopped'
         self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
-        self.on_running_script_stopped(self.ident)
+        self.signals.on_running_script_stopped(self.ident)
     
     def checking_for_pause(self):
         if self.pause_lock.locked:

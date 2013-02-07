@@ -86,15 +86,17 @@ class scheduler(object):
     def add_external_scan(self, scan):
         scan_id= self.scan_ID_counter
         self.scan_ID_counter += 1
-        d = Deferred()
-        d.addCallback(self.remove_from_running, scan_id)
-        status = script_semaphore(self.signals)
-        self.running[scan_id] = running_script(scan, d, status , externally_launched = True)
+        status = script_semaphore(scan_id, self.signals)
+        self.running[scan_id] = running_script(scan, Deferred(), status , externally_launched = True)
         return scan_id
         
     def remove_from_running(self, deferred_result, running_id):
         del self.running[running_id]
         self.signals.on_running_sciprt_finished(running_id)
+    
+    def remove_if_external(self, running_id):
+        if running_id in self.get_running_external():
+            self.remove_from_running(None, running_id)
      
     def new_scheduled_scan(self, scan, period):
         '''
