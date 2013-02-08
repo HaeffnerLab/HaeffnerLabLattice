@@ -75,17 +75,16 @@ class rabi_flop():
         n = self.n
         if 5 * nbar > self.n.max():
             print 'WARNING, trying to calculate nbar that is high compared to the precomputed energy levels' 
-        omega = self.rabi_coupling
         #level population probability for a given nbar, see Leibfried 2003 (57)
         ones = np.ones_like(t)
         sideband=self.sideband_order
-        
+        rabi_coupling = self.rabi_coupling
         nplus=0
         if sideband<0:
             nplus=-sideband
         
         p = ((float(nbar)/(nbar+1.))**(n+nplus))/(nbar+1.) 
-        result = np.outer(p*omega/np.sqrt(omega**2+delta**2), ones) * (np.sin( np.outer( np.sqrt(omega**2+delta**2)*f_Rabi, t ))**2)
+        result = np.outer(p, ones) * (np.sin( np.outer(f_Rabi*rabi_coupling, t ))**2)
         result = np.sum(result, axis = 0)
         return result
 
