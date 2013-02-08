@@ -30,18 +30,18 @@ class scripting_widget(QtGui.QWidget):
         layout.addWidget(self.running)
         self.setLayout(layout)
     
+    #selector
     def addExperiment(self, experiment):
         self.selector.addExperiment(experiment)
     
+    #queued
     def addQueued(self, ident, name):
         self.queued.add(ident, name)
     
     def removeQueued(self, ident):
         self.queued.remove(ident)
-
-    def addRunning(self, experiment):
-        pass
-    
+        
+    #scheduled    
     def addScheduled(self, ident, name, duration):
         self.scheduled.add(ident, name, duration)
     
@@ -51,6 +51,25 @@ class scripting_widget(QtGui.QWidget):
     def newScheduledDuration(self, info):
         ident, duration = info
         self.scheduled.change(ident, duration)
+        
+    #running
+    def runningScriptStopped(self, ident):
+        pass
+    
+    def runningScriptPaused(self, ident):
+        pass
+    
+    def runningScriptRestared(self, ident):
+        pass
+    
+    def runningScriptFinished(self, ident):
+        self.running.finish(ident)
+    
+    def addRunning(self, ident, name):
+        self.running.add(ident, name)
+    
+    def runningNewStatus(self, ident, status, percentage):
+        self.running.set_status(ident, status, percentage)
      
     def connect_layout(self):
         self.selector.on_run.connect(self.on_run.emit)

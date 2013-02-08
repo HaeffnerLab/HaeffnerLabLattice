@@ -72,7 +72,7 @@ class scheduler(object):
             raise Exception ("Can not restart script that is not in the launch history")
         else:
             scan_id = self.add_scan_to_queue(scan)
-            self.signals.on_running_sciprt_restarted((ident, scan_id))
+            self.signals.on_running_script_restarted((ident, scan_id))
             return scan_id
         
     def add_scan_to_queue(self, scan):
@@ -92,7 +92,6 @@ class scheduler(object):
         
     def remove_from_running(self, deferred_result, running_id):
         del self.running[running_id]
-        self.signals.on_running_sciprt_finished(running_id)
     
     def remove_if_external(self, running_id):
         if running_id in self.get_running_external():

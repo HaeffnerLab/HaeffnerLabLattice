@@ -70,9 +70,9 @@ class script_semaphore(object):
         self.percentage_complete = 100.0
         self.status = 'Finished'
         self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
-        self.signals.on_running_sciprt_finished(self.ident)
+        self.signals.on_running_script_finished(self.ident)
     
     def error_finish_confirmed(self, error):
         self.status = 'Error'
         self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
-        self.signals.on_running_sciprt_finished_error((self.ident, error))
+        self.signals.on_running_script_finished_error((self.ident, error))

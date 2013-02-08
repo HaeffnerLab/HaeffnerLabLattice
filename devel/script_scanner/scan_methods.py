@@ -171,8 +171,10 @@ class repeat_reload(experiment):
         dv.new(dataset_name, [('Iteration', 'Arb')], [self.script.name(), 'Arb', 'Arb'])
             
     def update_progress(self, iteration):
-        progress = self.min_progress + (self.max_progress - self.max_progress) * float(iteration + 1.0) / self.repeatitions
+        print 'updating progress'
+        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / self.repeatitions
         self.sc.script_set_progress(self.ident,  progress)
+        print self.ident, progress
     
     def finalize(self, cxn, context):
         self.script.finalize(cxn, context)
@@ -220,7 +222,7 @@ class scan_experiment_1D(experiment):
         dv.new(dataset_name, [('Iteration', 'Arb')], [self.script.name(), 'Arb', 'Arb'])
             
     def update_progress(self, iteration):
-        progress = self.min_progress + (self.max_progress - self.max_progress) * float(iteration + 1.0) / len(self.scan_points)
+        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan_points)
         self.sc.script_set_progress(self.ident,  progress)
     
     def finalize(self):
