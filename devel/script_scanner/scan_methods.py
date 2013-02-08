@@ -118,11 +118,11 @@ class single(experiment):
         self.script_cls = script_cls
         super(single,self).__init__(script_cls.name())
     
-    def initialize(self, cxn, context):
+    def initialize(self, cxn, context, ident):
         self.script = self.script_cls()
-        self.script.initialize(cxn, context)
+        self.script.initialize(cxn, context, ident)
     
-    def run(self, cxn, context):
+    def run(self, cxn, context, replacement_parameters = {}):
         self.script.run(cxn, context)
     
     def finalize(self, cxn, context):

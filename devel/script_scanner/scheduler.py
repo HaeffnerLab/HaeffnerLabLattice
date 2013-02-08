@@ -55,7 +55,7 @@ class scheduler(object):
     def get_queue(self):
         queue = []
         for ident, scan in sorted(self.queue.iteritems()):
-            queue.append((ident, scan.scan_name))
+            queue.append((ident, scan.name))
         return queue
     
     def remove_queued_script(self, script_ID):
@@ -104,7 +104,7 @@ class scheduler(object):
         '''
         lc = LoopingCall(self.add_scan_to_queue, scan)
         new_schedule_id = self.scheduled_ID_counter
-        self.scheduled[new_schedule_id] = (scan.scan_name, lc)
+        self.scheduled[new_schedule_id] = (scan.name, lc)
         self.scheduled_ID_counter += 1
         lc.start(period, now = True)
         self.signals.on_scheduled_new_script((new_schedule_id, scan.name, period))
@@ -124,7 +124,7 @@ class scheduler(object):
         try:
             name, lc = self.scheduled[scheduled_ID]
         except KeyError:
-            raise Exception ("Schedule Script {0} with {1} ID does not exist".format(name, scheduled_ID))
+            raise Exception ("Scheduled Script with ID {0} does not exist".format(scheduled_ID))
         else:
             lc.stop()
             del self.scheduled[scheduled_ID]
@@ -140,7 +140,7 @@ class scheduler(object):
             non_conflicting = non_conflicting.union( (set(non_conf) ) )
         #launch the scan if no conflicts or if no scans are running
         earliest_id,scan = sorted(self.queue.iteritems())[0]
-        if scan.script in non_conflicting or not self.are_scans_running():
+        if scan.script_cls.name() in non_conflicting or not self.are_scans_running():
             #launching the script:
             #firt add to history of launches
             self.launch_history.append((earliest_id, scan))
@@ -148,6 +148,7 @@ class scheduler(object):
                 self.launch_history.pop(0)
             #remove from queue
             del self.queue[earliest_id]
+            self.signals.on_queued_removed(earliest_id)
             #make a deferred, and starts things moving
             d = Deferred()
             status = script_semaphore(earliest_id, self.signals)

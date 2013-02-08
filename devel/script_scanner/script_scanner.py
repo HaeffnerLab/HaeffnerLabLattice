@@ -27,6 +27,7 @@ from scheduler import scheduler
 #----
 ##killer gui
 ##testing all together with the test script, parameters
+##---------------
 ##convert frequency scale of 729 everywhere
 ##sideband cooling script
 ##new experiment of scanning __ as a function of sideband cooling in repeat, scan

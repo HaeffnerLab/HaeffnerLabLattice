@@ -10,24 +10,25 @@ class fixed_width_button(QtGui.QPushButton):
         return QtCore.QSize(*self.size)
         
 class queued_widget(QtGui.QWidget):
-    def __init__(self, reactor, font = None, parent = None):
+    def __init__(self, reactor, ident, name, font = None, parent = None):
         super(queued_widget, self).__init__(parent)
         self.reactor = reactor
         self.parent = parent
+        self.ident = ident
+        self.name = name
         self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         if self.font is None:
             self.font = QtGui.QFont()
         self.setup_layout()
-        self.connect_layout()
     
     def setup_layout(self):
         layout = QtGui.QHBoxLayout()
-        self.id_label = QtGui.QLabel('001')
+        self.id_label = QtGui.QLabel('{0}'.format(self.ident))
         self.id_label.setFont(self.font)
         self.id_label.setMinimumWidth(50)
         self.id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.id_label.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.name_label = QtGui.QLabel("Name")
+        self.name_label = QtGui.QLabel(self.name)
         self.name_label.setFont(self.font)
         self.name_label.setAlignment(QtCore.Qt.AlignLeft)
         self.name_label.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
@@ -37,29 +38,14 @@ class queued_widget(QtGui.QWidget):
         layout.addWidget(self.name_label)
         layout.addWidget(self.cancel_button)
         self.setLayout(layout)
-    
-    def connect_layout(self):
-        pass
-#        self.pause_button.pressed.connect(self.on_pause)
-    
-    def on_stop(self):
-        if self.stop_button.text() == 'Stop':
-            self.stop_button.setText('Restart') 
-        
-        else:
-            self.stop_button.setDisabled(True)
-        self.pause_button.setDisabled(True)
-        
-    def on_pause(self):
-        if self.pause_button.text() == 'Pause':
-            self.pause_button.setText('Continue')
-        else:
-            self.pause_button.setText('Pause')
         
     def closeEvent(self, x):
         self.reactor.stop()
 
 class queued_list(QtGui.QTableWidget):
+    
+    on_cancel = QtCore.pyqtSignal(int)
+    
     def __init__(self, reactor, font = None, parent = None):
         super(queued_list, self).__init__(parent)
         self.reactor = reactor
@@ -68,24 +54,46 @@ class queued_list(QtGui.QTableWidget):
         if self.font is None:
             self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
-        self.test_item()
+        self.setupLayout()
+        self.d = {}#stores identification: corresponding widget
+        self.mapper = QtCore.QSignalMapper()
+        self.mapper.mapped.connect(self.on_user_cancel)
     
-    def test_item(self):
+    def on_user_cancel(self, ident):
+        self.on_cancel.emit(ident)
+    
+    def setupLayout(self):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.setColumnCount(1)
-        self.setRowCount(3)
+        self.setRowCount(0)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
-        
-        for i in range(3):
-            widget = queued_widget(self.reactor, self.parent)
-            self.setCellWidget(i, 0, widget)
-            self.resizeColumnsToContents()
-            self.adjustSize()
-#        self.removeRow(0)
     
+
+    def add(self, ident, name):
+        ident = int(ident)
+        row_count = self.rowCount()
+        self.setRowCount(row_count + 1)
+        widget = queued_widget(self.reactor, parent = self.parent, ident = ident, name = name)
+        self.mapper.setMapping(widget.cancel_button, ident)
+        widget.cancel_button.pressed.connect(self.mapper.map)
+        self.setCellWidget(row_count, 0, widget)
+        self.resizeColumnsToContents()
+        self.d[ident] = widget
+    
+    def cancel_all(self):
+        for ident in self.d.keys():
+            self.on_cancel.emit(ident)
+        
+    def remove(self, ident):
+        widget = self.d[ident]
+        for row in range(self.rowCount()):
+            if self.cellWidget(row, 0) == widget:
+                del self.d[ident]
+                self.removeRow(row)
+            
     def sizeHint(self):
         width = 0
         for i in range(self.columnCount()):
@@ -107,17 +115,27 @@ class queued_combined(QtGui.QWidget):
         if self.font is None:
             self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
         self.setupLayout()
+        self.connect_layout()
     
     def setupLayout(self):
         layout = QtGui.QGridLayout()
         title = QtGui.QLabel("Queued", font = self.font)
         title.setAlignment(QtCore.Qt.AlignLeft)
-        ql = queued_list(self.reactor, self.parent)
-        cancel_all = QtGui.QPushButton("Cancel All")
+        self.ql = queued_list(self.reactor, self.parent)
+        self.cancel_all = QtGui.QPushButton("Cancel All")
         layout.addWidget(title, 0, 0, 1, 2 )
-        layout.addWidget(cancel_all, 0, 2, 1, 1 )
-        layout.addWidget(ql, 1, 0, 3, 3 )
+        layout.addWidget(self.cancel_all, 0, 2, 1, 1 )
+        layout.addWidget(self.ql, 1, 0, 3, 3 )
         self.setLayout(layout)
+    
+    def connect_layout(self):
+        self.cancel_all.pressed.connect(self.ql.cancel_all)
+    
+    def add(self, ident, name):
+        self.ql.add(ident, name)
+    
+    def remove(self, ident):
+        self.ql.remove(ident)
     
     def closeEvent(self, x):
         self.reactor.stop()

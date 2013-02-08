@@ -13,14 +13,39 @@ class sample_experiment(experiment):
     
     @classmethod
     def required_parameters(cls):
-        return ['parameter']
+        return [('sample_experiment','parameter'),('trap_parameters','trap_drive_frequency')]
    
     def initialize(self, cxn, context, ident):
         print 'in initialize', self.name(), ident
         
     def run(self, cxn, context):
         print 'in running', self.name()
-        for i in range(1):
+        for i in range(3):
+            print i
+            time.sleep(1)
+            
+    def finalize(self, cxn, context):
+        print 'exiting', self.name()
+        
+class another_sample(experiment):
+    
+    def __init__(self):
+        self.param = 3.0
+    
+    @classmethod
+    def name(cls):
+        return 'another_sample'
+    
+    @classmethod
+    def required_parameters(cls):
+        return [('sample_experiment','parameter'),('trap_parameters','trap_drive_frequency')]
+   
+    def initialize(self, cxn, context, ident):
+        print 'in initialize', self.name(), ident
+        
+    def run(self, cxn, context):
+        print 'in running', self.name()
+        for i in range(5):
             print i
             time.sleep(1)
             
