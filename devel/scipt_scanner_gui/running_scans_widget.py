@@ -4,11 +4,13 @@ class progress_bar(QtGui.QProgressBar):
     def __init__(self, reactor, parent=None):
         super(progress_bar, self).__init__(parent)
         self.reactor = reactor
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.set_status('', 0.0)
     
     def set_status(self, status_name, percentage):
         self.setValue(percentage)
         self.setFormat('{0} %p%'.format(status_name))
+    
 
     def closeEvent(self, x):
         self.reactor.stop()
@@ -23,13 +25,19 @@ class fixed_width_button(QtGui.QPushButton):
         return QtCore.QSize(*self.size)
         
 class script_status_widget(QtGui.QWidget):
+    
+    on_pause = QtCore.pyqtSignal()
+    on_continue = QtCore.pyqtSignal()
+    on_stop = QtCore.pyqtSignal()
+    on_restart = QtCore.pyqtSignal()
+    
     def __init__(self, reactor, ident, name , font = None, parent = None):
         super(script_status_widget, self).__init__(parent)
         self.reactor = reactor
         self.ident = ident
         self.name = name
         self.parent = parent
-        self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        self.font = QtGui.QFont(self.font().family(), pointSize=10)
         if self.font is None:
             self.font = QtGui.QFont()
         self.setup_layout()
@@ -40,14 +48,14 @@ class script_status_widget(QtGui.QWidget):
         layout = QtGui.QHBoxLayout()
         self.id_label = QtGui.QLabel('{0}'.format(self.ident))
         self.id_label.setFont(self.font)
-        self.id_label.setMinimumWidth(50)
+        self.id_label.setMinimumWidth(30)
         self.id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.id_label.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.name_label = QtGui.QLabel(self.name)
         self.name_label.setFont(self.font)
         self.name_label.setAlignment(QtCore.Qt.AlignLeft)
         self.name_label.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
-        self.name_label.setMinimumWidth(200)
+        self.name_label.setMinimumWidth(150)
         self.progress_bar = progress_bar(self.reactor, self.parent)
         self.pause_button = fixed_width_button("Pause", (75,23))
         self.stop_button = fixed_width_button("Stop", (75,23))
@@ -59,15 +67,20 @@ class script_status_widget(QtGui.QWidget):
         self.setLayout(layout)
     
     def connect_layout(self):
-        pass
-#        self.stop_button.pressed.connect(self.on_stop)
-#        self.pause_button.pressed.connect(self.on_pause)
+        self.stop_button.pressed.connect(self.on_user_stop)
+        self.pause_button.pressed.connect(self.on_user_pause)
         
-    def on_pause(self):
+    def on_user_pause(self):
         if self.pause_button.text() == 'Pause':
-            self.pause_button.setText('Continue')
+            self.on_pause.emit()
         else:
-            self.pause_button.setText('Pause')
+            self.on_continue.emit()
+    
+    def on_user_stop(self):
+        if self.stop_button.text() == 'Restart':
+            self.on_restart.emit()
+        else:
+            self.on_stop.emit()
     
     def setFinished(self):
         self.stop_button.setText('Restart') 
@@ -77,6 +90,12 @@ class script_status_widget(QtGui.QWidget):
         self.progress_bar.setDisabled(True)
         self.finished = True
     
+    def set_paused(self, is_paused):
+        if is_paused:
+            self.pause_button.setText('Continue')
+        else:
+            self.pause_button.setText('Pause')
+    
     def set_status(self, status, percentage):
         self.progress_bar.set_status(status, percentage)
         
@@ -85,7 +104,7 @@ class script_status_widget(QtGui.QWidget):
 
 class running_scans_list(QtGui.QTableWidget):
     
-    on_cancel = QtCore.pyqtSignal(int)
+    on_restart = QtCore.pyqtSignal(int)
     on_pause = QtCore.pyqtSignal(int, bool)
     on_stop = QtCore.pyqtSignal(int)
     
@@ -96,14 +115,26 @@ class running_scans_list(QtGui.QTableWidget):
         self.font = font
         if self.font is None:
             self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
-        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setupLayout()
         self.d = {}
+        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.cellDoubleClicked.connect(self.on_double_click)
+        self.mapper_pause = QtCore.QSignalMapper()
+        self.mapper_pause.mapped.connect(self.emit_pause)
+        self.mapper_continue = QtCore.QSignalMapper()
+        self.mapper_continue.mapped.connect(self.emit_continue)
+        self.mapper_stop = QtCore.QSignalMapper()
+        self.mapper_stop.mapped.connect(self.on_stop.emit)
+        self.mapper_restart = QtCore.QSignalMapper()
+        self.mapper_restart.mapped.connect(self.on_restart.emit)
+    
+    def emit_pause(self, ident):
+        self.on_pause.emit(ident, True)
+    
+    def emit_continue(self, ident):
+        self.on_pause.emit(ident, False)
     
     def on_double_click(self, row, column):
-        widget = self.cellWidget(row, column)
-        item = self.item(row, column)
         self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
         self.selectRow(row)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
@@ -115,21 +146,22 @@ class running_scans_list(QtGui.QTableWidget):
         self.verticalHeader().hide()
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
-
-    def cancel_all(self):
-        pass
-#        for ident in self.d.keys():
-#            self.on_cancel.emit(ident)
     
     def add(self, ident, name):
         ident = int(ident)
         row_count = self.rowCount()
         self.setRowCount(row_count + 1)
         widget = script_status_widget(self.reactor, parent = self.parent, ident = ident, name = name)
-#        self.mapper_cancel.setMapping(widget.cancel_button, ident)
-#        widget.cancel_button.pressed.connect(self.mapper_cancel.map)
-#        self.mapper_duration.setMapping(widget.scheduled_duration, ident)
-#        widget.scheduled_duration.valueChanged.connect(self.mapper_duration.map)
+        #set up signal mapping
+        self.mapper_continue.setMapping(widget, ident)
+        widget.on_continue.connect(self.mapper_continue.map)
+        self.mapper_stop.setMapping(widget, ident)
+        widget.on_stop.connect(self.mapper_stop.map)
+        self.mapper_pause.setMapping(widget, ident)
+        widget.on_pause.connect(self.mapper_pause.map)
+        self.mapper_restart.setMapping(widget, ident)
+        widget.on_restart.connect(self.mapper_restart.map)
+        #insert widget
         self.setCellWidget(row_count, 0, widget)
         self.resizeColumnsToContents()
         self.d[ident] = widget
@@ -141,6 +173,14 @@ class running_scans_list(QtGui.QTableWidget):
             print "trying set status of experiment that's not there"
         else:
             widget.set_status(status, percentage)
+    
+    def set_paused(self, ident, is_paused):
+        try:
+            widget = self.d[ident]
+        except KeyError:
+            print "trying set pause experiment that's not there"
+        else:
+            widget.set_paused(is_paused)
             
     def remove(self, ident):
         selected = [model.row() for model in self.selectionModel().selectedRows()]
@@ -164,7 +204,7 @@ class running_scans_list(QtGui.QTableWidget):
             widget = self.d[ident]
             widget.setFinished()
         except KeyError:
-            print "trying disable experiment that's not there"
+            print "trying disable experiment {0} that's not there".format(ident)
     
     def clear_finished(self):
         [self.remove(ident) for (ident, widget) in self.d.items() if widget.finished]
@@ -199,6 +239,9 @@ class running_combined(QtGui.QWidget):
     
     def set_status(self, ident, status, percentage):
         self.scans_list.set_status(ident, status, percentage)
+    
+    def paused(self, ident, is_paused):
+        self.scans_list.set_paused(ident, is_paused)
     
     def finish(self, ident):
         self.scans_list.finish(ident)

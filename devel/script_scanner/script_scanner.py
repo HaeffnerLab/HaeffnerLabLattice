@@ -46,7 +46,6 @@ class script_class_parameters(object):
 class ScriptScanner(LabradServer, Signals):
     
     name = 'ScriptScanner'
-    test_signal = Signal(234927, 'sameple')
     
     def initServer(self):
         self.script_parameters = {}

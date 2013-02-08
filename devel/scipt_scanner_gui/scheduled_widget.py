@@ -18,7 +18,8 @@ class scheduled_widget(QtGui.QWidget):
         self.ident = ident
         self.name = name
         self.duration = duration
-        self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        print self.font().family()
+        self.font = QtGui.QFont(self.font().family(), pointSize=10)
         if self.font is None:
             self.font = QtGui.QFont()
         self.setup_layout()
@@ -27,14 +28,14 @@ class scheduled_widget(QtGui.QWidget):
         layout = QtGui.QHBoxLayout()
         self.id_label = QtGui.QLabel('{0}'.format(self.ident))
         self.id_label.setFont(self.font)
-        self.id_label.setMinimumWidth(50)
+        self.id_label.setMinimumWidth(30)
         self.id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.id_label.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.name_label = QtGui.QLabel(self.name)
         self.name_label.setFont(self.font)
         self.name_label.setAlignment(QtCore.Qt.AlignLeft)
         self.name_label.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
-        self.name_label.setMinimumWidth(200)
+        self.name_label.setMinimumWidth(150)
         self.scheduled_duration = QtGui.QSpinBox()
         self.scheduled_duration.setRange(1, 3600)
         self.scheduled_duration.setKeyboardTracking(False)
@@ -166,15 +167,3 @@ class scheduled_combined(QtGui.QWidget):
     
     def closeEvent(self, x):
         self.reactor.stop()
-
-if __name__=="__main__":
-    a = QtGui.QApplication( [] )
-    from common.clients import qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
-#    widget = progress_bar(reactor).
-#    widget = script_status_widget(reactor)
-    widget = scheduled_widget(reactor)
-#    widget = scheduled_combined(reactor)
-    widget.show()
-    reactor.run()

@@ -16,7 +16,7 @@ class queued_widget(QtGui.QWidget):
         self.parent = parent
         self.ident = ident
         self.name = name
-        self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+        self.font = QtGui.QFont(self.font().family(), pointSize=10)
         if self.font is None:
             self.font = QtGui.QFont()
         self.setup_layout()
@@ -25,14 +25,14 @@ class queued_widget(QtGui.QWidget):
         layout = QtGui.QHBoxLayout()
         self.id_label = QtGui.QLabel('{0}'.format(self.ident))
         self.id_label.setFont(self.font)
-        self.id_label.setMinimumWidth(50)
+        self.id_label.setMinimumWidth(30)
         self.id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.id_label.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.name_label = QtGui.QLabel(self.name)
         self.name_label.setFont(self.font)
         self.name_label.setAlignment(QtCore.Qt.AlignLeft)
         self.name_label.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
-        self.name_label.setMinimumWidth(200)
+        self.name_label.setMinimumWidth(150)
         self.cancel_button = fixed_width_button("Cancel", (75,23))
         layout.addWidget(self.id_label)
         layout.addWidget(self.name_label)

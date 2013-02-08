@@ -1,7 +1,7 @@
 class config(object):
 
     #list in the format (import_path, class_name)
-    scripts = [('sample_experiment', 'sample_experiment'),('sample_experiment', 'another_sample')]
+    scripts = [('sample_experiment', 'sample_experiment'),('sample_experiment', 'crashing_example')]
 
     #experiments are allowed to run together
     allowed_concurrent = {

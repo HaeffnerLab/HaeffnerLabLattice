@@ -17,7 +17,9 @@ class script_scanner_gui(object):
     @inlineCallbacks
     def connect(self):
         from labrad.units import WithUnit
+        from labrad.types import Error
         self.WithUnit = WithUnit
+        self.Error = Error
         if self.cxn is None:
             self.cxn = connection()
             yield self.cxn.connect()
@@ -27,8 +29,7 @@ class script_scanner_gui(object):
             yield self.setupListeners()
             self.connect_layouts()
         except Exception, e:
-            print e
-            print 'script_scanner_gui: DAC not available'
+            print 'script_scanner_gui: script scanner not available'
             self.disable(True)
 #        self.cxn.on_connect['DAC'].append( self.reinitialize)
 #        self.cxn.on_disconnect['DAC'].append( self.disable)
@@ -79,26 +80,18 @@ class script_scanner_gui(object):
         yield sc.addListener(listener = self.on_running_new_status, source = None, ID = self.SIGNALID + 6, context = self.context)
         yield sc.signal_on_running_script_finished(self.SIGNALID + 7, context = self.context)
         yield sc.addListener(listener = self.on_running_script_finished, source = None, ID = self.SIGNALID + 7, context = self.context)       
-        yield sc.signal_on_running_script_finished_error(self.SIGNALID + 7, context = self.context)
-        yield sc.addListener(listener = self.on_running_script_finished_error, source = None, ID = self.SIGNALID + 7, context = self.context)       
-        yield sc.signal_on_running_script_restarted(self.SIGNALID + 8, context = self.context)
-        yield sc.addListener(listener = self.on_running_script_restarted, source = None, ID = self.SIGNALID + 8, context = self.context) 
+        yield sc.signal_on_running_script_finished_error(self.SIGNALID + 8, context = self.context)
+        yield sc.addListener(listener = self.on_running_script_finished_error, source = None, ID = self.SIGNALID + 8, context = self.context)        
         yield sc.signal_on_running_script_paused(self.SIGNALID + 9, context = self.context)
         yield sc.addListener(listener = self.on_running_script_paused, source = None, ID = self.SIGNALID + 9, context = self.context) 
-        yield sc.signal_on_running_script_stopped(self.SIGNALID + 10, context = self.context)
-        yield sc.addListener(listener = self.on_running_script_stopped, source = None, ID = self.SIGNALID + 10, context = self.context) 
     
     def on_running_script_finished_error(self, signal, info):
-        pass
-    
-    def on_running_script_stopped(self, signal, info):
-        self.scripting_widget.runningScriptStopped(*info)
-    
+        ident, message = info
+        self.scripting_widget.runningScriptFinished(ident)
+        self.displayError("Experiment {0} ended with an error {1}".format(ident, message) )
+        
     def on_running_script_paused(self, signal, info):
         self.scripting_widget.runningScriptPaused(*info)
-
-    def on_running_script_restarted(self, signal, info):
-        self.scripting_widget.runningScriptRestared(*info)
          
     def on_running_script_finished(self, signal, ident):
         self.scripting_widget.runningScriptFinished(ident)
@@ -133,7 +126,10 @@ class script_scanner_gui(object):
         self.scripting_widget.on_schedule.connect(self.schedule_script)
         self.scripting_widget.on_cancel_scheduled.connect(self.scheduled_cancel)
         self.scripting_widget.on_schedule_duration.connect(self.scheduled_duration)
-    
+        self.scripting_widget.on_running_stop.connect(self.running_stop)
+        self.scripting_widget.on_running_restart.connect(self.running_restart)
+        self.scripting_widget.on_running_pause.connect(self.running_pause)
+
     def get_widgets(self):
         return self.scripting_widget
     
@@ -142,46 +138,96 @@ class script_scanner_gui(object):
         self.parameters_widget.show()
     
     @inlineCallbacks
+    def running_stop(self, ident):
+        sc = self.cxn.servers['scriptscanner']
+        ident = int(ident)
+        try:
+            yield sc.stop_script(ident)
+        except self.Error as e:
+            self.displayError(e.msg)
+    
+    @inlineCallbacks
+    def running_restart(self, ident):
+        sc = self.cxn.servers['scriptscanner']
+        ident = int(ident)
+        try:
+            yield sc.restart_script(ident)
+        except self.Error as e:
+            self.displayError(e.msg)
+    
+    @inlineCallbacks
+    def running_pause(self, ident, should_pause):
+        sc = self.cxn.servers['scriptscanner']
+        ident = int(ident)
+        try:
+            yield sc.pause_script(ident, should_pause)
+        except self.Error as e:
+            self.displayError(e.msg)
+    
+    @inlineCallbacks
     def scheduled_duration(self, ident, duration):
         sc = self.cxn.servers['scriptscanner']
         ident = int(ident)
         duration = self.WithUnit(float(duration), 's')
-        yield sc.change_scheduled_duration(ident, duration)
+        try:
+            yield sc.change_scheduled_duration(ident, duration)
+        except self.Error as e:
+            self.displayError(e.msg)
     
     @inlineCallbacks
     def scheduled_cancel(self, ident):
         ident = int(ident)
         sc = self.cxn.servers['scriptscanner']
-        yield sc.cancel_scheduled_script(ident)
+        try:
+            yield sc.cancel_scheduled_script(ident)
+        except self.Error as e:
+            self.displayError(e.msg)
         
     @inlineCallbacks
     def schedule_script(self, name, duration):
         sc = self.cxn.servers['scriptscanner']
         name = str(name)
         duration = self.WithUnit(duration, 's')
-        yield sc.new_script_schedule(name, duration)
+        try:
+            yield sc.new_script_schedule(name, duration)
+        except self.Error as e:
+            self.displayError(e.msg)
         
     @inlineCallbacks
     def repeat_script(self, name, repeatitions):
         sc = self.cxn.servers['scriptscanner']
         name = str(name)
-        yield sc.new_script_repeat(name, repeatitions)
+        try:
+            yield sc.new_script_repeat(name, repeatitions)
+        except self.Error as e:
+            self.displayError(e.msg)
     
     @inlineCallbacks
     def on_cancel_queued(self, ident):
         sc = self.cxn.servers['scriptscanner']
         ident = int(ident)
-        yield sc.remove_queued_script(ident, context = self.context)
+        try:
+            yield sc.remove_queued_script(ident, context = self.context)
+        except self.Error as e:
+            self.displayError(e.msg)
         
     @inlineCallbacks
     def run_script(self, script):
         sc = self.cxn.servers['scriptscanner']
         script = str(script)
-        yield sc.new_experiment(script, context = self.context)
+        try:
+            yield sc.new_experiment(script, context = self.context)
+        except self.Error as e:
+            self.displayError(e.msg)
     
     def setupWidgets(self):
         self.scripting_widget = scripting_widget(self.reactor)
         self.parameters_widget = parameters_widget(self.reactor)
+    
+    def displayError(self, text):
+        message = QtGui.QMessageBox()
+        message.setText(text)
+        message.exec_()
 
 if __name__=="__main__":
     a = QtGui.QApplication( ["Script Scanner"] )

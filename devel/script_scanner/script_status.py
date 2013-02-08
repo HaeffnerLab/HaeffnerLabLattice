@@ -28,13 +28,13 @@ class script_semaphore(object):
         if self.pause_lock.locked:
             self.status = 'Paused'
             self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
-            self.signals.on_running_scipt_paused((self.ident, True))
+            self.signals.on_running_script_paused((self.ident, True))
         yield self.pause_lock.acquire()
         self.pause_lock.release()
         if self.status == 'Paused':
             self.status = 'Running'
             self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
-            self.signals.on_running_scipt_paused((self.ident, False))
+            self.signals.on_running_script_paused((self.ident, False))
 
     def set_stopping(self):
         self.should_stop = True
@@ -67,9 +67,10 @@ class script_semaphore(object):
             self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
     
     def finish_confirmed(self):
-        self.percentage_complete = 100.0
-        self.status = 'Finished'
-        self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
+        if not self.status == 'Stopped':
+            self.percentage_complete = 100.0
+            self.status = 'Finished'
+            self.signals.on_running_new_status((self.ident, self.status, self.percentage_complete))
         self.signals.on_running_script_finished(self.ident)
     
     def error_finish_confirmed(self, error):

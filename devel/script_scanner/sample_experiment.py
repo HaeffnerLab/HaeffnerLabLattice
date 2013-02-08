@@ -27,14 +27,14 @@ class sample_experiment(experiment):
     def finalize(self, cxn, context):
         print 'exiting', self.name()
         
-class another_sample(experiment):
+class crashing_example(experiment):
     
     def __init__(self):
         self.param = 3.0
     
     @classmethod
     def name(cls):
-        return 'another_sample'
+        return 'crashing_example'
     
     @classmethod
     def required_parameters(cls):
@@ -42,6 +42,7 @@ class another_sample(experiment):
    
     def initialize(self, cxn, context, ident):
         print 'in initialize', self.name(), ident
+        raise Exception ("In a case of a crash, real message would follow")
         
     def run(self, cxn, context):
         print 'in running', self.name()
