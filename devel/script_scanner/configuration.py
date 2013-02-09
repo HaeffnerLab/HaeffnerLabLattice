@@ -4,7 +4,8 @@ class config(object):
     scripts = [
                ('sample_experiment', 'sample_experiment'), 
                ('sample_experiment', 'conflicting_experiment'),
-               ('sample_experiment', 'non_conflicting_experiment')
+               ('sample_experiment', 'non_conflicting_experiment'),
+               ('sample_experiment', 'crashing_example'), 
                ]
 
     #experiments are allowed to run together

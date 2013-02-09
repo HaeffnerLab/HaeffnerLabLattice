@@ -25,4 +25,27 @@ class parameters_widget(QtGui.QWidget):
 class parameter_tree(QtGui.QTreeWidget):
     def __init__(self):
         super(parameter_tree, self).__init__()
-    
+        self.setColumnCount(2)
+        
+        simple_sub = QtGui.QTreeWidgetItem()
+        box = QtGui.QDoubleSpinBox()
+        box.setAutoFillBackground(True)
+        self.setItemWidget(simple_sub, 0, box)
+#        text = QtCore.QString("hi")
+        item = QtGui.QTreeWidgetItem()
+        item.setText(0, "hi")
+        item.setText(1, "what")
+        self.addTopLevelItem(item)
+        item = QtGui.QTreeWidgetItem()
+        item.setText(0, "hi")
+        item.setText(1, "what")
+        self.addTopLevelItem(item)
+
+if __name__=="__main__":
+    a = QtGui.QApplication( ["Script Scanner"] )
+    from common.clients import qt4reactor
+    qt4reactor.install()
+    from twisted.internet import reactor
+    gui = parameter_tree()
+    gui.show()
+    reactor.run()
