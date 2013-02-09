@@ -15,7 +15,7 @@ message = 987654321
 timeout = 20
 ### END NODE INFO
 '''
-from labrad.server import LabradServer, setting, Signal
+from labrad.server import LabradServer, setting
 from labrad.units import WithUnit
 from twisted.internet.defer import inlineCallbacks, DeferredList, returnValue
 from signals import Signals
@@ -99,10 +99,10 @@ class ScriptScanner(LabradServer, Signals):
         scheduled = [(ident, name, WithUnit(dur,'s') ) for (ident, name, dur) in scheduled]
         return scheduled
     
-    @setting(4, "Get Queue", returns = '*(ws)')
+    @setting(4, "Get Queue", returns = '*(wsw)')
     def get_queue(self, c):
         '''
-        Returns the current queue of scans
+        Returns the current queue of scans in the form ID / Name / order
         '''
         return self.scheduler.get_queue()
     

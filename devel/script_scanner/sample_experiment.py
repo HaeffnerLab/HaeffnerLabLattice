@@ -16,15 +16,17 @@ class sample_experiment(experiment):
         return [('sample_experiment','parameter'),('trap_parameters','trap_drive_frequency')]
    
     def initialize(self, cxn, context, ident):
-        print 'in initialize', self.name(), ident
+        pass
+#        print 'in initialize', self.name(), ident
         
     def run(self, cxn, context):
-        print 'in running', self.name()
+#        print 'in running', self.name()
         for i in range(3):
             time.sleep(1)
             
     def finalize(self, cxn, context):
-        print 'exiting', self.name()
+        pass
+#        print 'exiting', self.name()
 
 class conflicting_experiment(experiment):
     
@@ -40,15 +42,17 @@ class conflicting_experiment(experiment):
         return [('conflicting_experiment','parameter'),('conflicting_experiment','trap_drive_frequency')]
    
     def initialize(self, cxn, context, ident):
-        print 'in initialize', self.name(), ident
+        pass
+#        print 'in initialize', self.name(), ident
         
     def run(self, cxn, context):
-        print 'in running', self.name()
+#        print 'in running', self.name()
         for i in range(3):
             time.sleep(1)
             
     def finalize(self, cxn, context):
-        print 'exiting', self.name()
+        pass
+#        print 'exiting', self.name()
         
 class non_conflicting_experiment(experiment):
     
@@ -64,15 +68,17 @@ class non_conflicting_experiment(experiment):
         return [('non_conflicting_experiment','parameter'),('non_conflicting_experiment','trap_drive_frequency')]
    
     def initialize(self, cxn, context, ident):
-        print 'in initialize', self.name(), ident
+        pass
+#        print 'in initialize', self.name(), ident
         
     def run(self, cxn, context):
-        print 'in running', self.name()
+#        print 'in running', self.name()
         for i in range(3):
             time.sleep(1)
             
     def finalize(self, cxn, context):
-        print 'exiting', self.name()
+        pass
+#        print 'exiting', self.name()
         
 class crashing_example(experiment):
     

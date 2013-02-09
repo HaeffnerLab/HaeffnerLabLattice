@@ -52,8 +52,8 @@ class script_scanner_gui(object):
         scheduled = yield sc.get_scheduled(context = self.context)
         for experiment in available:
             self.scripting_widget.addExperiment(experiment)
-        for ident,name in queued:
-            self.scripting_widget.addQueued(ident, name)
+        for ident,name,order in queued:
+            self.scripting_widget.addQueued(ident, name, order)
         for ident,name,duration in scheduled:
             self.scripting_widget.addScheduled(ident,name,duration)
         for ident,name in running:

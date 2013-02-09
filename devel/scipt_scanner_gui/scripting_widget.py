@@ -37,8 +37,8 @@ class scripting_widget(QtGui.QWidget):
         self.selector.addExperiment(experiment)
     
     #queued
-    def addQueued(self, ident, name, is_last = True):
-        self.queued.add(ident, name, is_last)
+    def addQueued(self, ident, name, order):
+        self.queued.add(ident, name, order)
     
     def removeQueued(self, ident):
         self.queued.remove(ident)

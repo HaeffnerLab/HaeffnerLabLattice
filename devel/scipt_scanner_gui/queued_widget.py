@@ -65,27 +65,24 @@ class queued_list(QtGui.QTableWidget):
     def setupLayout(self):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.setColumnCount(1)
-        self.setRowCount(0)
+        self.setRowCount(1)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
     
-    def add(self, ident, name, is_last):
+    def add(self, ident, name, order):
         #make the widget
         ident = int(ident)
+        order = int(order)
         widget = queued_widget(self.reactor, parent = self.parent, ident = ident, name = name)
         self.mapper.setMapping(widget.cancel_button, ident)
         widget.cancel_button.pressed.connect(self.mapper.map)
         self.d[ident] = widget
         #insert it
-        if is_last:
-            row_count = self.rowCount()
-            self.setRowCount(row_count + 1)
-            self.setCellWidget(row_count, 0, widget)
-        else:
-            self.insertRow(0)
-            self.setCellWidget(0, 0, widget)
+        self.insertRow(order)
+        self.setCellWidget(order, 0, widget)
+        #adjust size
         self.resizeColumnsToContents()
 
     def cancel_all(self):
@@ -136,8 +133,8 @@ class queued_combined(QtGui.QWidget):
     def connect_layout(self):
         self.cancel_all.pressed.connect(self.ql.cancel_all)
     
-    def add(self, ident, name, is_last):
-        self.ql.add(ident, name, is_last)
+    def add(self, ident, name, order):
+        self.ql.add(ident, name, order)
     
     def remove(self, ident):
         self.ql.remove(ident)

@@ -11,7 +11,7 @@ class Signals(LabradServer):
     '''
     queued scripts
     '''
-    on_queued_new_script = Signal(200010 , "signal_on_queued_new_script", 'wsb')#identification, name, whether added to the back (true) or front (false)
+    on_queued_new_script = Signal(200010 , "signal_on_queued_new_script", 'wsw')#identification, name, order
     on_queued_removed = Signal(200011 , "signal_on_queued_removed", 'w')
     '''
     scheduled script signals
