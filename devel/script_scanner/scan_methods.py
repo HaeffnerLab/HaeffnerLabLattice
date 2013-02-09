@@ -145,10 +145,8 @@ class repeat_reload(experiment):
         return 'Repeat {0} {1} times'.format(name, self.repeatitions)
     
     def initialize(self, cxn, context, ident):
-        print 'should be here'
         self.script = self.script_cls()
         self.script.initialize(cxn, context, ident)
-        print 'called ini from script'
         if self.save_data:
             self.navigate_data_vault(cxn, context)
     

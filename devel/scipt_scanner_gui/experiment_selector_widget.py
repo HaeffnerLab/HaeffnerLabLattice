@@ -8,7 +8,7 @@ class repeat_dialog(QtGui.QDialog):
     
     def setupLayout(self):
         layout = QtGui.QHBoxLayout()
-        label = QtGui.QLabel("Repeatitions")
+        label = QtGui.QLabel("Repetitions")
         self.repeat = QtGui.QSpinBox()
         self.repeat.setKeyboardTracking(False)
         self.repeat.setRange(1, 10000)
@@ -32,15 +32,26 @@ class schedule_dialog(QtGui.QDialog):
     
     def setupLayout(self):
         layout = QtGui.QHBoxLayout()
-        label = QtGui.QLabel("Duruation")
         self.duration = QtGui.QSpinBox()
         self.duration.setSuffix(' sec')
         self.duration.setKeyboardTracking(False)
         self.duration.setRange(1, 10000)
         self.okay_button = QtGui.QPushButton('Okay')
         self.cancel_button = QtGui.QPushButton("Cancel")
+        self.priority = QtGui.QComboBox()
+        self.priority.addItems(['Normal', 'First in Queue','Pause All Others'])
+        self.start_immediately = QtGui.QCheckBox()
+        self.start_immediately.setCheckable(True)
+        self.start_immediately.setChecked(True)
+        label = QtGui.QLabel("Period")
         layout.addWidget(label)
         layout.addWidget(self.duration)
+        label = QtGui.QLabel("Priority")
+        layout.addWidget(label)
+        layout.addWidget(self.priority)
+        label = QtGui.QLabel("Start Immediately")
+        layout.addWidget(label)
+        layout.addWidget(self.start_immediately)
         layout.addWidget(self.okay_button)
         layout.addWidget(self.cancel_button)
         self.setLayout(layout)
@@ -53,7 +64,7 @@ class experiment_selector_widget(QtGui.QWidget):
     
     on_run = QtCore.pyqtSignal(str)
     on_repeat = QtCore.pyqtSignal(str, int)
-    on_schedule = QtCore.pyqtSignal(str, float)
+    on_schedule = QtCore.pyqtSignal(str, float, str, bool)
     
     def __init__(self, reactor, font = None):
         self.font = font
@@ -91,7 +102,9 @@ class experiment_selector_widget(QtGui.QWidget):
         if dialog.exec_():
             duration = dialog.duration.value()
             name = self.dropdown.currentText()
-            self.on_schedule.emit(name, duration)
+            priority = dialog.priority.currentText()
+            run_now = dialog.start_immediately.isChecked()
+            self.on_schedule.emit(name, duration, priority, run_now)
     
     def on_repeat_button(self):
         dialog = repeat_dialog()

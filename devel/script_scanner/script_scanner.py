@@ -151,16 +151,19 @@ class ScriptScanner(LabradServer, Signals):
         scan_id = self.scheduler.add_scan_to_queue(scan_launch)
         return scan_id
     
-    @setting(13, 'New Script Schedule', script_name = 's', duration = 'v[s]', returns ='w')
-    def new_script_schedule(self, c, script_name, duration):
+    @setting(13, 'New Script Schedule', script_name = 's', duration = 'v[s]', priority = 's', start_now = 'b', returns ='w')
+    def new_script_schedule(self, c, script_name, duration, priority = 'Normal', start_now = True):
         '''
         Schedule the script to run every spcified duration of seconds.
+        Priority indicates the priority with which the scrpt is scheduled.
         '''
         if script_name not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script_name))
+        if priority not in ['Normal','First in Queue','Pause All Others']:
+            raise Exception ("Priority not recognized")
         script = self.script_parameters[script_name]
         single_launch = scan_methods.single(script.cls)
-        schedule_id = self.scheduler.new_scheduled_scan(single_launch, duration['s'])
+        schedule_id = self.scheduler.new_scheduled_scan(single_launch, duration['s'], priority, start_now)
         return schedule_id
     
     @setting(14, 'Change Scheduled Duration', scheduled_ID = 'w', duration = 'v[s]')
@@ -190,11 +193,6 @@ class ScriptScanner(LabradServer, Signals):
         if status is None:
             raise Exception ("Trying to stop script with ID {0} but it was not running".format(script_ID))
         status.set_stopping()
-    
-    @setting(22, "Restart Script", script_ID = 'w')
-    def restart_script(self, c, script_ID):
-        ident = self.scheduler.restart_script(script_ID)
-        return ident
 
     @setting(30, "Register External Launch", name = 's', returns = 'w')
     def register_external_launch(self, c, name):

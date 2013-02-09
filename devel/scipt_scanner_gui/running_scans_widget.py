@@ -29,7 +29,6 @@ class script_status_widget(QtGui.QWidget):
     on_pause = QtCore.pyqtSignal()
     on_continue = QtCore.pyqtSignal()
     on_stop = QtCore.pyqtSignal()
-    on_restart = QtCore.pyqtSignal()
     
     def __init__(self, reactor, ident, name , font = None, parent = None):
         super(script_status_widget, self).__init__(parent)
@@ -77,13 +76,10 @@ class script_status_widget(QtGui.QWidget):
             self.on_continue.emit()
     
     def on_user_stop(self):
-        if self.stop_button.text() == 'Restart':
-            self.on_restart.emit()
-        else:
-            self.on_stop.emit()
+        self.on_stop.emit()
     
     def setFinished(self):
-        self.stop_button.setText('Restart') 
+        self.stop_button.setDisabled(True)
         self.id_label.setDisabled(True)
         self.name_label.setDisabled(True)
         self.pause_button.setDisabled(True)
@@ -104,7 +100,6 @@ class script_status_widget(QtGui.QWidget):
 
 class running_scans_list(QtGui.QTableWidget):
     
-    on_restart = QtCore.pyqtSignal(int)
     on_pause = QtCore.pyqtSignal(int, bool)
     on_stop = QtCore.pyqtSignal(int)
     
@@ -118,26 +113,18 @@ class running_scans_list(QtGui.QTableWidget):
         self.setupLayout()
         self.d = {}
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
-        self.cellDoubleClicked.connect(self.on_double_click)
         self.mapper_pause = QtCore.QSignalMapper()
         self.mapper_pause.mapped.connect(self.emit_pause)
         self.mapper_continue = QtCore.QSignalMapper()
         self.mapper_continue.mapped.connect(self.emit_continue)
         self.mapper_stop = QtCore.QSignalMapper()
         self.mapper_stop.mapped.connect(self.on_stop.emit)
-        self.mapper_restart = QtCore.QSignalMapper()
-        self.mapper_restart.mapped.connect(self.on_restart.emit)
     
     def emit_pause(self, ident):
         self.on_pause.emit(ident, True)
     
     def emit_continue(self, ident):
         self.on_pause.emit(ident, False)
-    
-    def on_double_click(self, row, column):
-        self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
-        self.selectRow(row)
-        self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
     
     def setupLayout(self):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -159,8 +146,6 @@ class running_scans_list(QtGui.QTableWidget):
         widget.on_stop.connect(self.mapper_stop.map)
         self.mapper_pause.setMapping(widget, ident)
         widget.on_pause.connect(self.mapper_pause.map)
-        self.mapper_restart.setMapping(widget, ident)
-        widget.on_restart.connect(self.mapper_restart.map)
         #insert widget
         self.setCellWidget(row_count, 0, widget)
         self.resizeColumnsToContents()
@@ -183,10 +168,9 @@ class running_scans_list(QtGui.QTableWidget):
             widget.set_paused(is_paused)
             
     def remove(self, ident):
-        selected = [model.row() for model in self.selectionModel().selectedRows()]
         widget = self.d[ident]
         for row in range(self.rowCount()):
-            if self.cellWidget(row, 0) == widget and not row in selected:
+            if self.cellWidget(row, 0) == widget:
                 del self.d[ident]
                 self.removeRow(row)
     

@@ -18,7 +18,6 @@ class scheduled_widget(QtGui.QWidget):
         self.ident = ident
         self.name = name
         self.duration = duration
-        print self.font().family()
         self.font = QtGui.QFont(self.font().family(), pointSize=10)
         if self.font is None:
             self.font = QtGui.QFont()

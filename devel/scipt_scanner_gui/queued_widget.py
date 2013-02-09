@@ -71,18 +71,23 @@ class queued_list(QtGui.QTableWidget):
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
     
-
-    def add(self, ident, name):
+    def add(self, ident, name, is_last):
+        #make the widget
         ident = int(ident)
-        row_count = self.rowCount()
-        self.setRowCount(row_count + 1)
         widget = queued_widget(self.reactor, parent = self.parent, ident = ident, name = name)
         self.mapper.setMapping(widget.cancel_button, ident)
         widget.cancel_button.pressed.connect(self.mapper.map)
-        self.setCellWidget(row_count, 0, widget)
-        self.resizeColumnsToContents()
         self.d[ident] = widget
-    
+        #insert it
+        if is_last:
+            row_count = self.rowCount()
+            self.setRowCount(row_count + 1)
+            self.setCellWidget(row_count, 0, widget)
+        else:
+            self.insertRow(0)
+            self.setCellWidget(0, 0, widget)
+        self.resizeColumnsToContents()
+
     def cancel_all(self):
         for ident in self.d.keys():
             self.on_cancel.emit(ident)
@@ -131,8 +136,8 @@ class queued_combined(QtGui.QWidget):
     def connect_layout(self):
         self.cancel_all.pressed.connect(self.ql.cancel_all)
     
-    def add(self, ident, name):
-        self.ql.add(ident, name)
+    def add(self, ident, name, is_last):
+        self.ql.add(ident, name, is_last)
     
     def remove(self, ident):
         self.ql.remove(ident)

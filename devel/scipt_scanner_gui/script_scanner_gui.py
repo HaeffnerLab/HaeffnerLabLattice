@@ -29,6 +29,7 @@ class script_scanner_gui(object):
             yield self.setupListeners()
             self.connect_layouts()
         except Exception, e:
+            print e
             print 'script_scanner_gui: script scanner not available'
             self.disable(True)
 #        self.cxn.on_connect['DAC'].append( self.reinitialize)
@@ -127,7 +128,6 @@ class script_scanner_gui(object):
         self.scripting_widget.on_cancel_scheduled.connect(self.scheduled_cancel)
         self.scripting_widget.on_schedule_duration.connect(self.scheduled_duration)
         self.scripting_widget.on_running_stop.connect(self.running_stop)
-        self.scripting_widget.on_running_restart.connect(self.running_restart)
         self.scripting_widget.on_running_pause.connect(self.running_pause)
 
     def get_widgets(self):
@@ -143,15 +143,6 @@ class script_scanner_gui(object):
         ident = int(ident)
         try:
             yield sc.stop_script(ident)
-        except self.Error as e:
-            self.displayError(e.msg)
-    
-    @inlineCallbacks
-    def running_restart(self, ident):
-        sc = self.cxn.servers['scriptscanner']
-        ident = int(ident)
-        try:
-            yield sc.restart_script(ident)
         except self.Error as e:
             self.displayError(e.msg)
     
@@ -184,12 +175,13 @@ class script_scanner_gui(object):
             self.displayError(e.msg)
         
     @inlineCallbacks
-    def schedule_script(self, name, duration):
+    def schedule_script(self, name, duration, priority, start_now):
         sc = self.cxn.servers['scriptscanner']
         name = str(name)
+        priority = str(priority)
         duration = self.WithUnit(duration, 's')
         try:
-            yield sc.new_script_schedule(name, duration)
+            yield sc.new_script_schedule(name, duration, priority, start_now)
         except self.Error as e:
             self.displayError(e.msg)
         

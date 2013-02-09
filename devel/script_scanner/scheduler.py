@@ -1,8 +1,8 @@
 from twisted.internet.threads import deferToThread
-from twisted.internet.defer import Deferred
+from twisted.internet.defer import Deferred, DeferredList
 from configuration import config 
 from twisted.internet.task import LoopingCall
-from script_status import script_semaphore 
+from script_status import script_semaphore
 
 class running_script(object):
     '''holds information about a script that is currently running'''
@@ -18,14 +18,13 @@ class scheduler(object):
     def __init__(self, signals):
         self.signals = signals
         self.running = {} #dictionary in the form identification : running_script_instance
-        self.queue = {} #dictionary in the form identification : scan to launch
+        self.queue = [] #list where each element is in the form (ident, experiment)
+        self.urgent_task_running = False
         self.launch_history = []
         self.scheduled = {}
+        self.unpause_on_finish = {} #dictionary in the form experiment ident : set identifications to unpause when done
         self.scheduled_ID_counter = 0
         self.scan_ID_counter = 0
-        
-    def are_scans_running(self):
-        return bool(self.running)
     
     def running_deferred_list(self):
         return [script.defer_on_done for script in self.running.itervalues() if not script.externally_launched]
@@ -54,34 +53,88 @@ class scheduler(object):
     
     def get_queue(self):
         queue = []
-        for ident, scan in sorted(self.queue.iteritems()):
+        for ident, scan, urgent in self.queue:
             queue.append((ident, scan.name))
         return queue
     
     def remove_queued_script(self, script_ID):
-        if script_ID in self.queue.keys():
-            del self.queue[script_ID]
-            self.signals.on_queued_removed(script_ID)
-        else:
-            raise Exception("Tring to remove scirpt ID {0} from queue but it's not in the queue")
-    
-    def restart_script(self, ident):
-        d = dict(self.launch_history)
-        scan = d.get(ident, None)
-        if scan is None:
-            raise Exception ("Can not restart script that is not in the launch history")
-        else:
-            scan_id = self.add_scan_to_queue(scan)
-            self.signals.on_running_script_restarted((ident, scan_id))
-            return scan_id
-        
-    def add_scan_to_queue(self, scan):
-        scan_id= self.scan_ID_counter
-        self.queue[scan_id] = scan
+        removed = False
+        for ident, scan, urgent in self.queue:
+            if script_ID == ident: 
+                removed = True
+                self.queue.remove((script_ID, scan, urgent))
+                self.signals.on_queued_removed(script_ID)
+        if not removed:
+            raise Exception("Tring to remove scirpt ID {0} from queue but it's not in the queue".format(script_ID))
+            
+    def add_scan_to_queue(self, scan, priority = 'Normal'):
+        #increment counter
+        scan_id = self.scan_ID_counter
         self.scan_ID_counter += 1
-        self.signals.on_queued_new_script((scan_id, scan.name))
-        self.launch_scripts()
+        #add to queue
+        if priority == 'Normal':
+            self.queue.append((scan_id, scan, False))
+            self.signals.on_queued_new_script((scan_id, scan.name, True))
+            self.launch_scripts()
+        elif priority == 'First in Queue':
+            self.queue.insert(0, (scan_id, scan, False))
+            self.signals.on_queued_new_script((scan_id, scan.name, False))
+            self.launch_scripts()
+        elif priority == 'Pause All Others':
+            if not self.urgent_task_running:
+                self.launch_urgent_pausing_normal(scan_id, scan)
+            else:
+                #if other urgent tasks are running, put current one in the queue
+                self.queue.insert(0, (scan_id, scan, True))
+                self.signals.on_queued_new_script((scan_id, scan.name, False))
+        else: 
+            raise Exception ("Unrecognized priority type")
         return scan_id
+    
+    def launch_urgent_pausing_normal(self, scan_id, scan):
+        '''
+        first pauses all scripts that are currently running and conflict with with the scan
+        then launches the scan. At the end the pause scripts are unpaused
+        '''
+        self.urgent_task_running = True
+        paused_idents, d  = self.pause_conflicting(scan.name)
+        d.addCallback(self.insert_first_callback, (scan_id, scan))
+        paused_idents = set(paused_idents)
+        self.unpause_on_finish[scan_id] = paused_idents
+        
+    def insert_first_callback(self, result, to_insert):
+        scan_id, scan = to_insert
+        self.add_to_history(scan_id, scan)
+        self.do_launch(scan_id, scan)
+        
+    def pause_conflicting(self, name):
+        paused_identification = []
+        paused = []
+        for ident, script in self.running.iteritems():
+            non_conf = config.allowed_concurrent.get(script.name, [])
+            if not name in non_conf:
+                paused_identification.append(ident)
+                d = script.status.set_pausing(True)
+                paused.append(d)
+        paused_deferred = DeferredList(paused)
+        return paused_identification, paused_deferred
+        
+    def get_non_conflicting(self):
+        '''
+        returns a list of experiments that can run concurrently with current experiments
+        '''
+        non_conflicting = []
+        for running, script in self.running.iteritems():
+            cls_name = script.scan.script_cls.name()
+            non_conf = config.allowed_concurrent.get(cls_name, None)
+            if non_conf is not None:
+                non_conflicting.append(set(non_conf))
+        if non_conflicting:
+            return set.intersection(*non_conflicting)
+        else:
+            return set()
+       
+        return non_conflicting
     
     def add_external_scan(self, scan):
         scan_id= self.scan_ID_counter
@@ -92,20 +145,50 @@ class scheduler(object):
         
     def remove_from_running(self, deferred_result, running_id):
         del self.running[running_id]
+        self.finish_urgent(running_id)
     
+    def finish_urgent(self, running_id):
+        #check the queue: if there's another urgent task launch that one. otherwise, unpause the previously paused tasks
+        if running_id in self.unpause_on_finish.keys():
+            to_unpause = self.unpause_on_finish[running_id]
+            del self.unpause_on_finish[running_id]
+        else:
+            to_unpause = set()
+        if to_unpause:
+            self.do_unpause_on_finish(to_unpause)
+
+    def do_unpause_on_finish(self, to_unpause):
+        to_unpause_deferred = []
+        for ident in to_unpause:
+            try:
+                d = self.running[ident].status.set_pausing(False)
+                to_unpause_deferred.append(d)
+            except KeyError:
+                print 'tried to unpause ID {0} but no longer running'.format(ident)
+        to_unpause_deferred = DeferredList(to_unpause_deferred)
+        to_unpause_deferred.addCallback(self.check_launch_another_urgent)
+                
+    def check_launch_another_urgent(self, result):
+        try:
+            ident, scan, urgent = self.queue[0]
+            if urgent:
+                self.launch_urgent_pausing_normal(ident, scan)
+        except IndexError:
+            self.urgent_task_running = False
+            
     def remove_if_external(self, running_id):
         if running_id in self.get_running_external():
             self.remove_from_running(None, running_id)
      
-    def new_scheduled_scan(self, scan, period):
+    def new_scheduled_scan(self, scan, period, priority, start_now):
         '''
         @var period: in seconds
         '''
-        lc = LoopingCall(self.add_scan_to_queue, scan)
+        lc = LoopingCall(self.add_scan_to_queue, scan, priority)
         new_schedule_id = self.scheduled_ID_counter
         self.scheduled[new_schedule_id] = (scan.name, lc)
         self.scheduled_ID_counter += 1
-        lc.start(period, now = True)
+        lc.start(period, now = start_now)
         self.signals.on_scheduled_new_script((new_schedule_id, scan.name, period))
         return new_schedule_id
     
@@ -116,7 +199,7 @@ class scheduler(object):
             raise Exception ("Schedule Script {0} with {1} ID does not exist".format(name, scheduled_ID))
         else:
             lc.stop()
-            lc.start(period)
+            lc.start(period, now = False)
             self.signals.on_scheduled_new_duration((scheduled_ID, period))
     
     def cancel_scheduled_script(self, scheduled_ID):
@@ -130,35 +213,35 @@ class scheduler(object):
             self.signals.on_scheduled_removed(scheduled_ID)
 
     def launch_scripts(self, result = None):
-        if not self.queue:
+        try:
+            ident, scan, urgent = self.queue[0]
+        except IndexError:
             return
-        non_conflicting = set()
-        #find all non-conflicting experiments
-        for running in self.running.keys():
-            non_conf = config.allowed_concurrent.get(running, [])
-            non_conflicting = non_conflicting.union( (set(non_conf) ) )
-        #launch the scan if no conflicts or if no scans are running
-        earliest_id,scan = sorted(self.queue.iteritems())[0]
-        if scan.script_cls.name() in non_conflicting or not self.are_scans_running():
-            #launching the script:
-            #firt add to history of launches
-            self.launch_history.append((earliest_id, scan))
-            if len(self.launch_history) > config.launch_history:
-                self.launch_history.pop(0)
-            #remove from queue
-            del self.queue[earliest_id]
-            self.signals.on_queued_removed(earliest_id)
-            #make a deferred, and starts things moving
-            d = Deferred()
-            status = script_semaphore(earliest_id, self.signals)
-            self.running[earliest_id] = running_script(scan, d, status)
-            d.addCallback(self.launch_in_thread, scan, earliest_id)
-            d.addCallback(self.remove_from_running, running_id = earliest_id) 
-            d.addCallback(self.launch_scripts)
-            d.callback(True)
-            self.signals.on_running_new_script((earliest_id, scan.name))
-            #see of any other script can be launched
-            self.launch_scripts()
+        else:
+            non_conflicting = self.get_non_conflicting()
+            if scan.script_cls.name() in non_conflicting or not self.running:
+                #firt add to history of launches
+                self.add_to_history(ident, scan)
+                #remove from queue and launch
+                self.queue.pop(0)
+                self.signals.on_queued_removed(ident)
+                self.do_launch(ident, scan)
+                self.launch_scripts()
+                
+    def add_to_history(self, ident, scan):
+        self.launch_history.append((ident, scan))
+        if len(self.launch_history) > config.launch_history:
+            self.launch_history.pop(0)
+    
+    def do_launch(self, ident, scan ):
+        d = Deferred()
+        status = script_semaphore(ident, self.signals)
+        self.running[ident] = running_script(scan, d, status)
+        d.addCallback(self.launch_in_thread, scan, ident)
+        d.addCallback(self.remove_from_running, running_id = ident) 
+        d.addCallback(self.launch_scripts)
+        d.callback(True)
+        self.signals.on_running_new_script((ident, scan.name))
     
     def launch_in_thread(self, result, scan, ident):
         d = deferToThread(scan.execute, ident)

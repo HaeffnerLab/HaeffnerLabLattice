@@ -10,10 +10,9 @@ class scripting_widget(QtGui.QWidget):
     on_repeat = QtCore.pyqtSignal((str, int))
     on_cancel_queued = QtCore.pyqtSignal(int)
     on_cancel_scheduled = QtCore.pyqtSignal(int)
-    on_schedule = QtCore.pyqtSignal((str,float))
+    on_schedule = QtCore.pyqtSignal(str,float, str, bool)
     on_schedule_duration = QtCore.pyqtSignal((int, float))
     on_running_stop = QtCore.pyqtSignal(int)
-    on_running_restart = QtCore.pyqtSignal(int)
     on_running_pause = QtCore.pyqtSignal(int, bool)
         
     def __init__(self, reactor):
@@ -38,8 +37,8 @@ class scripting_widget(QtGui.QWidget):
         self.selector.addExperiment(experiment)
     
     #queued
-    def addQueued(self, ident, name):
-        self.queued.add(ident, name)
+    def addQueued(self, ident, name, is_last = True):
+        self.queued.add(ident, name, is_last)
     
     def removeQueued(self, ident):
         self.queued.remove(ident)
@@ -75,7 +74,6 @@ class scripting_widget(QtGui.QWidget):
         self.queued.ql.on_cancel.connect(self.on_cancel_queued.emit)
         self.scheduled.sl.on_cancel.connect(self.on_cancel_scheduled.emit)
         self.scheduled.sl.on_new_duration.connect(self.on_schedule_duration.emit)
-        self.running.scans_list.on_restart.connect(self.on_running_restart.emit)
         self.running.scans_list.on_stop.connect(self.on_running_stop.emit)
         self.running.scans_list.on_pause.connect(self.on_running_pause.emit)
            

@@ -6,13 +6,12 @@ class Signals(LabradServer):
     on_running_new_status = Signal(200001 , "signal_on_running_new_status", '(wsv)')
     on_running_script_paused = Signal(200002 , "signal_on_running_script_paused", 'wb')
     on_running_script_stopped = Signal(200003 , "signal_on_running_script_stopped", 'w')
-    on_running_script_restarted = Signal(200004 , "signal_on_running_script_restarted", 'ww')#signal with a pair if IDs (id of script to restart, new issue id)
     on_running_script_finished = Signal(200005 , "signal_on_running_script_finished", 'w')
     on_running_script_finished_error = Signal(200006 , "signal_on_running_script_finished_error", 'ws')
     '''
     queued scripts
     '''
-    on_queued_new_script = Signal(200010 , "signal_on_queued_new_script", 'ws')
+    on_queued_new_script = Signal(200010 , "signal_on_queued_new_script", 'wsb')#identification, name, whether added to the back (true) or front (false)
     on_queued_removed = Signal(200011 , "signal_on_queued_removed", 'w')
     '''
     scheduled script signals
