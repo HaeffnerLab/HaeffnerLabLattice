@@ -3,16 +3,12 @@ from labrad.units import WithUnit
 
 class rabi_excitation(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'rabi_excitation_frequency',
-                  'rabi_excitation_amplitude',
-                  'rabi_excitation_duration',
-                  ]
-        return config
-    
-    
+    required_parameters = [
+                          'rabi_excitation_frequency',
+                          'rabi_excitation_amplitude',
+                          'rabi_excitation_duration',
+                          ]
+
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
         frequency_advance_duration = WithUnit(6, 'us')
@@ -25,16 +21,12 @@ class rabi_excitation(pulse_sequence):
         
 class rabi_excitation_no_offset(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'rabi_excitation_frequency',
-                  'rabi_excitation_amplitude',
-                  'rabi_excitation_duration',
-                  ]
-        return config
-    
+    required_parameters = [
+                          'rabi_excitation_frequency',
+                          'rabi_excitation_amplitude',
+                          'rabi_excitation_duration',
+                          ]
     
     def sequence(self):
-        self.end = self.start + self.p.rabi_excitation_duration
-        self.dds_pulses.append(('729DP', self.start, self.p.rabi_excitation_duration, self.p.rabi_excitation_frequency, self.p.rabi_excitation_amplitude))
+        self.end = self.start + self.rabi_excitation_duration
+        self.dds_pulses.append(('729DP', self.start, self.rabi_excitation_duration, self.rabi_excitation_frequency, self.rabi_excitation_amplitude))

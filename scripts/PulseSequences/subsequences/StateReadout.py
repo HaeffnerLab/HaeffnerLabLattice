@@ -3,20 +3,16 @@ from lattice.scripts.PulseSequences.subsequences.DopplerCooling import doppler_c
 
 class state_readout(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
+    
+    required_parameters = [
                 'state_readout_frequency_397', 
                 'state_readout_amplitude_397', 
                 'state_readout_frequency_866', 
                 'state_readout_amplitude_866', 
                 'state_readout_duration',
                 ]
-        return config
-    
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling]
+
+    required_subsequences = [doppler_cooling]
     
     def sequence(self):
         

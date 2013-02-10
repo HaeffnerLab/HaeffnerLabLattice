@@ -8,20 +8,15 @@ from labrad.units import WithUnit
 
 class melting_heat(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'blue_heating_delay_before',
-                  'blue_heating_delay_after', 
-                  'use_local_blue_heating',
-                  'crystallization_duration'
-                  ]
-        return config
-    
-    @classmethod
-    def required_subsequences(cls):
-        return [turn_off_all, doppler_cooling, empty_sequence, global_blue_heating, local_blue_heating, state_readout]
-    
+    required_parameters = [
+                          'blue_heating_delay_before',
+                          'blue_heating_delay_after', 
+                          'use_local_blue_heating',
+                          'crystallization_duration'
+                          ]
+
+    required_subsequences = [turn_off_all, doppler_cooling, empty_sequence, global_blue_heating, local_blue_heating, state_readout]
+
     def sequence(self):
         self.start_record_timetags = self.end
         self.end = WithUnit(10, 'us')

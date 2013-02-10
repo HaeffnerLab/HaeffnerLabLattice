@@ -10,18 +10,14 @@ from labrad.units import WithUnit
            
 class ramsey_dephase(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
+    required_parameters = [
                   'optical_pumping_enable','rabi_pi_time','pulse_gap',
-                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866',
+                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 
+                  'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866',
                   'second_pulse_duration',
                   ]
-        return config
-    
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, local_blue_heating, rabi_excitation_no_offset]
+
+    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, local_blue_heating, rabi_excitation_no_offset]
     
     def sequence(self):
         self.end = WithUnit(10, 'us')
@@ -45,7 +41,7 @@ class ramsey_dephase(pulse_sequence):
                                                 'blue_heating_repump_additional': WithUnit(2, 'us')
                                                     }) 
             self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
-        self.addSequence(rabi_excitation_no_offset, **{'rabi_excitation_duration':self.p.second_pulse_duration})
+        self.addSequence(rabi_excitation_no_offset, **{'rabi_excitation_duration':self.second_pulse_duration})
         self.addSequence(state_readout)
 
 class sample_parameters(object):

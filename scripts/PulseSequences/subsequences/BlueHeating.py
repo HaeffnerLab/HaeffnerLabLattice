@@ -3,21 +3,16 @@ from lattice.scripts.PulseSequences.subsequences.DopplerCooling import doppler_c
 
 class global_blue_heating(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                'global_blue_heating_frequency_397', 
-                'global_blue_heating_amplitude_397', 
-                'blue_heating_frequency_866', 
-                'blue_heating_amplitude_866', 
-                'blue_heating_duration',
-                'blue_heating_repump_additional'
-                ]
-        return config
+    required_parameters = [
+                            'global_blue_heating_frequency_397', 
+                            'global_blue_heating_amplitude_397', 
+                            'blue_heating_frequency_866', 
+                            'blue_heating_amplitude_866', 
+                            'blue_heating_duration',
+                            'blue_heating_repump_additional'
+                            ]
     
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling]
+    required_subsequences = [doppler_cooling]
     
     def sequence(self):
         replace = {
@@ -32,22 +27,16 @@ class global_blue_heating(pulse_sequence):
 
 class local_blue_heating(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        
-        config = [
-                  'local_blue_heating_frequency_397', 
-                  'local_blue_heating_amplitude_397', 
-                  'blue_heating_frequency_866', 
-                  'blue_heating_amplitude_866', 
-                  'blue_heating_duration',
-                  'blue_heating_repump_additional'
-                  ]
-        return config
+    required_parameters = [
+                          'local_blue_heating_frequency_397', 
+                          'local_blue_heating_amplitude_397', 
+                          'blue_heating_frequency_866', 
+                          'blue_heating_amplitude_866', 
+                          'blue_heating_duration',
+                          'blue_heating_repump_additional'
+                          ]
     
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling]
+    required_subsequences = [doppler_cooling]
     
     def sequence(self):
         

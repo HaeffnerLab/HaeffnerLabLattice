@@ -10,16 +10,12 @@ from labrad.units import WithUnit
 
 class blue_heat_rabi(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'optical_pumping_enable','blue_heating_delay_before','blue_heating_delay_after', 'use_local_blue_heating'
-                  ]
-        return config
+    required_parameters = [
+                           'optical_pumping_enable','blue_heating_delay_before','blue_heating_delay_after', 'use_local_blue_heating'
+                           ]
     
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, global_blue_heating, local_blue_heating]
+    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, 
+                             state_readout, turn_off_all, global_blue_heating, local_blue_heating]
     
     def sequence(self):
         self.end = WithUnit(10, 'us')

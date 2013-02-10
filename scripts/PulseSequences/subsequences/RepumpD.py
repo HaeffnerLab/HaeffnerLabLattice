@@ -2,14 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 
 class repump_d(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'repump_d_duration',
-                  'repump_d_frequency_854',
-                  'repump_d_amplitude_854',
-                  ]
-        return config
+    required_parameters = ['repump_d_duration', 'repump_d_frequency_854', 'repump_d_amplitude_854',]
     
     def sequence(self):
         self.end = self.start + self.repump_d_duration

@@ -2,9 +2,8 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 
 class optical_pumping_continuous(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
+    
+    required_parameters = [
                   'optical_pumping_continuous_duration',
                   'optical_pumping_continuous_repump_additional',
                   'optical_pumping_continuous_frequency_854',
@@ -14,8 +13,7 @@ class optical_pumping_continuous(pulse_sequence):
                   'optical_pumping_continuous_frequency_866', 
                   'optical_pumping_continuous_amplitude_866',
                   ]
-        return config
-    
+
     def sequence(self):
         repump_dur_854 = self.optical_pumping_continuous_duration + self.optical_pumping_continuous_repump_additional
         repump_dur_866 = self.optical_pumping_continuous_duration + 2 * self.optical_pumping_continuous_repump_additional

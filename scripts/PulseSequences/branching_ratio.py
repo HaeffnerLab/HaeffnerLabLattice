@@ -6,16 +6,12 @@ from labrad.units import WithUnit
 
 class branching_ratio(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
+    
+    required_parameters = [
                   'cycles_per_sequence','between_pulses','duration_397_pulse','duration_866_pulse','frequency_397_pulse', 'frequency_866_pulse','amplitude_397_pulse', 'amplitude_866_pulse'
                   ]
-        return config
     
-    @classmethod
-    def required_subsequences(cls):
-        return [doppler_cooling, turn_off_all, empty_sequence]
+    required_subsequences = [doppler_cooling, turn_off_all, empty_sequence]
     
     def sequence(self):
         dds = self.dds_pulses

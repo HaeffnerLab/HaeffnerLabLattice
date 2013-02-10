@@ -4,13 +4,8 @@ from DopplerCooling import doppler_cooling
 
 class doppler_cooling_after_repump_d(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        return [ 'doppler_cooling_duration']
-    
-    @classmethod
-    def required_subsequences(cls):
-        return [repump_d, doppler_cooling]
+    required_parameters = [ 'doppler_cooling_duration']
+    required_subsequences = [repump_d, doppler_cooling]
     
     def sequence(self):
         self.addSequence(repump_d)

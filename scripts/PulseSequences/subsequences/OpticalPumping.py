@@ -4,9 +4,8 @@ from OpticalPumpingPulsed import optical_pumping_pulsed
 
 class optical_pumping(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
+    
+    required_parameters = [
                   'optical_pumping_continuous',
                   'optical_pumping_pulsed',
                   'optical_pumping_frequency_729',
@@ -16,11 +15,8 @@ class optical_pumping(pulse_sequence):
                   'optical_pumping_amplitude_854',
                   'optical_pumping_amplitude_866'
                   ]
-        return config
     
-    @classmethod
-    def required_subsequences(cls):
-        return [optical_pumping_continuous, optical_pumping_pulsed]
+    required_subsequences = [optical_pumping_continuous, optical_pumping_pulsed]
     
     def sequence(self):
         if (self.optical_pumping_continuous == self.optical_pumping_pulsed):

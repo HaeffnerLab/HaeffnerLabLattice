@@ -3,18 +3,14 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 class doppler_cooling(pulse_sequence):
     
     
-    @classmethod
-    def required_parameters(cls):
-        
-        config = [
-                'doppler_cooling_frequency_397', 
-                'doppler_cooling_amplitude_397', 
-                'doppler_cooling_frequency_866', 
-                'doppler_cooling_amplitude_866', 
-                'doppler_cooling_duration',
-                'doppler_cooling_repump_additional'
-                ]
-        return config
+    required_parameters = [
+                           'doppler_cooling_frequency_397', 
+                           'doppler_cooling_amplitude_397', 
+                           'doppler_cooling_frequency_866', 
+                           'doppler_cooling_amplitude_866', 
+                           'doppler_cooling_duration',
+                           'doppler_cooling_repump_additional'
+                           ]
     
     def sequence(self):
         pulses = self.dds_pulses
