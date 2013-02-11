@@ -5,12 +5,14 @@ from subsequences.OpticalPumping import optical_pumping
 from subsequences.RabiExcitation import rabi_excitation
 from subsequences.StateReadout import state_readout
 from subsequences.TurnOffAll import turn_off_all
+from subsequences.SidebandCooling import sideband_cooling
 from labrad.units import WithUnit
 
 class spectrum_rabi(pulse_sequence):
     
-    required_parameters =  ['background_heating_time','optical_pumping_enable']
-    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all]
+    required_parameters =  ['background_heating_time','optical_pumping_enable', 'sideband_cooling_enable']
+    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
+                             rabi_excitation, state_readout, turn_off_all, sideband_cooling]
 
     def sequence(self):
         self.end = WithUnit(10, 'us')
@@ -18,6 +20,8 @@ class spectrum_rabi(pulse_sequence):
         self.addSequence(doppler_cooling_after_repump_d)
         if self.optical_pumping_enable:
             self.addSequence(optical_pumping)
+        if self.sideband_cooling_enable:
+            self.addSequence(sideband_cooling)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.background_heating_time})
         self.addSequence(rabi_excitation)
         self.addSequence(state_readout)
@@ -56,6 +60,34 @@ class sample_parameters(object):
               
               'optical_pumping_continuous':True,
               'optical_pumping_pulsed':False,
+              
+              'sideband_cooling_enable':True,
+              'sideband_cooling_cycles': 4.0,
+              'sideband_cooling_continuous':False,
+              'sideband_cooling_pulsed':True,
+              'sideband_cooling_duration_729_increment_per_cycle':WithUnit(0, 'us'),
+              
+              'sideband_cooling_continuous_duration':WithUnit(500, 'us'),
+              'sideband_cooling_continuous_frequency_854':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_conitnuous_amplitude_854':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_continuous_frequency_866':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_continuous_amplitude_866':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_continuous_frequency_729':WithUnit(220.0, 'MHz'),
+              'sideband_cooling_continuous_amplitude_729':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_optical_pumping_duration':WithUnit(500, 'us'),
+              
+              'sideband_cooling_pulsed_duration_729':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_cycles':10.0,
+              
+              'sideband_cooling_pulsed_duration_repumps':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_duration_additional_866':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_duration_between_pulses':WithUnit(5, 'us'),
+              'sideband_cooling_pulsed_frequency_854':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_854':WithUnit(-3.0, 'dBm'),
+              'sideband_cooling_pulsed_frequency_866':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_866':WithUnit(-3.0, 'dBm'),
+              'sideband_cooling_pulsed_frequency_729':WithUnit(220.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_729':WithUnit(-13.0, 'dBm'),
               
               'background_heating_time':WithUnit(0.0, 'ms'),
               

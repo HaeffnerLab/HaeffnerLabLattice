@@ -2,22 +2,19 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 
 class optical_pumping_pulsed(pulse_sequence):
     
-    @classmethod
-    def required_parameters(cls):
-        config = [
-                  'optical_pumping_pulsed_cycles',
-                  'optical_pumping_pulsed_duration_729',
-                  'optical_pumping_pulsed_duration_repumps',
-                  'optical_pumping_pulsed_duration_additional_866',
-                  'optical_pumping_pulsed_duration_between_pulses',
-                  'optical_pumping_pulsed_frequency_854',
-                  'optical_pumping_pulsed_amplitude_854',
-                  'optical_pumping_pulsed_frequency_729',
-                  'optical_pumping_pulsed_amplitude_729',
-                  'optical_pumping_pulsed_frequency_866', 
-                  'optical_pumping_pulsed_amplitude_866',
-                  ]
-        return config
+    required_parameters =   [
+                          'optical_pumping_pulsed_cycles',
+                          'optical_pumping_pulsed_duration_729',
+                          'optical_pumping_pulsed_duration_repumps',
+                          'optical_pumping_pulsed_duration_additional_866',
+                          'optical_pumping_pulsed_duration_between_pulses',
+                          'optical_pumping_pulsed_frequency_854',
+                          'optical_pumping_pulsed_amplitude_854',
+                          'optical_pumping_pulsed_frequency_729',
+                          'optical_pumping_pulsed_amplitude_729',
+                          'optical_pumping_pulsed_frequency_866', 
+                          'optical_pumping_pulsed_amplitude_866',
+                          ]
     
     def sequence(self):
         cycles = int(self.optical_pumping_pulsed_cycles)
