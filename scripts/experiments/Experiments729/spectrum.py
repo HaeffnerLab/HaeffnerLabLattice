@@ -70,8 +70,10 @@ class spectrum(SemaphoreExperiment):
         sequence_parameters.update(common_values)
         sequence_parameters['doppler_cooling_frequency_866'] = check(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = check(self.p.frequency_866)
-        sequence_parameters['optical_pumping_frequency_866'] = check(self.p.frequency_866)        
+        sequence_parameters['optical_pumping_frequency_866'] = check(self.p.frequency_866)
+        sequence_parameters['sideband_cooling_frequency_866'] = check(self.p.frequency_866)     
         sequence_parameters['optical_pumping_frequency_854'] = check(self.p.frequency_854)
+        sequence_parameters['sideband_cooling_frequency_854'] = check(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = check(self.p.frequency_854)
         return sequence_parameters
         
@@ -83,7 +85,20 @@ class spectrum(SemaphoreExperiment):
         self.sequence_parameters['rabi_excitation_amplitude'] = ampl
         self.sequence_parameters['rabi_excitation_frequency'] = frequency_729
         self.sequence_parameters['rabi_excitation_duration'] = duration
-        #optical pumping can track line drift
+        #sideband cooling line selection
+        if self.p.sideband_cooling_use_line_selection:
+            line_info = self.p.saved_lines_729
+            line_selection = self.p.sideband_cooling_line_selection
+            sideband_frequencies = {'radial 1': self.check_parameter(self.p.radial_frequency_1),
+                                    'radial 2': self.check_parameter(self.p.radial_frequency_2),
+                                    'axial': self.check_parameter(self.p.axial_frequency),
+                                    'micromotion':self.check_parameter(self.p.rf_drive_frequency),
+                                    }
+            freq = cm.saved_line_info_to_frequency_complete(line_info, line_selection, sideband_frequencies)
+            self.sequence_parameters['sideband_cooling_frequency_729'] =freq
+        else:
+            self.sequence_parameters['sideband_cooling_frequency_729'] = self.check_parameter(self.p.sideband_cooling_user_selected_frequency_729)
+        #optical pumping line selection
         if self.p.optical_pumping_use_saved:
             info = self.p.saved_lines_729
             line_name = self.p.optical_pumping_use_saved_line
@@ -91,7 +106,7 @@ class spectrum(SemaphoreExperiment):
         else:
             self.sequence_parameters['optical_pumping_frequency_729'] = self.check_parameter(self.p.optical_pumping_user_selected_frequency_729)
 #        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
+#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print 'unfilled', unfilled
         seq = sequence(**self.sequence_parameters)
         seq.programSequence(self.pulser)
 

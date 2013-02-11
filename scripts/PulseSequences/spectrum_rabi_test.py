@@ -45,6 +45,34 @@ test_parameters = {
               'state_readout_frequency_866':WithUnit(80.0, 'MHz'),
               'state_readout_amplitude_866':WithUnit(-11.0, 'dBm'),
               'state_readout_duration':WithUnit(3.0,'ms'),
+              
+              'sideband_cooling_enable':False,
+              'sideband_cooling_cycles': 4.0,
+              'sideband_cooling_continuous':False,
+              'sideband_cooling_pulsed':True,
+              'sideband_cooling_duration_729_increment_per_cycle':WithUnit(0, 'us'),
+              
+              'sideband_cooling_continuous_duration':WithUnit(500, 'us'),
+              'sideband_cooling_continuous_frequency_854':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_conitnuous_amplitude_854':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_continuous_frequency_866':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_continuous_amplitude_866':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_continuous_frequency_729':WithUnit(220.0, 'MHz'),
+              'sideband_cooling_continuous_amplitude_729':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_optical_pumping_duration':WithUnit(500, 'us'),
+              
+              'sideband_cooling_pulsed_duration_729':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_cycles':10.0,
+              
+              'sideband_cooling_pulsed_duration_repumps':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_duration_additional_866':WithUnit(10, 'us'),
+              'sideband_cooling_pulsed_duration_between_pulses':WithUnit(5, 'us'),
+              'sideband_cooling_pulsed_frequency_854':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_854':WithUnit(-3.0, 'dBm'),
+              'sideband_cooling_pulsed_frequency_866':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_866':WithUnit(-3.0, 'dBm'),
+              'sideband_cooling_pulsed_frequency_729':WithUnit(220.0, 'MHz'),
+              'sideband_cooling_pulsed_amplitude_729':WithUnit(-13.0, 'dBm'),
               }
 
 

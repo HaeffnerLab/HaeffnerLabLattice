@@ -40,8 +40,7 @@ class sample_parameters(object):
               'doppler_cooling_repump_additional':WithUnit(100, 'us'),
               'doppler_cooling_duration':WithUnit(1.0,'ms'),
               
-              
-              'optical_pumping_enable':False,
+              'optical_pumping_enable':True,
               
               'optical_pumping_continuous_duration':WithUnit(1, 'ms'),
               'optical_pumping_continuous_repump_additional':WithUnit(200, 'us'),
@@ -63,17 +62,19 @@ class sample_parameters(object):
               
               'sideband_cooling_enable':True,
               'sideband_cooling_cycles': 4.0,
-              'sideband_cooling_continuous':False,
-              'sideband_cooling_pulsed':True,
+              'sideband_cooling_continuous':True,
+              'sideband_cooling_pulsed':False,
               'sideband_cooling_duration_729_increment_per_cycle':WithUnit(0, 'us'),
               
               'sideband_cooling_continuous_duration':WithUnit(500, 'us'),
-              'sideband_cooling_continuous_frequency_854':WithUnit(80.0, 'MHz'),
-              'sideband_cooling_conitnuous_amplitude_854':WithUnit(-11.0, 'dBm'),
-              'sideband_cooling_continuous_frequency_866':WithUnit(80.0, 'MHz'),
-              'sideband_cooling_continuous_amplitude_866':WithUnit(-11.0, 'dBm'),
-              'sideband_cooling_continuous_frequency_729':WithUnit(220.0, 'MHz'),
-              'sideband_cooling_continuous_amplitude_729':WithUnit(-11.0, 'dBm'),
+              
+              'sideband_cooling_frequency_854':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_amplitude_854':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_frequency_866':WithUnit(80.0, 'MHz'),
+              'sideband_cooling_amplitude_866':WithUnit(-11.0, 'dBm'),
+              'sideband_cooling_frequency_729':WithUnit(200.0, 'MHz'),
+              'sideband_cooling_amplitude_729':WithUnit(-11.0, 'dBm'),
+              
               'sideband_cooling_optical_pumping_duration':WithUnit(500, 'us'),
               
               'sideband_cooling_pulsed_duration_729':WithUnit(10, 'us'),
@@ -82,13 +83,7 @@ class sample_parameters(object):
               'sideband_cooling_pulsed_duration_repumps':WithUnit(10, 'us'),
               'sideband_cooling_pulsed_duration_additional_866':WithUnit(10, 'us'),
               'sideband_cooling_pulsed_duration_between_pulses':WithUnit(5, 'us'),
-              'sideband_cooling_pulsed_frequency_854':WithUnit(80.0, 'MHz'),
-              'sideband_cooling_pulsed_amplitude_854':WithUnit(-3.0, 'dBm'),
-              'sideband_cooling_pulsed_frequency_866':WithUnit(80.0, 'MHz'),
-              'sideband_cooling_pulsed_amplitude_866':WithUnit(-3.0, 'dBm'),
-              'sideband_cooling_pulsed_frequency_729':WithUnit(220.0, 'MHz'),
-              'sideband_cooling_pulsed_amplitude_729':WithUnit(-13.0, 'dBm'),
-              
+       
               'background_heating_time':WithUnit(0.0, 'ms'),
               
               'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),

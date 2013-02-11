@@ -71,27 +71,41 @@ class rabi_flopping(SemaphoreExperiment):
         sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
         sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
+        sequence_parameters['sideband_cooling_frequency_866'] = check(self.p.frequency_866)     
         sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
         sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-    
+        sequence_parameters['sideband_cooling_frequency_854'] = check(self.p.frequency_854)
         sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
         return sequence_parameters
         
     def program_pulser(self, duration):
         self.sequence_parameters['rabi_excitation_duration'] = duration
-        if self.p.rabi_flopping_use_saved_frequency:
-            info = self.p.saved_lines_729
-            line_name = self.p.rabi_flopping_saved_frequency
-            frequency = cm.saved_line_info_to_frequency(info, line_name)
-            sideband_frequencies = [self.check_parameter(self.p.radial_frequency_1),
-                                    self.check_parameter(self.p.radial_frequency_2),
-                                    self.check_parameter(self.p.axial_frequency),
-                                    self.check_parameter(self.p.rf_drive_frequency),
-                                    ]
-            frequency = frequency + cm.sideband_addition(self.p.sideband_selection, sideband_frequencies)
-            self.sequence_parameters['rabi_excitation_frequency'] = frequency
+        if self.p.rabi_flopping_use_line_selection:
+            line_info = self.p.saved_lines_729
+            line_selection = self.p.rabi_flopping_line_selection
+            sideband_frequencies = {'radial 1': self.check_parameter(self.p.radial_frequency_1),
+                                    'radial 2': self.check_parameter(self.p.radial_frequency_2),
+                                    'axial': self.check_parameter(self.p.axial_frequency),
+                                    'micromotion':self.check_parameter(self.p.rf_drive_frequency),
+                                    }
+            freq = cm.saved_line_info_to_frequency_complete(line_info, line_selection, sideband_frequencies)
+            self.sequence_parameters['rabi_excitation_frequency'] = freq
         else:
-            self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    
+            self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)
+        #sideband cooling line selection
+        if self.p.sideband_cooling_use_line_selection:
+            line_info = self.p.saved_lines_729
+            line_selection = self.p.sideband_cooling_line_selection
+            sideband_frequencies = {'radial 1': self.check_parameter(self.p.radial_frequency_1),
+                                    'radial 2': self.check_parameter(self.p.radial_frequency_2),
+                                    'axial': self.check_parameter(self.p.axial_frequency),
+                                    'micromotion':self.check_parameter(self.p.rf_drive_frequency),
+                                    }
+            freq = cm.saved_line_info_to_frequency_complete(line_info, line_selection, sideband_frequencies)
+            self.sequence_parameters['sideband_cooling_frequency_729'] =freq
+        else:
+            self.sequence_parameters['sideband_cooling_frequency_729'] = self.check_parameter(self.p.sideband_cooling_user_selected_frequency_729)            
+             
         #optical pumping can track line drift
         if self.p.optical_pumping_use_saved:
             info = self.p.saved_lines_729

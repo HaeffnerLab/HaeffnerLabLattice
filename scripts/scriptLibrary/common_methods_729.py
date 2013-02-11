@@ -58,3 +58,13 @@ class common_methods_729(object):
         for name, sideband in d.iteritems():
             detuning += int(round(sideband.value)) * sideband_name_map[name]
         return  detuning
+    
+    @staticmethod
+    def saved_line_info_to_frequency_complete(line_info, line_selection, sideband_frequencies):
+        line_selection = dict(line_selection[1])
+        selected_line_name = line_selection.get('line')
+        if selected_line_name is None: raise Exception ("could not find the selected line")
+        freq = common_methods_729.saved_line_info_to_frequency(line_info, selected_line_name)
+        for sideband in ['radial 1', 'radial 2', 'axial', 'micromotion']:
+            freq += line_selection.get(sideband) * sideband_frequencies[sideband]
+        return freq

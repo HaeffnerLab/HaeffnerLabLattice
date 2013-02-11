@@ -13,6 +13,12 @@ class sideband_cooling(pulse_sequence):
                            'sideband_cooling_optical_pumping_duration',
                            'sideband_cooling_continuous_duration',
                            'sideband_cooling_pulsed_duration_729',
+                           'sideband_cooling_amplitude_866',
+                           'sideband_cooling_amplitude_854',
+                           'sideband_cooling_amplitude_729',
+                           'sideband_cooling_frequency_854',
+                           'sideband_cooling_frequency_866',
+                           'sideband_cooling_frequency_729',
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
@@ -29,18 +35,30 @@ class sideband_cooling(pulse_sequence):
             cooling = sideband_cooling_continuous
             duration_key = 'sideband_cooling_continuous_duration'
             cooling_replace = {
-                               'sideband_cooling_continuous_duration':self.sideband_cooling_continuous_duration
+                               'sideband_cooling_continuous_duration':self.sideband_cooling_continuous_duration,
+                               'sideband_cooling_continuous_frequency_854':self.sideband_cooling_frequency_854,
+                               'sideband_cooling_continuous_frequency_729':self.sideband_cooling_frequency_729,
+                               'sideband_cooling_continuous_frequency_866':self.sideband_cooling_frequency_866,
+                               'sideband_cooling_conitnuous_amplitude_854':self.sideband_cooling_amplitude_854,
+                               'sideband_cooling_continuous_amplitude_729':self.sideband_cooling_amplitude_729,
+                               'sideband_cooling_continuous_amplitude_866':self.sideband_cooling_amplitude_866,
                                }
         else:
             cooling = sideband_cooling_pulsed
             duration_key = 'sideband_cooling_pulsed_duration_729'
             cooling_replace = {
-                                'sideband_cooling_pulsed_duration_729':self.sideband_cooling_pulsed_duration_729
+                                'sideband_cooling_pulsed_duration_729':self.sideband_cooling_pulsed_duration_729,
+                                
+                                'sideband_cooling_pulsed_frequency_854':self.sideband_cooling_frequency_854,
+                                'sideband_cooling_pulsed_amplitude_854':self.sideband_cooling_amplitude_854,
+                                'sideband_cooling_pulsed_frequency_729':self.sideband_cooling_frequency_729,
+                                'sideband_cooling_pulsed_amplitude_729':self.sideband_cooling_amplitude_729,
+                                'sideband_cooling_pulsed_frequency_866':self.sideband_cooling_frequency_866,
+                                'sideband_cooling_pulsed_amplitude_866':self.sideband_cooling_amplitude_866,
                                }
         optical_pump_replace = {
                                 'optical_pumping_continuous':True,
-                                'optical_pumping_continuous_duration':self.sideband_cooling_optical_pumping_duration
-                                
+                                'optical_pumping_continuous_duration':self.sideband_cooling_optical_pumping_duration,
                                 }
         for i in range(int(self.sideband_cooling_cycles)):
             #each cycle, increment the 729 duration
