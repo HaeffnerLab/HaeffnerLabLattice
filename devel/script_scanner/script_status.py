@@ -72,7 +72,7 @@ class script_semaphore(object):
         self.signals.on_running_script_stopped(self.ident)
     
     def finish_confirmed(self):
-        if self.continue_request is not None:
+        if self.pause_request is not None:
             if not self.pause_request.called:
                 self.pause_request.callback(True)
         if self.continue_request is not None:

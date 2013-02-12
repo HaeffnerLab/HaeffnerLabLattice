@@ -24,7 +24,6 @@ class priority_queue(object):
         return insert_order
     
     def put_first(self, priority, obj):
-
         insert_order = 0
         for i in range(priority):
             insert_order += len(self.d[i])
@@ -261,6 +260,10 @@ class scheduler(object):
     def unpause_on_finish(self, result):
         unpaused_defers = []
         for ident in self._paused_by_script:
+            if not ident in self.running.keys():
+                #if the previously paused experiment is no longer running
+                self._paused_by_script.remove(ident)
+                break
             d = self.running[ident].status.set_pausing(False)
             unpaused_defers.append(d)
         unpaused_defers = DeferredList(unpaused_defers)
