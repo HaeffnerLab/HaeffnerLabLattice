@@ -13,7 +13,7 @@ class script_scanner_gui(object):
         self.reactor = reactor
         self.setupWidgets()
         self.connect()
-    
+        
     @inlineCallbacks
     def connect(self):
         from labrad.units import WithUnit
@@ -89,8 +89,14 @@ class script_scanner_gui(object):
     def on_running_script_finished_error(self, signal, info):
         ident, message = info
         self.scripting_widget.runningScriptFinished(ident)
-        self.displayError("Experiment {0} ended with an error {1}".format(ident, message) )
-        
+        label = "Experiment {0} ended with an error {1}".format(ident, message)
+        #runs the message box in a non-blocking method
+        message = QtGui.QMessageBox(self.scripting_widget)
+        message.setText(label)
+        message.open()
+        message.show()
+        message.raise_()
+    
     def on_running_script_paused(self, signal, info):
         self.scripting_widget.runningScriptPaused(*info)
          

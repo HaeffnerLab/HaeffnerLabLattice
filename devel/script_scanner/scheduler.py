@@ -168,6 +168,7 @@ class scheduler(object):
         return scan_id
         
     def remove_from_running(self, deferred_result, running_id):
+        print 'removing from running now', running_id
         del self.running[running_id]
 
     def remove_if_external(self, running_id):
@@ -251,6 +252,7 @@ class scheduler(object):
                 #don't pause unless it's a conflicting experiment and it's not already paused
                 if not ident == current_ident:
                     paused_idents.append(ident)
+#                    print 'waiting to pause on', ident
                     d = script.status.set_pausing(True)
                     paused_deferred.append(d)
         paused_deferred = DeferredList(paused_deferred)
@@ -264,13 +266,18 @@ class scheduler(object):
                 #if the previously paused experiment is no longer running
                 self._paused_by_script.remove(ident)
                 break
-            d = self.running[ident].status.set_pausing(False)
-            unpaused_defers.append(d)
+            if not self.running[ident].status.status == 'Running':
+                #if not already running, unpause
+#                print 'waiting to unfinish', ident
+                d = self.running[ident].status.set_pausing(False)
+                unpaused_defers.append(d)
+        
         unpaused_defers = DeferredList(unpaused_defers)
         self._paused_by_script = []
         return unpaused_defers
     
     def launch_in_thread(self, result, scan, ident):
+#        print 'launching now', ident
         d = deferToThread(scan.execute, ident)
         return d
     
