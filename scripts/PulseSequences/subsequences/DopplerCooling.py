@@ -14,6 +14,6 @@ class doppler_cooling(pulse_sequence):
     
     def sequence(self):
         repump_duration = self.doppler_cooling_duration + self.doppler_cooling_repump_additional
-        self.addDDS ('110DP',self.start, self.doppler_cooling_duration, self.doppler_cooling_frequency_397, self.doppler_cooling_amplitude_397)
-        self.addDDS ('866DP',self.start, repump_duration, self.doppler_cooling_frequency_866, self.doppler_cooling_amplitude_866)
+        self.addDDS ('397',self.start, self.doppler_cooling_duration, self.doppler_cooling_frequency_397, self.doppler_cooling_amplitude_397)
+        self.addDDS ('866',self.start, repump_duration, self.doppler_cooling_frequency_866, self.doppler_cooling_amplitude_866)
         self.end = self.start + repump_duration

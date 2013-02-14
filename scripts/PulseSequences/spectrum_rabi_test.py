@@ -13,12 +13,11 @@ test_parameters = {
               'doppler_cooling_repump_additional':WithUnit(100, 'us'),
               'doppler_cooling_duration':WithUnit(1.0,'ms'),
               
-              
               'optical_pumping_enable':False,
               
               'optical_pumping_continuous_duration':WithUnit(1, 'ms'),
               'optical_pumping_continuous_repump_additional':WithUnit(200, 'us'),
-              'optical_pumping_frequency_729':WithUnit(220.0, 'MHz'),
+              'optical_pumping_frequency_729':WithUnit(0.0, 'MHz'),
               'optical_pumping_frequency_854':WithUnit(80.0, 'MHz'),
               'optical_pumping_frequency_866':WithUnit(80.0, 'MHz'),
               'optical_pumping_amplitude_729':WithUnit(-10.0, 'dBm'),
@@ -36,7 +35,7 @@ test_parameters = {
               
               'background_heating_time':WithUnit(0.0, 'ms'),
               
-              'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
+              'rabi_excitation_frequency':WithUnit(0.0, 'MHz'),
               'rabi_excitation_amplitude':WithUnit(-3.0, 'dBm'),
               'rabi_excitation_duration':WithUnit(10.0, 'us'),
               
@@ -57,7 +56,7 @@ test_parameters = {
               'sideband_cooling_conitnuous_amplitude_854':WithUnit(-11.0, 'dBm'),
               'sideband_cooling_continuous_frequency_866':WithUnit(80.0, 'MHz'),
               'sideband_cooling_continuous_amplitude_866':WithUnit(-11.0, 'dBm'),
-              'sideband_cooling_continuous_frequency_729':WithUnit(220.0, 'MHz'),
+              'sideband_cooling_continuous_frequency_729':WithUnit(0.0, 'MHz'),
               'sideband_cooling_continuous_amplitude_729':WithUnit(-11.0, 'dBm'),
               'sideband_cooling_optical_pumping_duration':WithUnit(500, 'us'),
               

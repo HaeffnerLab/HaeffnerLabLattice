@@ -23,13 +23,13 @@ class branching_ratio(pulse_sequence):
         start_recording_timetags = self.end
         for cycle in range(cycles):
             self.addSequence(empty_sequence, **{'empty_sequence_duration':self.between_pulses})
-            self.addDDS('110DP',self.end, self.duration_397_pulse, self.frequency_397_pulse, self.amplitude_397_pulse)
+            self.addDDS('397',self.end, self.duration_397_pulse, self.frequency_397_pulse, self.amplitude_397_pulse)
             self.end += self.duration_397_pulse
             self.addSequence(empty_sequence, **{'empty_sequence_duration':self.between_pulses})
-            self.addDDS('110DP',self.end, self.duration_397_pulse, self.frequency_397_pulse, self.amplitude_397_pulse)
+            self.addDDS('397',self.end, self.duration_397_pulse, self.frequency_397_pulse, self.amplitude_397_pulse)
             self.end += self.duration_397_pulse
             self.addSequence(empty_sequence, **{'empty_sequence_duration':self.between_pulses})
-            self.addDDS('866DP',self.end, self.duration_866_pulse, self.frequency_866_pulse, self.amplitude_866_pulse)
+            self.addDDS('866',self.end, self.duration_866_pulse, self.frequency_866_pulse, self.amplitude_866_pulse)
             self.end += self.duration_866_pulse
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
