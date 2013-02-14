@@ -34,7 +34,7 @@ class branching_ratio(pulse_sequence):
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
         #record timetags while cycling takes place
-        self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration))
+        self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
         self.timetag_record_cycle = 3 * self.between_pulses + 2 * self.duration_397_pulse + self.duration_866_pulse
 
