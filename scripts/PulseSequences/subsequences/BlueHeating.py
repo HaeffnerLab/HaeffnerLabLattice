@@ -39,12 +39,9 @@ class local_blue_heating(pulse_sequence):
     required_subsequences = [doppler_cooling]
     
     def sequence(self):
-        
-        dds = self.dds_pulses
-        ttl = self.ttl_pulses
         repump_duration = self.blue_heating_duration + self.blue_heating_repump_additional
-        dds.append( ('radial',self.start, self.blue_heating_duration, self.local_blue_heating_frequency_397, self.local_blue_heating_amplitude_397) )
+        self.addDDS('radial',self.start, self.blue_heating_duration, self.local_blue_heating_frequency_397, self.local_blue_heating_amplitude_397)
         if self.blue_heating_duration.value > 40e-9:
-            ttl.append( ('radial', self.start, self.blue_heating_duration))
-        dds.append( ('866DP',self.start, repump_duration, self.blue_heating_frequency_866, self.blue_heating_amplitude_866) )
+            self.addTTL ('radial', self.start, self.blue_heating_duration)
+        self.addDDS ('866DP',self.start, repump_duration, self.blue_heating_frequency_866, self.blue_heating_amplitude_866)
         self.end = self.start + repump_duration

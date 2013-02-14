@@ -29,7 +29,7 @@ class blue_heat_rabi(pulse_sequence):
             self.addSequence(global_blue_heating)
         self.addSequence(empty_sequence, **{'empty_sequence_duration':self.blue_heating_delay_after})
         self.timetag_record_duration = self.end - self.start_record_timetags
-        self.ttl_pulses.append( ('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration))
+        self.addTTL('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration)
         if self.optical_pumping_enable:
             self.addSequence(optical_pumping)
         self.addSequence(rabi_excitation)

@@ -24,4 +24,4 @@ class state_readout(pulse_sequence):
                    'doppler_cooling_duration':self.state_readout_duration,
                    }
         self.addSequence(doppler_cooling, **replace)
-        self.ttl_pulses.append(('ReadoutCount', self.start, self.state_readout_duration))
+        self.addTTL('ReadoutCount', self.start, self.state_readout_duration)

@@ -34,7 +34,7 @@ class melting_heat(pulse_sequence):
         self.addSequence(doppler_cooling, **{'doppler_cooling_duration':self.crystallization_duration})
         #record timetags the whole time
         self.timetag_record_duration = self.end - self.start_record_timetags
-        self.ttl_pulses.append( ('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration))
+        self.addTTL('TimeResolvedCount', self.start_record_timetags, self.timetag_record_duration)
 
 
 class sample_parameters(object):

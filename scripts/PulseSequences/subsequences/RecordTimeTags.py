@@ -6,4 +6,4 @@ class record_timetags(pulse_sequence):
     
     def sequence(self):
         self.end = self.start + self.record_timetags_duration
-        self.ttl_pulses.append(('TimeResolvedCount', self.start, self.record_timetags_duration))
+        self.addTTL('TimeResolvedCount', self.start, self.record_timetags_duration)
