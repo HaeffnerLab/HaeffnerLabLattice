@@ -31,6 +31,6 @@ class optical_pumping_pulsed(pulse_sequence):
         for start in cycles_start:
             start_repumps = start + self.optical_pumping_pulsed_duration_729 + self.optical_pumping_pulsed_duration_between_pulses
             duration_866 =  self.optical_pumping_pulsed_duration_repumps + self.optical_pumping_pulsed_duration_additional_866
-            self.addDDS('729DP', start, self.optical_pumping_pulsed_duration_729 , freq729 , ampl729)
-            self.addDDS('854DP', start_repumps, self.optical_pumping_pulsed_duration_repumps, freq854, ampl854)
-            self.addDDS('866DP', start_repumps, duration_866, freq866 , ampl866)
+            self.addDDS('729', start, self.optical_pumping_pulsed_duration_729 , freq729 , ampl729)
+            self.addDDS('854', start_repumps, self.optical_pumping_pulsed_duration_repumps, freq854, ampl854)
+            self.addDDS('866', start_repumps, duration_866, freq866 , ampl866)

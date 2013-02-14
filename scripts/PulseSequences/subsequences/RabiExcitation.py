@@ -15,9 +15,9 @@ class rabi_excitation(pulse_sequence):
         ampl_off = WithUnit(-63.0, 'dBm')
         self.end = self.start + frequency_advance_duration + self.rabi_excitation_duration
         #first advance the frequency but keep amplitude low        
-        self.addDDS('729DP', self.start, frequency_advance_duration, self.rabi_excitation_frequency, ampl_off)
+        self.addDDS('729', self.start, frequency_advance_duration, self.rabi_excitation_frequency, ampl_off)
         #turn on
-        self.addDDS('729DP', self.start + frequency_advance_duration, self.rabi_excitation_duration, self.rabi_excitation_frequency, self.rabi_excitation_amplitude)
+        self.addDDS('729', self.start + frequency_advance_duration, self.rabi_excitation_duration, self.rabi_excitation_frequency, self.rabi_excitation_amplitude)
         
 class rabi_excitation_no_offset(pulse_sequence):
     
@@ -29,4 +29,4 @@ class rabi_excitation_no_offset(pulse_sequence):
     
     def sequence(self):
         self.end = self.start + self.rabi_excitation_duration
-        self.addDDS('729DP', self.start, self.rabi_excitation_duration, self.rabi_excitation_frequency, self.rabi_excitation_amplitude)
+        self.addDDS('729', self.start, self.rabi_excitation_duration, self.rabi_excitation_frequency, self.rabi_excitation_amplitude)
