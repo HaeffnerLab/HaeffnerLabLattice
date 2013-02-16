@@ -47,11 +47,6 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             return node.data(index.column())
- 
-        if role == QtCore.Qt.DecorationRole:
-            if index.column() == 0:
-                resource = node.resource()
-                return QtGui.QIcon(QtGui.QPixmap(resource))
             
         if role == SceneGraphModel.sortRole:
             return node.typeInfo()

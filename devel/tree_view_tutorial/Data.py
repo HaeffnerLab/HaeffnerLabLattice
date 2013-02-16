@@ -31,53 +31,6 @@ class Node(object):
         if parent is not None:
             parent.addChild(self)
 
-
-    def attrs(self):
-
-        classes = self.__class__.__mro__
-
-        kv = {}
-
-        for cls in classes:
-            for k, v in cls.__dict__.iteritems():
-                if isinstance(v, property):
-                    print "Property:", k.rstrip("_"), "\n\tValue:", v.fget(self)
-                    kv[k] = v.fget(self)
-
-        return kv
-
-
-
-    def asXml(self):
-        
-        doc = QtXml.QDomDocument()
-        
-
-        node = doc.createElement(self.typeInfo())
-        doc.appendChild(node)
-       
-        for i in self._children:
-            i._recurseXml(doc, node)
-
-        return doc.toString(indent=4)
-
-
-    def _recurseXml(self, doc, parent):
-        node = doc.createElement(self.typeInfo())
-        parent.appendChild(node)
-
-        attrs = self.attrs().iteritems()
-        
-        for k, v in attrs:
-            node.setAttribute(k, v)
-
-        for i in self._children:
-            i._recurseXml(doc, node)
-
-
-
-
-
     def typeInfo(self):
         return "NODE"
 
@@ -105,7 +58,6 @@ class Node(object):
         return True
 
 
-
     def name():
         def fget(self): return self._name
         def fset(self, value): self._name = value
@@ -125,7 +77,6 @@ class Node(object):
     def row(self):
         if self._parent is not None:
             return self._parent._children.index(self)
-
 
     def log(self, tabLevel=-1):
 
@@ -148,19 +99,13 @@ class Node(object):
     def __repr__(self):
         return self.log()
 
-
     def data(self, column):
-        
         if   column is 0: return self.name
         elif column is 1: return self.typeInfo()
     
     def setData(self, column, value):
         if   column is 0: self.name = value.toPyObject()
         elif column is 1: pass
-    
-    def resource(self):
-        return None
-
 
 class TransformNode(Node):
     
@@ -211,8 +156,6 @@ class TransformNode(Node):
         elif column is 3: self.y = value.toPyObject()
         elif column is 4: self.z = value.toPyObject()
     
-    def resource(self):
-        return ":/Transform.png"
 
 
 class CameraNode(Node):
@@ -254,9 +197,7 @@ class CameraNode(Node):
         
         if   column is 2: self.motionBlur     = value.toPyObject()
         elif column is 3: self.shakeIntensity = value.toPyObject()
-    
-    def resource(self):
-        return ":/Camera.png"
+
 
 
 
@@ -273,9 +214,6 @@ class LightNode(Node):
 
     def typeInfo(self):
         return "LIGHT"
-    
-
-
 
     def intensity():
         def fget(self): return self._intensity
@@ -307,17 +245,13 @@ class LightNode(Node):
         return locals()
     shape = property(**shape())
         
-        
-        
     def data(self, column):
         r = super(LightNode, self).data(column)
-        
         if   column is 2: r = self.intensity
         elif column is 3: r = self.nearRange
         elif column is 4: r = self.farRange
         elif column is 5: r = self.castShadows
         elif column is 6: r = LIGHT_SHAPES.names.index(self.shape)
-        
         return r
     
     def setData(self, column, value):
@@ -328,13 +262,3 @@ class LightNode(Node):
         elif column is 4: self.farRange    = value.toPyObject()
         elif column is 5: self.castShadows = value.toPyObject()
         elif column is 6: self.shape       = LIGHT_SHAPES.names[value.toPyObject()]
-        
-    def resource(self):
-        return ":/Light.png"
-        
-        
-        
-        
-        
-
-        
