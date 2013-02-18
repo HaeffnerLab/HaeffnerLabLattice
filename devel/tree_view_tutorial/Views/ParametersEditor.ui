@@ -16,13 +16,6 @@
   <widget class="QWidget" name="uiCentralWidget">
    <layout class="QVBoxLayout" name="layoutMain">
     <item>
-     <widget class="QTextEdit" name="uiXml">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QLineEdit" name="uiFilter"/>
     </item>
     <item>
