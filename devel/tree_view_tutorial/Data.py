@@ -29,6 +29,9 @@ class Node(object):
 
     def name(self):
         return self._name
+    
+    def filter_text(self):
+        return self.name()
 
     def child(self, row):
         return self._children[row]
@@ -53,14 +56,11 @@ class CollectionNode(Node):
     def __init__(self, name, parent = None):
         super(CollectionNode, self).__init__(name, parent)
     
-    def typeInfo(self):
-        return 'Collection'
-    
 class ParameterNode(Node):
     
     def __init__(self, name, parent=None):
         super(ParameterNode, self).__init__(name, parent)
-
+        self._collection = parent.name()
         self._min = 0
         self._max = 100
         self._value = 0
@@ -71,6 +71,9 @@ class ParameterNode(Node):
             return super(ParameterNode, self).data(column)
         elif column == 1:
             return self.__repr__()
+    
+    def filter_text(self):
+        return self.parent().name() + self.name()
     
     def __repr__(self):
         return '{0} {1}'.format(self._value, self._units)
@@ -89,6 +92,9 @@ class ScanNode(Node):
         self._scan_points = 10
         self._units = 'MHz'
     
+    def filter_text(self):
+        return self.parent().name() + self.name()
+    
     def data(self, column):
         if column < 1:
             return super(ScanNode, self).data(column)
@@ -99,4 +105,4 @@ class ScanNode(Node):
         return 'Scan {0} {3} to {1} {3} in {2} steps'.format(self._scan_start, self._scan_stop, self._scan_points, self._units)
         
     def setData(self, column, value):
-        pass 
+        pass

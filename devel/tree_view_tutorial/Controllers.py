@@ -27,12 +27,13 @@ class ParametersEditor(base, form):
         childNode4 = ScanNode("frequency scan", spectrum)
     
     def setup_model(self): 
+        self.uiTree.setSortingEnabled(False)
         self._proxyModel = QtGui.QSortFilterProxyModel(self)
         self._model = ParametersTreeModel(self._rootNode, self)
         self._proxyModel.setSourceModel(self._model)
         self._proxyModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self._proxyModel.setFilterRole(ParametersTreeModel.filterRole)
-        self._proxyModel.setFilterKeyColumn(0)
+        self._proxyModel.setFilterKeyColumn(-1) #look at all columns while filtering
         self.uiTree.setModel(self._proxyModel)
         
         self._propEditor = PropertiesEditor(self)

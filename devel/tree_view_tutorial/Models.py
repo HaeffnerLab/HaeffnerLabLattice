@@ -1,9 +1,9 @@
 from PyQt4 import QtCore, QtGui
+from Data import CollectionNode
 
 class ParametersTreeModel(QtCore.QAbstractItemModel):
     
-    sortRole   = QtCore.Qt.UserRole
-    filterRole = QtCore.Qt.UserRole + 1
+    filterRole  = QtCore.Qt.UserRole
     
     def __init__(self, root, parent=None):
         super(ParametersTreeModel, self).__init__(parent)
@@ -30,12 +30,9 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
 
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             return node.data(index.column())
-            
-        if role == ParametersTreeModel.sortRole:
-            return node.name()
-
+        
         if role == ParametersTreeModel.filterRole:
-            return node.typeInfo()
+            return node.filter_text()
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if index.isValid():
@@ -51,11 +48,10 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
             if section == 0:
                 return "Collection"
             else:
-                return "Parameter"
+                return "Value"
 
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
-
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def parent(self, index):      
         '''
