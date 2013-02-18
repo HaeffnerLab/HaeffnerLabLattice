@@ -18,6 +18,7 @@ timeout = 20
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
+from parameter_vault_config import configuration as conf
 
 class ParameterVault(LabradServer):
     """
@@ -31,6 +32,7 @@ class ParameterVault(LabradServer):
     def initServer(self):
         self.listeners = set()
         self.parameters = {}  
+        self.matched_parames = conf.matched_parameters
         yield self.load_parameters()
     
     def initContext(self, c):
@@ -64,32 +66,17 @@ class ParameterVault(LabradServer):
             newpath = subPath + [directory]
             yield self._addParametersInDirectory(topPath, newpath)
 
-    def _getParameterNames(self, path):
+    def _get_parameter_names(self, collection):
         names = []
-        matching_keys = []
         for key in self.parameters.keys():
-            if key[:len(path)] == path:
-                matching_keys.append(key)
-        if not len(matching_keys):
-            raise Exception ("Wrong Directory or Empty Directory")
-        else:
-            for key in matching_keys:
-                if len(key) == len(path) + 1: #exclude directories
-                    names.append(key[-1])
+            if key[0] == collection:
+                names.append(key[1])
         return names
 
-    def _getDirectoryNames(self, path):
+    def _get_collections(self):
         names = set()
-        matching_keys = []
         for key in self.parameters.keys():
-            if key[:len(path)] == path:
-                matching_keys.append(key)
-        if not len(matching_keys):
-            raise Exception ("Wrong Directory or Empty Directory")
-        else:
-            for key in matching_keys:
-                if len(key) > len(path) + 1: #exclude parameters
-                    names.add(key[len(path)])
+            names.add(key[0])
         return list(names)
    
     @inlineCallbacks
@@ -103,53 +90,68 @@ class ParameterVault(LabradServer):
             yield self.client.registry.cd(fullDir)
             yield self.client.registry.set(parameter_name, value)
     
+    def _save_full(self, key, value):
+        t,item = self.parameters[key]
+        if t == 'parameter':
+            assert item[0] <= value <= item[1], "Parameter {} Out of Bound".format(key[1])
+            item[2] = value
+            return (t, item)
+        else:
+            raise Exception("Can't save, not one of checkable types")
+
     def check_parameter(self, name, value):
         t,item = value
         if t == 'parameter':
             assert item[0] <= item[2] <= item[1], "Parameter {} Out of Bound".format(name)
             return item[2]
         else:
-            #paraeter not one of known values
+            #parameter type not known
             return value
 
-    @setting(0, "Set Parameter", path = '*s', value = ['*v', 'v', 'b', 's', '*(sv)', '*s', '?'], returns = '')
-    def setParameter(self, c, path, value):
+    @setting(0, "Set Parameter", collection = 's', parameter_name = 's', value = '?', full_info = 'b', returns = '')
+    def setParameter(self, c, collection, parameter_name, value, full_info = False):
         """Set Parameter"""
-        key = path.astuple
+        key = (collection, parameter_name)
         if key not in self.parameters.keys():
             raise Exception ("Parameter Not Found")
-        self.parameters[key] = value
+        if full_info:
+            self.parameters[key] = value
+        else:
+            self.parameters[key] = self._save_full(key, value)
+        #save all the matches paramters
+        for matched in conf.matched_parameters:
+            if key in matched:
+                for matched_key in matched:
+                    self.parameters[matched_key] = self.parameters[key]
         notified = self.getOtherListeners(c)
-        self.onParameterChange((list(path), value), notified)
+        self.onParameterChange(key[0], key[1], notified)
 
-    @setting(1, "Get Parameter", path = '*s', returns = ['*v', 'v', 'b', 's', '*(sv)', '*s', '?'])
-    def getParameter(self, c, path):
+    @setting(1, "Get Parameter", collection = 's', parameter_name = 's', checked = 'b', returns = ['?'])
+    def getParameter(self, c, collection, parameter_name, checked = True):
         """Get Parameter Value"""
-        key = path.astuple
+        key = (collection, parameter_name)
         if key not in self.parameters.keys():
             raise Exception ("Parameter Not Found")
-        value = self.parameters[key]
-        result = self.check_parameter(key, value)
+        result = self.parameters[key]
+        if checked:
+            result = self.check_parameter(key, result)
         return result
 
-    @setting(2, "Get Parameter Names", path = '*s', returns = '*s')
-    def getParameterNames(self, c, path):
+    @setting(2, "Get Parameter Names", collection = 's', returns = '*s')
+    def getParameterNames(self, c, collection):
         """Get Parameter Names"""
-        path = path.astuple
-        parameterNames = self._getParameterNames(path)
-        return parameterNames
+        parameter_names = self._get_parameter_names(collection)
+        return parameter_names
     
     @setting(3, "Save Parameters To Registry", returns = '')
     def saveParametersToRegistry(self, c):
         """Get Experiment Parameter Names"""
         yield self.save_parameters()
     
-    @setting(4, "Get Directory Names", path = '*s', returns = '*s')
-    def get_directory_names(self, c, path):
-        """Get Directory Names, Use [] for top level directory"""
-        path = path.astuple
-        directoryNames = self._getDirectoryNames(path)
-        return directoryNames    
+    @setting(4, "Get Collections", returns = '*s')
+    def get_collection_names(self, c):
+        collections = self._get_collections()
+        return collections    
         
     @setting(5, "Refresh Parameters", returns = '')
     def refresh_parameters(self, c):

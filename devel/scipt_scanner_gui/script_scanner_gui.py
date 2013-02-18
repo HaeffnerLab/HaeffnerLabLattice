@@ -1,8 +1,8 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
-from parameters_widget import parameters_widget
 from scripting_widget import scripting_widget
 from common.clients.connection import connection
+from tree_view.Controllers import ParametersEditor
 
 class script_scanner_gui(object):
     
@@ -38,10 +38,10 @@ class script_scanner_gui(object):
     def disable(self, should_disable):
         if should_disable:
             self.scripting_widget.setDisabled(should_disable)
-            self.parameters_widget.setDisabled(should_disable)
+            self.ParametersEditor.setDisabled(should_disable)
         else:
             self.scripting_widget.setEnabled()
-            self.parameters_widget.setEnabled()
+            self.ParametersEditor.setEnabled()
     
     @inlineCallbacks
     def populateInformation(self):
@@ -126,7 +126,7 @@ class script_scanner_gui(object):
     
     def connect_layouts(self):
         self.scripting_widget.connect_layout()
-        self.parameters_widget.connect_layout()
+#        self.parameters_widget.connect_layout()
         self.scripting_widget.on_run.connect(self.run_script)
         self.scripting_widget.on_cancel_queued.connect(self.on_cancel_queued)
         self.scripting_widget.on_repeat.connect(self.repeat_script)
@@ -141,7 +141,7 @@ class script_scanner_gui(object):
     
     def show(self):
         self.scripting_widget.show()
-        self.parameters_widget.show()
+        self.ParametersEditor.show()
     
     @inlineCallbacks
     def running_stop(self, ident):
@@ -220,7 +220,7 @@ class script_scanner_gui(object):
     
     def setupWidgets(self):
         self.scripting_widget = scripting_widget(self.reactor)
-        self.parameters_widget = parameters_widget(self.reactor)
+        self.ParametersEditor = ParametersEditor(self.reactor)
     
     def displayError(self, text):
         message = QtGui.QMessageBox()

@@ -1,6 +1,5 @@
 from PyQt4 import QtCore, QtGui, uic
 import sys
-
 from Data import Node, ParameterNode, CollectionNode, ScanNode
 from Models import ParametersTreeModel
 from PropertiesEditor import PropertiesEditor
@@ -8,8 +7,9 @@ from PropertiesEditor import PropertiesEditor
 base, form = uic.loadUiType("Views/ParametersEditor.ui")
 
 class ParametersEditor(base, form):
-    def __init__(self, parent=None):
+    def __init__(self, reactor, parent=None):
         super(base, self).__init__(parent)
+        self.reactor = reactor
         self.setupUi(self)
         self.setup_sample_nodes()
         self.setup_model()
@@ -18,6 +18,7 @@ class ParametersEditor(base, form):
     def setup_sample_nodes(self):
         self._rootNode   = Node("Root")
         collectionDoppler = CollectionNode("Doppler Cooling", self._rootNode)
+        childNode2 = ParameterNode("duration", collectionDoppler)
         childNode0 = ParameterNode("frequency", collectionDoppler)
         childNode1 = ParameterNode("amplitude", collectionDoppler)
         sidebandCooling = CollectionNode("Sideband Cooling", self._rootNode)

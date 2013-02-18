@@ -39,7 +39,9 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
             node = index.internalPointer()
             if role == QtCore.Qt.EditRole:
                 node.setData(index.column(), value)
+                textIndex = self.createIndex(index.row(), 1, index.internalPointer())
                 self.dataChanged.emit(index, index)
+                self.dataChanged.emit(textIndex, textIndex)
                 return True
         return False
 

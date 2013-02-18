@@ -71,6 +71,16 @@ class ParameterNode(Node):
             return super(ParameterNode, self).data(column)
         elif column == 1:
             return self.__repr__()
+        elif column == 2:
+            return self._collection
+        elif column == 3:
+            return self._min
+        elif column == 4:
+            return self._max
+        elif column == 5:
+            return self._value
+        elif column == 6:
+            return self._units
     
     def filter_text(self):
         return self.parent().name() + self.name()
@@ -79,7 +89,15 @@ class ParameterNode(Node):
         return '{0} {1}'.format(self._value, self._units)
         
     def setData(self, column, value):
-        pass
+        value = value.toPyObject()
+        if column == 3:
+            self._min = value
+        elif column == 4:
+            self._max = value
+        elif column == 5:
+            self._value = value
+        elif column == 6:
+            self._units = value
 
 class ScanNode(Node):
     def __init__(self, name, parent=None):

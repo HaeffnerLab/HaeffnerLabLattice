@@ -30,8 +30,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>380</width>
-        <height>344</height>
+        <width>390</width>
+        <height>354</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -47,9 +47,6 @@
           <string>Properties</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <layout class="QHBoxLayout" name="layoutNode"/>
-          </item>
           <item>
            <layout class="QHBoxLayout" name="layoutSpecs"/>
           </item>
