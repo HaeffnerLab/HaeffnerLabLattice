@@ -74,8 +74,6 @@ test_parameters = {
               'sideband_cooling_pulsed_amplitude_729':WithUnit(-13.0, 'dBm'),
               }
 
-
-
 import labrad
 import time
 cxn = labrad.connect()
