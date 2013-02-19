@@ -42,9 +42,9 @@ class parameter_delegate(QtGui.QAbstractItemDelegate):
     def __init__(self, parent):
         super(parameter_delegate, self).__init__()
         self.parent = parent
-        self.parent.uiValue.valueChanged.connect(self.on_new_value)
-        self.parent.uiMin.valueChanged.connect(self.on_new_min)
-        self.parent.uiMax.valueChanged.connect(self.on_new_max)
+        self.parent.uiValue.editingFinished.connect(self.on_new_value)
+        self.parent.uiMin.editingFinished.connect(self.on_new_min)
+        self.parent.uiMax.editingFinished.connect(self.on_new_max)
         
     def setEditorData(self, editor, index):
         node = index.internalPointer()
@@ -56,6 +56,7 @@ class parameter_delegate(QtGui.QAbstractItemDelegate):
             editor.setValue(node.data(index.column()))
             self.parent.uiValue.setMinimum(node.data(index.column()))
         elif editor == self.parent.uiMax:
+            editor.setValue(node.data(index.column()))
             self.parent.uiValue.setMaximum(node.data(index.column()))
         elif index.column() == 6:
             suffix = node.data(index.column())
@@ -63,17 +64,23 @@ class parameter_delegate(QtGui.QAbstractItemDelegate):
             self.parent.uiMin.setSuffix(suffix)
             self.parent.uiMax.setSuffix(suffix)
     
-    def on_new_value(self, value):
+    def on_new_value(self):
         self.commitData.emit(self.parent.uiValue)
     
-    def on_new_min(self, value):
+    def on_new_min(self):
         self.commitData.emit(self.parent.uiMin)
     
-    def on_new_max(self, value):
+    def on_new_max(self):
         self.commitData.emit(self.parent.uiMax)
     
     def setModelData(self, editor, model, index):
-        model.setData(index, QtCore.QVariant(editor.value()))
+        if index.column() == 6:
+            return
+        elif isinstance(editor, QtGui.QLineEdit):
+            value = editor.text()
+        else:
+            value = editor.value()
+        model.setData(index, QtCore.QVariant(value))
 
 class ParameterEditor(paramBase, paramForm):
     
@@ -82,6 +89,15 @@ class ParameterEditor(paramBase, paramForm):
         self.setupUi(self)
         self._dataMapper = QtGui.QDataWidgetMapper(self)
         self._dataMapper.setItemDelegate(parameter_delegate(self))
+        self.connect_signals()
+    
+    def connect_signals(self):
+        self.uiDecimals.valueChanged.connect(self.on_new_decimals)
+    
+    def on_new_decimals(self, decimals):
+        for widget in [self.uiMin, self.uiMax, self.uiValue]:
+            widget.setSingleStep(10**-decimals)
+            widget.setDecimals(decimals)
 
     def setModel(self, proxyModel):
         self._proxyModel = proxyModel

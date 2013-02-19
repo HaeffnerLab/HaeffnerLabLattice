@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui
-from Data import CollectionNode
+from Data import ParameterNode, CollectionNode
 
 class ParametersTreeModel(QtCore.QAbstractItemModel):
     
@@ -41,7 +41,8 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
                 node.setData(index.column(), value)
                 textIndex = self.createIndex(index.row(), 1, index.internalPointer())
                 self.dataChanged.emit(index, index)
-                self.dataChanged.emit(textIndex, textIndex)
+                print 'emitting data changed', index, index.internalPointer().name()
+#                self.dataChanged.emit(textIndex, textIndex)
                 return True
         return False
 
@@ -86,47 +87,20 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
                 return node            
         return self._rootNode
 
-'''
-commenting out insertion, removal. not needed at this point.
-'''
-#    """INPUTS: int, int, QModelIndex"""
-#    def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
-#        parentNode = self.getNode(parent)
-#        self.beginInsertRows(parent, position, position + rows - 1)
-#        for row in range(rows):
-#            
-#            childCount = parentNode.childCount()
-#            childNode = Node("untitled" + str(childCount))
-#            success = parentNode.insertChild(position, childNode)
-#        
-#        self.endInsertRows()
-#
-#        return success
-#    
-#    def insertLights(self, position, rows, parent=QtCore.QModelIndex()):
-#        
-#        parentNode = self.getNode(parent)
-#        
-#        self.beginInsertRows(parent, position, position + rows - 1)
-#        
-#        for row in range(rows):
-#            
-#            childCount = parentNode.childCount()
-#            childNode = LightNode("light" + str(childCount))
-#            success = parentNode.insertChild(position, childNode)
-#        
-#        self.endInsertRows()
-#
-#        return success
-#
-#    """INPUTS: int, int, QModelIndex"""
-#    def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
-#        
-#        parentNode = self.getNode(parent)
-#        self.beginRemoveRows(parent, position, position + rows - 1)
-#        
-#        for row in range(rows):
-#            success = parentNode.removeChild(position)
-#            
-#        self.endRemoveRows()
-#        return success
+    def insert_collection(self, name, parent=QtCore.QModelIndex()):
+        parentNode = self.getNode(parent)
+        self.beginInsertRows(parent, 0, 0)
+        childNode = CollectionNode(name)
+        parentNode.insertChild(0, childNode)
+        self.endInsertRows()
+        #get index of the newly inserted collection and return it
+        index = self.index(0, 0, parent)
+        return index
+    
+    def insert_parameter(self, parameter_name, info, parent_index):
+        collectionNode = self.getNode(parent_index)
+        self.beginInsertRows(parent_index, 0, 0)
+        childNode = ParameterNode(parameter_name, info, collectionNode)
+        self.endInsertRows()
+        index = self.index(0, 0, parent_index)
+        return index

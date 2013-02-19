@@ -34,7 +34,10 @@ class Node(object):
         return self.name()
 
     def child(self, row):
-        return self._children[row]
+        try:
+            return self._children[row]
+        except IndexError:
+            return None
     
     def childCount(self):
         return len(self._children)
@@ -58,19 +61,19 @@ class CollectionNode(Node):
     
 class ParameterNode(Node):
     
-    def __init__(self, name, parent=None):
+    def __init__(self, name, info, parent=None):
         super(ParameterNode, self).__init__(name, parent)
         self._collection = parent.name()
-        self._min = 0
-        self._max = 100
-        self._value = 0
-        self._units = 'MHz'
-
+        self._units = info[2].units
+        self._min = info[0][self._units]
+        self._max = info[1][self._units]
+        self._value = info[2][self._units]
+        
     def data(self, column):
         if column < 1:
             return super(ParameterNode, self).data(column)
         elif column == 1:
-            return self.__repr__()
+            return self.string_format()
         elif column == 2:
             return self._collection
         elif column == 3:
@@ -85,10 +88,11 @@ class ParameterNode(Node):
     def filter_text(self):
         return self.parent().name() + self.name()
     
-    def __repr__(self):
+    def string_format(self):
         return '{0} {1}'.format(self._value, self._units)
         
     def setData(self, column, value):
+#        print 'setting data!', super(ParameterNode, self).name(), column, value.toPyObject()
         value = value.toPyObject()
         if column == 3:
             self._min = value

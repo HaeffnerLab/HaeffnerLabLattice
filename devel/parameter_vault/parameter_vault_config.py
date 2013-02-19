@@ -1,12 +1,12 @@
 class configuration(object):
 
     freq_866 = set([
-                    ('fixed_values', 'frequency_866'),
-                    ('doppler_cooling', 'doppler_cooling_frequency_866'),
+                    ('Fixed Parameters', 'frequency_866'),
+                    ('Doppler Cooling', 'doppler_cooling_frequency_866'),
                     ])
     
     freq_854 = set([
-                    ('fixed_values', 'frequency_854'),
+                    ('Fixed Parameters', 'frequency_854'),
                     ])
                    
     matched_parameters = [

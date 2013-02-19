@@ -7,28 +7,34 @@ from PropertiesEditor import PropertiesEditor
 base, form = uic.loadUiType("Views/ParametersEditor.ui")
 
 class ParametersEditor(base, form):
+    
+    on_parameter_change = QtCore.pyqtSignal()
+    
     def __init__(self, reactor, parent=None):
         super(base, self).__init__(parent)
         self.reactor = reactor
         self.setupUi(self)
-        self.setup_sample_nodes()
+        self._rootNode = None
         self.setup_model()
         self.connect_layout()
+        self._collection_index = {}
+#        self._parameter_index = {}
     
-    def setup_sample_nodes(self):
-        self._rootNode   = Node("Root")
-        collectionDoppler = CollectionNode("Doppler Cooling", self._rootNode)
-        childNode2 = ParameterNode("duration", collectionDoppler)
-        childNode0 = ParameterNode("frequency", collectionDoppler)
-        childNode1 = ParameterNode("amplitude", collectionDoppler)
-        sidebandCooling = CollectionNode("Sideband Cooling", self._rootNode)
-        childNode2 = ParameterNode("frequency", sidebandCooling)
-        childNode3 = ParameterNode("amplitude", sidebandCooling)
-        spectrum = CollectionNode("Spectrum", self._rootNode)
-        childNode4 = ScanNode("frequency scan", spectrum)
+    def add_collection_node(self, name):
+        node = self._model.insert_collection(name)
+        self._collection_index[name] = node
+    
+    def add_parameter(self, collection_name, parameter_name, value):
+        value_type = value[0]
+        info = value[1]
+        if value_type == 'parameter':
+            collection_node = self._collection_index[collection_name]
+            index =  self._model.insert_parameter(parameter_name, info, collection_node)
+#            self._parameter_index[(collection_name, parameter_name)] = index
     
     def setup_model(self): 
-        self.uiTree.setSortingEnabled(False)
+#        self.uiTree.setSortingEnabled(True)
+        self._rootNode   = Node("Root")
         self._proxyModel = QtGui.QSortFilterProxyModel(self)
         self._model = ParametersTreeModel(self._rootNode, self)
         self._proxyModel.setSourceModel(self._model)
@@ -44,6 +50,14 @@ class ParametersEditor(base, form):
     def connect_layout(self):
         self.uiFilter.textChanged.connect(self._proxyModel.setFilterRegExp)
         self.uiTree.selectionModel().currentChanged.connect(self._propEditor.setSelection)
+        self._proxyModel.dataChanged.connect(self.on_model_data_changed)
+    
+    def on_model_data_changed(self, topLeft, bottomRight):
+        index =  self._proxyModel.mapToSource(topLeft)
+        node = index.internalPointer()
+    
+    def closeEvent(self, event):
+        self.reactor.stop()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

@@ -58,7 +58,19 @@ class script_scanner_gui(object):
             self.scripting_widget.addScheduled(ident,name,duration)
         for ident,name in running:
             self.scripting_widget.addRunning(ident,name)
-    
+        pv = self.cxn.servers['parameter_vault']
+        yield self.populate_parameters(pv)
+        
+    @inlineCallbacks
+    def populate_parameters(self, pv):
+        collections = yield pv.get_collections(context = self.context)
+        for collection in collections:
+            self.ParametersEditor.add_collection_node(collection)
+            parameters = yield pv.get_parameter_names(collection)
+            for param_name in parameters:
+                value = yield pv.get_parameter(collection, param_name, False)
+                self.ParametersEditor.add_parameter(collection, param_name, value)
+            
     @inlineCallbacks
     def setupListeners(self):
         sc = self.cxn.servers['scriptscanner']
