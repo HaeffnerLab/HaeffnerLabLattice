@@ -29,8 +29,12 @@ class ParametersEditor(base, form):
         info = value[1]
         if value_type == 'parameter':
             collection_node = self._collection_index[collection_name]
-            index =  self._model.insert_parameter(parameter_name, info, collection_node)
-#            self._parameter_index[(collection_name, parameter_name)] = index
+            self._model.insert_parameter(parameter_name, info, collection_node)
+        elif value_type == 'scan':
+            collection_node = self._collection_index[collection_name]
+            self._model.insert_scan(parameter_name, info, collection_node)
+        else:
+            print 'uknown value type', value_type
     
     def setup_model(self): 
 #        self.uiTree.setSortingEnabled(True)

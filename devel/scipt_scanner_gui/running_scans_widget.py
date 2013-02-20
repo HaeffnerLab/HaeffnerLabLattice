@@ -10,7 +10,6 @@ class progress_bar(QtGui.QProgressBar):
     def set_status(self, status_name, percentage):
         self.setValue(percentage)
         self.setFormat('{0} %p%'.format(status_name))
-    
 
     def closeEvent(self, x):
         self.reactor.stop()

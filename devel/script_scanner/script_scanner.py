@@ -23,17 +23,6 @@ from configuration import config
 import scan_methods
 from scheduler import scheduler
 
-##parameters
-#----
-##killer gui
-##testing all together with the test script, parameters
-##---------------
-##convert frequency scale of 729 everywhere
-##sideband cooling script
-##new experiment of scanning __ as a function of sideband cooling in repeat, scan
-##compare pulse sequences to make sure, with testing
-##set up branches, demo
-
 class script_class_parameters(object):
     '''
     storage class for information about the launchable script

@@ -92,7 +92,6 @@ class ParameterNode(Node):
         return '{0} {1}'.format(self._value, self._units)
         
     def setData(self, column, value):
-#        print 'setting data!', super(ParameterNode, self).name(), column, value.toPyObject()
         value = value.toPyObject()
         if column == 3:
             self._min = value
@@ -104,27 +103,48 @@ class ParameterNode(Node):
             self._units = value
 
 class ScanNode(Node):
-    def __init__(self, name, parent=None):
+    def __init__(self, name, info, parent=None):
         super(ScanNode, self).__init__(name, parent)
-
-        self._min = 0
-        self._max = 100
-        self._scan_start = 1.0
-        self._scan_stop = 50.0
-        self._scan_points = 10
-        self._units = 'MHz'
-    
-    def filter_text(self):
-        return self.parent().name() + self.name()
+        self._collection = parent.name()
+        limit_info, scan_info = info
+        self._units = limit_info[0].units
+        self._min = limit_info[0][self._units]
+        self._max = limit_info[1][self._units]
+        self._scan_start = scan_info[0][self._units]
+        self._scan_stop = scan_info[1][self._units]
+        self._scan_points = scan_info[2]
     
     def data(self, column):
         if column < 1:
             return super(ScanNode, self).data(column)
         elif column == 1:
-            return self.__repr__()
+            return self.string_format()
+#        elif column == 2:
+#            return self._collection
+#        elif column == 3:
+#            return self._min
+#        elif column == 4:
+#            return self._max
+#        elif column == 5:
+#            return self._value
+#        elif column == 6:
+#            return self._units
+
+    def filter_text(self):
+        return self.parent().name() + self.name()
     
-    def __repr__(self):
+    def string_format(self):
         return 'Scan {0} {3} to {1} {3} in {2} steps'.format(self._scan_start, self._scan_stop, self._scan_points, self._units)
+
         
     def setData(self, column, value):
         pass
+#        value = value.toPyObject()
+#        if column == 3:
+#            self._min = value
+#        elif column == 4:
+#            self._max = value
+#        elif column == 5:
+#            self._value = value
+#        elif column == 6:
+#            self._units = value

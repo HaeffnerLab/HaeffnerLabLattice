@@ -25,7 +25,7 @@ class experiment(experiment_info):
         self.ident = ident
         cxn = labrad.connect()
         self.sc = cxn.servers['ScriptScanner']
-#        self.pv = cxn.servers['ParameterVault']
+        self.pv = cxn.servers['Parameter Vault']
         context = cxn.context()
         try:
             self._initialize(cxn, context, ident)
@@ -38,26 +38,24 @@ class experiment(experiment_info):
             cxn.disconnect()
         
     def _initialize(self, cxn, context, ident):
+        self._load_parameters()
+        self.check_parameters_filled()
         self.initialize(cxn, context, ident)
         self.sc.launch_confirmed(ident)
     
     def _run(self, cxn, context):
-        self._load_parameters()
-        self.check_parameters_filled()
-        self.check_parameters()
         self.run(cxn, context)
     
     def _load_parameters(self, overwrite = False):
-        pass
-#        for parameter in self.required_parameters:
-#            try:
-#                value = self.pv.get_parameters((self.name, parameter))
-#            except Exception:
-#                raise Exception ("In {}: Parameter {} not found among Parameter Vault parameters".format(self.name, parameter))
-#            else:
-#                already_have = parameter in self.__dict__.keys()
-#                if (already_have and overwrite) or not already_have:
-#                    self.__dict__[parameter] = value
+        for collection,parameter_name in self.required_parameters:
+            try:
+                value = self.pv.get_parameter(collection, parameter_name)
+            except Exception as e:
+                raise Exception ("In {}: Parameter {} not found among Parameter Vault parameters".format(self.name, (collection, parameter_name)))
+            else:
+                already_have = parameter_name in self.__dict__.keys()
+                if (already_have and overwrite) or not already_have:
+                    self.__dict__[parameter_name] = value
     
     def set_parameters(self, parameter_dict = {}):
         '''
@@ -73,8 +71,8 @@ class experiment(experiment_info):
         self._load_parameters(overwrite = True)
                 
     def check_parameters_filled(self):
-        for parameter in self.required_parameters:
-            if parameter not in self.__dict__:
+        for collection, parameter_name in self.required_parameters:
+            if parameter_name not in self.__dict__:
                 raise Exception("Parameter {0} not provided for experiment {1}".format(parameter, self.name)) 
     
     def _finalize(self, cxn, context):
@@ -103,11 +101,6 @@ class experiment(experiment_info):
     def finalize(self, cxn, context):
         '''
         implemented by the subclass
-        '''
-    
-    def check_parameters(self):
-        '''
-        implemented by the sublass
         '''
         
 class single(experiment):
