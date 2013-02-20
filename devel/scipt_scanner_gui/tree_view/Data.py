@@ -60,7 +60,6 @@ class CollectionNode(Node):
         super(CollectionNode, self).__init__(name, parent)
     
 class ParameterNode(Node):
-    
     def __init__(self, name, info, parent=None):
         super(ParameterNode, self).__init__(name, parent)
         self._collection = parent.name()
@@ -119,32 +118,38 @@ class ScanNode(Node):
             return super(ScanNode, self).data(column)
         elif column == 1:
             return self.string_format()
-#        elif column == 2:
-#            return self._collection
-#        elif column == 3:
-#            return self._min
-#        elif column == 4:
-#            return self._max
-#        elif column == 5:
-#            return self._value
-#        elif column == 6:
-#            return self._units
+        elif column == 2:
+            return self._collection
+        elif column == 3:
+            return self._min
+        elif column == 4:
+            return self._max
+        elif column == 5:
+            return self._scan_start
+        elif column == 6:
+            return self._scan_stop
+        elif column == 7:
+            return self._scan_points
+        elif column == 8:
+            return self._units
 
     def filter_text(self):
         return self.parent().name() + self.name()
     
     def string_format(self):
         return 'Scan {0} {3} to {1} {3} in {2} steps'.format(self._scan_start, self._scan_stop, self._scan_points, self._units)
-
         
     def setData(self, column, value):
-        pass
-#        value = value.toPyObject()
-#        if column == 3:
-#            self._min = value
-#        elif column == 4:
-#            self._max = value
-#        elif column == 5:
-#            self._value = value
-#        elif column == 6:
-#            self._units = value
+        value = value.toPyObject()
+        if column == 3:
+            self._min = value
+        elif column == 4:
+            self._max = value
+        elif column == 5:
+            self._scan_start = value
+        elif column == 6:
+            self._scan_stop = value
+        elif column == 7:
+            self._scan_points = value
+        elif column == 8:
+            self._units = value

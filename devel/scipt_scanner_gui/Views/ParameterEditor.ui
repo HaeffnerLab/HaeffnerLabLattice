@@ -107,7 +107,7 @@
    <item row="3" column="5">
     <widget class="QSpinBox" name="uiDecimals">
      <property name="minimum">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="maximum">
       <number>10</number>

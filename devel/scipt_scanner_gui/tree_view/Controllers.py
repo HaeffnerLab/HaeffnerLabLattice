@@ -18,7 +18,6 @@ class ParametersEditor(base, form):
         self.setup_model()
         self.connect_layout()
         self._collection_index = {}
-#        self._parameter_index = {}
     
     def add_collection_node(self, name):
         node = self._model.insert_collection(name)
@@ -48,7 +47,7 @@ class ParametersEditor(base, form):
         self.uiTree.setModel(self._proxyModel)
         
         self._propEditor = PropertiesEditor(self)
-        self.layoutMain.addWidget(self._propEditor)
+        self.layout().addWidget(self._propEditor)
         self._propEditor.setModel(self._proxyModel)
     
     def connect_layout(self):

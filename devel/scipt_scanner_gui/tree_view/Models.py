@@ -41,8 +41,7 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
                 node.setData(index.column(), value)
                 textIndex = self.createIndex(index.row(), 1, index.internalPointer())
                 self.dataChanged.emit(index, index)
-                print 'emitting data changed', index, index.internalPointer().name()
-#                self.dataChanged.emit(textIndex, textIndex)
+                self.dataChanged.emit(textIndex, textIndex)
                 return True
         return False
 
