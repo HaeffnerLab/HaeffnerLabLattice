@@ -17,7 +17,7 @@ timeout = 20
 """
 from labrad.server import LabradServer, setting, Signal
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
+from twisted.internet.defer import inlineCallbacks
 from parameter_vault_config import configuration as conf
 
 class ParameterVault(LabradServer):

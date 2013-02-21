@@ -70,7 +70,10 @@ class ParametersEditor(base, form):
         self._model.on_new_parameter.connect(self.on_parameter_change.emit)
 
     def closeEvent(self, event):
-        self.on_parameter_change.disconnect()
+        try:
+            self.on_parameter_change.disconnect()
+        except TypeError:
+            pass
         self.reactor.stop()
 
 if __name__ == '__main__':

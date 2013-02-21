@@ -66,7 +66,7 @@ class ScriptScanner(LabradServer, Signals):
     def get_available_scripts(self, c):
         return self.script_parameters.keys()
     
-    @setting(1, "Get Script Parameters", script = 's', returns = '*s')
+    @setting(1, "Get Script Parameters", script = 's', returns = '*2s')
     def get_script_parameters(self, c, script):
         if script not in self.script_parameters.keys():
             raise Exception ("Script {} Not Found".format(script))
