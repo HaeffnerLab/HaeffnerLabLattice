@@ -8,7 +8,7 @@ base, form = uic.loadUiType("Views/ParametersEditor.ui")
 
 class ParametersEditor(base, form):
     
-    on_parameter_change = QtCore.pyqtSignal()
+    on_parameter_change = QtCore.pyqtSignal(tuple, tuple)
     
     def __init__(self, reactor, parent=None):
         super(base, self).__init__(parent)
@@ -17,23 +17,34 @@ class ParametersEditor(base, form):
         self._rootNode = None
         self.setup_model()
         self.connect_layout()
-        self._collection_index = {}
+        self._collection = {}
+        self._parameter = {}
     
     def add_collection_node(self, name):
         node = self._model.insert_collection(name)
-        self._collection_index[name] = node
+        self._collection[name] = node
     
     def add_parameter(self, collection_name, parameter_name, value):
         value_type = value[0]
         info = value[1]
         if value_type == 'parameter':
-            collection_node = self._collection_index[collection_name]
-            self._model.insert_parameter(parameter_name, info, collection_node)
+            collection_node = self._collection[collection_name]
+            node = self._model.insert_parameter(parameter_name, info, collection_node)
+            self._parameter[collection_name, parameter_name]= node
         elif value_type == 'scan':
-            collection_node = self._collection_index[collection_name]
-            self._model.insert_scan(parameter_name, info, collection_node)
+            collection_node = self._collection[collection_name]
+            node = self._model.insert_scan(parameter_name, info, collection_node)
+            self._parameter[collection_name, parameter_name]= node
         else:
-            print 'uknown value type', value_type
+            print 'unknown value type', value_type
+    
+    def set_parameter(self, collection, name, full_info):
+        index =  self._parameter[collection,name]
+        node = self._parameter[collection,name].internalPointer()
+        node.set_full_info(full_info[1])
+        #refresh all
+        max_index= self._model.createIndex(index.row(), node.columns, index.internalPointer())
+        self._model.dataChanged.emit(index, max_index)
     
     def setup_model(self): 
 #        self.uiTree.setSortingEnabled(True)
@@ -53,13 +64,10 @@ class ParametersEditor(base, form):
     def connect_layout(self):
         self.uiFilter.textChanged.connect(self._proxyModel.setFilterRegExp)
         self.uiTree.selectionModel().currentChanged.connect(self._propEditor.setSelection)
-        self._proxyModel.dataChanged.connect(self.on_model_data_changed)
-    
-    def on_model_data_changed(self, topLeft, bottomRight):
-        index =  self._proxyModel.mapToSource(topLeft)
-        node = index.internalPointer()
-    
+        self._model.on_new_parameter.connect(self.on_parameter_change.emit)
+
     def closeEvent(self, event):
+        self.on_parameter_change.disconnect()
         self.reactor.stop()
 
 if __name__ == '__main__':

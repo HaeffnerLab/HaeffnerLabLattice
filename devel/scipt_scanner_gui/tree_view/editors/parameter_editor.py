@@ -48,6 +48,8 @@ class parameter_delegate(QtGui.QAbstractItemDelegate):
 
 class ParameterEditor(paramBase, paramForm):
     
+    max_columns = 10
+    
     def __init__(self, parent=None):
         super(ParameterEditor, self).__init__(parent)
         self.setupUi(self)

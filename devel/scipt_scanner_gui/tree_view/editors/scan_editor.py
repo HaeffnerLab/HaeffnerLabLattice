@@ -28,7 +28,7 @@ class scan_delegate(QtGui.QAbstractItemDelegate):
         elif index.column() == 8:
             self.parent.set_suffix(node.data(index.column()))
     
-    def set_scan_data(self, x):
+    def set_scan_data(self, x, y, z):
         self.commitData.emit(self.parent.uiStart)
         self.commitData.emit(self.parent.uiStop)
         self.commitData.emit(self.parent.uiSteps)

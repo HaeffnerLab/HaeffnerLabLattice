@@ -51,8 +51,7 @@ class ParameterVault(LabradServer):
     def load_parameters(self):
         #recursively add all parameters to the dictionary
         yield self._addParametersInDirectory(self.registryDirectory, [])
-        print self.parameters
-    
+
     @inlineCallbacks
     def _addParametersInDirectory(self, topPath, subPath):
         yield self.client.registry.cd(topPath + subPath)
@@ -124,7 +123,7 @@ class ParameterVault(LabradServer):
                 for matched_key in matched:
                     self.parameters[matched_key] = self.parameters[key]
         notified = self.getOtherListeners(c)
-        self.onParameterChange(key[0], key[1], notified)
+        self.onParameterChange((key[0], key[1]), notified)
 
     @setting(1, "Get Parameter", collection = 's', parameter_name = 's', checked = 'b', returns = ['?'])
     def getParameter(self, c, collection, parameter_name, checked = True):

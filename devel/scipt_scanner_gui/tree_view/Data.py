@@ -1,7 +1,8 @@
 class Node(object):
-    
     def __init__(self, name, parent=None): 
         super(Node, self).__init__()
+        from labrad.units import WithUnit
+        self.WithUnit = WithUnit
         self._name = name
         self._children = []
         self._parent = parent
@@ -60,14 +61,27 @@ class CollectionNode(Node):
         super(CollectionNode, self).__init__(name, parent)
     
 class ParameterNode(Node):
+    
+    columns = 6
+    
     def __init__(self, name, info, parent=None):
         super(ParameterNode, self).__init__(name, parent)
         self._collection = parent.name()
+        self.set_full_info(info)
+        
+    def set_full_info(self, info):
         self._units = info[2].units
         self._min = info[0][self._units]
         self._max = info[1][self._units]
         self._value = info[2][self._units]
-        
+    
+    def path(self):
+        return (self._collection, self.name())
+
+    def full_parameter(self):
+        WithUnit = self.WithUnit
+        return ('parameter', [WithUnit(self._min, self._units), WithUnit(self._max, self._units), WithUnit(self._value, self._units)])
+    
     def data(self, column):
         if column < 1:
             return super(ParameterNode, self).data(column)
@@ -102,9 +116,15 @@ class ParameterNode(Node):
             self._units = value
 
 class ScanNode(Node):
+    
+    columns = 8
+    
     def __init__(self, name, info, parent=None):
         super(ScanNode, self).__init__(name, parent)
         self._collection = parent.name()
+        self.set_full_info(info)
+    
+    def set_full_info(self, info):
         limit_info, scan_info = info
         self._units = limit_info[0].units
         self._min = limit_info[0][self._units]
@@ -113,6 +133,14 @@ class ScanNode(Node):
         self._scan_stop = scan_info[1][self._units]
         self._scan_points = scan_info[2]
     
+    def path(self):
+        return (self._collection, self.name())
+    
+    def full_parameter(self):
+        WithUnit = self.WithUnit
+        return ('scan', ([WithUnit(self._min, self._units), WithUnit(self._max, self._units) ],
+                         (WithUnit(self._scan_start, self._units), WithUnit(self._scan_stop, self._units), self._scan_points)
+                         ))    
     def data(self, column):
         if column < 1:
             return super(ScanNode, self).data(column)

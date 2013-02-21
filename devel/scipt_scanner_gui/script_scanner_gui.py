@@ -97,7 +97,18 @@ class script_scanner_gui(object):
         yield sc.addListener(listener = self.on_running_script_finished_error, source = None, ID = self.SIGNALID + 8, context = self.context)        
         yield sc.signal_on_running_script_paused(self.SIGNALID + 9, context = self.context)
         yield sc.addListener(listener = self.on_running_script_paused, source = None, ID = self.SIGNALID + 9, context = self.context) 
+        #parameter vault
+        pv = self.cxn.servers['parameter_vault']
+        yield pv.signal__parameter_change(self.SIGNALID + 10, context = self.context)
+        yield pv.addListener(listener = self.on_pv_parameter_change, source = None, ID = self.SIGNALID + 10, context = self.context) 
     
+    @inlineCallbacks
+    def on_pv_parameter_change(self, signal, info):
+        collection, name = info
+        pv = self.cxn.servers['parameter_vault']
+        full_info = yield pv.get_parameter(collection, name, False, context = self.context)
+        self.ParametersEditor.set_parameter(collection, name, full_info)
+        
     def on_running_script_finished_error(self, signal, info):
         ident, message = info
         self.scripting_widget.runningScriptFinished(ident)
@@ -137,8 +148,8 @@ class script_scanner_gui(object):
         self.scripting_widget.removeQueued(ident) 
     
     def connect_layouts(self):
+        #scripting widget
         self.scripting_widget.connect_layout()
-#        self.parameters_widget.connect_layout()
         self.scripting_widget.on_run.connect(self.run_script)
         self.scripting_widget.on_cancel_queued.connect(self.on_cancel_queued)
         self.scripting_widget.on_repeat.connect(self.repeat_script)
@@ -147,13 +158,23 @@ class script_scanner_gui(object):
         self.scripting_widget.on_schedule_duration.connect(self.scheduled_duration)
         self.scripting_widget.on_running_stop.connect(self.running_stop)
         self.scripting_widget.on_running_pause.connect(self.running_pause)
-
+        #parameter widget
+        self.ParametersEditor.on_parameter_change.connect(self.on_new_parameter)
+    
     def get_widgets(self):
         return self.scripting_widget
     
     def show(self):
         self.scripting_widget.show()
         self.ParametersEditor.show()
+    
+    @inlineCallbacks
+    def on_new_parameter(self, path, value):
+        pv = self.cxn.servers['parameter_vault']
+        try:
+            yield pv.set_parameter(path[0], path[1], value, True, context = self.context)
+        except self.Error as e:
+            self.displayError(e.msg)
     
     @inlineCallbacks
     def running_stop(self, ident):

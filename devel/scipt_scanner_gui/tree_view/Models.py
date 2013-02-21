@@ -4,6 +4,7 @@ from Data import ParameterNode, CollectionNode, ScanNode
 class ParametersTreeModel(QtCore.QAbstractItemModel):
     
     filterRole  = QtCore.Qt.UserRole
+    on_new_parameter = QtCore.pyqtSignal(tuple, tuple)
     
     def __init__(self, root, parent=None):
         super(ParametersTreeModel, self).__init__(parent)
@@ -42,6 +43,10 @@ class ParametersTreeModel(QtCore.QAbstractItemModel):
                 textIndex = self.createIndex(index.row(), 1, index.internalPointer())
                 self.dataChanged.emit(index, index)
                 self.dataChanged.emit(textIndex, textIndex)
+                print 'in setting data'
+                if not isinstance(node, CollectionNode):
+                    print 'emitting signal out'
+                    self.on_new_parameter.emit(node.path(), node.full_parameter())
                 return True
         return False
 
