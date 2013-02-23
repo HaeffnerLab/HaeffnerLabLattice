@@ -34,19 +34,19 @@ class fft_spectrum(experiment):
         seq = record_timetags(**{'record_timetags_duration': record_time})
         seq.programSequence(self.pulser)
     
-#    def getTotalPower(self):
-#        '''computers the total power in the spectrum of the given frequencies'''
-#        spectrum = self.getPowerSpectrum()
-#        totalPower = self.processor.totalPower(spectrum)
-#        print 'Total Power {}'.format(totalPower)
-#        return totalPower
+    def getTotalPower(self):
+        '''computers the total power in the spectrum of the given frequencies'''
+        spectrum = self.getPowerSpectrum()
+        totalPower = self.processor.totalPower(spectrum)
+        print 'Total Power {}'.format(totalPower)
+        return totalPower
     
-#    def getPeakArea(self, ptsAround):
-#        '''Finds the maximum of the power spectrum, computers the area of the peak using ptsAround, then subtracts the background'''
-#        spectrum = self.getPowerSpectrum()
-#        peakArea = self.processor.peakArea(spectrum, ptsAround)
-#        print 'Peak Area {}'.format(peakArea)
-#        return peakArea
+    def getPeakArea(self, ptsAround):
+        '''Finds the maximum of the power spectrum, computers the area of the peak using ptsAround, then subtracts the background'''
+        spectrum = self.getPowerSpectrum()
+        peakArea = self.processor.peakArea(spectrum, ptsAround)
+        print 'Peak Area {}'.format(peakArea)
+        return peakArea
 
     def run(self, cxn, context):
         pwr = self.getPowerSpectrum()
@@ -64,7 +64,6 @@ class fft_spectrum(experiment):
             timetags = self.pulser.get_timetags().asarray
             pwr += self.processor.getPowerSpectrum(self.freqs, timetags, self.record_time['s'], self.time_resolution)
             progress = self.min_progress + (self.max_progress - self.min_progress) * (i + 1) / float(self.average)
-            print 'setting progress'
             self.sc.script_set_progress(self.ident,  progress)
         pwr = pwr / float(self.average)
         return pwr

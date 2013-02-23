@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore
-from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -21,7 +21,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
 #        translationStageWidget = self.makeTranslationStageWidget(reactor)
         control729Widget =  self.makecontrol729Widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
-        grid = QtGui.QGridLayout()
+        layout = QtGui.QHBoxLayout()
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
@@ -29,18 +29,9 @@ class LATTICE_GUI(QtGui.QMainWindow):
 #        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(control729Widget,'&Control 729')
         self.createGrapherTab()
-#        scriptControl = self.makeScriptControl(reactor)
-#        grid.addWidget(scriptControl, 0, 0, 1, 1)
-        grid.addWidget(self.tabWidget, 0, 1, 1, 3)
-        centralWidget.setLayout(grid)
+        layout.addWidget(self.tabWidget)
+        centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
-    
-    def makeScriptControl(self, reactor):
-        from common.clients.guiscriptcontrol.scriptcontrol import ScriptControl
-        self.sc = ScriptControl(reactor, self)
-        self.sc, self.experimentParametersWidget = self.sc.getWidgets()
-        self.createExperimentParametersTab()
-        return self.sc
     
     @inlineCallbacks
     def createGrapherTab(self):
@@ -118,20 +109,14 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout.addWidget(pmtWidget(reactor),0, 1, 1, 1, alignment = QtCore.Qt.AlignRight)
         gridLayout.addWidget(switchWidget(reactor, cxn),1,0, 1, 2)
         gridLayout.addWidget(linetriggerWidget(reactor, cxn), 0, 0, 1, 1)#, 1, 2)
-        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),2, 0, 1, 2)#, 1, 2)
+        gridLayout.addWidget(DDS_CONTROL(reactor, cxn), 2, 0, 1, 2)#, 1, 2)
 #        gridLayout.addWidget(RS_CONTROL_LOCAL(reactor),2,0)
 #        gridLayout.addWidget(RS_CONTROL_LAB(reactor),2,1)
         widget.setLayout(gridLayout)
         return widget
 
-    def stopReactor(self, res):
-        self.reactor.stop()
-        
     def closeEvent(self, x):
-        dl = Deferred()
-        dl.addCallback(self.sc.exitProcedure)
-        dl.addCallback(self.stopReactor)
-        dl.callback(True)
+        self.reactor.stop()
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
