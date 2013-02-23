@@ -38,6 +38,6 @@ class processFFT():
             N = recordTime / timeResolution
             pwr = pwr / (N * timetags.size) 
         else:
-            pwr = np.zeros_like(freqs)
+             pwr = np.zeros_like(freqs)
         del(mat,fft)
         return pwr

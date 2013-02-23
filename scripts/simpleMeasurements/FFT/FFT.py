@@ -1,4 +1,4 @@
-from scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags  
+from lattice.scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags  
 import labrad
 from labrad.units import WithUnit
 import numpy as np
