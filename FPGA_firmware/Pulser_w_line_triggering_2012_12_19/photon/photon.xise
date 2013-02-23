@@ -157,6 +157,10 @@
       <association xil_pn:name="Implementation" xil_pn:seqID="11"/>
     </file>
     <file xil_pn:name="ipcore_dir/readout_count_fifo_flist.txt" xil_pn:type="FILE_USERDOC"/>
+    <file xil_pn:name="readout_count_fifo.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="110"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="110"/>
+    </file>
     <file xil_pn:name="ipcore_dir/readout_count_fifo.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
     </file>
