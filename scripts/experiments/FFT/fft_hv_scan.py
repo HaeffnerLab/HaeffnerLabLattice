@@ -1,31 +1,57 @@
-from fft_spectrum import fft_spectrum, labrad
+import labrad
+from labrad.units import WithUnit
+from numpy import linspace
+from common.abstractdevices.script_scanner.scan_methods import experiment
+from fft_peak_area import fft_peak_area
 
-class fft_peak_area(fft_spectrum):
+class fft_hv_scan(experiment):
     
-    name = 'FFT Peak Area'
+    name = 'FFT Scan High Volt'
     required_parameters = [
-                           ('TrapFrequencies','rf_drive_frequency'),
-                           ('FFT','average'),
-                           ('FFT','frequency_offset'),
-                           ('FFT','frequency_span'),
-                           ('FFT','record_time'),
-                           ('FFT','peak_width_pts')
+                           ('FFT','scan_hv_vs_fft')
                            ]
+    required_parameters.extend(fft_peak_area.required_parameters)
+    
+    def initialize(self, cxn, context, ident):
+        
+        self.script = self.make_experiment(fft_peak_area)
+        self.script.initialize(cxn, context, ident)
+        minim,maxim,steps = self.parameters.FFT.scan_hv_vs_fft[1][1]
+        minim = minim['V']; maxim = maxim['V']
+        self.scan = linspace(minim, maxim, steps)
+        self.dv = cxn.data_vault
+        self.hv = cxn.highvolta
+        self.navigate_data_vault(self.dv)
+        
+    def navigate_data_vault(self, dv):
+        dv.cd(['','QuickMeasurements','FFT'],True)
+        name = dv.new('FFT',[('Voltage', 'V')], [('FFTPeak','Arb','Arb')] )
+        dv.add_parameter('plotLive',True)
 
     def run(self, cxn, context):
-        pts_around = int(self.parameters.FFT.peak_width_pts)
-        try:
-            peak_area = self.getPeakArea(pts_around)
-        except Exception:
-            print 'peak not found'
-            peak_area = -1.0
-        print 'peak area', peak_area
-        return peak_area
+        init_voltage = self.hv.getvoltage()
+        for i,voltage in enumerate(self.scan):
+            self.hv.setvoltage(voltage)
+            self.set_script_progress_limits(i)
+            area = self.script.run(cxn, context)
+            self.dv.add(voltage, area)
+            self.update_progress(i)
+        self.hv.setvoltage(init_voltage)
+    
+    def set_script_progress_limits(self, i):
+        self.script.set_progress_limits(100.0 * i / len(self.scan), 100.0 * (i + 1) / len(self.scan))
+    
+    def update_progress(self, iteration):
+        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
+        self.sc.script_set_progress(self.ident,  progress)
+        
+    def finalize(self, cxn, context):
+        self.script.finalize(cxn, context)
 
 if __name__ == '__main__':
     #normal way to launch
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = fft_peak_area(cxn = cxn)
+    exprt = fft_hv_scan(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

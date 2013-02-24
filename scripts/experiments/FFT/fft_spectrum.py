@@ -16,7 +16,6 @@ class fft_spectrum(experiment):
                            ]
     
     def initialize(self, cxn, context, ident):
-#        print self.parameters.makeReport()
         self.ident = ident
         self.processor = processFFT()
         self.average = int(self.parameters.FFT.average)
