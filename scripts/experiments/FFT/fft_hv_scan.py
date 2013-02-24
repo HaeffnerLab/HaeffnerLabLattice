@@ -13,7 +13,7 @@ class fft_hv_scan(experiment):
     required_parameters.extend(fft_peak_area.required_parameters)
     
     def initialize(self, cxn, context, ident):
-        
+        self.ident = ident
         self.script = self.make_experiment(fft_peak_area)
         self.script.initialize(cxn, context, ident)
         minim,maxim,steps = self.parameters.FFT.scan_hv_vs_fft[1][1]
@@ -21,6 +21,7 @@ class fft_hv_scan(experiment):
         self.scan = linspace(minim, maxim, steps)
         self.dv = cxn.data_vault
         self.hv = cxn.highvolta
+        self.init_voltage  = self.hv.getvoltage()
         self.navigate_data_vault(self.dv)
         
     def navigate_data_vault(self, dv):
@@ -29,14 +30,13 @@ class fft_hv_scan(experiment):
         dv.add_parameter('plotLive',True)
 
     def run(self, cxn, context):
-        init_voltage = self.hv.getvoltage()
         for i,voltage in enumerate(self.scan):
             self.hv.setvoltage(voltage)
             self.set_script_progress_limits(i)
             area = self.script.run(cxn, context)
             self.dv.add(voltage, area)
             self.update_progress(i)
-        self.hv.setvoltage(init_voltage)
+            if self.script.should_stop: return
     
     def set_script_progress_limits(self, i):
         self.script.set_progress_limits(100.0 * i / len(self.scan), 100.0 * (i + 1) / len(self.scan))
@@ -46,6 +46,7 @@ class fft_hv_scan(experiment):
         self.sc.script_set_progress(self.ident,  progress)
         
     def finalize(self, cxn, context):
+        self.hv.setvoltage(self.init_voltage)
         self.script.finalize(cxn, context)
 
 if __name__ == '__main__':

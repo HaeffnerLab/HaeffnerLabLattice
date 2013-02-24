@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks, returnValue
 
+
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
         super(LATTICE_GUI, self).__init__(parent)
@@ -22,6 +23,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
         control729Widget =  self.makecontrol729Widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
+        from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
+        script_scanner = script_scanner_gui(reactor, cxn)
+        scan_widget, parameter_widget = script_scanner.get_widgets()
+        layout.addWidget(scan_widget)
+        layout.addWidget(parameter_widget)
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
