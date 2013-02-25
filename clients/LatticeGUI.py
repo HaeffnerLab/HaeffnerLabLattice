@@ -25,9 +25,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         layout = QtGui.QHBoxLayout()
         from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
         script_scanner = script_scanner_gui(reactor, cxn)
-        scan_widget, parameter_widget = script_scanner.get_widgets()
-        layout.addWidget(scan_widget)
-        layout.addWidget(parameter_widget)
+        script_scanner.show()
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
         self.tabWidget.addTab(lightControlTab,'&LaserRoom')
