@@ -16,7 +16,7 @@ class fft_hv_scan(experiment):
         self.ident = ident
         self.script = self.make_experiment(fft_peak_area)
         self.script.initialize(cxn, context, ident)
-        minim,maxim,steps = self.parameters.FFT.scan_hv_vs_fft[1][1]
+        minim,maxim,steps = self.parameters.FFT.scan_hv_vs_fft
         minim = minim['V']; maxim = maxim['V']
         self.scan = linspace(minim, maxim, steps)
         self.dv = cxn.data_vault
