@@ -1,5 +1,4 @@
 import labrad
-from labrad.units import WithUnit
 from numpy import linspace
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from fft_peak_area import fft_peak_area

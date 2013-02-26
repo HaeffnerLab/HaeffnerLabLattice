@@ -2,23 +2,23 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from OpticalPumping import optical_pumping
 from SidebandCoolingContinuous import sideband_cooling_continuous
 from SidebandCoolingPulsed import sideband_cooling_pulsed
+from treedict import TreeDict
 
 class sideband_cooling(pulse_sequence):
     
     required_parameters = [
-                           'sideband_cooling_cycles',
-                           'sideband_cooling_continuous',
-                           'sideband_cooling_pulsed',
-                           'sideband_cooling_duration_729_increment_per_cycle',
-                           'sideband_cooling_optical_pumping_duration',
-                           'sideband_cooling_continuous_duration',
-                           'sideband_cooling_pulsed_duration_729',
-                           'sideband_cooling_amplitude_866',
-                           'sideband_cooling_amplitude_854',
-                           'sideband_cooling_amplitude_729',
-                           'sideband_cooling_frequency_854',
-                           'sideband_cooling_frequency_866',
-                           'sideband_cooling_frequency_729',
+                           ('SidebandCooling','sideband_cooling_cycles'),
+                           ('SidebandCooling','sideband_cooling_type'),
+                           ('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle'),
+                           ('SidebandCooling','sideband_cooling_optical_pumping_duration'),
+                           ('SidebandCooling','sideband_cooling_amplitude_866'),
+                           ('SidebandCooling','sideband_cooling_amplitude_854'),
+                           ('SidebandCooling','sideband_cooling_amplitude_729'),
+                           ('SidebandCooling','sideband_cooling_frequency_854'),
+                           ('SidebandCooling', 'sideband_cooling_frequency_866'),
+                           ('SidebandCooling', 'sideband_cooling_frequency_729'),
+                           ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
+                           ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'),
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
@@ -30,43 +30,45 @@ class sideband_cooling(pulse_sequence):
         
         sideband cooling can be either pulsed or continuous 
         '''
-        self.check_valid_selelction()
-        if self.sideband_cooling_continuous:
+        sc = self.parameters.SidebandCooling
+        if sc.sideband_cooling_type == 'continuous':
+            continuous = True
+        elif sc.sideband_cooling_type == 'pulsed':
+            continuous = False
+        else:
+            raise Exception ("Incorrect Sideband cooling type {0}".format(sc.sideband_cooling_type))
+        
+        if continuous:
             cooling = sideband_cooling_continuous
-            duration_key = 'sideband_cooling_continuous_duration'
+            duration_key = 'SidebandCoolingContinuous.sideband_cooling_continuous_duration'
             cooling_replace = {
-                               'sideband_cooling_continuous_duration':self.sideband_cooling_continuous_duration,
-                               'sideband_cooling_continuous_frequency_854':self.sideband_cooling_frequency_854,
-                               'sideband_cooling_continuous_frequency_729':self.sideband_cooling_frequency_729,
-                               'sideband_cooling_continuous_frequency_866':self.sideband_cooling_frequency_866,
-                               'sideband_cooling_conitnuous_amplitude_854':self.sideband_cooling_amplitude_854,
-                               'sideband_cooling_continuous_amplitude_729':self.sideband_cooling_amplitude_729,
-                               'sideband_cooling_continuous_amplitude_866':self.sideband_cooling_amplitude_866,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_duration':self.parameters.SidebandCoolingContinuous.sideband_cooling_continuous_duration,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_frequency_854':sc.sideband_cooling_frequency_854,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_frequency_729':sc.sideband_cooling_frequency_729,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_frequency_866':sc.sideband_cooling_frequency_866,
+                               'SidebandCoolingContinuous.sideband_cooling_conitnuous_amplitude_854':sc.sideband_cooling_amplitude_854,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_amplitude_729':sc.sideband_cooling_amplitude_729,
+                               'SidebandCoolingContinuous.sideband_cooling_continuous_amplitude_866':sc.sideband_cooling_amplitude_866,
                                }
         else:
+            #pulsed
             cooling = sideband_cooling_pulsed
-            duration_key = 'sideband_cooling_pulsed_duration_729'
+            duration_key = 'SidebandCoolingPulsed.sideband_cooling_pulsed_duration_729'
             cooling_replace = {
-                                'sideband_cooling_pulsed_duration_729':self.sideband_cooling_pulsed_duration_729,
-                                
-                                'sideband_cooling_pulsed_frequency_854':self.sideband_cooling_frequency_854,
-                                'sideband_cooling_pulsed_amplitude_854':self.sideband_cooling_amplitude_854,
-                                'sideband_cooling_pulsed_frequency_729':self.sideband_cooling_frequency_729,
-                                'sideband_cooling_pulsed_amplitude_729':self.sideband_cooling_amplitude_729,
-                                'sideband_cooling_pulsed_frequency_866':self.sideband_cooling_frequency_866,
-                                'sideband_cooling_pulsed_amplitude_866':self.sideband_cooling_amplitude_866,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_duration_729':self.parameters.SidebandCoolingPulsed.sideband_cooling_pulsed_duration_729,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_854':sc.sideband_cooling_frequency_854,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_amplitude_854':sc.sideband_cooling_amplitude_854,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_729':sc.sideband_cooling_frequency_729,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_amplitude_729':sc.sideband_cooling_amplitude_729,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_866':sc.sideband_cooling_frequency_866,
+                                'SidebandCoolingPulsed.sideband_cooling_pulsed_amplitude_866':sc.sideband_cooling_amplitude_866,
                                }
         optical_pump_replace = {
-                                'optical_pumping_continuous':True,
-                                'optical_pumping_continuous_duration':self.sideband_cooling_optical_pumping_duration,
+                                'OpticalPumping.optical_pumping_continuous':True,
+                                'OpticalPumpingContinuous.optical_pumping_continuous_duration':sc.sideband_cooling_optical_pumping_duration,
                                 }
-        for i in range(int(self.sideband_cooling_cycles)):
+        for i in range(int(sc.sideband_cooling_cycles)):
             #each cycle, increment the 729 duration
-            cooling_replace[duration_key] +=  self.sideband_cooling_duration_729_increment_per_cycle
-            self.addSequence(cooling, **cooling_replace)
-            self.addSequence(optical_pumping, **optical_pump_replace)
-    
-    def check_valid_selelction(self):
-        #^does xor, because exactly one has to be true
-        if not self.sideband_cooling_continuous ^ self.sideband_cooling_pulsed:
-            raise Exception ("Incorrect sideband cooling type selected")
+            cooling_replace[duration_key] +=  sc.sideband_cooling_duration_729_increment_per_cycle
+            self.addSequence(cooling, TreeDict.fromdict(cooling_replace))
+            self.addSequence(optical_pumping, TreeDict.fromdict(optical_pump_replace))
