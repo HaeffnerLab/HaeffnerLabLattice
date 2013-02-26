@@ -12,17 +12,18 @@ class spectrum(experiment):
     name = 'Spectrum729'
     required_parameters = [
                            ('Spectrum','custom'),
+                           ('Spectrum','normal'),
                            ('Spectrum','fine'),
+                           ('Spectrum','ultimate'),
+                           
                            ('Spectrum','line_selection'),
                            ('Spectrum','manual_amplitude_729'),
                            ('Spectrum','manual_excitation_time'),
                            ('Spectrum','manual_scan'),
-                           ('Spectrum','normal'),
                            ('Spectrum','scan_selection'),
                            ('Spectrum','sensitivity_selection'),
                            ('Spectrum','sideband_selection'),
-                           ('Spectrum','ultimate'),
-                           
+
                            ('TrapFrequencies','axial_frequency'),
                            ('TrapFrequencies','radial_frequency_1'),
                            ('TrapFrequencies','radial_frequency_2'),
@@ -50,7 +51,6 @@ class spectrum(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.spectrum_save_context = cxn.context()
-        self.setup_data_vault()
     
     def setup_sequence_parameters(self):
         sp = self.parameters.Spectrum
@@ -88,6 +88,7 @@ class spectrum(experiment):
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
         
     def run(self, cxn, context):
+        self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
