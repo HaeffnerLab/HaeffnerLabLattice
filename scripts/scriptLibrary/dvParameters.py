@@ -1,16 +1,14 @@
-def saveParameters(dv, d):
+def saveParameters(dv, d, context):
     """Save the parameters from the dictionary dict into datavault"""
     for name in d.keys():
-        dv.add_parameter(name, d[name])
-        
+        dv.add_parameter(name, d[name], context = context)
+
 def measureParameters(cxn, cxnlab, specified = None):
     """Measures parameters in the list and returns the dictionary containing these"""
     d = {}
     local = {
-#            'trapdrive':measure_trapdrive,
             'endcaps':measure_endcaps,
             'compensation':measure_compensation,
-#            'dcoffsetonrf':measure_dcoffsetonrf,
             }
     lab = {
             'cavity397':measure_cavity('397'),

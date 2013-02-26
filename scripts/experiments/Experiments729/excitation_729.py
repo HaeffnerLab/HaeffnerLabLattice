@@ -1,4 +1,3 @@
-import labrad
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.PulseSequences.spectrum_rabi import spectrum_rabi
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
@@ -100,6 +99,7 @@ class excitation_729(experiment):
             self.total_readouts = []
 
 if __name__ == '__main__':
+    import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
     exprt = excitation_729(cxn = cxn)
