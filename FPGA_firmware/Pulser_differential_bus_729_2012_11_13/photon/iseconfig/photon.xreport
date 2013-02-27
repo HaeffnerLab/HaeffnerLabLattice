@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2013-01-04T15:41:07</DateModified>
+  <DateModified>2013-02-23T15:07:53</DateModified>
   <ModuleName>photon</ModuleName>
   <SummaryTimeStamp>2012-12-02T22:19:37</SummaryTimeStamp>
-  <SavedFilePath>Y:/LabRad/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/iseconfig/photon.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>Y:/LabRad/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon\</ImplementationReportsDirectory>
+  <SavedFilePath>C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/iseconfig/photon.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon\</ImplementationReportsDirectory>
   <DateInitialized>2012-02-15T16:27:09</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>

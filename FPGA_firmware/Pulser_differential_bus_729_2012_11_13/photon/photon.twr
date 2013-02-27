@@ -1,14 +1,14 @@
 --------------------------------------------------------------------------------
-Release 14.3 Trace  (nt64)
+Release 14.4 Trace  (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-C:\Xilinx\14.3\ISE_DS\ISE\bin\nt64\unwrapped\trce.exe -intstyle ise -v 3 -s 2
+C:\Xilinx\14.4\ISE_DS\ISE\bin\nt64\unwrapped\trce.exe -intstyle ise -v 3 -s 2
 -n 3 -fastpaths -xml photon.twx photon.ncd -o photon.twr photon.pcf -ucf
 xem6010.ucf
 
 Design file:              photon.ncd
 Physical constraint file: photon.pcf
-Device,package,speed:     xc6slx45,fgg484,C,-2 (PRODUCTION 1.23 2012-10-12)
+Device,package,speed:     xc6slx45,fgg484,C,-2 (PRODUCTION 1.23 2012-12-04)
 Report level:             verbose report
 
 Environment Variable      Effect 
@@ -4719,14 +4719,14 @@ Design statistics:
 ------------------------------------Footnotes-----------------------------------
 1)  The minimum period statistic assumes all single cycle delays.
 
-Analysis completed Sun Dec 02 22:47:43 2012 
+Analysis completed Sat Feb 23 15:14:18 2013 
 --------------------------------------------------------------------------------
 
 Trace Settings:
 -------------------------
 Trace Settings 
 
-Peak Memory Usage: 322 MB
+Peak Memory Usage: 321 MB
 
 
 
