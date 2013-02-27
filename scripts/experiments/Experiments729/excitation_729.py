@@ -57,9 +57,11 @@ class excitation_729(experiment):
         self.parameters['OpticalPumping.optical_pumping_frequency_729'] = optical_pumping_frequency
         sc = self.parameters.SidebandCooling
         sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker)
-        trap = self.parameters.TrapFrequencies
-        sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
-        self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = optical_pumping_frequency
+        if sc.frequency_selection == 'auto': 
+            trap = self.parameters.TrapFrequencies
+            sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
+        print 'cooling at freq', sideband_cooling_frequency
+        self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
     
     def setup_initial_switches(self):
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF

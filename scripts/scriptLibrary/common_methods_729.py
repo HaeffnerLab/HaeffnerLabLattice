@@ -14,8 +14,7 @@ class common_methods_729(object):
             raise Exception ("Incorrect frequency selection")
     
     @staticmethod
-    def add_sidebands(sideband_cooling_frequency, sideband_selection, trap):
-        freq = sideband_cooling_frequency
+    def add_sidebands(freq, sideband_selection, trap):
         sideband_frequencies = [trap.radial_frequency_1, trap.radial_frequency_2, trap.axial_frequency, trap.rf_drive_frequency]
         for order,sideband_frequency in zip(sideband_selection, sideband_frequencies):
             freq += order * sideband_frequency

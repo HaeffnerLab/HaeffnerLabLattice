@@ -3,6 +3,7 @@ import numpy as np
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.PulseSequences.subsequences.RecordTimeTags import record_timetags
 from processFFT import processFFT
+from treedict import TreeDict
 
 class fft_spectrum(experiment):
     
@@ -30,7 +31,7 @@ class fft_spectrum(experiment):
         self.programPulseSequence(self.record_time)
     
     def programPulseSequence(self, record_time):
-        seq = record_timetags(**{'record_timetags_duration': record_time})
+        seq = record_timetags(TreeDict.fromdict({'RecordTimetags.record_timetags_duration': record_time}))
         seq.programSequence(self.pulser)
     
     def getTotalPower(self):
