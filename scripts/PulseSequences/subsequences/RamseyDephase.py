@@ -8,7 +8,7 @@ from labrad.units import WithUnit
 class ramsey_dephase_excitation(pulse_sequence):
     
     required_parameters = [ 
-                           ('Ramsey','rabi_pi_time'),
+                           ('RamseyDephase','first_pulse_duration'),
                            ('RamseyDephase','pulse_gap'),
                            ('RamseyDephase','dephasing_frequency'),
                            ('RamseyDephase','dephasing_amplitude'),
@@ -22,17 +22,18 @@ class ramsey_dephase_excitation(pulse_sequence):
     
     def sequence(self):
         p = self.parameters
+        rd = p.RamseyDephase
         spacing = (p.RamseyDephase.pulse_gap - p.RamseyDephase.dephasing_duration) / 2.0
-        heating_replace = TreeDict.fromdict({'Heating.local_blue_heating_frequency_397':p.RamseyDephase.dephasing_frequency,
-                                             'Heating.local_blue_heating_amplitude_397':p.RamseyDephase.dephasing_amplitude,
+        heating_replace = TreeDict.fromdict({'Heating.local_blue_heating_frequency_397':rd.dephasing_frequency,
+                                             'Heating.local_blue_heating_amplitude_397':rd.dephasing_amplitude,
                                              'Heating.blue_heating_frequency_866':p.StateReadout.state_readout_frequency_866,
                                              'Heating.blue_heating_amplitude_866': p.StateReadout.state_readout_amplitude_866,
-                                             'Heating.blue_heating_duration':p.RamseyDephase.dephasing_duration,
+                                             'Heating.blue_heating_duration':rd.dephasing_duration,
                                              'Heating.blue_heating_repump_additional':WithUnit(5, 'us')
                                              })
         if spacing < WithUnit(10.0, 'us'): raise Exception("Ramsey Dephase, gap is too short to accomodate dephasing")
-        self.addSequence(rabi_excitation, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':p.Ramsey.rabi_pi_time / 2.0}))
+        self.addSequence(rabi_excitation, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':rd.first_pulse_duration}))
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':spacing}))
         self.addSequence(local_blue_heating, heating_replace)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':spacing}))
-        self.addSequence(rabi_excitation_no_offset, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':p.RamseyDephase.second_pulse_duration}))
+        self.addSequence(rabi_excitation_no_offset, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':rd.second_pulse_duration}))

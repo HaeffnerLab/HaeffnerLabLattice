@@ -10,73 +10,80 @@ from labrad.units import WithUnit
            
 class ramsey_dephase(pulse_sequence):
     
-    required_parameters =  [
-                  ('RepumpD_5_2','repump_d_duration'):WithUnit(200, 'us'),
-                  ('RepumpD_5_2','repump_d_frequency_854'):WithUnit(80.0, 'MHz'),
-                  ('RepumpD_5_2','repump_d_amplitude_854'):WithUnit(-11.0, 'dBm'),
-              
-                  ('DopplerCooling', 'doppler_cooling_frequency_397'):WithUnit(110.0, 'MHz'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_397'):WithUnit(-11.0, 'dBm'),
-                  ('DopplerCooling', 'doppler_cooling_frequency_866'):WithUnit(80.0, 'MHz'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_866'):WithUnit(-11.0, 'dBm'),
-                  ('DopplerCooling', 'doppler_cooling_repump_additional'):WithUnit(100, 'us'),
-                  ('DopplerCooling', 'doppler_cooling_duration'):WithUnit(1.0,'ms'),
-              
-                  ('OpticalPumping','optical_pumping_enable'):True,
-                  ('OpticalPumping','optical_pumping_frequency_729'):WithUnit(0.0, 'MHz'),
-                  ('OpticalPumping','optical_pumping_frequency_854'):WithUnit(80.0, 'MHz'),
-                  ('OpticalPumping','optical_pumping_frequency_866'):WithUnit(80.0, 'MHz'),
-                  ('OpticalPumping','optical_pumping_amplitude_729'):WithUnit(-10.0, 'dBm'),
-                  ('OpticalPumping','optical_pumping_amplitude_854'):WithUnit(-3.0, 'dBm'),
-                  ('OpticalPumping','optical_pumping_amplitude_866'):WithUnit(-11.0, 'dBm'),
-                  ('OpticalPumping','optical_pumping_type'):'continuous',
-                  
-                  ('OpticalPumpingContinuous','optical_pumping_continuous_duration'):WithUnit(1, 'ms'),
-                  ('OpticalPumpingContinuous','optical_pumping_continuous_repump_additional'):WithUnit(200, 'us'),
-                  
-                  ('OpticalPumpingPulsed','optical_pumping_pulsed_cycles'):2.0,
-                  ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_729'):WithUnit(20, 'us'),
-                  ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_repumps'):WithUnit(20, 'us'),
-                  ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_additional_866'):WithUnit(20, 'us'),
-                  ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_between_pulses'):WithUnit(5, 'us'),
-    
-                  ('SidebandCooling','sideband_cooling_enable'):True,
-                  ('SidebandCooling','sideband_cooling_cycles'): 4.0,
-                  ('SidebandCooling','sideband_cooling_type'):'continuous',
-                  ('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle'):WithUnit(0, 'us'),
-                  ('SidebandCooling','sideband_cooling_frequency_854'):WithUnit(80.0, 'MHz'),
-                  ('SidebandCooling','sideband_cooling_amplitude_854'):WithUnit(-11.0, 'dBm'),
-                  ('SidebandCooling','sideband_cooling_frequency_866'):WithUnit(80.0, 'MHz'),
-                  ('SidebandCooling','sideband_cooling_amplitude_866'):WithUnit(-11.0, 'dBm'),
-                  ('SidebandCooling','sideband_cooling_frequency_729'):WithUnit(-10.0, 'MHz'),
-                  ('SidebandCooling','sideband_cooling_amplitude_729'):WithUnit(-11.0, 'dBm'),
-                  ('SidebandCooling','sideband_cooling_optical_pumping_duration'):WithUnit(500, 'us'),
-                  
-                  ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'):WithUnit(500, 'us'),
-                  
-                  ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'):WithUnit(10, 'us'),
-                  ('SidebandCoolingPulsed','sideband_cooling_pulsed_cycles'):10.0,
-                  ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps'):WithUnit(10, 'us'),
-                  ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'):WithUnit(10, 'us'),
-                  ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'):WithUnit(5, 'us'),
-              
-                  ('StateReadout','state_readout_frequency_397'):WithUnit(110.0, 'MHz'),
-                  ('StateReadout','state_readout_amplitude_397'):WithUnit(-11.0, 'dBm'),
-                  ('StateReadout','state_readout_frequency_866'):WithUnit(80.0, 'MHz'),
-                  ('StateReadout','state_readout_amplitude_866'):WithUnit(-11.0, 'dBm'),
-                  ('StateReadout','state_readout_duration'):WithUnit(3.0,'ms'),
-              
-                  ('Ramsey','rabi_pi_time'):WithUnit(100.0, 'us'),
-                  
-                  ('RamseyDephase','pulse_gap'):WithUnit(100.0, 'us'),
-                  ('RamseyDephase','dephasing_frequency'):WithUnit(220.0, 'MHz'),
-                  ('RamseyDephase','dephasing_amplitude'):WithUnit(-11.0, 'dBm'),
-                  ('RamseyDephase','dephasing_duration'):WithUnit(20.0,'us'),
-                  ('RamseyDephase','second_pulse_duration'):WithUnit(100.0, 'us'),
-                  
-                  ('Excitation_729','rabi_excitation_frequency'):WithUnit(10.0, 'MHz'),
-                  ('Excitation_729','rabi_excitation_amplitude'):WithUnit(-3.0, 'dBm'),
-                     ]
+    required_parameters =  [('OpticalPumping','optical_pumping_enable'), 
+                            ('SidebandCooling','sideband_cooling_enable'),
+                            ('RepumpD_5_2','repump_d_duration'),
+                            ('RepumpD_5_2','repump_d_frequency_854'),
+                            ('RepumpD_5_2','repump_d_amplitude_854'),
+                            ('DopplerCooling', 'doppler_cooling_frequency_397'),
+                            ('DopplerCooling', 'doppler_cooling_amplitude_397'),
+                            ('DopplerCooling', 'doppler_cooling_frequency_866'),
+                            ('DopplerCooling', 'doppler_cooling_amplitude_866'),
+                            ('DopplerCooling', 'doppler_cooling_repump_additional'),
+                            ('DopplerCooling', 'doppler_cooling_duration'),
+                          
+                            ('OpticalPumping','optical_pumping_frequency_729'),
+                            ('OpticalPumping','optical_pumping_frequency_854'),
+                            ('OpticalPumping','optical_pumping_frequency_866'),
+                            ('OpticalPumping','optical_pumping_amplitude_729'),
+                            ('OpticalPumping','optical_pumping_amplitude_854'),
+                            ('OpticalPumping','optical_pumping_amplitude_866'),
+                            ('OpticalPumping','optical_pumping_type'),
+                          
+                            ('OpticalPumpingContinuous','optical_pumping_continuous_duration'),
+                            ('OpticalPumpingContinuous','optical_pumping_continuous_repump_additional'),
+                          
+                            ('OpticalPumpingPulsed','optical_pumping_pulsed_cycles'),
+                            ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_729'),
+                            ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_repumps'),
+                            ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_additional_866'),
+                            ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_between_pulses'),
+            
+                            ('SidebandCooling','sideband_cooling_cycles'),
+                            ('SidebandCooling','sideband_cooling_type'),
+                            ('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle'),
+                            ('SidebandCooling','sideband_cooling_frequency_854'),
+                            ('SidebandCooling','sideband_cooling_amplitude_854'),
+                            ('SidebandCooling','sideband_cooling_frequency_866'),
+                            ('SidebandCooling','sideband_cooling_amplitude_866'),
+                            ('SidebandCooling','sideband_cooling_frequency_729'),
+                            ('SidebandCooling','sideband_cooling_amplitude_729'),
+                            ('SidebandCooling','sideband_cooling_optical_pumping_duration'),
+                          
+                            ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
+                          
+                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'),
+                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_cycles'),
+                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps'),
+                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'),
+                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'),
+                          
+                            ('Excitation_729','rabi_excitation_frequency'),
+                            ('Excitation_729','rabi_excitation_amplitude'),
+
+                            ('StateReadout','state_readout_frequency_397'),
+                            ('StateReadout','state_readout_amplitude_397'),
+                            ('StateReadout','state_readout_frequency_866'),
+                            ('StateReadout','state_readout_amplitude_866'),
+                            ('StateReadout','state_readout_duration'),
+
+                            ('Excitation_729','rabi_excitation_frequency'),
+                            ('Excitation_729','rabi_excitation_amplitude'),
+                            ('Excitation_729','rabi_excitation_phase'),
+
+                            ('StateReadout','state_readout_frequency_397'),
+                            ('StateReadout','state_readout_amplitude_397'),
+                            ('StateReadout','state_readout_frequency_866'),
+                            ('StateReadout','state_readout_amplitude_866'),
+                            ('StateReadout','state_readout_duration'),
+                            
+                            ('RamseyDephase','first_pulse_duration'),
+                            ('RamseyDephase','pulse_gap'),
+                            ('RamseyDephase','dephasing_frequency'),
+                            ('RamseyDephase','dephasing_amplitude'),
+                            ('RamseyDephase','dephasing_duration'),
+                            ('RamseyDephase','second_pulse_duration'),
+                            ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
                              state_readout, turn_off_all, sideband_cooling, ramsey_dephase_excitation]

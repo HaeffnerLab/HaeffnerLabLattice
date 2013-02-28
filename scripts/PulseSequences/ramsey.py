@@ -75,6 +75,10 @@ class ramsey(pulse_sequence):
                             ('StateReadout','state_readout_frequency_866'),
                             ('StateReadout','state_readout_amplitude_866'),
                             ('StateReadout','state_readout_duration'),
+                            
+                            ('Ramsey','ramsey_time'),
+                            ('Ramsey','rabi_pi_time'),
+                            ('Ramsey','second_pulse_phase'),
                             ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
