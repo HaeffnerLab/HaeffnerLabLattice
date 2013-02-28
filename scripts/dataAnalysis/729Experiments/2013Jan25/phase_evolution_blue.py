@@ -4,7 +4,7 @@ import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 #get access to servers
-cxn = labrad.connect()
+cxn = labrad.connect('192.168.169.197', password = 'lab')
 dv = cxn.data_vault
 figure = pyplot.figure()
 pyplot.title("Phase evolution due to blue detuned laser")
