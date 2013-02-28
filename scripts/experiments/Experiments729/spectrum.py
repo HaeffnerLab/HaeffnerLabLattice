@@ -79,7 +79,7 @@ class spectrum(experiment):
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         directory = ['','Experiments']
-        directory.extend(self.name)
+        directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
         self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')], context = self.spectrum_save_context)
