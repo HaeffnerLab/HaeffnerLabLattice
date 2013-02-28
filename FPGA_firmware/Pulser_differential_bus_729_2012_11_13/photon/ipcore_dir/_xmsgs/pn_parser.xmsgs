@@ -8,7 +8,7 @@
 <!-- Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.    -->
 
 <messages>
-<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;Y:/LabRad/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/ipcore_dir/pulser_ram.vhd&quot; into library work</arg>
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/ipcore_dir/pulser_ram.vhd&quot; into library work</arg>
 </msg>
 
 </messages>

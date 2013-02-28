@@ -1,16 +1,16 @@
-Release 14.3 - xst P.40xd (nt64)
+Release 14.4 - xst P.49d (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 --> Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.37 secs
  
 --> Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.39 secs
  
 --> Reading design: photon.prj
 
@@ -108,37 +108,37 @@ Cores Search Directories           : {"ipcore_dir"  }
 =========================================================================
 *                          HDL Parsing                                  *
 =========================================================================
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\readout_count_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\readout_count_fifo.vhd" into library work
 Parsing entity <readout_count_fifo>.
 Parsing architecture <readout_count_fifo_a> of entity <readout_count_fifo>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\pulse_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\pulse_fifo.vhd" into library work
 Parsing entity <pulse_fifo>.
 Parsing architecture <pulse_fifo_a> of entity <pulse_fifo>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\pulser_ram.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\pulser_ram.vhd" into library work
 Parsing entity <pulser_ram>.
 Parsing architecture <pulser_ram_a> of entity <pulser_ram>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\okLibrary.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\okLibrary.vhd" into library work
 Parsing entity <okHost>.
 Parsing architecture <archHost> of entity <okhost>.
 Parsing entity <okWireOR>.
 Parsing architecture <archWireOR> of entity <okwireor>.
 Parsing package <FRONTPANEL>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\normal_pmt_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\normal_pmt_fifo.vhd" into library work
 Parsing entity <normal_pmt_fifo>.
 Parsing architecture <normal_pmt_fifo_a> of entity <normal_pmt_fifo>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\fifo_photon.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\fifo_photon.vhd" into library work
 Parsing entity <fifo_photon>.
 Parsing architecture <fifo_photon_a> of entity <fifo_photon>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\dds_fifo.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\dds_fifo.vhd" into library work
 Parsing entity <dds_fifo>.
 Parsing architecture <dds_fifo_a> of entity <dds_fifo>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\clk_pll_100_in_200_out.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\clk_pll_100_in_200_out.vhd" into library work
 Parsing entity <clk_pll_100_in_200_out>.
 Parsing architecture <xilinx> of entity <clk_pll_100_in_200_out>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" into library work
 Parsing entity <photon>.
 Parsing architecture <arch> of entity <photon>.
-Parsing VHDL file "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\ipcore_dir\clk_pll_100_in_200_out\example_design\clk_pll_100_in_200_out_exdes.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\ipcore_dir\clk_pll_100_in_200_out\example_design\clk_pll_100_in_200_out_exdes.vhd" into library work
 Parsing entity <clk_pll_100_in_200_out_exdes>.
 Parsing architecture <xilinx> of entity <clk_pll_100_in_200_out_exdes>.
 
@@ -157,40 +157,40 @@ Elaborating entity <pulse_fifo> (architecture <pulse_fifo_a>) from library <work
 Elaborating entity <pulser_ram> (architecture <pulser_ram_a>) from library <work>.
 
 Elaborating entity <fifo_photon> (architecture <fifo_photon_a>) from library <work>.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" Line 819: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" Line 819: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
 
 Elaborating entity <normal_pmt_fifo> (architecture <normal_pmt_fifo_a>) from library <work>.
 
 Elaborating entity <readout_count_fifo> (architecture <readout_count_fifo_a>) from library <work>.
-WARNING:HDLCompiler:92 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" Line 931: pmt_readout_count should be on the sensitivity list of the process
+WARNING:HDLCompiler:92 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" Line 931: pmt_readout_count should be on the sensitivity list of the process
 
 Elaborating entity <okHost> (architecture <archHost>) from library <work>.
 
 Elaborating entity <okWireOR> (architecture <archWireOR>) with generics from library <work>.
-WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" Line 279: Net <pulser_flag_register[15]> does not have a driver.
+WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" Line 279: Net <pulser_flag_register[15]> does not have a driver.
 
 =========================================================================
 *                           HDL Synthesis                               *
 =========================================================================
 
 Synthesizing Unit <photon>.
-    Related source file is "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd".
 WARNING:Xst:647 - Input <logic_in<3:2>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 327: Output port <wr_data_count> of the instance <fifo4> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 327: Output port <full> of the instance <fifo4> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 417: Output port <rd_data_count> of the instance <fifo2> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 417: Output port <full> of the instance <fifo2> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 769: Output port <full> of the instance <fifo1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 769: Output port <empty> of the instance <fifo1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 823: Output port <full> of the instance <fifo3> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 823: Output port <empty> of the instance <fifo3> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 900: Output port <full> of the instance <fifo5> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 900: Output port <empty> of the instance <fifo5> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 968: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 970: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 973: Output port <ep_blockstrobe> of the instance <epA0> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 976: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\photon.vhd" line 979: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 327: Output port <wr_data_count> of the instance <fifo4> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 327: Output port <full> of the instance <fifo4> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 417: Output port <rd_data_count> of the instance <fifo2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 417: Output port <full> of the instance <fifo2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 769: Output port <full> of the instance <fifo1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 769: Output port <empty> of the instance <fifo1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 823: Output port <full> of the instance <fifo3> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 823: Output port <empty> of the instance <fifo3> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 900: Output port <full> of the instance <fifo5> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 900: Output port <empty> of the instance <fifo5> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 968: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 970: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 973: Output port <ep_blockstrobe> of the instance <epA0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 976: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\photon.vhd" line 979: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
 WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
     Register <fifo_photon_wr_clk> equivalent to <pmt_synced> has been removed
     Found 10-bit register for signal <write_ram_address>.
@@ -329,13 +329,13 @@ WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned
 Unit <photon> synthesized.
 
 Synthesizing Unit <clk_pll_100_in_200_out>.
-    Related source file is "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\clk_pll_100_in_200_out.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\clk_pll_100_in_200_out.vhd".
     Summary:
 	no macro.
 Unit <clk_pll_100_in_200_out> synthesized.
 
 Synthesizing Unit <okHost>.
-    Related source file is "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\okLibrary.vhd".
     Found 16-bit register for signal <hi_dataout_reg>.
     Found 16-bit register for signal <hi_datain>.
     Found 1-bit register for signal <hi_drive>.
@@ -361,7 +361,7 @@ Synthesizing Unit <okHost>.
 Unit <okHost> synthesized.
 
 Synthesizing Unit <okWireOR>.
-    Related source file is "C:\Users\lattice\Desktop\NEW_DDS_WORK\Pulser_differential_bus_2012_11_13\photon\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser_differential_bus_729_2012_11_13\photon\okLibrary.vhd".
         N = 7
     Summary:
 	no macro.
@@ -1821,12 +1821,12 @@ pmt_synced     |         |         |    2.729|         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 40.00 secs
-Total CPU time to Xst completion: 40.22 secs
+Total REAL time to Xst completion: 44.00 secs
+Total CPU time to Xst completion: 43.80 secs
  
 --> 
 
-Total memory usage is 324752 kilobytes
+Total memory usage is 317832 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  124 (   0 filtered)

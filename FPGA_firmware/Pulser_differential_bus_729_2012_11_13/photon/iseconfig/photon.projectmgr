@@ -12,13 +12,13 @@
          <ClosedNode>/photon - arch C:|Users|lattice|Hong_DB|Dropbox|WORK|VHDL|XEM6010|Photon_sd_ram_2012_06_20|Photon_sd_ram_2012_05_10|photon|photon.vhd/okHI - okHost - archHost</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>xem6010.ucf (Y:/LabRad/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/xem6010.ucf)</SelectedItem>
+         <SelectedItem>xem6010.ucf (C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/xem6010.ucf)</SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >35</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >27</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000202000000010000000100000064000001df000000020000000000000000000000000200000064ffffffff000000810000000300000002000001df0000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>xem6010.ucf (Y:/LabRad/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/xem6010.ucf)</CurrentItem>
+      <CurrentItem>xem6010.ucf (C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser_differential_bus_729_2012_11_13/photon/xem6010.ucf)</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
       <ClosedNodes>
@@ -40,9 +40,9 @@
       <SelectedItems/>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000000000000001000000000000000000000000000000000000027d000000040101000100000000000000000000000064ffffffff000000810000000000000004000001030000000100000000000000620000000100000000000000660000000100000000000000b20000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000000000000010000000000000000000000000000000000000392000000040101000100000000000000000000000064ffffffff000000810000000000000004000001030000000100000000000000620000000100000000000000660000000100000000000001c70000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem></CurrentItem>
+      <CurrentItem>blk_mem_gen_v6_3_readme.txt</CurrentItem>
    </ItemView>
    <ItemView guiview="Library" >
       <ClosedNodes>
@@ -68,13 +68,13 @@
          <ClosedNode>Synthesize - XST</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>Generate Programming File</SelectedItem>
+         <SelectedItem></SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >6</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000000b8000000010000000100000000000000000000000064ffffffff000000810000000000000001000000b80000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000001b4000000010000000100000000000000000000000064ffffffff000000810000000000000001000001b40000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>Generate Programming File</CurrentItem>
+      <CurrentItem></CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_UCF" guiview="Process" >
       <ClosedNodes>
@@ -85,7 +85,7 @@
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000000c9000000010000000100000000000000000000000064ffffffff000000810000000000000001000000c90000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000001b4000000010000000100000000000000000000000064ffffffff000000810000000000000001000001b40000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem></CurrentItem>
    </ItemView>
