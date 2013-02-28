@@ -1,161 +1,120 @@
-from lattice.scripts.experiments.SemaphoreExperiment import SemaphoreExperiment
-from lattice.scripts.PulseSequences.ramsey_dephase import ramsey_dephase as sequence
-from lattice.scripts.PulseSequences.ramsey_dephase import sample_parameters
-from lattice.scripts.scriptLibrary import dvParameters
-from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
-import time
-import numpy
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
+from subsequences.EmptySequence import empty_sequence
+from subsequences.OpticalPumping import optical_pumping
+from subsequences.RabiExcitation import rabi_excitation, rabi_excitation_no_offset
+from subsequences.StateReadout import state_readout
+from subsequences.TurnOffAll import turn_off_all
+from subsequences.BlueHeating import local_blue_heating
 from labrad.units import WithUnit
-       
-class ramsey_dephase(SemaphoreExperiment):
+           
+class ramsey_dephase(pulse_sequence):
     
-    def __init__(self):
-        self.experimentPath = ['729Experiments','RamseyDephase']
-        self.experimentPath_flop = ['729Experiments','RabiFlopping']
+    required_parameters = [
+                  'optical_pumping_enable','rabi_pi_time','pulse_gap',
+                  'dephasing_enable', 'dephasing_frequency','dephasing_amplitude', 
+                  'dephasing_duration','doppler_cooling_frequency_866','doppler_cooling_amplitude_866',
+                  'second_pulse_duration',
+                  ]
 
-    def run(self):
-        self.initialize()
-        try:
-            self.sequence()
-        except Exception,e:
-            print 'Had to stop Sequence with error:', e
-        finally:
-            self.finalize()
-
-    def initialize(self):
-        print 'Started: {}'.format(self.experimentPath)
-        self.percentDone = 0.0
-        self.import_labrad()
-        self.setup_data_vault()
-        self.sequence_parameters = self.setup_sequence_parameters()
-        self.setup_pulser()
-        self.total_readouts = []
+    required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, rabi_excitation, state_readout, turn_off_all, local_blue_heating, rabi_excitation_no_offset]
     
-    def import_labrad(self):
-        import labrad
-        self.cxn = cxn = labrad.connect()
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
-        self.dv = self.cxn.data_vault
-        self.readout_save_context = self.cxn.context()
-        self.histogram_save_context = self.cxn.context()
-        self.pulser = self.cxn.pulser
-        self.sem = cxn.semaphore
-        self.dv = cxn.data_vault
-        self.p_ramsey = self.populate_parameters(self.sem, self.experimentPath)
-        self.p = self.populate_parameters(self.sem, self.experimentPath_flop)
-        
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        self.dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend(self.experimentPath)
-        directory.extend(self.dirappend)
-        self.dv.cd(directory ,True )
-        self.dv.new('Rabi Flopping {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')] )
-        self.dv.add_parameter('Window', self.p.window_name)
-        self.dv.add_parameter('plotLive',self.p.plot_live_parameter)
-        self.dv.cd(directory , context = self.readout_save_context)
-        self.dv.new('Readout {}'.format(self.datasetNameAppend),[('Freq', 'MHz')],[('Readout Counts','Arb','Arb')], context = self.readout_save_context )
-    
-    def setup_pulser(self):
-        self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
-        self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False)
-        #switch off 729 at the beginning
-        self.pulser.output('729DP', False)
-    
-    def setup_sequence_parameters(self):
-        #update the sequence parameters with our values
-        sequence_parameters = {}.fromkeys(sample_parameters.parameters)
-        check = self.check_parameter
-        common_values_ramsey = dict([(key,check(value)) for key,value in self.p_ramsey.iteritems() if key in sequence_parameters])
-        common_values_flop = dict([(key,check(value)) for key,value in self.p.iteritems() if key in sequence_parameters])
-        sequence_parameters.update(common_values_flop)
-        sequence_parameters.update(common_values_ramsey)        
-        sequence_parameters['doppler_cooling_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['state_readout_frequency_866'] = self.check_parameter(self.p.frequency_866)
-        sequence_parameters['optical_pumping_frequency_866'] = self.check_parameter(self.p.frequency_866)        
-        sequence_parameters['optical_pumping_frequency_854'] = self.check_parameter(self.p.frequency_854)
-        sequence_parameters['repump_d_frequency_854'] = self.check_parameter(self.p.frequency_854)
-    
-        sequence_parameters['rabi_excitation_amplitude'] = self.check_parameter(self.p.rabi_amplitude_729)
-        return sequence_parameters
-        
-    def program_pulser(self, duration):
-        self.sequence_parameters['total_excitation_duration'] = duration
-        if self.p.rabi_flopping_use_saved_frequency:
-            info = self.p.saved_lines_729
-            line_name = self.p.rabi_flopping_saved_frequency
-            self.sequence_parameters['rabi_excitation_frequency'] = cm.saved_line_info_to_frequency(info, line_name)
-        else:
-            self.sequence_parameters['rabi_excitation_frequency'] = self.check_parameter(self.p.frequency)    
-        #optical pumping can track line drift
-        if self.p.optical_pumping_use_saved:
-            info = self.p.saved_lines_729
-            line_name = self.p.optical_pumping_use_saved_line
-            self.sequence_parameters['optical_pumping_frequency_729'] = cm.saved_line_info_to_frequency(info, line_name)
-        else:
-            self.sequence_parameters['optical_pumping_frequency_729'] = self.check_parameter(self.p.optical_pumping_user_selected_frequency_729)
-#        filled = [key for key,value in self.sequence_parameters.iteritems() if value is not None]; print filled
-#        unfilled = [key for key,value in self.sequence_parameters.iteritems() if value is None]; print unfilled
-        seq = sequence(**self.sequence_parameters)
-        seq.programSequence(self.pulser)
-
     def sequence(self):
-        cp = self.check_parameter
-        scan_range =  cp(self.p_ramsey.preparation_pulse_duration, False, 'us') + cp(self.p_ramsey.second_pulse_duration, False, 'us')
-        scan_start = cp(self.p_ramsey.preparation_pulse_duration, False, 'us')
-        scan_steps = int(cp(self.p_ramsey.scan_steps))
-        scan = numpy.linspace(0.0, scan_range, scan_steps)
-        scan = [WithUnit(s, 'us') for s in scan]
-        repeatitions = int(self.check_parameter(self.p.repeat_each_measurement, keep_units = False))
-        threshold = int(self.check_parameter(self.p.readout_threshold, keep_units = False))
-        for index, duration in enumerate(scan):
-            print 'Excitation {}'.format(duration)
-            self.percentDone = 100.0 * index / len(scan)
-            should_continue = self.sem.block_experiment(self.experimentPath, self.percentDone)
-            if not should_continue:
-                print 'Not Continuing'
-                return
-            else:
-                #program pulser, run sequence, and get readouts
-                self.program_pulser(duration)
-                self.pulser.start_number(repeatitions)
-                self.pulser.wait_sequence_done()
-                self.pulser.stop_sequence()
-                readouts = self.pulser.get_readout_counts().asarray
-                #save frequency scan
-                perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-                self.dv.add(duration, perc_excited)
-                #save readout counts
-                durations = numpy.ones_like(readouts) * duration
-                self.dv.add(numpy.vstack((durations, readouts)).transpose(), context = self.readout_save_context)       
-                self.total_readouts.extend(readouts)
-                self.save_histogram()
-        self.percentDone = 100.0
-                
-    def save_histogram(self, force = False):
-        if (len(self.total_readouts) >= 500) or force:
-            hist, bins = numpy.histogram(self.total_readouts, 50)
-            self.dv.new('Histogram {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')], context = self.histogram_save_context )
-            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
-            self.dv.add_parameter('Histogram729', True, context = self.histogram_save_context )
-            self.total_readouts = []
+        self.end = WithUnit(10, 'us')
+        self.addSequence(turn_off_all)
+        self.addSequence(doppler_cooling_after_repump_d)
+        if self.optical_pumping_enable:
+            self.addSequence(optical_pumping)
+        self.addSequence(rabi_excitation, **{'rabi_excitation_duration':self.rabi_pi_time / 2.0})
+        if not self.dephasing_enable:
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':self.pulse_gap}) 
+        else:
+            spacing = (self.pulse_gap - self.dephasing_duration) / 2.0
+            if spacing < WithUnit(5.0, 'us'): raise Exception("Ramsey Dephase, gap is too short to accomodate dephasing")
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
+            self.addSequence(local_blue_heating, **{
+                                                'local_blue_heating_frequency_397': self.dephasing_frequency,
+                                                'local_blue_heating_amplitude_397': self.dephasing_amplitude,
+                                                'blue_heating_frequency_866': self.doppler_cooling_frequency_866,
+                                                'blue_heating_amplitude_866': self.doppler_cooling_amplitude_866,
+                                                'blue_heating_duration': self.dephasing_duration,
+                                                'blue_heating_repump_additional': WithUnit(2, 'us')
+                                                    }) 
+            self.addSequence(empty_sequence, **{'empty_sequence_duration':spacing}) 
+        self.addSequence(rabi_excitation_no_offset, **{'rabi_excitation_duration':self.second_pulse_duration})
+        self.addSequence(state_readout)
+
+class sample_parameters(object):
     
-    def save_parameters(self):
-        measuredDict = dvParameters.measureParameters(self.cxn, self.cxnlab)
-        dvParameters.saveParameters(self.dv, measuredDict)
-        dvParameters.saveParameters(self.dv, self.p.toDict())
-    
-    def finalize(self):
-        self.save_parameters()
-        self.sem.finish_experiment(self.experimentPath, self.percentDone)
-        self.pulser.clear_dds_lock()
-        self.cxn.disconnect()
-        self.cxnlab.disconnect()
-        print 'Finished: {0}, {1}'.format(self.experimentPath, self.dirappend)
+    parameters = {
+              'repump_d_duration':WithUnit(200, 'us'),
+              'repump_d_frequency_854':WithUnit(80.0, 'MHz'),
+              'repump_d_amplitude_854':WithUnit(-11.0, 'dBm'),
+              
+              'doppler_cooling_frequency_397':WithUnit(110.0, 'MHz'),
+              'doppler_cooling_amplitude_397':WithUnit(-11.0, 'dBm'),
+              'doppler_cooling_frequency_866':WithUnit(80.0, 'MHz'),
+              'doppler_cooling_amplitude_866':WithUnit(-11.0, 'dBm'),
+              'doppler_cooling_repump_additional':WithUnit(100, 'us'),
+              'doppler_cooling_duration':WithUnit(1.0,'ms'),
+              
+              'optical_pumping_enable':False,
+              
+              'optical_pumping_continuous_duration':WithUnit(1, 'ms'),
+              'optical_pumping_continuous_repump_additional':WithUnit(200, 'us'),
+              'optical_pumping_frequency_729':WithUnit(150.0, 'MHz'),
+              'optical_pumping_frequency_854':WithUnit(80.0, 'MHz'),
+              'optical_pumping_frequency_866':WithUnit(80.0, 'MHz'),
+              'optical_pumping_amplitude_729':WithUnit(-11.0, 'dBm'),
+              'optical_pumping_amplitude_854':WithUnit(-11.0, 'dBm'),
+              'optical_pumping_amplitude_866':WithUnit(-11.0, 'dBm'),
+              
+              'optical_pumping_pulsed_cycles':5.0,
+              'optical_pumping_pulsed_duration_729':WithUnit(20, 'us'),
+              'optical_pumping_pulsed_duration_repumps':WithUnit(20, 'us'),
+              'optical_pumping_pulsed_duration_additional_866':WithUnit(20, 'us'),
+              'optical_pumping_pulsed_duration_between_pulses':WithUnit(5, 'us'),
+              
+              'optical_pumping_continuous':True,
+              'optical_pumping_pulsed':False,
+              
+              'state_readout_frequency_397':WithUnit(110.0, 'MHz'),
+              'state_readout_amplitude_397':WithUnit(-11.0, 'dBm'),
+              'state_readout_frequency_866':WithUnit(80.0, 'MHz'),
+              'state_readout_amplitude_866':WithUnit(-11.0, 'dBm'),
+              'state_readout_duration':WithUnit(3.0,'ms'),
+              
+              'pulse_gap':WithUnit(100.0, 'us'),
+
+              'rabi_pi_time':WithUnit(20.0, 'us'),
+              'second_pulse_duration':WithUnit(10.0, 'us'),
+              
+              'dephasing_enable' : True,
+              'dephasing_frequency':WithUnit(220.0, 'MHz'),
+              'dephasing_amplitude':WithUnit(-11.0, 'dBm'),
+              'dephasing_duration':WithUnit(5.0, 'us'),
+              
+              'rabi_excitation_frequency':WithUnit(220.0, 'MHz'),
+              'rabi_excitation_amplitude':WithUnit(-3.0, 'dBm'),
+              
+              }
 
 if __name__ == '__main__':
-    exprt = ramsey_dephase()
-    exprt.run()
+    import labrad
+    import time
+    cxn = labrad.connect()
+    params = sample_parameters.parameters
+    tinit = time.time()
+    cs = ramsey_dephase(**params)
+    cs.programSequence(cxn.pulser)
+#    print 'to program', time.time() - tinit
+#    cxn.pulser.start_number(1000)
+#    cxn.pulser.wait_sequence_done()
+#    cxn.pulser.stop_sequence()
+#    readout = cxn.pulser.get_readout_counts().asarray
+#    print readout
+    dds = cxn.pulser.human_readable_dds()
+    ttl = cxn.pulser.human_readable_ttl()
+    print dds
+    print ttl
+    

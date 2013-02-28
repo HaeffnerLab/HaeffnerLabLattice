@@ -76,6 +76,18 @@ if __name__ == '__main__':
     #make a treedictionary out of the parameters
     for (collection,param), value in test_parameters.parameters.iteritems():
         d['{0}.{1}'.format(collection, param)] = value
+        
+#    for key in d.keys():
+#        a = TreeDict()
+#        a.update(d)
+#        a.pop(key)
+#        try:
+#            sequence = spectrum_rabi(a)
+#        except Exception:
+#            print 'here'
+#        else:
+#            print 'key not needed', key
+
     tinit = time.time()
     cs = spectrum_rabi(d)
     cs.programSequence(cxn.pulser)
