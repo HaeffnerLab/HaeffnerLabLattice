@@ -1,20 +1,20 @@
-Release 14.3 par P.40xd (nt64)
+Release 14.4 par P.49d (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-LATTICE-IMAGING::  Sun Dec 02 22:46:34 2012
+LATTICE-IMAGING::  Sat Feb 23 15:13:09 2013
 
 par -w -intstyle ise -ol high -mt off photon_map.ncd photon.ncd photon.pcf 
 
 
 Constraints file: photon.pcf.
-Loading device for application Rf_Device from file '6slx45.nph' in environment C:\Xilinx\14.3\ISE_DS\ISE\.
+Loading device for application Rf_Device from file '6slx45.nph' in environment C:\Xilinx\14.4\ISE_DS\ISE\.
    "photon" is an NCD, version 3.2, device xc6slx45, package fgg484, speed -2
 
 Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000 Celsius)
 Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
 
 
-Device speed data version:  "PRODUCTION 1.23 2012-10-12".
+Device speed data version:  "PRODUCTION 1.23 2012-12-04".
 
 
 
@@ -52,7 +52,7 @@ Slice Logic Utilization:
 
 Slice Logic Distribution:
   Number of occupied Slices:                 1,064 out of   6,822   15%
-  Nummber of MUXCYs used:                      540 out of  13,644    3%
+  Number of MUXCYs used:                       540 out of  13,644    3%
   Number of LUT Flip Flop pairs used:        2,930
     Number with an unused Flip Flop:           903 out of   2,930   30%
     Number with an unused LUT:                 842 out of   2,930   28%
@@ -129,7 +129,7 @@ Phase  2  : 13749 unrouted;      REAL time: 16 secs
 
 Phase  3  : 4841 unrouted;      REAL time: 32 secs 
 
-Phase  4  : 4841 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 35 secs 
+Phase  4  : 4841 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 34 secs 
 
 Updating file: photon.ncd with current fully routed design.
 
@@ -145,7 +145,7 @@ Phase  9  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL 
 
 Phase 10  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 50 secs 
 Total REAL time to Router completion: 50 secs 
-Total CPU time to Router completion: 51 secs 
+Total CPU time to Router completion: 49 secs 
 
 Partition Implementation Status
 -------------------------------
@@ -409,9 +409,9 @@ All signals are completely routed.
 WARNING:Par:283 - There are 4 loadless signals in this design. This design will cause Bitgen to issue DRC warnings.
 
 Total REAL time to PAR completion: 52 secs 
-Total CPU time to PAR completion: 53 secs 
+Total CPU time to PAR completion: 52 secs 
 
-Peak Memory Usage:  487 MB
+Peak Memory Usage:  486 MB
 
 Placer: Placement generated during map.
 Routing: Completed - No errors found.

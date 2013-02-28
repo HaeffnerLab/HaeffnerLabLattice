@@ -1,0 +1,13 @@
+run
+-ifmt VHDL
+-ent fifo_pulse_seq_w16_1024_r64_256_exdes 
+-p xc6slx45-fgg484-2
+-ifn xst.prj
+-write_timing_constraints No
+-iobuf YES
+-max_fanout 100
+-ofn fifo_pulse_seq_w16_1024_r64_256_exdes 
+-ofmt NGC
+-bus_delimiter ()
+-hierarchy_separator /
+-case Maintain

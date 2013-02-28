@@ -1,4 +1,4 @@
-Release 14.3 Map P.40xd (nt64)
+Release 14.4 Map P.49d (nt64)
 Xilinx Map Application Log File for Design 'photon'
 
 Design Information
@@ -10,7 +10,7 @@ Target Device  : xc6slx45
 Target Package : fgg484
 Target Speed   : -2
 Mapper Version : spartan6 -- $Revision: 1.55 $
-Mapped Date    : Sun Dec 02 22:45:10 2012
+Mapped Date    : Sat Feb 23 15:11:38 2013
 
 Mapping design into LUTs...
 Running directed packing...
@@ -19,75 +19,57 @@ Updating timing models...
 INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
    (.mrp).
 Running timing-driven placement...
-Total REAL time at the beginning of Placer: 18 secs 
-Total CPU  time at the beginning of Placer: 18 secs 
+Total REAL time at the beginning of Placer: 23 secs 
+Total CPU  time at the beginning of Placer: 19 secs 
 
 Phase 1.1  Initial Placement Analysis
-Phase 1.1  Initial Placement Analysis (Checksum:4e5bac8b) REAL time: 21 secs 
+Phase 1.1  Initial Placement Analysis (Checksum:4e5bac8b) REAL time: 27 secs 
 
 Phase 2.7  Design Feasibility Check
-Phase 2.7  Design Feasibility Check (Checksum:4e5bac8b) REAL time: 21 secs 
+Phase 2.7  Design Feasibility Check (Checksum:4e5bac8b) REAL time: 27 secs 
 
 Phase 3.31  Local Placement Optimization
-Phase 3.31  Local Placement Optimization (Checksum:e562a24b) REAL time: 21 secs 
+Phase 3.31  Local Placement Optimization (Checksum:e562a24b) REAL time: 27 secs 
 
 Phase 4.2  Initial Placement for Architecture Specific Features
 
 Phase 4.2  Initial Placement for Architecture Specific Features
-(Checksum:a41297e1) REAL time: 46 secs 
+(Checksum:a41297e1) REAL time: 53 secs 
 
 Phase 5.36  Local Placement Optimization
-Phase 5.36  Local Placement Optimization (Checksum:a41297e1) REAL time: 46 secs 
+Phase 5.36  Local Placement Optimization (Checksum:a41297e1) REAL time: 53 secs 
 
 Phase 6.30  Global Clock Region Assignment
-Phase 6.30  Global Clock Region Assignment (Checksum:a41297e1) REAL time: 46 secs 
+Phase 6.30  Global Clock Region Assignment (Checksum:a41297e1) REAL time: 53 secs 
 
 Phase 7.3  Local Placement Optimization
-Phase 7.3  Local Placement Optimization (Checksum:a41297e1) REAL time: 46 secs 
+Phase 7.3  Local Placement Optimization (Checksum:a41297e1) REAL time: 53 secs 
 
 Phase 8.5  Local Placement Optimization
-Phase 8.5  Local Placement Optimization (Checksum:a41297e1) REAL time: 47 secs 
+Phase 8.5  Local Placement Optimization (Checksum:a41297e1) REAL time: 53 secs 
 
 Phase 9.8  Global Placement
 ...............................
 ...............................................
 ............
-Phase 9.8  Global Placement (Checksum:8511acdc) REAL time: 1 mins 
+Phase 9.8  Global Placement (Checksum:8511acdc) REAL time: 1 mins 6 secs 
 
 Phase 10.5  Local Placement Optimization
-Phase 10.5  Local Placement Optimization (Checksum:8511acdc) REAL time: 1 mins 
+Phase 10.5  Local Placement Optimization (Checksum:8511acdc) REAL time: 1 mins 6 secs 
 
 Phase 11.18  Placement Optimization
-Phase 11.18  Placement Optimization (Checksum:e2e97348) REAL time: 1 mins 10 secs 
+Phase 11.18  Placement Optimization (Checksum:e2e97348) REAL time: 1 mins 16 secs 
 
 Phase 12.5  Local Placement Optimization
-Phase 12.5  Local Placement Optimization (Checksum:e2e97348) REAL time: 1 mins 10 secs 
+Phase 12.5  Local Placement Optimization (Checksum:e2e97348) REAL time: 1 mins 16 secs 
 
 Phase 13.34  Placement Validation
-Phase 13.34  Placement Validation (Checksum:fd7cb167) REAL time: 1 mins 10 secs 
+Phase 13.34  Placement Validation (Checksum:fd7cb167) REAL time: 1 mins 16 secs 
 
-Total REAL time to Placer completion: 1 mins 16 secs 
+Total REAL time to Placer completion: 1 mins 22 secs 
 Total CPU  time to Placer completion: 1 mins 16 secs 
 Running post-placement packing...
 Writing output files...
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst>. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> and
-DESKEW(5). 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
-no EXTERN driver in CLKFB path. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
-non-EXTERN block <BUFG> in CLKFB path. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<pll/dcm_sp_inst> found
-NO extern 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm>. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> and
-DESKEW(5). 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found no
-EXTERN driver in CLKFB path. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found
-non-EXTERN block <BUFG> in CLKFB path. 
-Now executing Pdr_LogDcm_DeskewExtern::DoCheck for block<okHI/hi_dcm> found NO
-extern 
 WARNING:PhysDesignRules:372 - Gated clock. Clock net
    normal_pmt_count_trigger_inv is sourced by a combinatorial pin. This is not
    good design practice. Use the CE pin to control the loading of data into the
@@ -261,7 +243,7 @@ Slice Logic Utilization:
 
 Slice Logic Distribution:
   Number of occupied Slices:                 1,064 out of   6,822   15%
-  Nummber of MUXCYs used:                      540 out of  13,644    3%
+  Number of MUXCYs used:                       540 out of  13,644    3%
   Number of LUT Flip Flop pairs used:        2,930
     Number with an unused Flip Flop:           903 out of   2,930   30%
     Number with an unused LUT:                 842 out of   2,930   28%
@@ -319,8 +301,8 @@ Specific Feature Utilization:
 
 Average Fanout of Non-Clock Nets:                3.82
 
-Peak Memory Usage:  516 MB
-Total REAL time to MAP completion:  1 mins 20 secs 
+Peak Memory Usage:  514 MB
+Total REAL time to MAP completion:  1 mins 26 secs 
 Total CPU time to MAP completion:   1 mins 20 secs 
 
 Mapping completed.

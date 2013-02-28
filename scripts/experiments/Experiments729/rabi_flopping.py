@@ -66,7 +66,7 @@ class rabi_flopping(experiment):
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         directory = ['','Experiments']
-        directory.extend(self.name)
+        directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
         self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')],[('Excitation Probability','Arb','Arb')], context = self.rabi_flop_save_context)

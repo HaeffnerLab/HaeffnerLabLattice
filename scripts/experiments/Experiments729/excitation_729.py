@@ -60,7 +60,6 @@ class excitation_729(experiment):
         if sc.frequency_selection == 'auto': 
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
-        print 'cooling at freq', sideband_cooling_frequency
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
     
     def setup_initial_switches(self):

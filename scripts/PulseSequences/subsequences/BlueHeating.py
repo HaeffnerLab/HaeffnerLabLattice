@@ -30,8 +30,8 @@ class global_blue_heating(pulse_sequence):
 class local_blue_heating(pulse_sequence):
     
     required_parameters = [
-                            ('Heating','global_blue_heating_frequency_397'), 
-                            ('Heating','global_blue_heating_amplitude_397'), 
+                            ('Heating','local_blue_heating_frequency_397'), 
+                            ('Heating','local_blue_heating_amplitude_397'), 
                             ('Heating','blue_heating_frequency_866'), 
                             ('Heating','blue_heating_amplitude_866'), 
                             ('Heating','blue_heating_duration'),

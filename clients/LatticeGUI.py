@@ -32,7 +32,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
 #        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Drift Tracker')
-        self.createGrapherTab()
+#        self.createGrapherTab()
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)

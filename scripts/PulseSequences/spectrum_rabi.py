@@ -25,7 +25,6 @@ class spectrum_rabi(pulse_sequence):
                             ('DopplerCooling', 'doppler_cooling_repump_additional'),
                             ('DopplerCooling', 'doppler_cooling_duration'),
                           
-                            ('OpticalPumping','optical_pumping_enable'),
                             ('OpticalPumping','optical_pumping_frequency_729'),
                             ('OpticalPumping','optical_pumping_frequency_854'),
                             ('OpticalPumping','optical_pumping_frequency_866'),
@@ -43,7 +42,6 @@ class spectrum_rabi(pulse_sequence):
                             ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_additional_866'),
                             ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_between_pulses'),
             
-                            ('SidebandCooling','sideband_cooling_enable'),
                             ('SidebandCooling','sideband_cooling_cycles'),
                             ('SidebandCooling','sideband_cooling_type'),
                             ('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle'),
@@ -68,6 +66,7 @@ class spectrum_rabi(pulse_sequence):
                             ('Excitation_729','rabi_excitation_frequency'),
                             ('Excitation_729','rabi_excitation_amplitude'),
                             ('Excitation_729','rabi_excitation_duration'),
+                            ('Excitation_729','rabi_excitation_phase'),
 
                             ('StateReadout','state_readout_frequency_397'),
                             ('StateReadout','state_readout_amplitude_397'),
