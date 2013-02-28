@@ -4,7 +4,7 @@ import time
 
 nodeDict = {'node_lattice_control':
 					['Serial Server','Data Vault', 'DAC', 'Pulser', 'NormalPMTFlow',
-					'ADCserver',  'HighVoltA','Semaphore', 'SD Tracker','GPIB Device Manager', 
+					'ADCserver',  'HighVoltA','SD Tracker','GPIB Device Manager', 
 					'ScriptScanner','ParameterVault'],
 		}
 
