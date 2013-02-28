@@ -14,7 +14,7 @@ def generateData():
 generateData()
 cxn = labrad.connect()
 cxn.server = cxn.data_vault
-cxn.data_vault.cd('Sine Curves')
+cxn.data_vault.cd(['Tests', 'Sine Curves'])
 cxn.data_vault.new('Lorentzian', [('x', 'num')], [('y1','Test-Spectrum','num')])
 cxn.data_vault.add_parameter('Window', ['Lorentzian'])
 cxn.data_vault.add_parameter('plotLive', True)
@@ -23,8 +23,11 @@ for i in range(len(x)):
     data = [i, y1[i]]
     print data
     time.sleep(.01)
-cxn.data_vault.add_parameter('Fit', ['[]', 'Lorentzian', '[0.01, 25.0, 0.10000000000000001, 1.4901161193880158e-08]'])
-
+cxn.data_vault.add_parameter('Fit', ['0', 'Lorentzian', '[0.10000000000000001, 25.0, 0.01, 1.4901161193880158e-08]'])
+print 'waiting'
+cxn.data_vault.wait_for_parameter('Accept-0', 5)
+print 'done!'
+#cxn.wait_for_parameter
 #cxn.data_vault.add_parameter('Fit', ['[]', 'Line', '[-0.0029498298822661514, 32.067818432564962]'])
 #cxn.data_vault.add_parameter('Fit', ['[1, 2]', 'Parabola', '[1, 1, 1]'])
 #cxn.data_vault.add_parameter('Garbage', True)
