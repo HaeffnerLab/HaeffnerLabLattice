@@ -100,6 +100,9 @@ class rabi_flop():
         n = self.n
         #level population probability for a given nbar, see Leibfried 2003 (57)
         p = ((float(nbar)/(nbar+1.))**(n+nplus))/(nbar+1.)
+        
+        if np.abs(1-np.sum(p,axis=0))>0.00001:
+            print 'Warning: nmax may not be high enough for chosen value of nbar\n missing probability = {0}'.format(1-np.sum(p,axis=0))
 
         ones = np.ones_like(t)
         rabi_coupling = self.rabi_coupling
