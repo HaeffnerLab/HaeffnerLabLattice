@@ -6,8 +6,7 @@ import time
        
 class excitation_729(experiment):
     
-    name = 'Excitation729'
-    
+    name = 'Excitation729'  
     required_parameters = [('OpticalPumping','frequency_selection'),
                            ('OpticalPumping','manual_frequency_729'),
                            ('OpticalPumping','line_selection'),
@@ -24,7 +23,8 @@ class excitation_729(experiment):
                            ('StateReadout', 'repeat_each_measurement'),
                            ('StateReadout', 'state_readout_threshold'),
                            ]
-    required_parameters.extend(spectrum_rabi.required_parameters)
+    pulse_sequence = spectrum_rabi
+    required_parameters.extend(pulse_sequence.required_parameters)
     #removing pulse sequence items that will be calculated in the experiment and do not need to be loaded
     required_parameters.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
     required_parameters.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
@@ -40,7 +40,7 @@ class excitation_729(experiment):
         self.setup_sequence_parameters()
         self.setup_initial_switches()
         self.setup_data_vault()
-        
+
     def setup_data_vault(self):
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -72,7 +72,7 @@ class excitation_729(experiment):
     def run(self, cxn, context):
         threshold = int(self.parameters.StateReadout.state_readout_threshold)
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
-        pulse_sequence = spectrum_rabi(self.parameters)
+        pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()
