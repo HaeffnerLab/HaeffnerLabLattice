@@ -46,7 +46,6 @@ class rabi_flopping(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.rabi_flop_save_context = cxn.context()
-        self.setup_data_vault()
     
     def setup_sequence_parameters(self):
         flop = self.parameters.RabiFlopping
@@ -75,6 +74,7 @@ class rabi_flopping(experiment):
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
         
     def run(self, cxn, context):
+        self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()

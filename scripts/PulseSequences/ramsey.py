@@ -57,15 +57,6 @@ class ramsey(pulse_sequence):
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps'),
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'),
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'),
-                          
-                            ('Excitation_729','rabi_excitation_frequency'),
-                            ('Excitation_729','rabi_excitation_amplitude'),
-
-                            ('StateReadout','state_readout_frequency_397'),
-                            ('StateReadout','state_readout_amplitude_397'),
-                            ('StateReadout','state_readout_frequency_866'),
-                            ('StateReadout','state_readout_amplitude_866'),
-                            ('StateReadout','state_readout_duration'),
 
                             ('Excitation_729','rabi_excitation_frequency'),
                             ('Excitation_729','rabi_excitation_amplitude'),

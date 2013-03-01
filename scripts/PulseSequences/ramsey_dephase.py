@@ -57,9 +57,6 @@ class ramsey_dephase(pulse_sequence):
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps'),
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'),
                             ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'),
-                          
-                            ('Excitation_729','rabi_excitation_frequency'),
-                            ('Excitation_729','rabi_excitation_amplitude'),
 
                             ('StateReadout','state_readout_frequency_397'),
                             ('StateReadout','state_readout_amplitude_397'),
@@ -70,12 +67,6 @@ class ramsey_dephase(pulse_sequence):
                             ('Excitation_729','rabi_excitation_frequency'),
                             ('Excitation_729','rabi_excitation_amplitude'),
                             ('Excitation_729','rabi_excitation_phase'),
-
-                            ('StateReadout','state_readout_frequency_397'),
-                            ('StateReadout','state_readout_amplitude_397'),
-                            ('StateReadout','state_readout_frequency_866'),
-                            ('StateReadout','state_readout_amplitude_866'),
-                            ('StateReadout','state_readout_duration'),
                             
                             ('RamseyDephase','first_pulse_duration'),
                             ('RamseyDephase','pulse_gap'),
