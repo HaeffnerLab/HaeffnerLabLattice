@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">okHostClk</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_okHostClk</arg>&apos;, was traced into <arg fmt="%s" index="4">DCM_SP</arg> instance <arg fmt="%s" index="5">okHI/hi_dcm</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">DCM_SP</arg> output(s): 
+<arg fmt="%s" index="7">CLK0</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_okHI_dcm_clk0 = PERIOD &quot;okHI_dcm_clk0&quot; TS_okHostClk HIGH 50%&gt;</arg>
+</msg>
+
+<msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">SYS_CLK3</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_SYS_CLK3</arg>&apos;, was traced into <arg fmt="%s" index="4">PLL_ADV</arg> instance <arg fmt="%s" index="5">memc3_infrastructure_inst/u_pll_adv</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">PLL_ADV</arg> output(s): 
+<arg fmt="%s" index="7">CLKOUT3</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_memc3_infrastructure_inst_mcb_drp_clk_bufg_in = PERIOD &quot;memc3_infrastructure_inst_mcb_drp_clk_bufg_in&quot; TS_SYS_CLK3 / 0.78125 HIGH 50%&gt;</arg>
+</msg>
+
+<msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">SYS_CLK3</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_SYS_CLK3</arg>&apos;, was traced into <arg fmt="%s" index="4">PLL_ADV</arg> instance <arg fmt="%s" index="5">memc3_infrastructure_inst/u_pll_adv</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">PLL_ADV</arg> output(s): 
+<arg fmt="%s" index="7">CLKOUT1</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_memc3_infrastructure_inst_clk_2x_180 = PERIOD &quot;memc3_infrastructure_inst_clk_2x_180&quot; TS_SYS_CLK3 / 6.25 PHASE 0.8 ns HIGH 50%&gt;</arg>
+</msg>
+
+<msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">SYS_CLK3</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_SYS_CLK3</arg>&apos;, was traced into <arg fmt="%s" index="4">PLL_ADV</arg> instance <arg fmt="%s" index="5">memc3_infrastructure_inst/u_pll_adv</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">PLL_ADV</arg> output(s): 
+<arg fmt="%s" index="7">CLKOUT0</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_memc3_infrastructure_inst_clk_2x_0 = PERIOD &quot;memc3_infrastructure_inst_clk_2x_0&quot; TS_SYS_CLK3 / 6.25 HIGH 50%&gt;</arg>
+</msg>
+
+<msg type="info" file="ConstraintSystem" num="178" delta="old" ><arg fmt="%s" index="1">TNM</arg> &apos;<arg fmt="%s" index="2">SYS_CLK3</arg>&apos;, used in period specification &apos;<arg fmt="%s" index="3">TS_SYS_CLK3</arg>&apos;, was traced into <arg fmt="%s" index="4">PLL_ADV</arg> instance <arg fmt="%s" index="5">memc3_infrastructure_inst/u_pll_adv</arg>. The following new TNM groups and period specifications were generated at the <arg fmt="%s" index="6">PLL_ADV</arg> output(s): 
+<arg fmt="%s" index="7">CLKOUT2</arg>: <arg fmt="%s" index="8">&lt;TIMESPEC TS_memc3_infrastructure_inst_clk0_bufg_in = PERIOD &quot;memc3_infrastructure_inst_clk0_bufg_in&quot; TS_SYS_CLK3 / 1.5625 HIGH 50%&gt;</arg>
+</msg>
+
+<msg type="info" file="NgdBuild" num="1222" delta="old" >Setting <arg fmt="%s" index="1">CLKIN_PERIOD</arg> attribute associated with <arg fmt="%s" index="2">DCM</arg> instance <arg fmt="%s" index="3">okHI/hi_dcm</arg> to <arg fmt="%s" index="4">20.830000</arg> ns based on the period specification (<arg fmt="%s" index="5">&lt;TIMESPEC &quot;TS_okHostClk&quot; = PERIOD &quot;okHostClk&quot; 20.83 ns HIGH 50%;&gt; [xem6010.ucf(49)]</arg>).
+</msg>
+
+<msg type="warning" file="NgdBuild" num="443" delta="old" >SFF primitive &apos;<arg fmt="%s" index="1">okHI/core0/core0/a0/pc0/read_strobe_flop</arg>&apos; has unconnected output pin
+</msg>
+
+<msg type="warning" file="NgdBuild" num="443" delta="old" >SFF primitive &apos;<arg fmt="%s" index="1">okHI/core0/core0/a0/pc0/k_write_strobe_flop</arg>&apos; has unconnected output pin
+</msg>
+
+<msg type="warning" file="NgdBuild" num="440" delta="old" >FF primitive &apos;<arg fmt="%s" index="1">okHI/core0/core0/a0/pc0/interrupt_ack_flop</arg>&apos; has unconnected output pin
+</msg>
+
+<msg type="warning" file="NgdBuild" num="452" delta="old" ><arg fmt="%s" index="1">logical</arg> net &apos;<arg fmt="%s" index="2">N372</arg>&apos; has no driver
+</msg>
+
+<msg type="warning" file="NgdBuild" num="452" delta="old" ><arg fmt="%s" index="1">logical</arg> net &apos;<arg fmt="%s" index="2">N376</arg>&apos; has no driver
+</msg>
+
+</messages>
+
