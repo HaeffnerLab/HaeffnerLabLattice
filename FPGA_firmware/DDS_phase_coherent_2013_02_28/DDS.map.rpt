@@ -1,6 +1,6 @@
 Analysis & Synthesis report for DDS
-Thu Feb 28 20:13:39 2013
-Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
+Fri Mar 01 11:13:19 2013
+Quartus II 32-bit Version 12.0 Build 263 08/02/2012 Service Pack 2 SJ Web Edition
 
 
 ---------------------
@@ -50,24 +50,24 @@ applicable agreement for further details.
 
 
 
-+-------------------------------------------------------------------------------+
-; Analysis & Synthesis Summary                                                  ;
-+------------------------------------+------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Thu Feb 28 20:13:39 2013    ;
-; Quartus II 32-bit Version          ; 12.1 Build 177 11/07/2012 SJ Web Edition ;
-; Revision Name                      ; DDS                                      ;
-; Top-level Entity Name              ; dds                                      ;
-; Family                             ; Cyclone II                               ;
-; Total logic elements               ; 386                                      ;
-;     Total combinational functions  ; 296                                      ;
-;     Dedicated logic registers      ; 216                                      ;
-; Total registers                    ; 216                                      ;
-; Total pins                         ; 73                                       ;
-; Total virtual pins                 ; 0                                        ;
-; Total memory bits                  ; 65,536                                   ;
-; Embedded Multiplier 9-bit elements ; 0                                        ;
-; Total PLLs                         ; 1                                        ;
-+------------------------------------+------------------------------------------+
++------------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                       ;
++------------------------------------+-----------------------------------------------+
+; Analysis & Synthesis Status        ; Successful - Fri Mar 01 11:13:18 2013         ;
+; Quartus II 32-bit Version          ; 12.0 Build 263 08/02/2012 SP 2 SJ Web Edition ;
+; Revision Name                      ; DDS                                           ;
+; Top-level Entity Name              ; dds                                           ;
+; Family                             ; Cyclone II                                    ;
+; Total logic elements               ; 386                                           ;
+;     Total combinational functions  ; 296                                           ;
+;     Dedicated logic registers      ; 216                                           ;
+; Total registers                    ; 216                                           ;
+; Total pins                         ; 73                                            ;
+; Total virtual pins                 ; 0                                             ;
+; Total memory bits                  ; 65,536                                        ;
+; Embedded Multiplier 9-bit elements ; 0                                             ;
+; Total PLLs                         ; 1                                             ;
++------------------------------------+-----------------------------------------------+
 
 
 +----------------------------------------------------------------------------------------------------------------------+
@@ -147,7 +147,6 @@ applicable agreement for further details.
 ; SDC constraint protection                                                  ; Off                ; Off                ;
 ; Synthesis Effort                                                           ; Auto               ; Auto               ;
 ; Shift Register Replacement - Allow Asynchronous Clear Signal               ; On                 ; On                 ;
-; Pre-Mapping Resynthesis Optimization                                       ; Off                ; Off                ;
 ; Analysis & Synthesis Message Level                                         ; Medium             ; Medium             ;
 ; Disable Register Merging Across Hierarchies                                ; Auto               ; Auto               ;
 ; Resource Aware Inference For Block RAM                                     ; On                 ; On                 ;
@@ -155,80 +154,74 @@ applicable agreement for further details.
 +----------------------------------------------------------------------------+--------------------+--------------------+
 
 
-+------------------------------------------+
-; Parallel Compilation                     ;
-+----------------------------+-------------+
-; Processors                 ; Number      ;
-+----------------------------+-------------+
-; Number detected on machine ; 4           ;
-; Maximum allowed            ; 4           ;
-;                            ;             ;
-; Average used               ; 1.00        ;
-; Maximum used               ; 1           ;
-;                            ;             ;
-; Usage by Processor         ; % Time Used ;
-;     1 processor            ; 100.0%      ;
-;     2-4 processors         ;   0.0%      ;
-+----------------------------+-------------+
+Parallel compilation was disabled, but you have multiple processors available. Enable parallel compilation to reduce compilation time.
++-------------------------------------+
+; Parallel Compilation                ;
++----------------------------+--------+
+; Processors                 ; Number ;
++----------------------------+--------+
+; Number detected on machine ; 4      ;
+; Maximum allowed            ; 1      ;
++----------------------------+--------+
 
 
-+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                                                                             ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------------------+---------+
-; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                         ; Library ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------------------+---------+
-; DDS.vhd                          ; yes             ; User VHDL File               ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/DDS.vhd                ;         ;
-; dds_pll.vhd                      ; yes             ; User Wizard-Generated File   ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/dds_pll.vhd            ;         ;
-; dds_ram.vhd                      ; yes             ; User Wizard-Generated File   ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/dds_ram.vhd            ;         ;
-; altpll.tdf                       ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/altpll.tdf                            ;         ;
-; aglobal121.inc                   ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/aglobal121.inc                        ;         ;
-; stratix_pll.inc                  ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/stratix_pll.inc                       ;         ;
-; stratixii_pll.inc                ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/stratixii_pll.inc                     ;         ;
-; cycloneii_pll.inc                ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/cycloneii_pll.inc                     ;         ;
-; altsyncram.tdf                   ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/altsyncram.tdf                        ;         ;
-; stratix_ram_block.inc            ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/stratix_ram_block.inc                 ;         ;
-; lpm_mux.inc                      ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/lpm_mux.inc                           ;         ;
-; lpm_decode.inc                   ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/lpm_decode.inc                        ;         ;
-; a_rdenreg.inc                    ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/a_rdenreg.inc                         ;         ;
-; altrom.inc                       ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/altrom.inc                            ;         ;
-; altram.inc                       ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/altram.inc                            ;         ;
-; altdpram.inc                     ; yes             ; Megafunction                 ; c:/altera/12.1/quartus/libraries/megafunctions/altdpram.inc                          ;         ;
-; db/altsyncram_dik1.tdf           ; yes             ; Auto-Generated Megafunction  ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/db/altsyncram_dik1.tdf ;         ;
-; db/altsyncram_ods1.tdf           ; yes             ; Auto-Generated Megafunction  ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/db/altsyncram_ods1.tdf ;         ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------------------+---------+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                                                   ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                                               ; Library ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------------------------------------------------------+---------+
+; DDS.vhd                          ; yes             ; User VHDL File               ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/DDS.vhd                ;         ;
+; dds_pll.vhd                      ; yes             ; User Wizard-Generated File   ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/dds_pll.vhd            ;         ;
+; dds_ram.vhd                      ; yes             ; User Wizard-Generated File   ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/dds_ram.vhd            ;         ;
+; altpll.tdf                       ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/altpll.tdf                                               ;         ;
+; aglobal120.inc                   ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/aglobal120.inc                                           ;         ;
+; stratix_pll.inc                  ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/stratix_pll.inc                                          ;         ;
+; stratixii_pll.inc                ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/stratixii_pll.inc                                        ;         ;
+; cycloneii_pll.inc                ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/cycloneii_pll.inc                                        ;         ;
+; altsyncram.tdf                   ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/altsyncram.tdf                                           ;         ;
+; stratix_ram_block.inc            ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/stratix_ram_block.inc                                    ;         ;
+; lpm_mux.inc                      ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/lpm_mux.inc                                              ;         ;
+; lpm_decode.inc                   ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/lpm_decode.inc                                           ;         ;
+; a_rdenreg.inc                    ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/a_rdenreg.inc                                            ;         ;
+; altrom.inc                       ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/altrom.inc                                               ;         ;
+; altram.inc                       ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/altram.inc                                               ;         ;
+; altdpram.inc                     ; yes             ; Megafunction                 ; c:/altera/12.0sp2/quartus/libraries/megafunctions/altdpram.inc                                             ;         ;
+; db/altsyncram_dik1.tdf           ; yes             ; Auto-Generated Megafunction  ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/db/altsyncram_dik1.tdf ;         ;
+; db/altsyncram_ods1.tdf           ; yes             ; Auto-Generated Megafunction  ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/db/altsyncram_ods1.tdf ;         ;
++----------------------------------+-----------------+------------------------------+------------------------------------------------------------------------------------------------------------+---------+
 
 
-+-----------------------------------------------------+
-; Analysis & Synthesis Resource Usage Summary         ;
-+---------------------------------------------+-------+
-; Resource                                    ; Usage ;
-+---------------------------------------------+-------+
-; Estimated Total logic elements              ; 386   ;
-;                                             ;       ;
-; Total combinational functions               ; 296   ;
-; Logic element usage by number of LUT inputs ;       ;
-;     -- 4 input functions                    ; 177   ;
-;     -- 3 input functions                    ; 67    ;
-;     -- <=2 input functions                  ; 52    ;
-;                                             ;       ;
-; Logic elements by mode                      ;       ;
-;     -- normal mode                          ; 266   ;
-;     -- arithmetic mode                      ; 30    ;
-;                                             ;       ;
-; Total registers                             ; 216   ;
-;     -- Dedicated logic registers            ; 216   ;
-;     -- I/O registers                        ; 0     ;
-;                                             ;       ;
-; I/O pins                                    ; 73    ;
-; Total memory bits                           ; 65536 ;
-; Embedded Multiplier 9-bit elements          ; 0     ;
-; Total PLLs                                  ; 1     ;
-;     -- PLLs                                 ; 1     ;
-;                                             ;       ;
-; Maximum fan-out                             ; 116   ;
-; Total fan-out                               ; 2090  ;
-; Average fan-out                             ; 3.47  ;
-+---------------------------------------------+-------+
++------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary          ;
++---------------------------------------------+--------+
+; Resource                                    ; Usage  ;
++---------------------------------------------+--------+
+; Estimated Total logic elements              ; 386    ;
+;                                             ;        ;
+; Total combinational functions               ; 296    ;
+; Logic element usage by number of LUT inputs ;        ;
+;     -- 4 input functions                    ; 177    ;
+;     -- 3 input functions                    ; 67     ;
+;     -- <=2 input functions                  ; 52     ;
+;                                             ;        ;
+; Logic elements by mode                      ;        ;
+;     -- normal mode                          ; 266    ;
+;     -- arithmetic mode                      ; 30     ;
+;                                             ;        ;
+; Total registers                             ; 216    ;
+;     -- Dedicated logic registers            ; 216    ;
+;     -- I/O registers                        ; 0      ;
+;                                             ;        ;
+; I/O pins                                    ; 73     ;
+; Total memory bits                           ; 65536  ;
+; Total PLLs                                  ; 1      ;
+;     -- PLLs                                 ; 1      ;
+;                                             ;        ;
+; Maximum fan-out node                        ; clk_25 ;
+; Maximum fan-out                             ; 116    ;
+; Total fan-out                               ; 2090   ;
+; Average fan-out                             ; 3.47   ;
++---------------------------------------------+--------+
 
 
 +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -256,14 +249,15 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------------------------------------------------------------------------------------------------------------------+------+----------------+--------------+--------------+--------------+--------------+-------+------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis IP Cores Summary                                                                                                                         ;
-+--------+--------------+---------+--------------+--------------+-------------------+---------------------------------------------------------------------------+
-; Vendor ; IP Core Name ; Version ; Release Date ; License Type ; Entity Instance   ; IP Include File                                                           ;
-+--------+--------------+---------+--------------+--------------+-------------------+---------------------------------------------------------------------------+
-; Altera ; ALTPLL       ; 11.1    ; N/A          ; N/A          ; |dds|dds_pll:PLL  ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/dds_pll.vhd ;
-; Altera ; RAM: 2-PORT  ; 12.1    ; N/A          ; N/A          ; |dds|dds_ram:ram1 ; Y:/LabRad/lattice/FPGA_firmware/DDS_phase_coherent_2012_12_02/dds_ram.vhd ;
-+--------+--------------+---------+--------------+--------------+-------------------+---------------------------------------------------------------------------+
+The IP Core highlighted in red is outdated. Regenerate the outdated IP with the current version of the Quartus II software and the MegaWizard interface.
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis IP Cores Summary                                                                                                                                               ;
++--------+--------------+---------+--------------+--------------+-------------------+-------------------------------------------------------------------------------------------------+
+; Vendor ; IP Core Name ; Version ; Release Date ; License Type ; Entity Instance   ; IP Include File                                                                                 ;
++--------+--------------+---------+--------------+--------------+-------------------+-------------------------------------------------------------------------------------------------+
+; Altera ; ALTPLL       ; 11.1    ; N/A          ; N/A          ; |dds|dds_pll:PLL  ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/dds_pll.vhd ;
+; Altera ; RAM: 2-PORT  ; 12.1    ; N/A          ; N/A          ; |dds|dds_ram:ram1 ; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS_phase_coherent_2013_02_28/dds_ram.vhd ;
++--------+--------------+---------+--------------+--------------+-------------------+-------------------------------------------------------------------------------------------------+
 
 
 +---------------------------------------------------------------------------------+
@@ -318,24 +312,24 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------------------------+---------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                              ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output    ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------+
-; 3:1                ; 31 bits   ; 62 LEs        ; 0 LEs                ; 62 LEs                 ; Yes        ; |dds|main_amplitude_var[11]   ;
-; 7:1                ; 8 bits    ; 32 LEs        ; 8 LEs                ; 24 LEs                 ; Yes        ; |dds|parallel_data[5]~reg0    ;
-; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |dds|instruction[0]           ;
-; 4:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; Yes        ; |dds|data_to_write[28]        ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |dds|count[4]                 ;
-; 5:1                ; 6 bits    ; 18 LEs        ; 6 LEs                ; 12 LEs                 ; Yes        ; |dds|parallel_data[10]~reg0   ;
-; 8:1                ; 3 bits    ; 15 LEs        ; 12 LEs               ; 3 LEs                  ; Yes        ; |dds|main_count[2]            ;
-; 20:1               ; 2 bits    ; 26 LEs        ; 4 LEs                ; 22 LEs                 ; Yes        ; |dds|LED_OE~reg0              ;
-; 5:1                ; 7 bits    ; 21 LEs        ; 14 LEs               ; 7 LEs                  ; Yes        ; |dds|command_count[5]         ;
-; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; Yes        ; |dds|ram_process_count[1]     ;
-; 26:1               ; 2 bits    ; 34 LEs        ; 12 LEs               ; 22 LEs                 ; Yes        ; |dds|\process_5:main_count[3] ;
-; 8:1                ; 6 bits    ; 30 LEs        ; 12 LEs               ; 18 LEs                 ; Yes        ; |dds|data_bit_count[0]        ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                              ;
++--------------------+-----------+---------------+----------------------+------------------------+-------------------------------+----------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered                    ; Example Multiplexer Output ;
++--------------------+-----------+---------------+----------------------+------------------------+-------------------------------+----------------------------+
+; 3:1                ; 31 bits   ; 62 LEs        ; 0 LEs                ; 62 LEs                 ; |dds|main_amplitude_var[11]   ;                            ;
+; 7:1                ; 8 bits    ; 32 LEs        ; 8 LEs                ; 24 LEs                 ; |dds|parallel_data[5]~reg0    ;                            ;
+; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; |dds|instruction[0]           ;                            ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; |dds|data_to_write[28]        ;                            ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; |dds|count[4]                 ;                            ;
+; 5:1                ; 6 bits    ; 18 LEs        ; 6 LEs                ; 12 LEs                 ; |dds|parallel_data[10]~reg0   ;                            ;
+; 8:1                ; 3 bits    ; 15 LEs        ; 12 LEs               ; 3 LEs                  ; |dds|main_count[2]            ;                            ;
+; 20:1               ; 2 bits    ; 26 LEs        ; 4 LEs                ; 22 LEs                 ; |dds|LED_OE~reg0              ;                            ;
+; 5:1                ; 7 bits    ; 21 LEs        ; 14 LEs               ; 7 LEs                  ; |dds|command_count[5]         ;                            ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; |dds|ram_process_count[1]     ;                            ;
+; 26:1               ; 2 bits    ; 34 LEs        ; 12 LEs               ; 22 LEs                 ; |dds|\process_5:main_count[3] ;                            ;
+; 8:1                ; 6 bits    ; 30 LEs        ; 12 LEs               ; 18 LEs                 ; |dds|data_bit_count[0]        ;                            ;
++--------------------+-----------+---------------+----------------------+------------------------+-------------------------------+----------------------------+
 
 
 +----------------------------------------------------------------------------------------------------+
@@ -842,7 +836,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:01     ;
+; Top            ; 00:00:02     ;
 +----------------+--------------+
 
 
@@ -851,10 +845,10 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-------------------------------+
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Analysis & Synthesis
-    Info: Version 12.1 Build 177 11/07/2012 SJ Web Edition
-    Info: Processing started: Thu Feb 28 20:13:35 2013
+    Info: Version 12.0 Build 263 08/02/2012 Service Pack 2 SJ Web Edition
+    Info: Processing started: Fri Mar 01 11:13:11 2013
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off DDS -c DDS
-Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
+Warning (20028): Parallel compilation is not licensed and has been disabled
 Info (12021): Found 2 design units, including 1 entities, in source file dds.vhd
     Info (12022): Found design unit 1: dds-behaviour
     Info (12023): Found entity 1: dds
@@ -975,14 +969,6 @@ Warning (20013): Ignored assignments for entity "dds_controller" -- entity does 
     Warning (20014): Assignment for entity set_global_assignment -name PARTITION_IMPORT_PROMOTE_ASSIGNMENTS ON -entity dds_controller -section_id Top was ignored
     Warning (20014): Assignment for entity set_global_assignment -name PARTITION_TYPE STANDARD_PARTITION -entity dds_controller -section_id Top was ignored
     Warning (20014): Assignment for entity set_global_assignment -name ALLOW_MULTIPLE_PERSONAS OFF -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name PARTITION_ASD_REGION_ID 1 -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name CROSS_BOUNDARY_OPTIMIZATIONS OFF -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name PROPAGATE_CONSTANTS_ON_INPUTS ON -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name PROPAGATE_INVERSIONS_ON_INPUTS ON -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name REMOVE_LOGIC_ON_UNCONNECTED_OUTPUTS ON -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name MERGE_EQUIVALENT_INPUTS ON -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name MERGE_EQUIVALENT_BIDIRS ON -entity dds_controller -section_id Top was ignored
-    Warning (20014): Assignment for entity set_global_assignment -name ABSORB_PATHS_FROM_OUTPUTS_TO_INPUTS ON -entity dds_controller -section_id Top was ignored
     Warning (20014): Assignment for entity set_global_assignment -name PARTITION_EXTRACT_HARD_BLOCK_NODES ON -entity dds_controller -section_id Top was ignored
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 1 node(s), including 0 DDIO, 1 PLL, 0 transceiver and 0 LCELL
@@ -998,10 +984,10 @@ Info (21057): Implemented 481 device resources after synthesis - the final resou
     Info (21061): Implemented 391 logic cells
     Info (21064): Implemented 16 RAM segments
     Info (21065): Implemented 1 PLLs
-Info: Quartus II 32-bit Analysis & Synthesis was successful. 0 errors, 40 warnings
-    Info: Peak virtual memory: 373 megabytes
-    Info: Processing ended: Thu Feb 28 20:13:39 2013
-    Info: Elapsed time: 00:00:04
-    Info: Total CPU time (on all processors): 00:00:04
+Info: Quartus II 32-bit Analysis & Synthesis was successful. 0 errors, 33 warnings
+    Info: Peak virtual memory: 367 megabytes
+    Info: Processing ended: Fri Mar 01 11:13:19 2013
+    Info: Elapsed time: 00:00:08
+    Info: Total CPU time (on all processors): 00:00:05
 
 

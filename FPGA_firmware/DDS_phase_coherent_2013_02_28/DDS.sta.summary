@@ -3,32 +3,36 @@ TimeQuest Timing Analyzer Summary
 ------------------------------------------------------------
 
 Type  : Slow Model Setup 'clk_system'
-Slack : -2.561
-TNS   : -68.381
+Slack : -2.638
+TNS   : -64.441
 
 Type  : Slow Model Setup 'PLL|altpll_component|pll|clk[0]'
-Slack : -2.481
-TNS   : -74.162
+Slack : -2.621
+TNS   : -79.718
 
 Type  : Slow Model Setup 'clk_25'
-Slack : -2.039
-TNS   : -267.484
+Slack : -2.059
+TNS   : -245.003
 
 Type  : Slow Model Setup 'dds_ram_wrclock'
 Slack : -1.915
-TNS   : -177.345
+TNS   : -86.928
 
 Type  : Slow Model Setup 'bus_in_step_to_next_value'
-Slack : -1.059
-TNS   : -6.395
+Slack : -1.054
+TNS   : -6.350
 
 Type  : Slow Model Hold 'clk_25'
 Slack : -2.209
 TNS   : -2.209
 
 Type  : Slow Model Hold 'clk_system'
-Slack : -1.694
-TNS   : -1.694
+Slack : -1.682
+TNS   : -1.682
+
+Type  : Slow Model Hold 'dds_ram_wrclock'
+Slack : 0.244
+TNS   : 0.000
 
 Type  : Slow Model Hold 'PLL|altpll_component|pll|clk[0]'
 Slack : 0.391
@@ -36,10 +40,6 @@ TNS   : 0.000
 
 Type  : Slow Model Hold 'bus_in_step_to_next_value'
 Slack : 0.391
-TNS   : 0.000
-
-Type  : Slow Model Hold 'dds_ram_wrclock'
-Slack : 0.660
 TNS   : 0.000
 
 Type  : Slow Model Minimum Pulse Width 'dds_ram_wrclock'
@@ -64,22 +64,22 @@ TNS   : 0.000
 
 Type  : Fast Model Setup 'dds_ram_wrclock'
 Slack : -1.457
-TNS   : -41.129
+TNS   : -23.412
 
 Type  : Fast Model Setup 'clk_system'
-Slack : -0.591
-TNS   : -6.986
+Slack : -0.570
+TNS   : -5.628
 
 Type  : Fast Model Setup 'clk_25'
-Slack : -0.341
-TNS   : -25.614
+Slack : -0.280
+TNS   : -12.900
 
 Type  : Fast Model Setup 'bus_in_step_to_next_value'
-Slack : 0.055
+Slack : 0.057
 TNS   : 0.000
 
 Type  : Fast Model Setup 'PLL|altpll_component|pll|clk[0]'
-Slack : 0.974
+Slack : 0.891
 TNS   : 0.000
 
 Type  : Fast Model Hold 'clk_25'
@@ -87,8 +87,8 @@ Slack : -1.346
 TNS   : -1.346
 
 Type  : Fast Model Hold 'clk_system'
-Slack : -1.048
-TNS   : -1.048
+Slack : -1.038
+TNS   : -1.038
 
 Type  : Fast Model Hold 'PLL|altpll_component|pll|clk[0]'
 Slack : 0.215
@@ -99,7 +99,7 @@ Slack : 0.215
 TNS   : 0.000
 
 Type  : Fast Model Hold 'dds_ram_wrclock'
-Slack : 0.540
+Slack : 0.362
 TNS   : 0.000
 
 Type  : Fast Model Minimum Pulse Width 'dds_ram_wrclock'
