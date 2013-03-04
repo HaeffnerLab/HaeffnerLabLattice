@@ -66,8 +66,8 @@ class ramsey_scanphase(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.data_save_context)
-        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')],[('Excitation Probability','Arb','Arb')], context = self.data_save_context)
-        window_name = self.parameters.get('RamseyScanPhase.window_name', ['Ramsey Gap Scan'])
+        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Second pulse phase', 'deg')],[('Excitation Probability','Arb','Arb')], context = self.data_save_context)
+        window_name = self.parameters.get('RamseyScanPhase.window_name', ['Ramsey Phase Scan'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
         
