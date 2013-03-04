@@ -72,6 +72,8 @@ class rabi_tomography(pulse_sequence):
                             
                             ('Tomography', 'rabi_pi_time'),
                             ('Tomography', 'iteration'),
+                            ('Tomography', 'tomography_excitation_frequency'),
+                            ('Tomography', 'tomography_excitation_amplitude'),
                             ]
     
     

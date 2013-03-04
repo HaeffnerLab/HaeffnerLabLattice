@@ -4,6 +4,7 @@ from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
+
 class rabi_tomography(experiment):
     
     name = 'RabiTomography'
@@ -21,7 +22,10 @@ class rabi_tomography(experiment):
                            ('TrapFrequencies','radial_frequency_2'),
                            ('TrapFrequencies','rf_drive_frequency'),
                            
-                           ('Tomography','repeat_each_measurement')
+                           ('Tomography','repeat_each_measurement'),
+                           
+                           ('Tomography', 'line_selection'),
+                           ('Tomography', 'tomography_excitation_amplitude'),
                            ]
 
     required_parameters.extend(excitation_rabi_tomography.required_parameters)
@@ -29,8 +33,9 @@ class rabi_tomography(experiment):
     required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
     required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
     required_parameters.remove(('Tomography','iteration'))
+    required_parameters.remove(('Tomography','tomography_excitation_frequency'))
     required_parameters.remove(('StateReadout','repeat_each_measurement'))
-    
+
     def initialize(self, cxn, context, ident):
         self.ident = ident
         self.excite = self.make_experiment(excitation_rabi_tomography)
@@ -54,6 +59,9 @@ class rabi_tomography(experiment):
             frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
         self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        tom = self.parameters.Tomography
+        frequency = cm.frequency_from_line_selection('auto', None, tom.line_selection, self.drift_tracker)
+        self.parameters['Tomography.tomography_excitation_frequency'] = frequency
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -83,7 +91,6 @@ class rabi_tomography(experiment):
      
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
-        print self.excitations
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)

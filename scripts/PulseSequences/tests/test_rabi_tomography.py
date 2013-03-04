@@ -67,6 +67,8 @@ class test_parameters(object):
               
               ('Tomography', 'rabi_pi_time'):WithUnit(50.0, 'us'),
               ('Tomography', 'iteration'):2,
+              ('Tomography', 'tomography_excitation_frequency'):WithUnit(0.0, 'MHz'),
+              ('Tomography', 'tomography_excitation_amplitude'):WithUnit(-11.0, 'dBm'),
               }
 
 if __name__ == '__main__':
