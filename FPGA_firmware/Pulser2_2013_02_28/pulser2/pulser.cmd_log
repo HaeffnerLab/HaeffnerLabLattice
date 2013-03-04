@@ -1,0 +1,306 @@
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 
+xst -intstyle ise -ifn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.xst" -ofn "C:/Users/lattice/Desktop/Pulser2/pulser2/pulser.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc xem6010.ucf -p xc6slx45-fgg484-2 pulser.ngc pulser.ngd  
+map -intstyle ise -p xc6slx45-fgg484-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o pulser_map.ncd pulser.ngd pulser.pcf 
+par -w -intstyle ise -ol high -mt off pulser_map.ncd pulser.ncd pulser.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml pulser.twx pulser.ncd -o pulser.twr pulser.pcf -ucf xem6010.ucf 
+bitgen -intstyle ise -f pulser.ut pulser.ncd 

@@ -65,29 +65,29 @@ xem.ActivateTriggerIn(0x40,1)
 
 buf1 = "\x00\x00\x00\x00\x01\x00\x01\x00"
 buf2 = "\x10\x00\x00\x00\x02\x00\x02\x00"
-buf3 = "\x80\x00\x00\x00\x04\x00\x04\x00"
-#buf4 = "\x30\x00\x00\x00\x08\x00\x08\x00"
-#buf5 = "\x40\x00\x00\x00\x10\x00\x10\x00"
-#buf6 = "\x50\x00\x00\x00\x20\x00\x20\x00"
-#buf7 = "\x60\x00\x00\x00\x40\x00\x40\x00"
-#buf8 = "\x70\x00\x00\x00\x80\x00\x80\x00"
-#buf9 = "\x80\x00\x00\x00\x00\x01\x00\x01"
-#buf10 = "\x90\x00\x00\x00\x00\x02\x00\x02"
-#buf11 = "\xa0\x00\x00\x00\x00\x04\x00\x04"
-#buf12 = "\xb0\x00\x00\x00\x00\x08\x00\x08"
-#buf13 = "\xc0\x00\x00\x00\x00\x10\x00\x10"
-#buf14 = "\xd0\x00\x00\x00\x00\x20\x00\x20"
-#buf15 = "\xe0\x00\x00\x00\x00\x40\x00\x40"
-#buf16 = "\xf0\x00\x00\x00\x00\x80\x00\x80"
-#buf17 = "\x00\x01\x00\x00\x00\x00\x00\x00"
+buf3 = "\x20\x00\x00\x00\x04\x00\x04\x00"
+buf4 = "\x30\x00\x00\x00\x08\x00\x08\x00"
+buf5 = "\x40\x00\x00\x00\x10\x00\x10\x00"
+buf6 = "\x50\x00\x00\x00\x20\x00\x20\x00"
+buf7 = "\x60\x00\x00\x00\x40\x00\x40\x00"
+buf8 = "\x70\x00\x00\x00\x80\x00\x80\x00"
+buf9 = "\x80\x00\x00\x00\x00\x01\x00\x01"
+buf10 = "\x90\x00\x00\x00\x00\x02\x00\x02"
+buf11 = "\xa0\x00\x00\x00\x00\x04\x00\x04"
+buf12 = "\xb0\x00\x00\x00\x00\x08\x00\x08"
+buf13 = "\xc0\x00\x00\x00\x00\x10\x00\x10"
+buf14 = "\xd0\x00\x00\x00\x00\x20\x00\x20"
+buf15 = "\xe0\x00\x00\x00\x00\x40\x00\x40"
+buf16 = "\xf0\x00\x00\x00\x00\x80\x00\x80"
+buf17 = "\x00\x01\x00\x00\x00\x00\x00\x00"
 blank = "\x00\x00\x00\x00\x00\x00\x00\x00"
 
 xem.WriteToBlockPipeIn(0x80, 2, buf1)
 xem.WriteToBlockPipeIn(0x80, 2, buf2)
 xem.WriteToBlockPipeIn(0x80, 2, buf3)
-#xem.WriteToBlockPipeIn(0x80, 2, buf4)
-#xem.WriteToBlockPipeIn(0x80, 2, buf5)
-#xem.WriteToBlockPipeIn(0x80, 2, buf6)
+xem.WriteToBlockPipeIn(0x80, 2, buf4)
+xem.WriteToBlockPipeIn(0x80, 2, buf5)
+xem.WriteToBlockPipeIn(0x80, 2, buf6)
 #xem.WriteToBlockPipeIn(0x80, 2, buf7)
 #xem.WriteToBlockPipeIn(0x80, 2, buf8)
 #xem.WriteToBlockPipeIn(0x80, 2, buf9)
@@ -101,19 +101,27 @@ xem.WriteToBlockPipeIn(0x80, 2, buf3)
 #xem.WriteToBlockPipeIn(0x80, 2, buf17)
 xem.WriteToBlockPipeIn(0x80, 2, blank)
 
+###line trigger on###
+
+xem.SetWireInValue(0x00,0x00,0x08)
+
 ###start one seq
+xem.SetWireInValue(0x05,10) ## run 3 sequences
 xem.SetWireInValue(0x00,0x06,0x06)
 xem.UpdateWireIns()
 
 print "begin reading1..."
 
-time.sleep(10)
+time.sleep(5)
 
-xem.SetWireInValue(0x07,0x0000)
+xem.SetWireInValue(0x07,0x0000) #stop SDRAM operation
+xem.SetWireInValue(0x00,0x80,0xf0) #read number of readout count
 xem.UpdateWireIns()
 xem.UpdateWireOuts()
 
 number_of_photon = ((xem.GetWireOutValue(0x23)*65536 + xem.GetWireOutValue(0x22))+8)/4
+
+#print "Readout count is ",xem.GetWireOutValue(0x21)
 
 if number_of_photon == 570425336:
     print "SDRAM is full"
@@ -128,14 +136,11 @@ xem.UpdateWireIns()
 xem.SetWireInValue(0x07,0x0001)
 xem.UpdateWireIns()
 
-#time.sleep(5)
 
 if number_of_photon > 4194302:
     number_of_photon = 4194302
     
 write_size = number_of_photon
-
-print "Write size is ", write_size
 
 read_buf1 = write_size*4*'\x00'
 print "start reading"
@@ -145,10 +150,61 @@ print "done reading"
 
 xem.UpdateWireOuts()
 
-
-for i in np.arange(write_size-20,write_size):
+print "time tag is"
+for i in np.arange(write_size-16,write_size):
 #for i in np.arange(0,write_size):
     print (65536*(256*ord(read_buf1[i*4+1])+ord(read_buf1[i*4]))+(256*ord(read_buf1[i*4+3])+ord(read_buf1[i*4+2])))*10E-9
 
 #print rand[0:64]
 #print read_number1[0:64]
+
+
+xem.UpdateWireOuts()
+readout = xem.GetWireOutValue(0x21)/2
+
+print "Readout count is ", readout
+
+buf = readout*4*"\x00"
+xem.ReadFromBlockPipeOut(0xA2,2,buf)
+
+for i in np.arange(0,readout):
+#for i in np.arange(0,write_size):
+    print (65536*(256*ord(buf[i*4+1])+ord(buf[i*4]))+(256*ord(buf[i*4+3])+ord(buf[i*4+2])))
+
+xem.ActivateTriggerIn(0x40,6)
+xem.SetWireInValue(0x04,0x00)
+xem.UpdateWireIns()
+ 
+xem.ActivateTriggerIn(0x40,4)
+
+
+####phase: \x\xMSB amplitude: \x\x freq: \xLSB\xlSB\xmSB\xMSB
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x40")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x41")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x42")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x43")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x44")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x45")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x46")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00\x00\x80\x00\x00\x00\x47")
+xem.WriteToBlockPipeIn(0x81, 2, "\x00\x00")
+
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,5)
+time.sleep(1)
+xem.ActivateTriggerIn(0x40,4)
+
