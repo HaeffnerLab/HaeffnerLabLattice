@@ -15,6 +15,7 @@ class scan_cavity(experiment):
                            ]
     
     def initialize(self, cxn, context, ident):
+        self.ident = ident
         cxnlab = labrad.connect('192.168.169.49')
         self.ld = cxnlab.laserdac
         self.pmt = cxn.normalpmtflow

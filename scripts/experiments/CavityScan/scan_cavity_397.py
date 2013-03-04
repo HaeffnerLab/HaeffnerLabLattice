@@ -13,6 +13,7 @@ class scan_cavity_397(scan_cavity):
                            ]
     
     def initialize(self, cxn, context, ident):
+        self.ident = ident
         self.cavity_name = '397D'
         cxnlab = labrad.connect('192.168.169.49')
         self.ld = cxnlab.laserdac
@@ -31,6 +32,6 @@ if __name__ == '__main__':
     #normal way to launch
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = scan_cavity(cxn = cxn)
+    exprt = scan_cavity_397(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
