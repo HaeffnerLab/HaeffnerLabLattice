@@ -1,5 +1,5 @@
 Analysis & Synthesis report for DDS
-Mon Mar 04 10:56:09 2013
+Mon Mar 04 11:02:52 2013
 Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
 
 
@@ -53,7 +53,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +------------------------------------+------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Mon Mar 04 10:56:09 2013    ;
+; Analysis & Synthesis Status        ; Successful - Mon Mar 04 11:02:52 2013    ;
 ; Quartus II 32-bit Version          ; 12.1 Build 177 11/07/2012 SJ Web Edition ;
 ; Revision Name                      ; DDS                                      ;
 ; Top-level Entity Name              ; dds                                      ;
@@ -852,7 +852,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Analysis & Synthesis
     Info: Version 12.1 Build 177 11/07/2012 SJ Web Edition
-    Info: Processing started: Mon Mar 04 10:56:05 2013
+    Info: Processing started: Mon Mar 04 11:02:48 2013
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off DDS -c DDS
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
 Info (12021): Found 2 design units, including 1 entities, in source file dds.vhd
@@ -865,7 +865,6 @@ Info (12021): Found 2 design units, including 1 entities, in source file dds_ram
     Info (12022): Found design unit 1: dds_ram-SYN
     Info (12023): Found entity 1: dds_ram
 Info (12127): Elaborating entity "DDS" for the top level hierarchy
-Warning (10492): VHDL Process Statement warning at DDS.vhd(170): signal "DDS_manual_mode" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
 Info (12128): Elaborating entity "dds_pll" for hierarchy "dds_pll:PLL"
 Info (12128): Elaborating entity "altpll" for hierarchy "dds_pll:PLL|altpll:altpll_component"
 Info (12130): Elaborated megafunction instantiation "dds_pll:PLL|altpll:altpll_component"
@@ -999,9 +998,9 @@ Info (21057): Implemented 481 device resources after synthesis - the final resou
     Info (21061): Implemented 391 logic cells
     Info (21064): Implemented 16 RAM segments
     Info (21065): Implemented 1 PLLs
-Info: Quartus II 32-bit Analysis & Synthesis was successful. 0 errors, 41 warnings
+Info: Quartus II 32-bit Analysis & Synthesis was successful. 0 errors, 40 warnings
     Info: Peak virtual memory: 373 megabytes
-    Info: Processing ended: Mon Mar 04 10:56:09 2013
+    Info: Processing ended: Mon Mar 04 11:02:52 2013
     Info: Elapsed time: 00:00:04
     Info: Total CPU time (on all processors): 00:00:04
 

@@ -164,7 +164,7 @@ begin
 
 	dds_step_to_next_freq_sampled <= dds_step_to_next_freq;
 	
-	process (dds_step_to_next_freq_sampled, dds_ram_reset)
+	process (dds_step_to_next_freq_sampled, dds_ram_reset,DDS_manual_mode)
 		variable dds_step_count: integer range 0 to 1023:=0;
 	begin
 			if ((dds_ram_reset = '1') OR (DDS_manual_mode = '1')) then
