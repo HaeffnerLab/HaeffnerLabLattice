@@ -93,6 +93,7 @@ generic
 		dds_logic_ram_reset: out STD_LOGIC;
 		dds_logic_step_to_next_value: out STD_LOGIC;
 		dds_logic_reset_dds_chip: out STD_LOGIC;
+		dds_logic_ram_reset_manual: out STD_LOGIC;
 		dds_logic_address : out STD_LOGIC_VECTOR (2 downto 0)
 	);
 end pulser;
@@ -1045,6 +1046,7 @@ dds_logic_ram_reset <= master_logic(19) or ep40wire(4); -----------dds reset----
 dds_logic_step_to_next_value <= master_logic(18) or ep40wire(5);
 dds_logic_reset_dds_chip <= ep40wire(6);
 dds_logic_address <= ep04wire(2 downto 0); ---------------set dds channel
+dds_logic_ram_reset_manual<=ep40wire(8);
 
 	
 ---------------------------------------------------------------------------------------

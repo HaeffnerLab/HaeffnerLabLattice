@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2013-02-28T17:34:30</DateModified>
+  <DateModified>2013-03-04T19:01:40</DateModified>
   <ModuleName>pulser</ModuleName>
   <SummaryTimeStamp>2013-02-25T20:06:58</SummaryTimeStamp>
-  <SavedFilePath>C:/Users/lattice/Desktop/Pulser2/pulser2/iseconfig/pulser.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>C:/Users/lattice/Desktop/Pulser2/pulser2\</ImplementationReportsDirectory>
+  <SavedFilePath>C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser2_2013_02_28/pulser2/iseconfig/pulser.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/Pulser2_2013_02_28/pulser2\</ImplementationReportsDirectory>
   <DateInitialized>2013-02-25T20:06:47</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>

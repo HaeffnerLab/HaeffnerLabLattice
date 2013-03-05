@@ -1,7 +1,7 @@
 Release 14.4 - par P.49d (nt64)
 Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 
-Thu Feb 28 20:03:52 2013
+Mon Mar 04 19:15:29 2013
 
 
 # NOTE: This file is designed to be imported into a spreadsheet program
@@ -36,7 +36,7 @@ A14|dds_logic_step_to_next_value|IOB|IO_L50N_0|OUTPUT|LVCMOS33|0|12|SLOW||||LOCA
 A15|dds_logic_ram_reset|IOB|IO_L51N_0|OUTPUT|LVCMOS33|0|12|SLOW||||LOCATED|NO|NONE|
 A16|dds_logic_address<2>|IOB|IO_L63N_SCP6_0|OUTPUT|LVCMOS33|0|12|SLOW||||LOCATED|NO|NONE|
 A17|dds_logic_address<1>|IOB|IO_L64N_SCP4_0|OUTPUT|LVCMOS33|0|12|SLOW||||LOCATED|NO|NONE|
-A18||IOBS|IO_L65N_SCP2_0|UNUSED||0|||||||||
+A18|dds_logic_ram_reset_manual|IOB|IO_L65N_SCP2_0|OUTPUT|LVCMOS33|0|12|SLOW||||LOCATED|NO|NONE|
 A19|||TDO||||||||||||
 A20||IOBM|IO_L20P_1|UNUSED||1|||||||||
 A21||IOBS|IO_L20N_1|UNUSED||1|||||||||

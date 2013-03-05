@@ -10,23 +10,23 @@ Target Device  : xc6slx45
 Target Package : fgg484
 Target Speed   : -2
 Mapper Version : spartan6 -- $Revision: 1.55 $
-Mapped Date    : Thu Feb 28 20:01:03 2013
+Mapped Date    : Mon Mar 04 19:12:26 2013
 
 Design Summary
 --------------
 Number of errors:      0
 Number of warnings:   34
 Slice Logic Utilization:
-  Number of Slice Registers:                 2,920 out of  54,576    5%
-    Number used as Flip Flops:               2,887
+  Number of Slice Registers:                 2,924 out of  54,576    5%
+    Number used as Flip Flops:               2,891
     Number used as Latches:                     33
     Number used as Latch-thrus:                  0
     Number used as AND/OR logics:                0
-  Number of Slice LUTs:                      2,790 out of  27,288   10%
+  Number of Slice LUTs:                      2,771 out of  27,288   10%
     Number used as logic:                    2,603 out of  27,288    9%
-      Number using O6 output only:           1,633
+      Number using O6 output only:           1,631
       Number using O5 output only:             289
-      Number using O5 and O6:                  681
+      Number using O5 and O6:                  683
       Number used as ROM:                        0
     Number used as Memory:                      45 out of   6,408    1%
       Number used as Dual Port RAM:             20
@@ -41,21 +41,21 @@ Slice Logic Utilization:
         Number using O6 output only:             1
         Number using O5 output only:             0
         Number using O5 and O6:                  0
-    Number used exclusively as route-thrus:    142
-      Number with same-slice register load:    126
+    Number used exclusively as route-thrus:    123
+      Number with same-slice register load:    107
       Number with same-slice carry load:        16
       Number with other load:                    0
 
 Slice Logic Distribution:
-  Number of occupied Slices:                 1,291 out of   6,822   18%
+  Number of occupied Slices:                 1,287 out of   6,822   18%
   Number of MUXCYs used:                       748 out of  13,644    5%
-  Number of LUT Flip Flop pairs used:        3,642
-    Number with an unused Flip Flop:         1,055 out of   3,642   28%
-    Number with an unused LUT:                 852 out of   3,642   23%
-    Number of fully used LUT-FF pairs:       1,735 out of   3,642   47%
+  Number of LUT Flip Flop pairs used:        3,674
+    Number with an unused Flip Flop:         1,063 out of   3,674   28%
+    Number with an unused LUT:                 903 out of   3,674   24%
+    Number of fully used LUT-FF pairs:       1,708 out of   3,674   46%
     Number of unique control sets:             287
     Number of slice register sites lost
-      to control set restrictions:           1,395 out of  54,576    2%
+      to control set restrictions:           1,391 out of  54,576    2%
 
   A LUT Flip Flop pair for this architecture represents one LUT paired with
   one Flip Flop within a slice.  A control set is a unique combination of
@@ -64,8 +64,8 @@ Slice Logic Distribution:
   over-mapped for a non-slice resource or if Placement fails.
 
 IO Utilization:
-  Number of bonded IOBs:                       141 out of     316   44%
-    Number of LOCed IOBs:                      141 out of     141  100%
+  Number of bonded IOBs:                       142 out of     316   44%
+    Number of LOCed IOBs:                      142 out of     142  100%
     IOB Flip Flops:                             17
 
 Specific Feature Utilization:
@@ -109,7 +109,7 @@ Specific Feature Utilization:
 Average Fanout of Non-Clock Nets:                3.61
 
 Peak Memory Usage:  549 MB
-Total REAL time to MAP completion:  1 mins 46 secs 
+Total REAL time to MAP completion:  1 mins 55 secs 
 Total CPU time to MAP completion:   1 mins 46 secs 
 
 Table of Contents
@@ -262,16 +262,16 @@ WARNING:PhysDesignRules:372 - Gated clock. Clock net
    combinatorial pin. This is not good design practice. Use the CE pin to
    control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 WARNING:PhysDesignRules:367 - The signal
-   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM1_RAMD_O> is
+   <okHI/core0/core0/a0/cb0/BU2/U0/grf.rf/mem/gdm.dm/Mram_RAM2_RAMD_O> is
    incomplete. The signal does not drive any load pins in the design.
 
 Section 3 - Informational
 -------------------------
 INFO:LIT:243 - Logical network ok1<29> has no load.
-INFO:LIT:395 - The above info message is repeated 135 more times for the
+INFO:LIT:395 - The above info message is repeated 134 more times for the
    following (max. 5 shown):
    N372,
    N376,
@@ -296,9 +296,9 @@ INFO:PhysDesignRules:1861 - To achieve optimal frequency synthesis performance
 
 Section 4 - Removed Logic Summary
 ---------------------------------
- 383 block(s) removed
+ 377 block(s) removed
   67 block(s) optimized away
- 508 signal(s) removed
+ 502 signal(s) removed
 
 Section 5 - Removed Logic
 -------------------------
@@ -716,7 +716,6 @@ The signal "ep40/ep_trigger<12>" is sourceless and has been removed.
 The signal "ep40/ep_trigger<11>" is sourceless and has been removed.
 The signal "ep40/ep_trigger<10>" is sourceless and has been removed.
 The signal "ep40/ep_trigger<9>" is sourceless and has been removed.
-The signal "ep40/ep_trigger<8>" is sourceless and has been removed.
 The signal "ep40/ep_trigger<3>" is sourceless and has been removed.
 The signal "ep40/eptrig[15]_ti_datain[15]_xor_11_OUT<3>" is sourceless and has
 been removed.
@@ -732,21 +731,6 @@ removed.
 been removed.
          Sourceless block "ep40/ep_trigger_3" (FF) removed.
    Sourceless block "ep40/Mxor_eptrig[15]_ti_datain[15]_xor_11_OUT_3_xo<0>1" (ROM)
-removed.
-The signal "ep40/eptrig[15]_ti_datain[15]_xor_11_OUT<8>" is sourceless and has
-been removed.
- Sourceless block "ep40/eptrig_8" (SFF) removed.
-  The signal "ep40/eptrig<8>" is sourceless and has been removed.
-   Sourceless block "ep40/trigff0_8" (FF) removed.
-    The signal "ep40/trigff0<8>" is sourceless and has been removed.
-     Sourceless block "ep40/trigff1_8" (FF) removed.
-      The signal "ep40/trigff1<8>" is sourceless and has been removed.
-       Sourceless block "ep40/Mxor_trigff0[15]_trigff1[15]_xor_3_OUT_8_xo<0>1" (ROM)
-removed.
-        The signal "ep40/trigff0[15]_trigff1[15]_xor_3_OUT<8>" is sourceless and has
-been removed.
-         Sourceless block "ep40/ep_trigger_8" (FF) removed.
-   Sourceless block "ep40/Mxor_eptrig[15]_ti_datain[15]_xor_11_OUT_8_xo<0>1" (ROM)
 removed.
 The signal "ep40/eptrig[15]_ti_datain[15]_xor_11_OUT<9>" is sourceless and has
 been removed.
@@ -2659,6 +2643,7 @@ Section 6 - IOB Properties
 | dds_logic_fifo_rd_clk              | IOB              | INPUT     | LVCMOS33             |       |          |      | IFF          |          |          |
 | dds_logic_fifo_rd_en               | IOB              | INPUT     | LVCMOS33             |       |          |      |              |          |          |
 | dds_logic_ram_reset                | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          |          |
+| dds_logic_ram_reset_manual         | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          |          |
 | dds_logic_reset_dds_chip           | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          |          |
 | dds_logic_step_to_next_value       | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          |          |
 | hi_aa                              | IOB              | BIDIR     | LVCMOS33             |       | 12       | SLOW |              |          |          |

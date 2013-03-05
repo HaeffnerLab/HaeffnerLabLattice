@@ -5,7 +5,7 @@
     The structure and the elements are likely to change over the next few releases.
     This means code written to parse this file will need to be revisited each subsequent release.-->
 
-  <application stringID="Xst" timeStamp="Thu Feb 28 19:59:41 2013">
+  <application stringID="Xst" timeStamp="Mon Mar 04 19:10:57 2013">
     <section stringID="User_Env">
       <table stringID="User_EnvVar">
         <column stringID="variable"/>
@@ -275,11 +275,11 @@
           <item dataType="int" label="-bufg" stringID="XST_BUFG" value="7"/>
           <item dataType="int" stringID="XST_BUFGMUX" value="1"/>
         </item>
-        <item dataType="int" stringID="XST_IO_BUFFERS" value="132">
+        <item dataType="int" stringID="XST_IO_BUFFERS" value="133">
           <item dataType="int" stringID="XST_IBUF" value="11"/>
           <item dataType="int" stringID="XST_IBUFG" value="3"/>
           <item dataType="int" label="-iobuf" stringID="XST_IOBUF" value="35"/>
-          <item dataType="int" stringID="XST_OBUF" value="55"/>
+          <item dataType="int" stringID="XST_OBUF" value="56"/>
           <item dataType="int" stringID="XST_OBUFT" value="25"/>
         </item>
         <item dataType="int" stringID="XST_DCMS" value="2">
@@ -300,8 +300,8 @@
       <item AVAILABLE="4810" dataType="int" label="Number with an unused LUT" stringID="XST_NUMBER_WITH_AN_UNUSED_LUT" value="1532"/>
       <item AVAILABLE="4810" dataType="int" label="Number of fully used LUT-FF pairs" stringID="XST_NUMBER_OF_FULLY_USED_LUTFF_PAIRS" value="1633"/>
       <item dataType="int" label="Number of unique control sets" stringID="XST_NUMBER_OF_UNIQUE_CONTROL_SETS" value="315"/>
-      <item dataType="int" label="Number of IOs" stringID="XST_NUMBER_OF_IOS" value="141"/>
-      <item AVAILABLE="316" dataType="int" label="Number of bonded IOBs" stringID="XST_NUMBER_OF_BONDED_IOBS" value="135"/>
+      <item dataType="int" label="Number of IOs" stringID="XST_NUMBER_OF_IOS" value="142"/>
+      <item AVAILABLE="316" dataType="int" label="Number of bonded IOBs" stringID="XST_NUMBER_OF_BONDED_IOBS" value="136"/>
       <item dataType="int" label="IOB Flip Flops/Latches" stringID="XST_IOB_FLIP_FLOPSLATCHES" value="1"/>
       <item AVAILABLE="116" dataType="int" label="Number of Block RAM/FIFO" stringID="XST_NUMBER_OF_BLOCK_RAMFIFO" value="70"/>
       <item dataType="int" label="Number using Block RAM only" stringID="XST_NUMBER_USING_BLOCK_RAM_ONLY" value="70"/>

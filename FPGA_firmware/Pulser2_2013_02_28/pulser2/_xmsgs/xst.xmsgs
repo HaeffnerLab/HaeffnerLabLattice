@@ -5,106 +5,106 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
-<msg type="warning" file="HDLCompiler" num="946" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 766: Actual for formal port <arg fmt="%s" index="1">reset</arg> is neither a static name nor a globally static expression
+<msg type="warning" file="HDLCompiler" num="946" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 767: Actual for formal port <arg fmt="%s" index="1">reset</arg> is neither a static name nor a globally static expression
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 750: Assignment to <arg fmt="%s" index="1">c3_sys_clk</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 751: Assignment to <arg fmt="%s" index="1">c3_sys_clk</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 317: Formal port <arg fmt="%s" index="1">ob_we</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">ob_we</arg> of mode <arg fmt="%s" index="4">out</arg>
+<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 318: Formal port <arg fmt="%s" index="1">ob_we</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">ob_we</arg> of mode <arg fmt="%s" index="4">out</arg>
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 326: Formal port <arg fmt="%s" index="1">p0_cmd_en</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">p0_cmd_en</arg> of mode <arg fmt="%s" index="4">out</arg>
+<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 327: Formal port <arg fmt="%s" index="1">p0_cmd_en</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">p0_cmd_en</arg> of mode <arg fmt="%s" index="4">out</arg>
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 327: Formal port <arg fmt="%s" index="1">p0_cmd_instr</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">p0_cmd_instr</arg> of mode <arg fmt="%s" index="4">out</arg>
+<msg type="warning" file="HDLCompiler" num="439" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 328: Formal port <arg fmt="%s" index="1">p0_cmd_instr</arg> of mode <arg fmt="%s" index="2">buffer</arg> cannot be associated with actual port <arg fmt="%s" index="3">p0_cmd_instr</arg> of mode <arg fmt="%s" index="4">out</arg>
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 582: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 582: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 586: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 586: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3207: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3207: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3495: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3495: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3757: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3757: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3964: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3964: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 559: Assignment to <arg fmt="%s" index="1">half_mv_du</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 559: Assignment to <arg fmt="%s" index="1">half_mv_du</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 561: Assignment to <arg fmt="%s" index="1">half_mv_dd</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 561: Assignment to <arg fmt="%s" index="1">half_mv_dd</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 623: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 623: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 911: Assignment to <arg fmt="%s" index="1">state_start_dyncal_r1</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 911: Assignment to <arg fmt="%s" index="1">state_start_dyncal_r1</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 968: Assignment to <arg fmt="%s" index="1">mcb_uodatavalid_u</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 968: Assignment to <arg fmt="%s" index="1">mcb_uodatavalid_u</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 1012: Assignment to <arg fmt="%s" index="1">iodrpctrlr_use_bkst</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 1012: Assignment to <arg fmt="%s" index="1">iodrpctrlr_use_bkst</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd" Line 395: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd" Line 395: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 6993: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 6993: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7024: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7024: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7025: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7025: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7050: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7050: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7051: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7051: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7075: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7075: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7086: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7086: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7087: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7087: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7091: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7091: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7092: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+<msg type="warning" file="HDLCompiler" num="321" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7092: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1480: Assignment to <arg fmt="%s" index="1">fifo_photon_wr_en</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1482: Assignment to <arg fmt="%s" index="1">fifo_photon_wr_en</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1484: Assignment to <arg fmt="%s" index="1">time_resolved_pipe_out_valid</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1486: Assignment to <arg fmt="%s" index="1">time_resolved_pipe_out_valid</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1486: Assignment to <arg fmt="%s" index="1">fifo_photon_rst</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1488: Assignment to <arg fmt="%s" index="1">fifo_photon_rst</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1522: Assignment to <arg fmt="%s" index="1">normal_pmt_block_aval</arg> ignored, since the identifier is never used
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1524: Assignment to <arg fmt="%s" index="1">normal_pmt_block_aval</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="634" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 566: Net &lt;<arg fmt="%s" index="1">ep23wire[14]</arg>&gt; does not have a driver.
+<msg type="warning" file="HDLCompiler" num="634" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 567: Net &lt;<arg fmt="%s" index="1">ep23wire[14]</arg>&gt; does not have a driver.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="634" delta="old" >"C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 696: Net &lt;<arg fmt="%s" index="1">pulser_flag_register[15]</arg>&gt; does not have a driver.
+<msg type="warning" file="HDLCompiler" num="634" delta="old" >"C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 697: Net &lt;<arg fmt="%s" index="1">pulser_flag_register[15]</arg>&gt; does not have a driver.
 </msg>
 
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">bnc_in</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -113,88 +113,88 @@
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">logic_in&lt;3:1&gt;</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">p0_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">829</arg>: Output port &lt;<arg fmt="%s" index="3">selfrefresh_mode</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">830</arg>: Output port &lt;<arg fmt="%s" index="3">selfrefresh_mode</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">969</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_wr</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">970</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_wr</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">969</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_wr</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">970</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_wr</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">984</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">985</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">984</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">985</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">984</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">985</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">984</arg>: Output port &lt;<arg fmt="%s" index="3">valid</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">985</arg>: Output port &lt;<arg fmt="%s" index="3">valid</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_sdram_rd</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1002</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_dds</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1003</arg>: Output port &lt;<arg fmt="%s" index="3">wr_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_dds</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1002</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_dds</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1003</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_dds</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1068</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_pulse_seq</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1070</arg>: Output port &lt;<arg fmt="%s" index="3">rd_data_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_pulse_seq</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1068</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_pulse_seq</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1070</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_pulse_seq</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1526</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_normal_pmt</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1528</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_normal_pmt</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1526</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_normal_pmt</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1528</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_normal_pmt</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1603</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_readout</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1605</arg>: Output port &lt;<arg fmt="%s" index="3">full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_readout</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1603</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_readout</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1605</arg>: Output port &lt;<arg fmt="%s" index="3">empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">fifo_readout</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1674</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1676</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep80</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1676</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1678</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">ep81</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1682</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1684</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1685</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd</arg>&quot; line <arg fmt="%s" index="2">1687</arg>: Output port &lt;<arg fmt="%s" index="3">ep_blockstrobe</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">epA2</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="warning" file="Xst" num="2935" delta="old" >Signal &apos;<arg fmt="%s" index="1">ep23wire&lt;14&gt;</arg>&apos;, unconnected in block &apos;<arg fmt="%s" index="2">pulser</arg>&apos;, is tied to its initial value (<arg fmt="%s" index="3">0</arg>).
@@ -221,223 +221,223 @@
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">selfrefresh_enter</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_count</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">status</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">status</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p1_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p2_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p3_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p4_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_cmd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_cmd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_underrun</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_wr_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_full</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_empty</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_overflow</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">p5_rd_error</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">mcbx_dram_ddr3_rst</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">mcbx_dram_ddr3_rst</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_data_valid</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_data_valid</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_cmd_ready_in</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_cmd_ready_in</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_refrsh_flag</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_refrsh_flag</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_cal_start</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_cal_start</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_sdo</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd</arg>&quot; line <arg fmt="%s" index="2">607</arg>: Output port &lt;<arg fmt="%s" index="3">uo_sdo</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">memc3_mcb_raw_wrapper_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">p0_cmd_byte_addr&lt;0:0&gt;</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -701,7 +701,7 @@
 <msg type="warning" file="Xst" num="2404" delta="old" > FFs/Latches &lt;<arg fmt="%s" index="1">selfrefresh_enter_r3</arg>&lt;<arg fmt="%d" index="2">0</arg>:<arg fmt="%d" index="3">0</arg>&gt;&gt; (without init value) have a constant value of <arg fmt="%c" index="4">0</arg> in block &lt;<arg fmt="%s" index="5">mcb_raw_wrapper</arg>&gt;.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd</arg>&quot; line <arg fmt="%s" index="2">291</arg>: Output port &lt;<arg fmt="%s" index="3">Max_Value</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">mcb_soft_calibration_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd</arg>&quot; line <arg fmt="%s" index="2">291</arg>: Output port &lt;<arg fmt="%s" index="3">Max_Value</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">mcb_soft_calibration_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">MCB_UODATA</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -716,10 +716,10 @@
 <msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">MCB_UO_CAL_START</arg>&gt; is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd</arg>&quot; line <arg fmt="%s" index="2">583</arg>: Output port &lt;<arg fmt="%s" index="3">DRP_BKST</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">iodrp_controller_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd</arg>&quot; line <arg fmt="%s" index="2">583</arg>: Output port &lt;<arg fmt="%s" index="3">DRP_BKST</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">iodrp_controller_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
-<msg type="info" file="Xst" num="3210" delta="old" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd</arg>&quot; line <arg fmt="%s" index="2">601</arg>: Output port &lt;<arg fmt="%s" index="3">read_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">iodrp_mcb_controller_inst</arg>&gt; is unconnected or connected to loadless signal.
+<msg type="info" file="Xst" num="3210" delta="new" >&quot;<arg fmt="%s" index="1">C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd</arg>&quot; line <arg fmt="%s" index="2">601</arg>: Output port &lt;<arg fmt="%s" index="3">read_data</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">iodrp_mcb_controller_inst</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
 <msg type="info" file="Xst" num="1799" delta="old" >State <arg fmt="%s" index="1">111010</arg> is never reached in FSM &lt;<arg fmt="%s" index="2">STATE</arg>&gt;.
@@ -1106,7 +1106,7 @@
 <msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">DRP_BKST</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">iodrp_controller</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_9&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_9</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_9&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_1&gt; </arg>
@@ -1139,82 +1139,82 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wr_en_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_wr_en&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_10&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_10&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_11&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_11&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_12&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_12&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_13&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_13&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_14&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_14&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_20</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_20&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_20</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_20&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_15&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_15&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_21&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_21&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_16</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_16&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_16</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_16&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_22&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_22</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_22&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_17</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_17&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_17</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_17&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_23&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_23</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_23&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_18</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_18&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_18</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_18&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_10</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_10&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_24&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_24</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_24&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_19</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_19&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_19</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_19&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_11</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_11&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_30&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_30&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_25</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_25&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_25</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_25&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_12&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_31&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_31&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_26&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_26</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_26&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_13</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_13&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_27&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_27&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_14</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_14&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_28&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_28&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_20</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_20&gt; </arg>
@@ -1223,7 +1223,7 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_15&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_29&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_29&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_21</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_21&gt; </arg>
@@ -1262,19 +1262,19 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_31</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_31&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_0&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_0&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_27</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_27&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_1&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_1&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_28</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_28&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_2&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_2&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_29</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_29&gt; </arg>
@@ -1283,22 +1283,22 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">pmt_count_reset_var</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;pmt_count_reset&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_3&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_3</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_3&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_4&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_4&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_5&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_5</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_5&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_6&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_6</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_6&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_7&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_7</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_7&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_8&gt; </arg>
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">_i000242_8</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;normal_pmt_fifo_data_8&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">fifo_data_var_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">pulser</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;readout_count_fifo_data_0&gt; </arg>

@@ -50,7 +50,8 @@ entity dds is
 	 bus_in_fifo_rd_clk : out std_logic;
 	 bus_in_fifo_rd_en: out std_logic;
 	 bus_in_fifo_empty: in std_logic;
-	 bus_in_ram_reset: in std_logic;
+	 bus_in_ram_reset_auto: in std_logic;
+	 bus_in_ram_reset_manual: in std_logic;
 	 bus_in_step_to_next_value: in std_logic;
 	 bus_in_reset_dds_chip: in std_logic;
 	 bus_transmitter_en: out std_logic_vector (1 downto 0);
@@ -144,7 +145,8 @@ begin
 	bus_in_fifo_rd_en<=fifo_dds_rd_en WHEN bus_in_address = dip_in(2 downto 0) else 'Z';
 	bus_transmitter_en<= "11" WHEN bus_in_address = dip_in(2 downto 0) else "00";
 	
-	dds_ram_reset <= bus_in_ram_reset;
+	dds_ram_reset <= bus_in_ram_reset_auto WHEN DDS_manual_mode = '0' else bus_in_ram_reset_manual;
+	
 	dds_step_to_next_freq <= bus_in_step_to_next_value;
 	dds_ram_rdclock<=clk_25;
 	--led_VALUE (2 downto 0) <= dip_in(2 downto 0);
@@ -167,7 +169,7 @@ begin
 	process (dds_step_to_next_freq_sampled, dds_ram_reset,DDS_manual_mode)
 		variable dds_step_count: integer range 0 to 1023:=0;
 	begin
-			if ((dds_ram_reset = '1') OR (DDS_manual_mode = '1')) then
+			if ((dds_ram_reset = '1') OR (DDS_manual_mode = '1')) then ---- if DDS is in manual mode, then the ram position is always 0
 				dds_step_count:=0;
 			elsif (rising_edge(dds_step_to_next_freq_sampled)) then	
 				dds_step_count := dds_step_count+1;

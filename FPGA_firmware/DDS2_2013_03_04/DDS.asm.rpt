@@ -1,6 +1,6 @@
 Assembler report for DDS
-Mon Mar 04 18:25:26 2013
-Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
+Mon Mar 04 19:13:02 2013
+Quartus II 32-bit Version 12.1 Build 243 01/31/2013 Service Pack 1 SJ Web Edition
 
 
 ---------------------
@@ -10,8 +10,8 @@ Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
   2. Assembler Summary
   3. Assembler Settings
   4. Assembler Generated Files
-  5. Assembler Device Options: Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof
-  6. Assembler Device Options: Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof
+  5. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof
+  6. Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof
   7. Assembler Messages
 
 
@@ -38,7 +38,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Mon Mar 04 18:25:26 2013 ;
+; Assembler Status      ; Successful - Mon Mar 04 19:13:02 2013 ;
 ; Revision Name         ; DDS                                   ;
 ; Top-level Entity Name ; dds                                   ;
 ; Family                ; Cyclone II                            ;
@@ -78,37 +78,37 @@ applicable agreement for further details.
 +-----------------------------------------------------------------------------+----------+---------------+
 
 
-+---------------------------------------------------------+
-; Assembler Generated Files                               ;
-+---------------------------------------------------------+
-; File Name                                               ;
-+---------------------------------------------------------+
-; Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof ;
-; Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof ;
-+---------------------------------------------------------+
++-------------------------------------------------------------------------------+
+; Assembler Generated Files                                                     ;
++-------------------------------------------------------------------------------+
+; File Name                                                                     ;
++-------------------------------------------------------------------------------+
+; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof ;
+; C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof ;
++-------------------------------------------------------------------------------+
 
 
-+-----------------------------------------------------------------------------------+
-; Assembler Device Options: Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof ;
-+----------------+------------------------------------------------------------------+
-; Option         ; Setting                                                          ;
-+----------------+------------------------------------------------------------------+
-; Device         ; EP2C5T144C6                                                      ;
-; JTAG usercode  ; 0xFFFFFFFF                                                       ;
-; Checksum       ; 0x000C8801                                                       ;
-+----------------+------------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.sof ;
++----------------+----------------------------------------------------------------------------------------+
+; Option         ; Setting                                                                                ;
++----------------+----------------------------------------------------------------------------------------+
+; Device         ; EP2C5T144C6                                                                            ;
+; JTAG usercode  ; 0xFFFFFFFF                                                                             ;
+; Checksum       ; 0x000CB0E6                                                                             ;
++----------------+----------------------------------------------------------------------------------------+
 
 
-+-----------------------------------------------------------------------------------+
-; Assembler Device Options: Y:/LabRad/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof ;
-+--------------------+--------------------------------------------------------------+
-; Option             ; Setting                                                      ;
-+--------------------+--------------------------------------------------------------+
-; Device             ; EPCS4                                                        ;
-; JTAG usercode      ; 0x00000000                                                   ;
-; Checksum           ; 0x07470F17                                                   ;
-; Compression Ratio  ; 2                                                            ;
-+--------------------+--------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/lattice/Desktop/LabRAD/lattice/FPGA_firmware/DDS2_2013_03_04/DDS.pof ;
++--------------------+------------------------------------------------------------------------------------+
+; Option             ; Setting                                                                            ;
++--------------------+------------------------------------------------------------------------------------+
+; Device             ; EPCS4                                                                              ;
+; JTAG usercode      ; 0x00000000                                                                         ;
+; Checksum           ; 0x074847A3                                                                         ;
+; Compression Ratio  ; 2                                                                                  ;
++--------------------+------------------------------------------------------------------------------------+
 
 
 +--------------------+
@@ -116,15 +116,15 @@ applicable agreement for further details.
 +--------------------+
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Assembler
-    Info: Version 12.1 Build 177 11/07/2012 SJ Web Edition
-    Info: Processing started: Mon Mar 04 18:25:24 2013
+    Info: Version 12.1 Build 243 01/31/2013 Service Pack 1 SJ Web Edition
+    Info: Processing started: Mon Mar 04 19:13:00 2013
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off DDS -c DDS
 Info (115031): Writing out detailed assembly data for power analysis
 Info (115030): Assembler is generating device programming files
 Info: Quartus II 32-bit Assembler was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 327 megabytes
-    Info: Processing ended: Mon Mar 04 18:25:26 2013
+    Info: Peak virtual memory: 348 megabytes
+    Info: Processing ended: Mon Mar 04 19:13:02 2013
     Info: Elapsed time: 00:00:02
-    Info: Total CPU time (on all processors): 00:00:01
+    Info: Total CPU time (on all processors): 00:00:02
 
 

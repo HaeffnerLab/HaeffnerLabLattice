@@ -59,7 +59,7 @@
  -- Pin directions (input, output or bidir) are based on device operating in user mode.
  ---------------------------------------------------------------------------------
 
-Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
+Quartus II 32-bit Version 12.1 Build 243 01/31/2013 Service Pack 1 SJ Web Edition
 CHIP  "DDS"  ASSIGNED TO AN: EP2C5T144C6
 
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
@@ -199,7 +199,7 @@ bus_in_data[13]              : 132       : input  : 3.3-V LVTTL       :         
 bus_in_data[14]              : 133       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_data[15]              : 134       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_fifo_empty            : 135       : input  : 3.3-V LVTTL       :         : 2         : Y              
-bus_in_ram_reset             : 136       : input  : 3.3-V LVTTL       :         : 2         : Y              
+bus_in_ram_reset_auto        : 136       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_step_to_next_value    : 137       : input  : 3.3-V LVTTL       :         : 2         : Y              
 VCCIO2                       : 138       : power  :                   : 3.3V    : 2         :                
 bus_in_reset_dds_chip        : 139       : input  : 3.3-V LVTTL       :         : 2         : Y              
@@ -207,4 +207,4 @@ GND                          : 140       : gnd    :                   :         
 bus_in_address[0]            : 141       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_address[1]            : 142       : input  : 3.3-V LVTTL       :         : 2         : Y              
 bus_in_address[2]            : 143       : input  : 3.3-V LVTTL       :         : 2         : Y              
-GND*                         : 144       :        :                   :         : 2         :                
+bus_in_ram_reset_manual      : 144       : input  : 3.3-V LVTTL       :         : 2         : Y              

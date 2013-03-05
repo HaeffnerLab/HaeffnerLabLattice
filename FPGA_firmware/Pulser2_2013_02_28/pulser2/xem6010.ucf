@@ -82,6 +82,7 @@ NET "dds_logic_fifo_rd_clk" CLOCK_DEDICATED_ROUTE = FALSE;
 NET "dds_logic_reset_dds_chip"  LOC=C17  | IOSTANDARD=LVCMOS33; #JP2-38
 NET "dds_logic_step_to_next_value"  LOC=A14   | IOSTANDARD=LVCMOS33; #JP2-37
 NET "dds_logic_address[0]"  LOC=B16  | IOSTANDARD=LVCMOS33; #JP2-46
+NET "dds_logic_ram_reset_manual" LOC= A18 | IOSTANDARD=LVCMOS33;
 
 
 NET "dds_logic_data_out[3]"   LOC=B8  | IOSTANDARD=LVCMOS33; #JP2-18

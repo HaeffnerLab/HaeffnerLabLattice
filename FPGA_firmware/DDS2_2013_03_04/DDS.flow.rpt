@@ -1,6 +1,6 @@
 Flow report for DDS
-Mon Mar 04 18:25:29 2013
-Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
+Mon Mar 04 19:13:06 2013
+Quartus II 32-bit Version 12.1 Build 243 01/31/2013 Service Pack 1 SJ Web Edition
 
 
 ---------------------
@@ -35,26 +35,26 @@ applicable agreement for further details.
 
 
 
-+-------------------------------------------------------------------------------+
-; Flow Summary                                                                  ;
-+------------------------------------+------------------------------------------+
-; Flow Status                        ; Successful - Mon Mar 04 18:25:26 2013    ;
-; Quartus II 32-bit Version          ; 12.1 Build 177 11/07/2012 SJ Web Edition ;
-; Revision Name                      ; DDS                                      ;
-; Top-level Entity Name              ; dds                                      ;
-; Family                             ; Cyclone II                               ;
-; Device                             ; EP2C5T144C6                              ;
-; Timing Models                      ; Final                                    ;
-; Total logic elements               ; 366 / 4,608 ( 8 % )                      ;
-;     Total combinational functions  ; 296 / 4,608 ( 6 % )                      ;
-;     Dedicated logic registers      ; 215 / 4,608 ( 5 % )                      ;
-; Total registers                    ; 215                                      ;
-; Total pins                         ; 73 / 89 ( 82 % )                         ;
-; Total virtual pins                 ; 0                                        ;
-; Total memory bits                  ; 65,536 / 119,808 ( 55 % )                ;
-; Embedded Multiplier 9-bit elements ; 0 / 26 ( 0 % )                           ;
-; Total PLLs                         ; 1 / 2 ( 50 % )                           ;
-+------------------------------------+------------------------------------------+
++------------------------------------------------------------------------------------+
+; Flow Summary                                                                       ;
++------------------------------------+-----------------------------------------------+
+; Flow Status                        ; Successful - Mon Mar 04 19:13:02 2013         ;
+; Quartus II 32-bit Version          ; 12.1 Build 243 01/31/2013 SP 1 SJ Web Edition ;
+; Revision Name                      ; DDS                                           ;
+; Top-level Entity Name              ; dds                                           ;
+; Family                             ; Cyclone II                                    ;
+; Device                             ; EP2C5T144C6                                   ;
+; Timing Models                      ; Final                                         ;
+; Total logic elements               ; 371 / 4,608 ( 8 % )                           ;
+;     Total combinational functions  ; 297 / 4,608 ( 6 % )                           ;
+;     Dedicated logic registers      ; 215 / 4,608 ( 5 % )                           ;
+; Total registers                    ; 215                                           ;
+; Total pins                         ; 74 / 89 ( 83 % )                              ;
+; Total virtual pins                 ; 0                                             ;
+; Total memory bits                  ; 65,536 / 119,808 ( 55 % )                     ;
+; Embedded Multiplier 9-bit elements ; 0 / 26 ( 0 % )                                ;
+; Total PLLs                         ; 1 / 2 ( 50 % )                                ;
++------------------------------------+-----------------------------------------------+
 
 
 +-----------------------------------------+
@@ -62,37 +62,34 @@ applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 03/04/2013 18:25:08 ;
+; Start date & time ; 03/04/2013 19:12:41 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; DDS                 ;
 +-------------------+---------------------+
 
 
-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Flow Non-Default Global Settings                                                                                                                                               ;
-+-------------------------------------+--------------------------------------------------------------------------------------------+---------------+----------------+------------+
-; Assignment Name                     ; Value                                                                                      ; Default Value ; Entity Name    ; Section Id ;
-+-------------------------------------+--------------------------------------------------------------------------------------------+---------------+----------------+------------+
-; COMPILER_SIGNATURE_ID               ; 121367168678.136245030802660                                                               ; --            ; --             ; --         ;
-; IP_TOOL_NAME                        ; ALTPLL                                                                                     ; --            ; --             ; --         ;
-; IP_TOOL_NAME                        ; RAM: 2-PORT                                                                                ; --            ; --             ; --         ;
-; IP_TOOL_VERSION                     ; 11.1                                                                                       ; --            ; --             ; --         ;
-; IP_TOOL_VERSION                     ; 12.1                                                                                       ; --            ; --             ; --         ;
-; MAX_CORE_JUNCTION_TEMP              ; 85                                                                                         ; --            ; --             ; --         ;
-; MIN_CORE_JUNCTION_TEMP              ; 0                                                                                          ; --            ; --             ; --         ;
-; MISC_FILE                           ; C:/Documents and Settings/data-taker/Desktop/DDS/DDS.dpf                                   ; --            ; --             ; --         ;
-; MISC_FILE                           ; dds_pll.cmp                                                                                ; --            ; --             ; --         ;
-; MISC_FILE                           ; dds_pll.ppf                                                                                ; --            ; --             ; --         ;
-; MISC_FILE                           ; dds_ram.cmp                                                                                ; --            ; --             ; --         ;
-; MISC_FILE                           ; C:/Users/3/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.dpf                         ; --            ; --             ; --         ;
-; MISC_FILE                           ; C:/Users/lattice/Desktop/Hong_work/Dropbox/WORK/VHDL/CycloneII/HONG_DDS_2012_03_09/DDS.dpf ; --            ; --             ; --         ;
-; PARTITION_COLOR                     ; 16764057                                                                                   ; --            ; --             ; Top        ;
-; PARTITION_COLOR                     ; 16764057                                                                                   ; --            ; dds_controller ; Top        ;
-; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING                                                                      ; --            ; --             ; Top        ;
-; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING                                                                      ; --            ; dds_controller ; Top        ;
-; PARTITION_NETLIST_TYPE              ; SOURCE                                                                                     ; --            ; --             ; Top        ;
-; PARTITION_NETLIST_TYPE              ; SOURCE                                                                                     ; --            ; dds_controller ; Top        ;
-+-------------------------------------+--------------------------------------------------------------------------------------------+---------------+----------------+------------+
++------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                 ;
++-------------------------------------+------------------------------+---------------+----------------+------------+
+; Assignment Name                     ; Value                        ; Default Value ; Entity Name    ; Section Id ;
++-------------------------------------+------------------------------+---------------+----------------+------------+
+; COMPILER_SIGNATURE_ID               ; 158512924265.136245316101552 ; --            ; --             ; --         ;
+; IP_TOOL_NAME                        ; ALTPLL                       ; --            ; --             ; --         ;
+; IP_TOOL_NAME                        ; RAM: 2-PORT                  ; --            ; --             ; --         ;
+; IP_TOOL_VERSION                     ; 11.1                         ; --            ; --             ; --         ;
+; IP_TOOL_VERSION                     ; 12.1                         ; --            ; --             ; --         ;
+; MAX_CORE_JUNCTION_TEMP              ; 85                           ; --            ; --             ; --         ;
+; MIN_CORE_JUNCTION_TEMP              ; 0                            ; --            ; --             ; --         ;
+; MISC_FILE                           ; dds_pll.cmp                  ; --            ; --             ; --         ;
+; MISC_FILE                           ; dds_pll.ppf                  ; --            ; --             ; --         ;
+; MISC_FILE                           ; dds_ram.cmp                  ; --            ; --             ; --         ;
+; PARTITION_COLOR                     ; 16764057                     ; --            ; --             ; Top        ;
+; PARTITION_COLOR                     ; 16764057                     ; --            ; dds_controller ; Top        ;
+; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING        ; --            ; --             ; Top        ;
+; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING        ; --            ; dds_controller ; Top        ;
+; PARTITION_NETLIST_TYPE              ; SOURCE                       ; --            ; --             ; Top        ;
+; PARTITION_NETLIST_TYPE              ; SOURCE                       ; --            ; dds_controller ; Top        ;
++-------------------------------------+------------------------------+---------------+----------------+------------+
 
 
 +-------------------------------------------------------------------------------------------------------------------------------+
@@ -100,11 +97,11 @@ applicable agreement for further details.
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis      ; 00:00:06     ; 1.0                     ; 373 MB              ; 00:00:05                           ;
-; Fitter                    ; 00:00:07     ; 2.2                     ; 427 MB              ; 00:00:10                           ;
-; Assembler                 ; 00:00:02     ; 1.0                     ; 326 MB              ; 00:00:01                           ;
-; TimeQuest Timing Analyzer ; 00:00:02     ; 1.0                     ; 319 MB              ; 00:00:02                           ;
-; Total                     ; 00:00:17     ; --                      ; --                  ; 00:00:18                           ;
+; Analysis & Synthesis      ; 00:00:07     ; 1.0                     ; 393 MB              ; 00:00:05                           ;
+; Fitter                    ; 00:00:10     ; 2.6                     ; 444 MB              ; 00:00:11                           ;
+; Assembler                 ; 00:00:02     ; 1.0                     ; 347 MB              ; 00:00:01                           ;
+; TimeQuest Timing Analyzer ; 00:00:03     ; 1.0                     ; 336 MB              ; 00:00:03                           ;
+; Total                     ; 00:00:22     ; --                      ; --                  ; 00:00:20                           ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -113,10 +110,10 @@ applicable agreement for further details.
 +---------------------------+------------------+-----------+------------+----------------+
 ; Module Name               ; Machine Hostname ; OS Name   ; OS Version ; Processor type ;
 +---------------------------+------------------+-----------+------------+----------------+
-; Analysis & Synthesis      ; THANEDPRUTTA60B  ; Windows 7 ; 6.1        ; i686           ;
-; Fitter                    ; THANEDPRUTTA60B  ; Windows 7 ; 6.1        ; i686           ;
-; Assembler                 ; THANEDPRUTTA60B  ; Windows 7 ; 6.1        ; i686           ;
-; TimeQuest Timing Analyzer ; THANEDPRUTTA60B  ; Windows 7 ; 6.1        ; i686           ;
+; Analysis & Synthesis      ; lattice-imaging  ; Windows 7 ; 6.1        ; x86_64         ;
+; Fitter                    ; lattice-imaging  ; Windows 7 ; 6.1        ; x86_64         ;
+; Assembler                 ; lattice-imaging  ; Windows 7 ; 6.1        ; x86_64         ;
+; TimeQuest Timing Analyzer ; lattice-imaging  ; Windows 7 ; 6.1        ; x86_64         ;
 +---------------------------+------------------+-----------+------------+----------------+
 
 

@@ -3,14 +3,14 @@ Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
 --> Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.47 secs
  
 --> Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.47 secs
  
 --> Reading design: pulser.prj
 
@@ -108,121 +108,121 @@ Cores Search Directories           : {"ipcore_dir"  }
 =========================================================================
 *                          HDL Parsing                                  *
 =========================================================================
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_mcb_controller.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_mcb_controller.vhd" into library work
 Parsing entity <iodrp_mcb_controller>.
 Parsing architecture <trans> of entity <iodrp_mcb_controller>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_controller.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_controller.vhd" into library work
 Parsing entity <iodrp_controller>.
 Parsing architecture <trans> of entity <iodrp_controller>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" into library work
 Parsing entity <mcb_soft_calibration>.
 Parsing architecture <trans> of entity <mcb_soft_calibration>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd" into library work
 Parsing entity <mcb_soft_calibration_top>.
 Parsing architecture <trans> of entity <mcb_soft_calibration_top>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" into library work
 Parsing entity <mcb_raw_wrapper>.
 Parsing architecture <aarch> of entity <mcb_raw_wrapper>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\okLibrary.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\okLibrary.vhd" into library work
 Parsing entity <okHost>.
 Parsing architecture <archHost> of entity <okhost>.
 Parsing entity <okWireOR>.
 Parsing architecture <archWireOR> of entity <okwireor>.
 Parsing package <FRONTPANEL>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" into library work
 Parsing entity <memc3_wrapper>.
 Parsing architecture <acch> of entity <memc3_wrapper>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_infrastructure.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_infrastructure.vhd" into library work
 Parsing entity <memc3_infrastructure>.
 Parsing architecture <syn> of entity <memc3_infrastructure>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\ram_pulser.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\ram_pulser.vhd" into library work
 Parsing entity <ram_pulser>.
 Parsing architecture <ram_pulser_a> of entity <ram_pulser>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\fifo_sdram_wr_w32_1024_r64_512.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\fifo_sdram_wr_w32_1024_r64_512.vhd" into library work
 Parsing entity <fifo_sdram_wr_w32_1024_r64_512>.
 Parsing architecture <fifo_sdram_wr_w32_1024_r64_512_a> of entity <fifo_sdram_wr_w32_1024_r64_512>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\fifo_sdram_rd_w64_512_r16_2048.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\fifo_sdram_rd_w64_512_r16_2048.vhd" into library work
 Parsing entity <fifo_sdram_rd_w64_512_r16_2048>.
 Parsing architecture <fifo_sdram_rd_w64_512_r16_2048_a> of entity <fifo_sdram_rd_w64_512_r16_2048>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\fifo_pulse_seq_w16_1024_r64_256.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\fifo_pulse_seq_w16_1024_r64_256.vhd" into library work
 Parsing entity <fifo_pulse_seq_w16_1024_r64_256>.
 Parsing architecture <fifo_pulse_seq_w16_1024_r64_256_a> of entity <fifo_pulse_seq_w16_1024_r64_256>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\fifo_pmt_w32_1024_r16_2048.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\fifo_pmt_w32_1024_r16_2048.vhd" into library work
 Parsing entity <fifo_pmt_w32_1024_r16_2048>.
 Parsing architecture <fifo_pmt_w32_1024_r16_2048_a> of entity <fifo_pmt_w32_1024_r16_2048>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\fifo_dds_w16_2048_r16_2048.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\fifo_dds_w16_2048_r16_2048.vhd" into library work
 Parsing entity <fifo_dds_w16_2048_r16_2048>.
 Parsing architecture <fifo_dds_w16_2048_r16_2048_a> of entity <fifo_dds_w16_2048_r16_2048>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\clk_pll.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\clk_pll.vhd" into library work
 Parsing entity <clk_pll>.
 Parsing architecture <xilinx> of entity <clk_pll>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" into library work
 Parsing entity <ddr2_test>.
-INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 25. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
-INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 35. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
-INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 36. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
+INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 25. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
+INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 35. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
+INFO:HDLCompiler:1676 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 36. declaration of a buffer port will make it difficult for you to validate this design by simulation. It is preferable to declare it as output
 Parsing architecture <Behavioral> of entity <ddr2_test>.
-Parsing VHDL file "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" into library work
+Parsing VHDL file "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" into library work
 Parsing entity <pulser>.
 Parsing architecture <arch> of entity <pulser>.
-WARNING:HDLCompiler:946 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 766: Actual for formal port reset is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 767: Actual for formal port reset is neither a static name nor a globally static expression
 
 =========================================================================
 *                            HDL Elaboration                            *
 =========================================================================
 
 Elaborating entity <pulser> (architecture <arch>) with generics from library <work>.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 750: Assignment to c3_sys_clk ignored, since the identifier is never used
-WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 317: Formal port ob_we of mode buffer cannot be associated with actual port ob_we of mode out
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 25. ob_we is declared here
-WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 326: Formal port p0_cmd_en of mode buffer cannot be associated with actual port p0_cmd_en of mode out
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 35. p0_cmd_en is declared here
-WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 327: Formal port p0_cmd_instr of mode buffer cannot be associated with actual port p0_cmd_instr of mode out
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 36. p0_cmd_instr is declared here
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 751: Assignment to c3_sys_clk ignored, since the identifier is never used
+WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 318: Formal port ob_we of mode buffer cannot be associated with actual port ob_we of mode out
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 25. ob_we is declared here
+WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 327: Formal port p0_cmd_en of mode buffer cannot be associated with actual port p0_cmd_en of mode out
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 35. p0_cmd_en is declared here
+WARNING:HDLCompiler:439 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 328: Formal port p0_cmd_instr of mode buffer cannot be associated with actual port p0_cmd_instr of mode out
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 36. p0_cmd_instr is declared here
 
 Elaborating entity <ddr2_test> (architecture <Behavioral>) from library <work>.
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 25. ob_we is declared here
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 35. p0_cmd_en is declared here
-INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd" Line 36. p0_cmd_instr is declared here
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 25. ob_we is declared here
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 35. p0_cmd_en is declared here
+INFO:HDLCompiler:1408 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd" Line 36. p0_cmd_instr is declared here
 
 Elaborating entity <memc3_infrastructure> (architecture <syn>) with generics from library <work>.
 
 Elaborating entity <memc3_wrapper> (architecture <acch>) with generics from library <work>.
 
 Elaborating entity <mcb_raw_wrapper> (architecture <aarch>) with generics from library <work>.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 582: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 586: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3207: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3495: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3757: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 3964: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 582: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 586: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3207: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3495: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3757: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 3964: Comparison between arrays of unequal length always returns FALSE.
 
 Elaborating entity <mcb_soft_calibration_top> (architecture <trans>) with generics from library <work>.
 
 Elaborating entity <mcb_soft_calibration> (architecture <trans>) with generics from library <work>.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 559: Assignment to half_mv_du ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 561: Assignment to half_mv_dd ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 559: Assignment to half_mv_du ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 561: Assignment to half_mv_dd ignored, since the identifier is never used
 
 Elaborating entity <iodrp_controller> (architecture <trans>) from library <work>.
-INFO:HDLCompiler:679 - "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_controller.vhd" Line 352. Case statement is complete. others clause is never selected
+INFO:HDLCompiler:679 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_controller.vhd" Line 352. Case statement is complete. others clause is never selected
 
 Elaborating entity <iodrp_mcb_controller> (architecture <trans>) from library <work>.
-INFO:HDLCompiler:679 - "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_mcb_controller.vhd" Line 496. Case statement is complete. others clause is never selected
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 623: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 911: Assignment to state_start_dyncal_r1 ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 968: Assignment to mcb_uodatavalid_u ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" Line 1012: Assignment to iodrpctrlr_use_bkst ignored, since the identifier is never used
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd" Line 395: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 6993: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7024: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7025: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7050: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7051: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7075: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7086: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7087: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7091: Comparison between arrays of unequal length always returns FALSE.
-WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd" Line 7092: Comparison between arrays of unequal length always returns FALSE.
+INFO:HDLCompiler:679 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_mcb_controller.vhd" Line 496. Case statement is complete. others clause is never selected
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 623: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 911: Assignment to state_start_dyncal_r1 ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 968: Assignment to mcb_uodatavalid_u ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" Line 1012: Assignment to iodrpctrlr_use_bkst ignored, since the identifier is never used
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd" Line 395: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 6993: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7024: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7025: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7050: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7051: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7075: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7086: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7087: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7091: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd" Line 7092: Comparison between arrays of unequal length always returns FALSE.
 
 Elaborating entity <fifo_sdram_wr_w32_1024_r64_512> (architecture <fifo_sdram_wr_w32_1024_r64_512_a>) from library <work>.
 
@@ -235,25 +235,25 @@ Elaborating entity <clk_pll> (architecture <xilinx>) from library <work>.
 Elaborating entity <fifo_pulse_seq_w16_1024_r64_256> (architecture <fifo_pulse_seq_w16_1024_r64_256_a>) from library <work>.
 
 Elaborating entity <ram_pulser> (architecture <ram_pulser_a>) from library <work>.
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1480: Assignment to fifo_photon_wr_en ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1484: Assignment to time_resolved_pipe_out_valid ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1486: Assignment to fifo_photon_rst ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 1522: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1482: Assignment to fifo_photon_wr_en ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1486: Assignment to time_resolved_pipe_out_valid ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1488: Assignment to fifo_photon_rst ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 1524: Assignment to normal_pmt_block_aval ignored, since the identifier is never used
 
 Elaborating entity <fifo_pmt_w32_1024_r16_2048> (architecture <fifo_pmt_w32_1024_r16_2048_a>) from library <work>.
 
 Elaborating entity <okHost> (architecture <archHost>) from library <work>.
 
 Elaborating entity <okWireOR> (architecture <archWireOR>) with generics from library <work>.
-WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 566: Net <ep23wire[14]> does not have a driver.
-WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" Line 696: Net <pulser_flag_register[15]> does not have a driver.
+WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 567: Net <ep23wire[14]> does not have a driver.
+WARNING:HDLCompiler:634 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" Line 697: Net <pulser_flag_register[15]> does not have a driver.
 
 =========================================================================
 *                           HDL Synthesis                               *
 =========================================================================
 
 Synthesizing Unit <pulser>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd".
         C3_P0_MASK_SIZE = 4
         C3_P0_DATA_PORT_SIZE = 32
         C3_P1_MASK_SIZE = 4
@@ -270,34 +270,34 @@ Synthesizing Unit <pulser>.
         C3_MEM_BANKADDR_WIDTH = 3
 WARNING:Xst:647 - Input <bnc_in> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <logic_in<3:1>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_wr_count> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_rd_count> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_cmd_empty> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_wr_empty> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_wr_underrun> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_wr_error> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_rd_full> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_rd_overflow> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <p0_rd_error> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 829: Output port <selfrefresh_mode> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 969: Output port <wr_data_count> of the instance <fifo_sdram_wr> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 969: Output port <full> of the instance <fifo_sdram_wr> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 984: Output port <rd_data_count> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 984: Output port <full> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 984: Output port <empty> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 984: Output port <valid> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1002: Output port <wr_data_count> of the instance <fifo_dds> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1002: Output port <full> of the instance <fifo_dds> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1068: Output port <rd_data_count> of the instance <fifo_pulse_seq> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1068: Output port <full> of the instance <fifo_pulse_seq> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1526: Output port <full> of the instance <fifo_normal_pmt> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1526: Output port <empty> of the instance <fifo_normal_pmt> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1603: Output port <full> of the instance <fifo_readout> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1603: Output port <empty> of the instance <fifo_readout> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1674: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1676: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1682: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\pulser.vhd" line 1685: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_wr_count> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_rd_count> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_cmd_empty> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_wr_empty> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_wr_underrun> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_wr_error> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_rd_full> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_rd_overflow> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <p0_rd_error> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 830: Output port <selfrefresh_mode> of the instance <memc3_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 970: Output port <wr_data_count> of the instance <fifo_sdram_wr> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 970: Output port <full> of the instance <fifo_sdram_wr> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 985: Output port <rd_data_count> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 985: Output port <full> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 985: Output port <empty> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 985: Output port <valid> of the instance <fifo_sdram_rd> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1003: Output port <wr_data_count> of the instance <fifo_dds> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1003: Output port <full> of the instance <fifo_dds> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1070: Output port <rd_data_count> of the instance <fifo_pulse_seq> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1070: Output port <full> of the instance <fifo_pulse_seq> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1528: Output port <full> of the instance <fifo_normal_pmt> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1528: Output port <empty> of the instance <fifo_normal_pmt> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1605: Output port <full> of the instance <fifo_readout> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1605: Output port <empty> of the instance <fifo_readout> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1676: Output port <ep_blockstrobe> of the instance <ep80> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1678: Output port <ep_blockstrobe> of the instance <ep81> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1684: Output port <ep_blockstrobe> of the instance <epA1> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\pulser.vhd" line 1687: Output port <ep_blockstrobe> of the instance <epA2> is unconnected or connected to loadless signal.
 WARNING:Xst:2935 - Signal 'ep23wire<14>', unconnected in block 'pulser', is tied to its initial value (0).
 WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
     Register <fifo_photon_wr_clk> equivalent to <pmt_synced> has been removed
@@ -410,36 +410,36 @@ WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 14-bit adder for signal <write_ram_address[13]_GND_8_o_add_7_OUT> created at line 1138.
-    Found 5-bit adder for signal <count[4]_GND_8_o_add_23_OUT> created at line 1158.
-    Found 4-bit adder for signal <delay_count[3]_GND_8_o_add_33_OUT> created at line 1185.
-    Found 4-bit adder for signal <duration_count[3]_GND_8_o_add_36_OUT> created at line 1188.
-    Found 16-bit adder for signal <delay_count[15]_GND_8_o_add_45_OUT> created at line 1209.
-    Found 16-bit adder for signal <duration_count[15]_GND_8_o_add_48_OUT> created at line 1212.
-    Found 32-bit adder for signal <time_count[31]_GND_8_o_add_64_OUT> created at line 1273.
-    Found 14-bit adder for signal <ram_read_address[13]_GND_8_o_add_71_OUT> created at line 1288.
-    Found 16-bit adder for signal <seq_count[15]_GND_8_o_add_73_OUT> created at line 1298.
-    Found 4-bit adder for signal <ram_process_count[3]_GND_8_o_add_80_OUT> created at line 1308.
-    Found 31-bit adder for signal <count[30]_GND_8_o_add_200_OUT> created at line 1509.
-    Found 3-bit adder for signal <count[2]_GND_8_o_add_217_OUT> created at line 1577.
-    Found 31-bit adder for signal <pmt_count[30]_GND_8_o_add_228_OUT> created at line 1593.
-    Found 31-bit adder for signal <pmt_readout_count[30]_GND_8_o_add_230_OUT> created at line 1622.
-    Found 2-bit adder for signal <count[1]_GND_8_o_add_233_OUT> created at line 1648.
-    Found 16x16-bit multiplier for signal <normal_pmt_count_period[15]_PWR_8_o_MuLt_202_OUT> created at line 1512.
-    Found 16x17-bit multiplier for signal <n0713> created at line 1514.
-    Found 16-bit 7-to-1 multiplexer for signal <GND_8_o_pulser_flag_register[15]_mux_197_OUT> created at line 1465.
-    Found 1-bit tristate buffer for signal <i2c_sda> created at line 1488
-    Found 1-bit tristate buffer for signal <i2c_scl> created at line 1489
-    Found 5-bit comparator greater for signal <n0045> created at line 1159
-    Found 5-bit comparator greater for signal <n0047> created at line 1161
-    Found 4-bit comparator greater for signal <delay_count[3]_GND_8_o_LessThan_33_o> created at line 1184
-    Found 4-bit comparator greater for signal <duration_count[3]_GND_8_o_LessThan_36_o> created at line 1187
-    Found 16-bit comparator greater for signal <delay_count[15]_ep06wire[15]_LessThan_45_o> created at line 1208
-    Found 16-bit comparator greater for signal <duration_count[15]_GND_8_o_LessThan_48_o> created at line 1211
-    Found 32-bit comparator equal for signal <time_stamp[31]_time_count[31]_equal_66_o> created at line 1273
-    Found 16-bit comparator equal for signal <ep05wire[15]_seq_count[15]_equal_76_o> created at line 1300
-    Found 32-bit comparator equal for signal <normal_pmt_count_period[15]_GND_8_o_equal_204_o> created at line 1512
-    Found 32-bit comparator greater for signal <normal_pmt_count_period[15]_GND_8_o_LessThan_206_o> created at line 1514
+    Found 14-bit adder for signal <write_ram_address[13]_GND_8_o_add_7_OUT> created at line 1140.
+    Found 5-bit adder for signal <count[4]_GND_8_o_add_23_OUT> created at line 1160.
+    Found 4-bit adder for signal <delay_count[3]_GND_8_o_add_33_OUT> created at line 1187.
+    Found 4-bit adder for signal <duration_count[3]_GND_8_o_add_36_OUT> created at line 1190.
+    Found 16-bit adder for signal <delay_count[15]_GND_8_o_add_45_OUT> created at line 1211.
+    Found 16-bit adder for signal <duration_count[15]_GND_8_o_add_48_OUT> created at line 1214.
+    Found 32-bit adder for signal <time_count[31]_GND_8_o_add_64_OUT> created at line 1275.
+    Found 14-bit adder for signal <ram_read_address[13]_GND_8_o_add_71_OUT> created at line 1290.
+    Found 16-bit adder for signal <seq_count[15]_GND_8_o_add_73_OUT> created at line 1300.
+    Found 4-bit adder for signal <ram_process_count[3]_GND_8_o_add_80_OUT> created at line 1310.
+    Found 31-bit adder for signal <count[30]_GND_8_o_add_200_OUT> created at line 1511.
+    Found 3-bit adder for signal <count[2]_GND_8_o_add_217_OUT> created at line 1579.
+    Found 31-bit adder for signal <pmt_count[30]_GND_8_o_add_228_OUT> created at line 1595.
+    Found 31-bit adder for signal <pmt_readout_count[30]_GND_8_o_add_230_OUT> created at line 1624.
+    Found 2-bit adder for signal <count[1]_GND_8_o_add_233_OUT> created at line 1650.
+    Found 16x16-bit multiplier for signal <normal_pmt_count_period[15]_PWR_8_o_MuLt_202_OUT> created at line 1514.
+    Found 16x17-bit multiplier for signal <n0714> created at line 1516.
+    Found 16-bit 7-to-1 multiplexer for signal <GND_8_o_pulser_flag_register[15]_mux_197_OUT> created at line 1467.
+    Found 1-bit tristate buffer for signal <i2c_sda> created at line 1490
+    Found 1-bit tristate buffer for signal <i2c_scl> created at line 1491
+    Found 5-bit comparator greater for signal <n0046> created at line 1161
+    Found 5-bit comparator greater for signal <n0048> created at line 1163
+    Found 4-bit comparator greater for signal <delay_count[3]_GND_8_o_LessThan_33_o> created at line 1186
+    Found 4-bit comparator greater for signal <duration_count[3]_GND_8_o_LessThan_36_o> created at line 1189
+    Found 16-bit comparator greater for signal <delay_count[15]_ep06wire[15]_LessThan_45_o> created at line 1210
+    Found 16-bit comparator greater for signal <duration_count[15]_GND_8_o_LessThan_48_o> created at line 1213
+    Found 32-bit comparator equal for signal <time_stamp[31]_time_count[31]_equal_66_o> created at line 1275
+    Found 16-bit comparator equal for signal <ep05wire[15]_seq_count[15]_equal_76_o> created at line 1302
+    Found 32-bit comparator equal for signal <normal_pmt_count_period[15]_GND_8_o_equal_204_o> created at line 1514
+    Found 32-bit comparator greater for signal <normal_pmt_count_period[15]_GND_8_o_LessThan_206_o> created at line 1516
     Summary:
 	inferred   2 Multiplier(s).
 	inferred  15 Adder/Subtractor(s).
@@ -451,7 +451,7 @@ WARNING:Xst:653 - Signal <pulser_flag_register<15:1>> is used but never assigned
 Unit <pulser> synthesized.
 
 Synthesizing Unit <ddr2_test>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\ddr2_test.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ddr2_test.vhd".
 WARNING:Xst:647 - Input <ib_empty> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <p0_cmd_full> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <p0_wr_full> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -505,7 +505,7 @@ WARNING:Xst:647 - Input <p0_wr_full> is never used. This port will be preserved 
 Unit <ddr2_test> synthesized.
 
 Synthesizing Unit <memc3_infrastructure>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_infrastructure.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_infrastructure.vhd".
         C_INCLK_PERIOD = 10000
         C_RST_ACT_LOW = 0
         C_INPUT_CLK_TYPE = "SINGLE_ENDED"
@@ -526,7 +526,7 @@ WARNING:Xst:647 - Input <sys_clk_n> is never used. This port will be preserved a
 Unit <memc3_infrastructure> synthesized.
 
 Synthesizing Unit <memc3_wrapper>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd".
         C_MEMCLK_PERIOD = 3200
         C_P0_MASK_SIZE = 4
         C_P0_DATA_PORT_SIZE = 32
@@ -603,85 +603,85 @@ Synthesizing Unit <memc3_wrapper>.
         C_MC_CALIBRATION_DELAY = "HALF"
         C_CALIB_SOFT_IP = "TRUE"
 WARNING:Xst:647 - Input <selfrefresh_enter> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <status> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <mcbx_dram_ddr3_rst> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_data_valid> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_cmd_ready_in> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_refrsh_flag> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_cal_start> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_sdo> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_count> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_data> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <status> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p1_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p2_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p3_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p4_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_cmd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_cmd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_underrun> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_wr_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_full> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_empty> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_overflow> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <p5_rd_error> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <mcbx_dram_ddr3_rst> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_data_valid> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_cmd_ready_in> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_refrsh_flag> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_cal_start> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\memc3_wrapper.vhd" line 607: Output port <uo_sdo> of the instance <memc3_mcb_raw_wrapper_inst> is unconnected or connected to loadless signal.
     Summary:
 	no macro.
 Unit <memc3_wrapper> synthesized.
 
 Synthesizing Unit <mcb_raw_wrapper>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_raw_wrapper.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_raw_wrapper.vhd".
         C_MEMCLK_PERIOD = 3200
         C_PORT_ENABLE = "000001"
         C_MEM_ADDR_ORDER = "ROW_BANK_COLUMN"
@@ -863,7 +863,7 @@ WARNING:Xst:653 - Signal <mcbx_dram_ddr3_rst> is used but never assigned. This s
 Unit <mcb_raw_wrapper> synthesized.
 
 Synthesizing Unit <mcb_soft_calibration_top>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd".
         C_MEM_TZQINIT_MAXCNT = "1000010000"
         C_MC_CALIBRATION_MODE = "CALIBRATION"
         SKIP_IN_TERM_CAL = 0
@@ -871,7 +871,7 @@ Synthesizing Unit <mcb_soft_calibration_top>.
         SKIP_DYN_IN_TERM = 1
         C_SIMULATION = "FALSE"
         C_MEM_TYPE = "DDR2"
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_top.vhd" line 291: Output port <Max_Value> of the instance <mcb_soft_calibration_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration_top.vhd" line 291: Output port <Max_Value> of the instance <mcb_soft_calibration_inst> is unconnected or connected to loadless signal.
     Found 1-bit register for signal <ZIO_IN_R2>.
     Found 1-bit register for signal <RZQ_IN_R1>.
     Found 1-bit register for signal <RZQ_IN_R2>.
@@ -881,7 +881,7 @@ INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration_t
 Unit <mcb_soft_calibration_top> synthesized.
 
 Synthesizing Unit <mcb_soft_calibration>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd".
         C_MEM_TZQINIT_MAXCNT = "1000010000"
         SKIP_IN_TERM_CAL = 0
         SKIP_DYNAMIC_CAL = 0
@@ -906,8 +906,8 @@ WARNING:Xst:647 - Input <MCB_UODATA> is never used. This port will be preserved 
 WARNING:Xst:647 - Input <MCB_UODATAVALID> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <MCB_UOCMDREADY> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <MCB_UO_CAL_START> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" line 583: Output port <DRP_BKST> of the instance <iodrp_controller_inst> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\lattice\Desktop\Pulser2\pulser2\mcb_soft_calibration.vhd" line 601: Output port <read_data> of the instance <iodrp_mcb_controller_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" line 583: Output port <DRP_BKST> of the instance <iodrp_controller_inst> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\mcb_soft_calibration.vhd" line 601: Output port <read_data> of the instance <iodrp_mcb_controller_inst> is unconnected or connected to loadless signal.
     Register <MCB_UIUDQSINC> equivalent to <MCB_UILDQSINC> has been removed
     Register <MCB_UIUDQSDEC> equivalent to <MCB_UILDQSDEC> has been removed
     Found 1-bit register for signal <CKE_Train>.
@@ -1005,10 +1005,10 @@ INFO:Xst:1799 - State 111010 is never reached in FSM <STATE>.
     Found 15-bit adder for signal <n0493> created at line 501.
     Found 15-bit adder for signal <_n0885> created at line 501.
     Found 15-bit adder for signal <n0483> created at line 501.
-    Found 15-bit adder for signal <_n0891> created at line 501.
+    Found 15-bit adder for signal <n0554> created at line 501.
+    Found 15-bit adder for signal <_n0894> created at line 501.
     Found 15-bit adder for signal <n0754> created at line 501.
     Found 15-bit adder for signal <n0502> created at line 501.
-    Found 15-bit adder for signal <n0554> created at line 501.
     Found 1-bit 3-to-1 multiplexer for signal <IODRP_SDO> created at line 982.
     Found 10-bit comparator greater for signal <RstCounter[9]_GND_42_o_LessThan_18_o> created at line 692
     Found 8-bit comparator greater for signal <Dec_Flag> created at line 946
@@ -1034,7 +1034,7 @@ INFO:Xst:1799 - State 111010 is never reached in FSM <STATE>.
 Unit <mcb_soft_calibration> synthesized.
 
 Synthesizing Unit <iodrp_controller>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_controller.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_controller.vhd".
     Found 8-bit register for signal <data_reg>.
     Found 1-bit register for signal <rd_not_write_reg>.
     Found 8-bit register for signal <shift_through_reg>.
@@ -1068,7 +1068,7 @@ Synthesizing Unit <iodrp_controller>.
 Unit <iodrp_controller> synthesized.
 
 Synthesizing Unit <iodrp_mcb_controller>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\iodrp_mcb_controller.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\iodrp_mcb_controller.vhd".
     Set property "fsm_encoding = gray" for signal <state>.
     Set property "fsm_encoding = gray" for signal <nextstate>.
 WARNING:Xst:647 - Input <drp_ioi_addr> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -1107,13 +1107,13 @@ WARNING:Xst:647 - Input <drp_ioi_addr> is never used. This port will be preserve
 Unit <iodrp_mcb_controller> synthesized.
 
 Synthesizing Unit <clk_pll>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\ipcore_dir\clk_pll.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\ipcore_dir\clk_pll.vhd".
     Summary:
 	no macro.
 Unit <clk_pll> synthesized.
 
 Synthesizing Unit <okHost>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\okLibrary.vhd".
     Found 16-bit register for signal <hi_dataout_reg>.
     Found 16-bit register for signal <hi_datain>.
     Found 1-bit register for signal <hi_drive>.
@@ -1139,7 +1139,7 @@ Synthesizing Unit <okHost>.
 Unit <okHost> synthesized.
 
 Synthesizing Unit <okWireOR>.
-    Related source file is "C:\Users\lattice\Desktop\Pulser2\pulser2\okLibrary.vhd".
+    Related source file is "C:\Users\lattice\Desktop\LabRAD\lattice\FPGA_firmware\Pulser2_2013_02_28\pulser2\okLibrary.vhd".
         N = 8
     Summary:
 	no macro.
@@ -2008,12 +2008,12 @@ Primitive and Black Box Usage:
 # Clock Buffers                    : 8
 #      BUFG                        : 7
 #      BUFGMUX                     : 1
-# IO Buffers                       : 132
+# IO Buffers                       : 133
 #      IBUF                        : 11
 #      IBUFG                       : 3
 #      IOBUF                       : 35
 #      IOBUFDS                     : 2
-#      OBUF                        : 55
+#      OBUF                        : 56
 #      OBUFT                       : 25
 #      OBUFTDS                     : 1
 # DCMs                             : 2
@@ -2054,8 +2054,8 @@ Slice Logic Distribution:
    Number of unique control sets:       315
 
 IO Utilization: 
- Number of IOs:                         141
- Number of bonded IOBs:                 135  out of    316    42%  
+ Number of IOs:                         142
+ Number of bonded IOBs:                 136  out of    316    43%  
     IOB Flip Flops/Latches:               1
 
 Specific Feature Utilization:
@@ -2203,8 +2203,8 @@ Delay:               9.297ns (Levels of Logic = 34)
      LUT6:I1->O            1   0.254   0.000  Mcompar_time_stamp[31]_time_count[31]_equal_66_o_lut<9> (Mcompar_time_stamp[31]_time_count[31]_equal_66_o_lut<9>)
      MUXCY:S->O            1   0.215   0.000  Mcompar_time_stamp[31]_time_count[31]_equal_66_o_cy<9> (Mcompar_time_stamp[31]_time_count[31]_equal_66_o_cy<9>)
      MUXCY:CI->O          10   0.235   1.284  Mcompar_time_stamp[31]_time_count[31]_equal_66_o_cy<10> (time_stamp[31]_time_count[31]_equal_66_o)
-     LUT6:I2->O           31   0.254   1.503  _n1009_inv11 (_n1009_inv1)
-     LUT5:I4->O           21   0.254   1.309  _n1009_inv1 (_n1009_inv)
+     LUT6:I2->O           31   0.254   1.503  _n1010_inv11 (_n1010_inv1)
+     LUT5:I4->O           21   0.254   1.309  _n1010_inv1 (_n1010_inv)
      FDCE:CE                   0.302          master_logic_0
     ----------------------------------------
     Total                      9.297ns (3.320ns logic, 5.977ns route)
@@ -2260,7 +2260,7 @@ Delay:               6.244ns (Levels of Logic = 3)
      FDCE:C->Q             2   0.525   1.181  duration_count_9 (duration_count_9)
      LUT6:I0->O            1   0.254   1.112  line_triggering_pulse_PWR_8_o_MUX_446_o21 (line_triggering_pulse_PWR_8_o_MUX_446_o2)
      LUT6:I1->O            2   0.254   1.181  line_triggering_pulse_PWR_8_o_MUX_446_o23 (line_triggering_pulse_PWR_8_o_MUX_446_o)
-     LUT6:I0->O           16   0.254   1.181  _n0904_inv1 (_n0904_inv)
+     LUT6:I0->O           16   0.254   1.181  _n0905_inv1 (_n0905_inv)
      FDCE:CE                   0.302          duration_count_0
     ----------------------------------------
     Total                      6.244ns (1.589ns logic, 4.655ns route)
@@ -2544,7 +2544,7 @@ Offset:              5.693ns (Levels of Logic = 2)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clk_1'
-  Total number of paths / destination ports: 4 / 4
+  Total number of paths / destination ports: 5 / 5
 -------------------------------------------------------------------------
 Offset:              5.282ns (Levels of Logic = 3)
   Source:            ep40/ep_trigger_4 (FF)
@@ -3024,12 +3024,12 @@ pmt_synced     |         |         |    2.729|         |
 =========================================================================
 
 
-Total REAL time to Xst completion: 63.00 secs
-Total CPU time to Xst completion: 63.60 secs
+Total REAL time to Xst completion: 68.00 secs
+Total CPU time to Xst completion: 67.50 secs
  
 --> 
 
-Total memory usage is 342216 kilobytes
+Total memory usage is 342856 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :  335 (   0 filtered)
