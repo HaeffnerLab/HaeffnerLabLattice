@@ -1,5 +1,5 @@
 TimeQuest Timing Analyzer report for DDS
-Mon Mar 04 11:03:06 2013
+Mon Mar 04 18:25:29 2013
 Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Web Edition
 
 
@@ -4041,7 +4041,7 @@ No dedicated SERDES Receiver circuitry present in device or used in design
 Info: *******************************************************************
 Info: Running Quartus II 32-bit TimeQuest Timing Analyzer
     Info: Version 12.1 Build 177 11/07/2012 SJ Web Edition
-    Info: Processing started: Mon Mar 04 11:03:04 2013
+    Info: Processing started: Mon Mar 04 18:25:27 2013
 Info: Command: quartus_sta DDS -c DDS
 Info: qsta_default_script.tcl version: #1
 Warning (20013): Ignored assignments for entity "dds_controller" -- entity does not exist in design
@@ -4157,8 +4157,8 @@ Info (332001): The selected device family is not supported by the report_metasta
 Info (332102): Design is not fully constrained for setup requirements
 Info (332102): Design is not fully constrained for hold requirements
 Info: Quartus II 32-bit TimeQuest Timing Analyzer was successful. 0 errors, 29 warnings
-    Info: Peak virtual memory: 324 megabytes
-    Info: Processing ended: Mon Mar 04 11:03:06 2013
+    Info: Peak virtual memory: 319 megabytes
+    Info: Processing ended: Mon Mar 04 18:25:29 2013
     Info: Elapsed time: 00:00:02
     Info: Total CPU time (on all processors): 00:00:02
 
