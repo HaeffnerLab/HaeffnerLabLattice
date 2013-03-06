@@ -15,7 +15,7 @@ class ramsey_dephase_complete(experiment):
 
     required_parameters.extend(ramsey_dephase_scan_second_pulse.required_parameters)
     required_parameters.extend(rabi_flopping.required_parameters)
-    required_parameters = set(required_parameters)
+    required_parameters = list(set(required_parameters))
     #removing parameters we'll be overwriting, and they do not need to be loaded
     required_parameters.remove(('RamseyDephase','dephasing_duration'))
     required_parameters.remove(('RabiFlopping','manual_scan'))
@@ -30,10 +30,15 @@ class ramsey_dephase_complete(experiment):
         self.dephasing_scan = None
     
     def setup_sequence_parameters(self):
+        #define the dephasing scan
         minim,maxim,steps = self.parameters.RamseyDephase.scan_dephase_duration
         minim = minim['us']; maxim = maxim['us']
         self.dephasing_scan = np.linspace(minim,maxim, steps)
         self.dephasing_scan = [WithUnit(pt, 'us') for pt in self.dephasing_scan]
+        #define the rabi flop scan
+        minim,maxim,steps = self.parameters.RamseyDephase.scan_second_pulse
+        minim = minim['us']; maxim = maxim['us']
+        
         resolution = abs(maxim - minim) / steps
         rabi_steps = maxim / float(resolution)
         self.rabi.set_parameters(

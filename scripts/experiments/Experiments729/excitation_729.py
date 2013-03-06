@@ -78,7 +78,11 @@ class excitation_729(experiment):
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         readouts = self.pulser.get_readout_counts().asarray
-        perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+        if len(readouts):
+            perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+        else:
+            #got no readouts
+            perc_excited = -1.0
         self.save_data(readouts)
         return perc_excited
     
