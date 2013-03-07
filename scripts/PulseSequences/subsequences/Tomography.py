@@ -15,9 +15,6 @@ class tomography_excitation(pulse_sequence):
     required_subsequences = [rabi_excitation]
     
     def sequence(self):
-        print 'in tomography excitation, my frequency is: ', self.parameters.Tomography.tomography_excitation_frequency
-        print 'in tomography excitation, my rabi pi time is: ', self.parameters.Tomography.rabi_pi_time
-        
         t = self.parameters.Tomography
         iteration = int(t.iteration)
         if not iteration in range(3):
