@@ -1,15 +1,14 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitation_rabi_tomography import excitation_rabi_tomography
+from excitation_ramsey_dephase import excitation_ramsey_dephase
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
 
-class general_tomography(experiment):
+class ramsey_dephase_tomography(experiment):
     
-    name = 'GeneralTomography'    
+    name = 'RamseyDephaseTomography'
     required_parameters = [
-                           
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','manual_frequency_729'),
                            ('RabiFlopping','line_selection'),
@@ -21,17 +20,13 @@ class general_tomography(experiment):
                            ('TrapFrequencies','radial_frequency_1'),
                            ('TrapFrequencies','radial_frequency_2'),
                            ('TrapFrequencies','rf_drive_frequency'),
-                           
+
                            ('Tomography','repeat_each_measurement'),
-                           
                            ('Tomography', 'line_selection'),
                            ('Tomography', 'tomography_excitation_amplitude'),
                            ]
-    
-    scannable_excitations = []
-    
-    
-    required_parameters.extend(excitation_rabi_tomography.required_parameters)
+
+    required_parameters.extend(excitation_ramsey_dephase.required_parameters)
     #removing parameters we'll be overwriting, and they do not need to be loaded
     required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
     required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
@@ -41,12 +36,7 @@ class general_tomography(experiment):
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        
-        
-        
-        
-        
-        self.excite = self.make_experiment(excitation_rabi_tomography)
+        self.excite = self.make_experiment(excitation_ramsey_dephase)
         self.excite.initialize(cxn, context, ident)
         total_iterations = 3
         self.scan = range(total_iterations)
@@ -57,7 +47,6 @@ class general_tomography(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
-        self.setup_data_vault()
     
     def setup_sequence_parameters(self):
         flop = self.parameters.RabiFlopping
@@ -80,11 +69,12 @@ class general_tomography(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.data_save_context)
         self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Iteration', 'arb')],[('Excitation Probability','Arb','Arb')], context = self.data_save_context)
-        window_name = self.parameters.get('RabiTomography.window_name', ['RabiTomography'])
+        window_name = self.parameters.get('RabiTomography.window_name', ['Tomography'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
         
     def run(self, cxn, context):
+        self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,iteration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
@@ -112,6 +102,6 @@ class general_tomography(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_tomography(cxn = cxn)
+    exprt = ramsey_dephase_tomography(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

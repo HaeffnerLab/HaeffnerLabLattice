@@ -1,6 +1,9 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from ramsey_dephase_scan_second_pulse import ramsey_dephase_scan_second_pulse
 from rabi_flopping import rabi_flopping
+from rabi_tomography import rabi_tomography
+from ramsey_dephase_tomography import ramsey_dephase_tomography
+
 from labrad.units import WithUnit
 import numpy as np
 from treedict import TreeDict
@@ -25,8 +28,12 @@ class ramsey_dephase_complete(experiment):
         self.ident = ident
         self.rabi = self.make_experiment(rabi_flopping)
         self.dephase = self.make_experiment(ramsey_dephase_scan_second_pulse)
+        self.rabi_tomography = self.make_experiment(rabi_tomography)
+        self.ramsey_dephase_tomography = self.make_experiment(ramsey_dephase_tomography)
         self.rabi.initialize(cxn, context, ident)
         self.dephase.initialize(cxn, context, ident)
+        self.rabi_tomography.initialize(cxn, context, ident)
+        self.ramsey_dephase_tomography.initialize(cxn, context, ident)
         self.rabi_scan = None
         self.dephasing_scan = None
     
@@ -49,11 +56,28 @@ class ramsey_dephase_complete(experiment):
         self.setup_sequence_parameters()
         total = len(self.dephasing_scan)
         for i,duration in enumerate(self.dephasing_scan):
-            self.rabi.set_progress_limits(100.0 * i / total, 100.0 * (i + 0.5) / total)
+            #rabi flop
+            self.rabi.set_progress_limits(100.0 * i / total, 100.0 * (i + 0.4) / total)
             self.rabi.run(cxn, context)
             if self.rabi.should_stop: return
+            #rabi tomography
+            self.rabi_tomography.set_parameters(TreeDict.fromdict({
+                                                                   'Excitation_729.rabi_excitation_duration':self.parameters.RamseyDephase.first_pulse_duration
+                                                                    }))
+            self.rabi_tomography.set_progress_limits(100.0 * (i+0.4) / total, 100.0 * (i + 0.5) / total)
+            self.rabi_tomography.run(cxn, context)
+            if self.rabi_tomography.should_stop: return
+            #ramsey dephase tomography
+            self.dephase.set_parameters(TreeDict.fromdict({
+                                                           'RamseyDephase.dephasing_duration':duration,
+                                                           'RamseyDephase.second_pulse_duration':WithUnit(0,'us')
+                                                           }))
+            self.ramsey_dephase_tomography.set_progress_limits(100.0 * (i+0.5) / total, 100.0 * (i + 0.6) / total)
+            self.ramsey_dephase_tomography.run(cxn, context)
+            if self.ramsey_dephase_tomography.should_stop: return
+            #dephase
             self.dephase.set_parameters(TreeDict.fromdict({'RamseyDephase.dephasing_duration':duration}))
-            self.dephase.set_progress_limits(100.0 * (i+ 0.5) / total, 100.0 * (i + 1.0) / total)
+            self.dephase.set_progress_limits(100.0 * (i+ 0.6) / total, 100.0 * (i + 1.0) / total)
             self.dephase.run(cxn, context)
             if self.dephase.should_stop: return
 
