@@ -1,4 +1,5 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from StateReadout import state_readout
 from RabiExcitation import rabi_excitation
 from treedict import TreeDict
 from labrad.units import WithUnit
@@ -37,3 +38,13 @@ class tomography_excitation(pulse_sequence):
                             'Excitation_729.rabi_excitation_phase':WithUnit(90, 'deg'),
                             })
             self.addSequence(rabi_excitation, replace)
+
+class tomography_readout(pulse_sequence):
+    '''
+    pulse sequence that combines tomography rotations with the readout
+    '''
+    required_subsequences = [tomography_excitation, state_readout]
+    
+    def sequence(self):
+        self.addSequence(tomography_excitation)
+        self.addSequence(state_readout)

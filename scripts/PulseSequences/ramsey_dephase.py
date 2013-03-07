@@ -2,10 +2,9 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.SidebandCooling import sideband_cooling
 from subsequences.OpticalPumping import optical_pumping
-from subsequences.StateReadout import state_readout
+from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.RamseyDephase import ramsey_dephase_excitation
-
 from labrad.units import WithUnit
            
 class ramsey_dephase(pulse_sequence):
@@ -68,6 +67,11 @@ class ramsey_dephase(pulse_sequence):
                             ('Excitation_729','rabi_excitation_amplitude'),
                             ('Excitation_729','rabi_excitation_phase'),
                             
+                            ('Tomography', 'rabi_pi_time'),
+                            ('Tomography', 'iteration'),
+                            ('Tomography', 'tomography_excitation_frequency'),
+                            ('Tomography', 'tomography_excitation_amplitude'),
+                            
                             ('RamseyDephase','first_pulse_duration'),
                             ('RamseyDephase','pulse_gap'),
                             ('RamseyDephase','dephasing_frequency'),
@@ -77,7 +81,7 @@ class ramsey_dephase(pulse_sequence):
                             ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
-                             state_readout, turn_off_all, sideband_cooling, ramsey_dephase_excitation]
+                             tomography_readout, turn_off_all, sideband_cooling, ramsey_dephase_excitation]
                              
     def sequence(self):
         p = self.parameters
@@ -89,4 +93,4 @@ class ramsey_dephase(pulse_sequence):
         if p.SidebandCooling.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(ramsey_dephase_excitation)
-        self.addSequence(state_readout)
+        self.addSequence(tomography_readout)

@@ -3,7 +3,7 @@ from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
 from subsequences.RabiExcitation import rabi_excitation
-from subsequences.StateReadout import state_readout
+from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
 from labrad.units import WithUnit
@@ -72,11 +72,16 @@ class spectrum_rabi(pulse_sequence):
                             ('StateReadout','state_readout_frequency_866'),
                             ('StateReadout','state_readout_amplitude_866'),
                             ('StateReadout','state_readout_duration'),
+                            
+                            ('Tomography', 'rabi_pi_time'),
+                            ('Tomography', 'iteration'),
+                            ('Tomography', 'tomography_excitation_frequency'),
+                            ('Tomography', 'tomography_excitation_amplitude'),
                             ]
     
     
     required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
-                             rabi_excitation, state_readout, turn_off_all, sideband_cooling]
+                             rabi_excitation, tomography_readout, turn_off_all, sideband_cooling]
 
     def sequence(self):
         p = self.parameters
@@ -89,4 +94,4 @@ class spectrum_rabi(pulse_sequence):
             self.addSequence(sideband_cooling)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':p.Heating.background_heating_time}))
         self.addSequence(rabi_excitation)
-        self.addSequence(state_readout)
+        self.addSequence(tomography_readout)
