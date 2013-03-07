@@ -11,6 +11,7 @@ class ramsey_dephase_complete(experiment):
     required_parameters = [
                            ('RamseyDephase', 'scan_dephase_duration'),
                            ('RamseyDephase', 'scan_second_pulse'),
+                           ('RamseyDephase', 'first_pulse_duration'),
                            ]
 
     required_parameters.extend(ramsey_dephase_scan_second_pulse.required_parameters)
@@ -38,11 +39,11 @@ class ramsey_dephase_complete(experiment):
         #define the rabi flop scan
         minim,maxim,steps = self.parameters.RamseyDephase.scan_second_pulse
         minim = minim['us']; maxim = maxim['us']
-        
         resolution = abs(maxim - minim) / steps
-        rabi_steps = maxim / float(resolution)
+        rabi_maxim = maxim + self.parameters.RamseyDephase.first_pulse_duration['us']
+        rabi_steps = rabi_maxim / float(resolution)
         self.rabi.set_parameters(
-                                 TreeDict.fromdict({'RabiFlopping.manual_scan':(WithUnit(0, 'us'), WithUnit(maxim, 'us'), rabi_steps)})
+                                 TreeDict.fromdict({'RabiFlopping.manual_scan':(WithUnit(0, 'us'), WithUnit(rabi_maxim, 'us'), rabi_steps)})
                                  )
     def run(self, cxn, context):
         self.setup_sequence_parameters()
