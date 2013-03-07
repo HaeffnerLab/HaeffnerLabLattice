@@ -16,36 +16,36 @@ from labrad import units as U
         #    2nd level: sets to be joined to one plot (CONSECUTIVE TIME AXES)
         #    3rd level: Dates and Filenames of the parts
         
-info = {'plot_type':'rabi_flop',
-        'title':'Carrier Rabi-Flop', 
-        'sideband':-1,
-        'offset_time': U.WithUnit(600,'ns'),
-        'trap_frequency': U.WithUnit(2.8, 'MHz'), #ENTER WITHOUT 2Pi FACTOR (UNLIKE THEORY PREDICTION)
-        'nmax':5000,
-        'fit_until':U.WithUnit(80,'us'),
-        'folder':'RabiFlopping',
-        #'datasets':[[['2013Feb05','1137_00'],['2013Feb05','1138_55']]],
-        #'datasets':[[['2013Feb05','1433_43']],[['2013Feb05','1431_49']],[['2013Feb05','1435_40']]],
-        'datasets':[[['2013Mar01','1842_01']]],
-        'fit_init_nbar':5,
-        'fit_init_RabiTime':U.WithUnit(24,'us'),
-        'plot_initial_values':False}
-#info = {
-#        'plot_type':'ramsey_fringe',
-#        'title':'Ramsey Fringes', 
-##        'fit_from':U.WithUnit(200,'us'),
-##        'fit_until':U.WithUnit(250,'us'),
-#        'folder':'RamseyScanGap',
-#        #'datasets':[[['2013Jan17','1731_45'],['2013Jan17','1733_00']]],
-#        #'datasets':[[['2012Dec20','2105_00']]],
-#        #'datasets':[[['2012Dec20','2121_24'],['2012Dec20','2123_16']]],
-#        'datasets':[[['2013Mar01','1521_41']]],
-#        'fit_init_period':U.WithUnit(110,'us'),
-#        'fit_init_T2':U.WithUnit(3000,'us'),
-#        'fit_init_phase':0,
-#        'fit_init_contrast':0.9,
-#        'plot_initial_values':False
-#        }
+#info = {'plot_type':'rabi_flop',
+#        'title':'Carrier Rabi-Flop', 
+#        'sideband':-1,
+#        'offset_time': U.WithUnit(600,'ns'),
+#        'trap_frequency': U.WithUnit(2.8, 'MHz'), #ENTER WITHOUT 2Pi FACTOR (UNLIKE THEORY PREDICTION)
+#        'nmax':5000,
+#        'fit_until':U.WithUnit(80,'us'),
+#        'folder':'RabiFlopping',
+#        #'datasets':[[['2013Feb05','1137_00'],['2013Feb05','1138_55']]],
+#        #'datasets':[[['2013Feb05','1433_43']],[['2013Feb05','1431_49']],[['2013Feb05','1435_40']]],
+#        'datasets':[[['2013Mar01','1842_01']]],
+#        'fit_init_nbar':5,
+#        'fit_init_RabiTime':U.WithUnit(24,'us'),
+#        'plot_initial_values':False}
+info = {
+        'plot_type':'ramsey_fringe',
+        'title':'Ramsey Fringes', 
+        'fit_from':U.WithUnit(0,'us'),
+        'fit_until':U.WithUnit(150,'us'),
+        'folder':'RamseyScanGap',
+        #'datasets':[[['2013Jan17','1731_45'],['2013Jan17','1733_00']]],
+        #'datasets':[[['2012Dec20','2105_00']]],
+        #'datasets':[[['2012Dec20','2121_24'],['2012Dec20','2123_16']]],
+        'datasets':[[['2013Mar05','2023_53']]],
+        'fit_init_period':U.WithUnit(120,'us'),
+        'fit_init_T2':U.WithUnit(100,'us'),
+        'fit_init_phase':0,
+        'fit_init_contrast':0.9,
+        'plot_initial_values':False
+        }
 
 #optimization
 class Parameter:
