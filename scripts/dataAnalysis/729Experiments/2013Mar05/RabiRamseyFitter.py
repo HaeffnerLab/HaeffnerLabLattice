@@ -2,13 +2,13 @@
 Fitter for Carrier and Sideband Rabi Flopping or Ramsey Fringes.####
 """
 import numpy as np
-from scipy.special.orthogonal import eval_genlaguerre as laguer
 from scipy import optimize
 import matplotlib 
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot, pylab
 import labrad
 from labrad import units as U
+import timeevolution as te
 
 # PROVIDE INFO FOR PLOTS
         #'dataset' has three levels: 
@@ -17,33 +17,41 @@ from labrad import units as U
         #    3rd level: Dates and Filenames of the parts
         
 info = {'plot_type':'rabi_flop',
-        'title':'Carrier Rabi-Flop', 
-        'sideband':-1,
-        'offset_time': U.WithUnit(600,'ns'),
-        'trap_frequency': U.WithUnit(2.8, 'MHz'), #ENTER WITHOUT 2Pi FACTOR (UNLIKE THEORY PREDICTION)
-        'nmax':5000,
-        'fit_until':U.WithUnit(80,'us'),
+        'title':'Rabi-Flop', 
+        'sideband':1,
+        'offset_time': U.WithUnit(600.0,'ns'),
+        'trap_frequency': U.WithUnit(2.84736, 'MHz'), #ENTER WITHOUT 2Pi FACTOR
+        'nmax':1000,
+        'fit_until':U.WithUnit(140,'us'),
+        'fit_from':U.WithUnit(1,'us'),
         'folder':'RabiFlopping',
         #'datasets':[[['2013Feb05','1137_00'],['2013Feb05','1138_55']]],
         #'datasets':[[['2013Feb05','1433_43']],[['2013Feb05','1431_49']],[['2013Feb05','1435_40']]],
-        'datasets':[[['2013Mar01','1842_01']]],
+        'datasets':[[['2013Mar06','0033_00']]],#0034_31  0033_00
         'fit_init_nbar':5,
-        'fit_init_RabiTime':U.WithUnit(24,'us'),
+#        'take_init_fRabi_from_Pi_time':U.WithUnit(68,'us'),
+        'fit_init_fRabi':U.WithUnit(41.4193925185,'kHz'),
+        'fit_init_delta':U.WithUnit(1,'kHz'),
+        'fit_init_delta_fluc':U.WithUnit(1,'kHz'),
+        'fit_fRabi':False,
+        'fit_nbar':False,
+        'fit_delta':True,
+        'fit_delta_fluc':True,
         'plot_initial_values':False}
 #info = {
 #        'plot_type':'ramsey_fringe',
 #        'title':'Ramsey Fringes', 
-##        'fit_from':U.WithUnit(200,'us'),
-##        'fit_until':U.WithUnit(250,'us'),
-#        'folder':'RamseyScanGap',
+#        'fit_from':U.WithUnit(3,'us'),
+##        'fit_until':U.WithUnit(36,'us'),
+#        'folder':'RamseyDephaseScanDuration',
 #        #'datasets':[[['2013Jan17','1731_45'],['2013Jan17','1733_00']]],
 #        #'datasets':[[['2012Dec20','2105_00']]],
 #        #'datasets':[[['2012Dec20','2121_24'],['2012Dec20','2123_16']]],
-#        'datasets':[[['2013Mar01','1521_41']]],
-#        'fit_init_period':U.WithUnit(110,'us'),
-#        'fit_init_T2':U.WithUnit(3000,'us'),
+#        'datasets':[[['2013Mar06','0043_36']]],
+#        'fit_init_period':U.WithUnit(40,'us'),
+#        'fit_init_T2':U.WithUnit(2000,'us'),
 #        'fit_init_phase':0,
-#        'fit_init_contrast':0.9,
+#        'fit_init_contrast':1.2,
 #        'plot_initial_values':False
 #        }
 
@@ -69,48 +77,6 @@ def fit(function, parameters, y, x = None):
     if x is None: x = np.arange(y.shape[0])
     p = [param() for param in parameters]
     return optimize.leastsq(f, p)
-
-#class for computing rabi flop time evolution
-class rabi_flop():
-    def __init__(self, trap_frequency, sideband_order,nmax = 1000):
-        m = 40 * U.amu
-        hbar = U.hbar
-        wavelength= U.WithUnit(729,'nm')
-        
-        self.sideband_order = sideband_order #0 for carrier, 1 for 1st blue sideband etc
-        self.n = np.linspace(0, nmax,nmax +1) #how many vibrational states to consider
-        self.eta = 2.*np.cos(np.pi/4)*np.pi/wavelength['m']*np.sqrt(hbar['J*s']/(2.*m['kg']*2.*np.pi*trap_frequency['Hz']))
-        self.rabi_coupling=self.rabi_coupling()
-        
-    def rabi_coupling(self):
-        eta = self.eta
-        n = self.n
-        sideband=np.abs(self.sideband_order)
-        x=1
-        for k in np.linspace(1,sideband,sideband):
-            x=x*(n+k)
-        result = (eta**sideband)/2.*np.exp(-.5*eta**2.)*laguer(n,sideband,eta**2.)/np.sqrt(x)
-        return result
-        
-    def state_evolution(self, nbar, f_Rabi, t):
-        sideband=self.sideband_order
-        nplus=0
-        if sideband<0:
-            nplus=-sideband
-        n = self.n
-        #level population probability for a given nbar, see Leibfried 2003 (57)
-        nbar=np.float64(nbar)
-        p = ((nbar/(nbar+1.))**(n+nplus))/(nbar+1.)
-        pp=np.sum(((nbar/(nbar+1.))**(np.linspace(-nplus,-1,nplus)+nplus))/(nbar+1.),axis=0)
-        one=np.sum(p,axis=0)+pp
-        if np.abs(1-one)>0.00001:
-            print 'Warning: nmax may not be high enough for chosen value of nbar = {0}\nmissing probability = {1}'.format(nbar,1-one)
-        ones = np.ones_like(t)
-        rabi_coupling = self.rabi_coupling
-
-        result = np.outer(p, ones) * np.sin( np.outer(2.*np.pi*f_Rabi*rabi_coupling, t ))**2
-        result = np.sum(result, axis = 0)
-        return result
 
 cxn = labrad.connect('192.168.169.197')
 dv = cxn.data_vault
@@ -154,28 +120,42 @@ fit_times = detailed_times - offset_time
 
 # Find out what data and fit
 if info['plot_type']=='rabi_flop':
-    nbar = Parameter(info['fit_init_nbar'])
     if 'sideband' in info: sideband_order=info['sideband'] 
     else: sideband_order=0
     if 'nmax' in info: nmax=info['nmax']
     else: nmax=1000
     trap_frequency = info['trap_frequency']
-    flop = rabi_flop(nmax=nmax,trap_frequency = trap_frequency, sideband_order = sideband_order)
-    fit_init_fRabi=1./(info['fit_init_RabiTime']['s']*(flop.eta*np.sqrt(info['fit_init_nbar']))**sideband_order)
+    flop = te.time_evolution(nmax=nmax,trap_frequency = trap_frequency, sideband_order = sideband_order)
+    if 'take_init_fRabi_from_Pi_time' in info: fit_init_fRabi=1.0/((2.0*flop.eta)**np.abs(sideband_order)*2.0*info['take_init_fRabi_from_Pi_time']['s'])
+    else: fit_init_fRabi=info['fit_init_fRabi']['Hz']
+    fit_init_nbar=info['fit_init_nbar']
+    fit_init_delta=info['fit_init_delta']['Hz']
+    fit_init_delta_fluc=info['fit_init_delta_fluc']['Hz']
+    nbar = Parameter(info['fit_init_nbar'])
+    delta = Parameter(fit_init_delta)
+    delta_fluc = Parameter(fit_init_delta_fluc)
     f_Rabi = Parameter(fit_init_fRabi)
     def f(t):
-        evolution = flop.state_evolution(nbar(), f_Rabi(), t)
+        evolution = flop.state_evolution_fluc(t,nbar(), f_Rabi(), delta(), delta_fluc())
         return evolution
-    p,success = fit(f, [nbar, f_Rabi], y = prob[fitting_region], x = times[fitting_region] - offset_time)
-    print 'fit for nbar is', nbar()
+    fit_params=[]
+    if info['fit_fRabi']: fit_params.append(f_Rabi)
+    if info['fit_nbar']: fit_params.append(nbar)
+    if info['fit_delta']: fit_params.append(delta)
+    if info['fit_delta_fluc']: fit_params.append(delta_fluc)
+    p,success = fit(f, fit_params, y = prob[fitting_region], x = times[fitting_region] - offset_time)
     print 'fit for f_Rabi is ', f_Rabi()
+    print 'fit for nbar is', nbar()
     if 'plot_initial_values' in info and info['plot_initial_values']:
-        evolution = flop.state_evolution( info['fit_init_nbar'], 1./info['fit_init_RabiTime']['s'], detailed_times - offset_time )
+        evolution = flop.state_evolution_fluc( fit_times,fit_init_nbar, fit_init_fRabi,fit_init_delta,fit_init_delta_fluc )
     else:
-        evolution = flop.state_evolution( nbar(), f_Rabi(), fit_times )
+        evolution = flop.state_evolution_fluc( fit_times, nbar(),f_Rabi(), delta(),delta_fluc())
     pi_time_arg = pylab.unravel_index(np.array(evolution).argmax(),np.array(evolution).shape)
     pi_time = fit_times[pi_time_arg]
-    print 'Rabi Pi Time is {} us'.format(pi_time*10**6)
+    print 
+    print 'Rabi Pi Time is {} us'.format((pi_time+offset_time)*10**6)
+    print 'Rabi Pi/2 Time is {} us'.format((pi_time)/2.0*10**6+offset_time*10**6)
+    print "The detuning is centered around {} kHz and spreads with a variance of {} kHz".format(delta()*10**-3,np.abs(delta_fluc())*10**-3)
     plot_fit_label = 'fit with nb = {:.2f} and f_Rabi = {:.1f} kHz'.format(nbar(),10**-3 * f_Rabi())
     plot_data_label = 'measured data, sideband = {}'.format(sideband_order)
 
@@ -197,6 +177,7 @@ elif info['plot_type']=='ramsey_fringe':
     p,success = fit(f, [frequency, T2,phase,contrast,offset], y = prob[fitting_region], x = times[fitting_region] - offset_time)
     print 'fit to T2 is {} ms'.format(T2()*10**6)
     print 'fit for f is {} kHz'.format(frequency()*10**-3)
+    print 'period is {} us'.format(1./frequency()*10**6)
     print 'fit for contrast is {}'.format(contrast())
     print 'fit to phase is {}'.format(phase())
     print 'fit to offset is {}'.format(offset())

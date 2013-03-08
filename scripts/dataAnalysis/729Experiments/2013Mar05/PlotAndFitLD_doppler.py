@@ -66,7 +66,6 @@ nb = Parameter(nb_init)
 f_Rabi = Parameter(f_Rabi_init['Hz'])
 delta = Parameter(delta_init['Hz'])
 delta_fluc=Parameter(delta_fluc_init['Hz'])
-#which to fit?
 fit_params = [nb,f_Rabi,delta,delta_fluc]
 
 # take list of Rabi flops and average
@@ -98,7 +97,7 @@ deph_y_axis = np.sum(deph_y_axis_list,axis=0)/np.float32(len(dephase_files))
 deph_x_axis=data[:,0]*10**(-6)+dephasing_time_offset['s']
 t0 = deph_x_axis.min()+dephasing_time_offset['s']
 
-#fit Rabi Flops to theory
+#fit to theory
 evo=tp.time_evolution(trap_frequency, sideband,nmax = 1000)
 def f(x):
     evolution = evo.state_evolution_fluc(x,nb(),f_Rabi(),delta(),delta_fluc())
@@ -142,11 +141,13 @@ pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 
+#pyplot(sb.x,sb.flop)
+
 pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
 pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
 pyplot.xlabel('t in us')
 pyplot.ylim((0,1))
-pyplot.ylabel('Population in the D-5/2 state')
+pyplot.ylabel('Population in the D-5/2 state')# + {0:.0f} kHz'.format(ymin))
 #pyplot.legend()
 pyplot.text(xmax*0.70*10**6,0.83, 'nbar = {:.2f}'.format(nb()))
 pyplot.text(xmax*0.70*10**6,0.88, 'Rabi Frequency f = {:.2f} kHz'.format(f_Rabi()*10**(-3)))
