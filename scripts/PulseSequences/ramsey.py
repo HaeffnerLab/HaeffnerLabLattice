@@ -2,7 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.SidebandCooling import sideband_cooling
 from subsequences.OpticalPumping import optical_pumping
-from subsequences.StateReadout import state_readout
+from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.Ramsey import ramsey_excitation
 
@@ -67,13 +67,18 @@ class ramsey(pulse_sequence):
                             ('StateReadout','state_readout_amplitude_866'),
                             ('StateReadout','state_readout_duration'),
                             
+                            ('Tomography', 'rabi_pi_time'),
+                            ('Tomography', 'iteration'),
+                            ('Tomography', 'tomography_excitation_frequency'),
+                            ('Tomography', 'tomography_excitation_amplitude'),
+                            
                             ('Ramsey','ramsey_time'),
                             ('Ramsey','rabi_pi_time'),
                             ('Ramsey','second_pulse_phase'),
                             ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
-                             state_readout, turn_off_all, sideband_cooling, ramsey_excitation]
+                             tomography_readout, turn_off_all, sideband_cooling, ramsey_excitation]
                              
     def sequence(self):
         p = self.parameters
@@ -85,4 +90,4 @@ class ramsey(pulse_sequence):
         if p.SidebandCooling.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(ramsey_excitation)
-        self.addSequence(state_readout)
+        self.addSequence(tomography_readout)

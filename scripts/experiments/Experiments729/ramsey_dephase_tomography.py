@@ -1,15 +1,14 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitation_729 import excitation_729
+from excitation_ramsey_dephase import excitation_ramsey_dephase
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
 
-class rabi_tomography(experiment):
+class ramsey_dephase_tomography(experiment):
     
-    name = 'RabiTomography'
+    name = 'RamseyDephaseTomography'
     required_parameters = [
-                           
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','manual_frequency_729'),
                            ('RabiFlopping','line_selection'),
@@ -21,13 +20,13 @@ class rabi_tomography(experiment):
                            ('TrapFrequencies','radial_frequency_1'),
                            ('TrapFrequencies','radial_frequency_2'),
                            ('TrapFrequencies','rf_drive_frequency'),
-                           
+
                            ('Tomography','repeat_each_measurement'),
                            ('Tomography', 'line_selection'),
                            ('Tomography', 'tomography_excitation_amplitude'),
                            ]
 
-    required_parameters.extend(excitation_729.required_parameters)
+    required_parameters.extend(excitation_ramsey_dephase.required_parameters)
     #removing parameters we'll be overwriting, and they do not need to be loaded
     required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
     required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
@@ -37,7 +36,7 @@ class rabi_tomography(experiment):
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(excitation_729)
+        self.excite = self.make_experiment(excitation_ramsey_dephase)
         self.excite.initialize(cxn, context, ident)
         total_iterations = 3
         self.scan = range(total_iterations)
@@ -103,6 +102,6 @@ class rabi_tomography(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_tomography(cxn = cxn)
+    exprt = ramsey_dephase_tomography(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
