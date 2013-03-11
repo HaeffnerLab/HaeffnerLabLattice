@@ -1,14 +1,9 @@
-import numpy as np
-#check for pulse overalap
-#duration is positive
-#start time reasonable
-#need certain space for duration and between pulses
-durationAdvance = 2
-
+durationAdvance = 2 #duration of the 'adance' TTL pulse in pulser timesteps
 minPulseLengthTTL = durationAdvance
 minPulseLengthDDS = 2 * durationAdvance
-minCoherentPulseGapOnFreqChange = 125 #timesteps, which is 5 microseconds
+minPulseGapOnFreqChange = 150 #timesteps, which is 6 microseconds
 
+#defining pulse classes
 class pulse(object):
     def __init__(self, channel, start, end):
         self.channel = channel
@@ -19,7 +14,6 @@ class dds_pulse(pulse):
     def __init__(self, channel, start, end, freq, ampl, phase = 0.0):
         super(dds_pulse, self).__init__(channel, start, end)
         self.pulse_type = 'dds'
-        self.coherent = True
         self.freq = freq
         self.ampl = ampl
         self.phase = phase
@@ -29,26 +23,23 @@ class dds_pulse(pulse):
         return (self.freq, self.ampl, self.phase)
 
 class ttl_pulse(pulse):
-    pass
+    def __init__(self, channel, start, end):
+        super(ttl_pulse, self).__init__(channel, start, end)
+        self.pulse_type = 'ttl'
 
 def pulse_type_limits(pulse):
+    '''
+    returns the limits on duration for dds and tll pulses
+    '''
     if pulse.pulse_type == 'dds':
-        minPulseLength = 2 * durationAdvance
-        minGapNoChange = 2 * durationAdvance
-        if pulse.coherent == True:
-            minGapOnChange = (minCoherentPulseGapOnFreqChange, minPulseLengthDDS, minPulseLengthDDS)
-        else:
-            minGapOnChange = (minPulseLengthDDS, minPulseLengthDDS, minPulseLengthDDS)
+        minPulseLength = minPulseLengthDDS
+        minGapNoChange = minPulseLengthDDS
+        minGapOnChange = (minPulseGapOnFreqChange, minPulseLengthDDS, minPulseLengthDDS)
     elif pulse.pulse_type == 'ttl':
-        minPulseLength = (minPulseLengthTTL, )
-        minGapOnChange = (minPulseLengthTTL, )
+        minPulseLength = minPulseLengthTTL
+        minGapOnChange = minPulseLengthTTL
         minGapNoChange = (minPulseLengthTTL, )
     return minPulseLength, minGapOnChange, minGapNoChange
-    
-d = {'729': []}
-d['729'].append(dds_pulse('729DP', 5.0, 16.0, 220.0, -10.0))
-d['729'].append(dds_pulse('729DP', 20.0, 25.0, 220.0, -11.0 ))
-d['729'].append(dds_pulse('729DP', 175.0, 250.0, 221.0, -10.0))
 
 def check_errors(last_pulse, new_pulse):
     minPulseLength, minGapOnChange, minGapNoChange = pulse_type_limits(last_pulse)
@@ -56,32 +47,32 @@ def check_errors(last_pulse, new_pulse):
     message_collision=''
     message_duration=''
     if difference < 0:
-        message_collision = "Overlap found at channel {0}. Pulse starting at {1} but previous ending at {2}"
+        message_collision = "Overlap found at {0} channel {1}. Pulse starting at {2} but previous ending at {3}"
     elif last_pulse.setting == new_pulse.setting and difference < minGapNoChange:
-        message_collision = "Gap Between Pulses Too Short for channel {0}. Pulse starting at {1} but previous ending at {2}"
+        message_collision = "Gap Between Pulses Too Short for {0} channel {1}. Pulse starting at {2} but previous ending at {3}"
     else:
         #check on errors if any of the settings were changed
         for i,last_setting in enumerate(last_pulse.setting):
             if new_pulse.setting[i] != last_setting and difference < minGapOnChange[i]:
-                message_collision = "Gap Between Pulses Too Short for channel {0}. Pulse starting at {1} but previous ending at {2}"
+                message_collision = "Gap Between Pulses Too Short for {0} channel {1}. Pulse starting at {2} but previous ending at {3}"
     #check for duration erros of each pulse
     for p in [last_pulse, new_pulse]:
         if p.start < minPulseLength:
-            message_duration = "Pulse starts too early for channel {0}, starting at {1}"
-            message_duration = message_duration.format(p.channel, p.start)
+            message_duration = "Pulse starts too early for {0} channel {1}, starting at {2}"
+            message_duration = message_duration.format(p.pulse_type, p.channel, p.start)
         if p.end - p.start < minPulseLength:
-            message_duration = "Pulse is too short for channel {0}, starting at {1}, ending at {2}"
-            message_duration = message_duration.format(p.channel, p.start, p.end)
+            message_duration = "Pulse is too short for {0} channel {1}, starting at {2}, ending at {3}"
+            message_duration = message_duration.format(p.pulse_type, p.channel, p.start, p.end)
     #format and raise the relevant error message
     message = '' 
     if message_collision:
-        message = message_collision.format(new_pulse.channel, new_pulse.start, last_pulse.end)
+        message = message_collision.format(new_pulse.pulse_type, new_pulse.channel, new_pulse.start, last_pulse.end)
     if message_duration:
         message = message_duration
     if message:
         raise Exception (message)
 
-def merge_adjacent_dds(pulse_list):
+def merge_adjacent(pulse_list):
     '''
     merges adjacent dds pulses by combining pulses together when they are back to back and have the same dds settings
     '''
@@ -100,11 +91,12 @@ def merge_adjacent_dds(pulse_list):
     merged.append(last_pulse)
     return merged
 
+
 def get_merged_pulses():
     '''returns all pulses while mergent adjacent pulses for each channel'''
     all_pulses = []
     for pulse_list in d.itervalues():
-        merged = merge_adjacent_dds(pulse_list)
+        merged = merge_adjacent(pulse_list)
         all_pulses.extend(merged)
     return all_pulses
 
@@ -124,7 +116,6 @@ def parse_dds():
 #        while pulses_sorted_by_start:
 #            
     
-    
 def add_to_dds_program(self, prog, state):
     for name,num in state.iteritems():
         if not hardwareConfiguration.ddsDict[name].remote:
@@ -132,6 +123,11 @@ def add_to_dds_program(self, prog, state):
         else:  
             buf = self.parent._intToBuf_remote(num)
         prog[name] += buf
+
+    
+d = {'729': []}
+d['729'].append(dds_pulse('729DP', 5.0, 16.0, 220.0, -10.0))
+d['729'].append(dds_pulse('729DP', 16.0, 25.0, 220.0, -10.0 ))
+d['729'].append(dds_pulse('729DP', 175.0, 250.0, 221.0, -10.0))
     
 parse_dds()
-        
