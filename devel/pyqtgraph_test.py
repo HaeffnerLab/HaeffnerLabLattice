@@ -35,10 +35,16 @@ print p.listDataItems()
 x = np.arange(10**5)
 y= np.random.random(10**5)
 itr = 0
-
+import time
+t = time.time()
 app.processEvents()  ## force complete redraw for every plot
 while True:
+    t1 = time.time()
+    print t1 - t
+    t = t1
     itr+=1
+    curve.clear()
+    another_curve.clear()
     curve.setData(x[0:itr],y[0:itr])
     another_curve.setData(x[0:itr],5 + y[0:itr])
     app.processEvents()  ## force complete redraw for every plot

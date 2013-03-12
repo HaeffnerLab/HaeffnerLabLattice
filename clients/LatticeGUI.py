@@ -1,5 +1,5 @@
-from PyQt4 import QtGui, QtCore
-from twisted.internet.defer import inlineCallbacks, returnValue
+from PyQt4 import QtGui
+from twisted.internet.defer import inlineCallbacks
 
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, parent=None):
@@ -15,9 +15,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.create_layout(cxn)
     
     def create_layout(self, cxn):
-        lightControlTab = self.makeLightWidget(reactor)
-        voltageControlTab = self.makeVoltageWidget(reactor, cxn)
-        tableOpticsWidget = self.makeTableOpticsWidget(reactor, cxn)
+        contrl_widget = self.makeControlWidget(reactor, cxn)
         histogram = self.make_histogram_widget(reactor, cxn)
         drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
@@ -26,13 +24,10 @@ class LATTICE_GUI(QtGui.QMainWindow):
         script_scanner = script_scanner_gui(reactor, cxn)
         script_scanner.show()
         self.tabWidget = QtGui.QTabWidget()
-        self.tabWidget.addTab(voltageControlTab,'&Trap Voltages')
-        self.tabWidget.addTab(lightControlTab,'&LaserRoom')
-        self.tabWidget.addTab(tableOpticsWidget,'&Optics')
+        self.tabWidget.addTab(contrl_widget,'&Control')
 #        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
-        self.tabWidget.addTab(drift_tracker, '&Drift Tracker')
-#        self.createGrapherTab()
+        self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -41,28 +36,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.drift_tracker.drift_tracker import drift_tracker
         widget = drift_tracker(reactor, cxn)
         return widget
-    
-    @inlineCallbacks
-    def createGrapherTab(self):
-        grapher = yield self.makeGrapherWidget(reactor)
-        self.tabWidget.addTab(grapher, '&Grapher')
-    
-    @inlineCallbacks
-    def makeGrapherWidget(self, reactor):
-        widget = QtGui.QWidget()
-        from common.clients.pygrapherlive.connections import CONNECTIONS
-        vboxlayout = QtGui.QVBoxLayout()
-        Connections = CONNECTIONS(reactor)
-        @inlineCallbacks
-        def widgetReady():
-            window = yield Connections.introWindow
-            vboxlayout.addWidget(window)
-            widget.setLayout(vboxlayout)
-        yield Connections.communicate.connectionReady.connect(widgetReady)
-        returnValue(widget)
-
-    def createExperimentParametersTab(self):
-        self.tabWidget.addTab(self.experimentParametersWidget, '&Experiment Parameters')
     
     def make_histogram_widget(self, reactor, cxn):
         from common.clients.readout_histogram import readout_histogram
@@ -75,39 +48,27 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget.setLayout(gridLayout)
         return widget
     
-    def makeLightWidget(self, reactor):
-        widget = QtGui.QWidget()
-        from common.clients.CAVITY_CONTROL import cavityWidget
-        from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
-        gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(cavityWidget(reactor),0,0)
-        gridLayout.addWidget(multiplexerWidget(reactor),0,1)
-        widget.setLayout(gridLayout)
-        return widget
-    
-    def makeVoltageWidget(self, reactor, cxn):
+    def makeControlWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
         from COMPENSATION_CONTROL import COMPENSATION_CONTROL as compensationWidget
         from HV_CONTROL import hvWidget
-        gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(endcapWidget(reactor, cxn),0,0,1,1)
-        gridLayout.addWidget(compensationWidget(reactor, cxn),1,0,1,1)
-        gridLayout.addWidget(hvWidget(reactor), 2,0, 1, 1)
-        widget.setLayout(gridLayout)
-        return widget
-    
-    def makeTableOpticsWidget(self, reactor, cxn):
-        widget = QtGui.QWidget()
+        from common.clients.CAVITY_CONTROL import cavityWidget
+        from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from common.clients.PMT_CONTROL import pmtWidget
         from common.clients.SWITCH_CONTROL import switchWidget
         from common.clients.DDS_CONTROL import DDS_CONTROL
         from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(pmtWidget(reactor),0, 1, 1, 1, alignment = QtCore.Qt.AlignRight)
-        gridLayout.addWidget(switchWidget(reactor, cxn),1,0, 1, 2)
-        gridLayout.addWidget(linetriggerWidget(reactor, cxn), 0, 0, 1, 1)
-        gridLayout.addWidget(DDS_CONTROL(reactor, cxn), 2, 0, 1, 2)
+        gridLayout.addWidget(endcapWidget(reactor, cxn),        0,0,1,1)
+        gridLayout.addWidget(compensationWidget(reactor, cxn),  1,0,1,1)
+        gridLayout.addWidget(hvWidget(reactor),                 2,0,1,1)
+        gridLayout.addWidget(cavityWidget(reactor),             0,1,3,2)
+        gridLayout.addWidget(multiplexerWidget(reactor),        0,3,3,1)
+        gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,1)
+        gridLayout.addWidget(pmtWidget(reactor),                3,1,1,1)
+        gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,2,1,1)
+        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,3,1,1)
         widget.setLayout(gridLayout)
         return widget
 
