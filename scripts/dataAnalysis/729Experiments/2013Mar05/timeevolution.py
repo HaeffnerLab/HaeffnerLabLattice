@@ -20,7 +20,7 @@ class time_evolution():#contains all relevant functions for thermal states, rabi
         x=1
         for k in np.linspace(1,sideband,sideband):
             x=x*(n+k)
-        result = (eta**sideband)/2.*np.exp(-.5*eta**2.)*laguer(n,sideband,eta**2.)/np.sqrt(x)
+        result = (eta**sideband)*np.exp(-.5*eta**2.)*laguer(n,sideband,eta**2.)/np.sqrt(x)
         return result
         
     def p_thermal(self,nbar):
@@ -38,33 +38,52 @@ class time_evolution():#contains all relevant functions for thermal states, rabi
             print 'Warning: nmax may not be high enough for chosen value of nbar = {0}\nmissing probability = {1}'.format(nbar,1-one)
         return p
     
-    def state_evolution(self, nbar, f_Rabi, t):
+    def state_evolution(self, t, nbar, f_Rabi, delta=0.0):
         ones = np.ones_like(t)
-        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi['Hz']
         p = self.p_thermal(nbar)
-        result = np.sum(np.outer(p, ones) * np.sin( np.outer(omega_eff, t ))**2, axis = 0)
+        g_to_e = self.g_to_e_prob(t, f_Rabi, delta)
+        result = np.sum(np.outer(p, ones) * g_to_e, axis = 0)
         return result
     
-    def local_signal(self,nbar,f_Rabi,t0,t): #Local signal after local detection as a function of t
-        p = self.p_thermal(nbar)
-        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi['Hz']
-        result=(2.*np.abs(np.sum(np.outer(p,np.ones_like(t))*
-                         np.sin(np.outer(omega_eff,np.ones_like(t))*t0)*
-                         np.cos(np.outer(omega_eff,np.ones_like(t))*t0)*
-                         np.sin(np.outer(omega_eff,t-np.ones_like(t0)*t0))*
-                         np.cos(np.outer(omega_eff,t-np.ones_like(t0)*t0)),axis=0))**2)
-        return result
-    
-    def deph_evolution(self,nbar,f_Rabi,t0,t):
-        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi['Hz']
-        p=self.p_thermal(nbar)
-        result=(np.sum(np.outer(p,np.ones_like(t))*(np.sin(np.outer(omega_eff,np.ones_like(t))*t0)**2.*np.cos(np.outer(omega_eff,t-np.ones_like(t0)*t0))**2+
-                                 np.sin(np.outer(omega_eff,t-np.ones_like(t0)*t0))**2.*np.cos(np.outer(omega_eff,np.ones_like(t))*t0)**2.),axis=0))
+    def state_evolution_fluc(self,t,nbar,f_Rabi,delta_center,delta_variance,n_fluc=5.0):
+        evo_list=[]
+        i_list=np.linspace(-1,1,n_fluc)*np.exp(-np.linspace(-1,1,n_fluc)**2/2.0)/np.sqrt(2.0*np.pi)
+        for i in i_list:
+            evo_list.append(self.state_evolution(t,nbar,f_Rabi,delta_center+delta_variance*i))
+        result = np.sum(evo_list,axis=0)/float(n_fluc)
         return result
 
-    def discord(self,nbar,f_Rabi,t):
-        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi['Hz']
+    def deph_evolution_fluc(self,t,t0,nbar,f_Rabi,delta_center,delta_variance,n_fluc=5.0):
+        evo_list=[]
+        i_list=np.linspace(-1,1,n_fluc)*np.exp(-np.linspace(-1,1,n_fluc)**2/2.0)/np.sqrt(2.0*np.pi)
+        for i in i_list:
+            evo_list.append(self.deph_evolution(t,t0,nbar,f_Rabi,delta_center+delta_variance*i))
+        result = np.sum(evo_list,axis=0)/float(n_fluc)
+        return result
+    
+    def g_to_e_prob(self,t,f_Rabi,delta):#absolute value of u^{eg}_{nm}(t), is equal to e_to_g_prob
+        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi
+        delta = 2.0*np.pi*delta
+        omega = np.sqrt(omega_eff**2+delta**2)
+        ones = np.ones_like(t)
+        result = np.outer(omega_eff**2/omega**2,ones)*np.sin(np.outer(omega/2.0,t))**2
+        return result
+
+    def g_to_g_prob(self,t,f_Rabi,delta):#absolute value of u^{gg}_{nm}(t), is equal to e_to_e_prob
+        omega_eff = self.rabi_coupling*2.0*np.pi*f_Rabi
+        delta = 2.0*np.pi*delta
+        omega = np.sqrt(omega_eff**2+delta**2)
+        ones = np.ones_like(t)
+        result = np.cos(np.outer(omega/2.0,t))**2+np.outer(delta/omega,ones)**2*np.sin(np.outer(omega/2.0,t))**2
+        return result
+    
+    def deph_evolution(self,t,t0,nbar,f_Rabi,delta=0.0):
         p=self.p_thermal(nbar)
-        result=(2.*np.sum(np.outer(p**2,np.ones_like(t))*np.sin(np.outer(omega_eff,t))**2*
-                          np.cos(np.outer(omega_eff,t))**2,axis=0))
+        def pge(t):
+            return self.g_to_e_prob(t, f_Rabi, delta)
+        def pgg(t):
+            return self.g_to_g_prob(t, f_Rabi, delta)
+        ones = np.ones_like(t)
+        t0=ones*t0
+        result=np.sum(np.outer(p,ones)*(pgg(t0)*pge(t-t0)+pge(t0)*pgg(t-t0)),axis=0)
         return result
