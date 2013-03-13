@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 import numpy as np
 import os
+from util import color_chooser
 
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
@@ -24,9 +25,7 @@ class PlotWindow(base, form):
         self.datasets = {}
         self.setup_layout()
         self.connect_layout()
-        self.index = 0
-        self.color_index = 0
-        self.colors = ['b','g','r','c','m','k']
+        self.colors = color_chooser()
     
     def new_dataset(self, dataset):
         pass
@@ -56,11 +55,8 @@ class PlotWindow(base, form):
 #        self.plot_widget.removeItem(self.a)
         #clear legend
 #        print self.plot_widget.plotItem.legend.items
-        pen = pg.mkPen(color = self.colors[self.color_index], width = 1.0)
-        self.color_index  = (self.color_index +  1) % len(self.colors)
-        print self.plot_widget.plotItem.legend.items
+        pen = pg.mkPen(color = self.colors.next_color(), width = 1.0)
         self.plot_widget.plotItem.legend.items = []
-        self.a.setPen(pen)
         self.a = self.plot_widget.plot(name = 'another curve')
         self.a.setPen(pen)
         self.a.setData(value + np.array([1,2,3,4]), 
