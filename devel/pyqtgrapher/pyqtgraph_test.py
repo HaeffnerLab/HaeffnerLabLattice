@@ -7,11 +7,25 @@ import pyqtgraph as pg
 from pyqtgraph.ptime import time
 app = QtGui.QApplication([])
 
+
+my_widget = QtGui.QWidget()
+my_layout = QtGui.QHBoxLayout()
+spin = QtGui.QSpinBox()
+
+
+
+
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 
+my_layout.addWidget(spin)
+spin.setLayout(my_layout)
 
+my_widget.show()
 p = pg.plot()
+
+
+
 
 p.setWindowTitle('pyqtgraph example: PlotSpeedTest')
 p.setRange(QtCore.QRectF(0, -10, 5000, 20)) 
@@ -39,9 +53,6 @@ import time
 t = time.time()
 app.processEvents()  ## force complete redraw for every plot
 while True:
-    t1 = time.time()
-    print t1 - t
-    t = t1
     itr+=1
     curve.clear()
     another_curve.clear()

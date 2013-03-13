@@ -5,7 +5,7 @@ from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
 from labrad.units import WithUnit
-from numpy import linspace
+import numpy as np
 
 class spectrum(experiment):
     
@@ -71,7 +71,7 @@ class spectrum(experiment):
         self.parameters['Excitation_729.rabi_excitation_duration'] = duration
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
         minim = minim['MHz']; maxim = maxim['MHz']
-        self.scan = linspace(minim,maxim, steps)
+        self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
         
     def setup_data_vault(self):
@@ -98,7 +98,19 @@ class spectrum(experiment):
             excitation = self.excite.run(cxn, context)
             self.dv.add((freq, excitation), context = self.spectrum_save_context)
             self.update_progress(i)
-     
+    
+    def fit_lorentzian(self, timeout):
+        #for lorentzian format is FWHM, center, height, offset
+        fwhm_guess = (self.scan.max() - self.scan.min()) / 10.0
+        center_guess = np.average(self.scan)
+        self.dv.add_parameter('Fit', ['0', 'Lorentzian', '[{0}, {1}, {2}, {3}]'
+                                      .format(fwhm_guess, center_guess, 0.5, 0.0)], context = self.spectrum_save_context)
+        submitted = cxn.data_vault.wait_for_parameter('Accept-0', timeout, context = self.spectrum_save_context)
+        if submitted:
+            return cxn.data_vault.get_parameter('Solutions-0-Lorentzian', context = self.spectrum_save_context)
+        else:
+            return None
+        
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
 

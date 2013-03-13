@@ -1,5 +1,6 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from spectrum import spectrum
+from labrad.untis import WithUnit
 
 class drift_tracker(experiment):
     
@@ -23,6 +24,7 @@ class drift_tracker(experiment):
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
+        self.drift_tracker = cxn.sd_tracker
         self.spectrum = self.make_experiment(spectrum)
         self.spectrum.initialize(cxn, context, ident)
         self.parameters['Spectrum.scan_selection'] = 'auto'
@@ -39,6 +41,7 @@ class drift_tracker(experiment):
         self.spectrum.set_progress_limits(0, 50.0)
         self.spectrum.run(cxn, context)
         if self.spectrum.should_stop: return
+        center1 = WithUnit[self.spectrum.fit_lorentzian(timeout = 30)[1], 'MHz']
         self.parameters['Spectrum.line_selection'] = dt.line_selection_2
         self.parameters['Spectrum.sensitivity_selection'] = dt.sensitivity_selection_2
         self.parameters['Spectrum.window_name'] = ['Drift Tracker {0}'.format(dt.line_selection_2)]
@@ -46,6 +49,17 @@ class drift_tracker(experiment):
         self.spectrum.set_progress_limits(50.0, 100.0)
         self.spectrum.run(cxn, context)
         if self.spectrum.should_stop: return
+        center2 = WithUnit[self.spectrum.fit_lorentzian(timeout = 30)[1], 'MHz']
+        self.submit_centers(center1, center2)
+    
+    def submit_centers(self, center1, center2):
+        dt = self.parameters.DriftTracker
+        if center1 is not None and center2 is not None:
+            submission = [
+                          (dt.line_selection_1, center1)
+                          (dt.line_selection_2, center2)
+                          ]
+            self.drift_tracker.set_measurements(submission)
      
     def finalize(self, cxn, context):
         self.spectrum.finalize(cxn, context)
