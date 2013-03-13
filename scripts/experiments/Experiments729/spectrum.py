@@ -101,13 +101,15 @@ class spectrum(experiment):
     
     def fit_lorentzian(self, timeout):
         #for lorentzian format is FWHM, center, height, offset
-        fwhm_guess = (self.scan.max() - self.scan.min()) / 10.0
-        center_guess = np.average(self.scan)
+        scan = np.array([pt['MHz'] for pt in self.scan])
+        
+        fwhm_guess = (scan.max() - scan.min()) / 10.0
+        center_guess = np.average(scan)
         self.dv.add_parameter('Fit', ['0', 'Lorentzian', '[{0}, {1}, {2}, {3}]'
                                       .format(fwhm_guess, center_guess, 0.5, 0.0)], context = self.spectrum_save_context)
-        submitted = cxn.data_vault.wait_for_parameter('Accept-0', timeout, context = self.spectrum_save_context)
+        submitted = self.cxn.data_vault.wait_for_parameter('Accept-0', timeout, context = self.spectrum_save_context)
         if submitted:
-            return cxn.data_vault.get_parameter('Solutions-0-Lorentzian', context = self.spectrum_save_context)
+            return self.cxn.data_vault.get_parameter('Solutions-0-Lorentzian', context = self.spectrum_save_context)
         else:
             return None
         

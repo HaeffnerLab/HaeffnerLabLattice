@@ -1,22 +1,19 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitation_729 import excitation_729
+from excitation_ramsey_dephase_check_coherence import excitation_ramsey_dephase_check_coherence as excitation
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
 
-class rabi_tomography(experiment):
+class ramsey_dephase_check_coherence(experiment):
     
-    name = 'RabiTomography'
+    name = 'RamseyDephaseCheckCoherenceTomography'
     required_parameters = [
-                           
-                           ('RabiFlopping','rabi_amplitude_729'),
-                           ('RabiFlopping','manual_frequency_729'),
-                           ('RabiFlopping','line_selection'),
-                           ('RabiFlopping','rabi_amplitude_729'),
-                           ('RabiFlopping','frequency_selection'),
-                           ('RabiFlopping','sideband_selection'),
-                           
+                           ('RamseyDephaseCheckCoherence','line_selection_1'),
+                           ('RamseyDephaseCheckCoherence','line_selection_2'),
+                           ('RamseyDephaseCheckCoherence','sideband_selection_1'),
+                           ('RamseyDephaseCheckCoherence','sideband_selection_2'),
+
                            ('TrapFrequencies','axial_frequency'),
                            ('TrapFrequencies','radial_frequency_1'),
                            ('TrapFrequencies','radial_frequency_2'),
@@ -25,18 +22,17 @@ class rabi_tomography(experiment):
                            ('Tomography','repeat_each_measurement'),
                            ('Tomography', 'line_selection'),
                            ]
-
-    required_parameters.extend(excitation_729.required_parameters)
+    required_parameters.extend(excitation.required_parameters)
     #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+    required_parameters.remove(('RamseyDephaseCheckCoherence','first_pulse_frequency'))
+    required_parameters.remove(('RamseyDephaseCheckCoherence','second_pulse_frequency'))
     required_parameters.remove(('Tomography','iteration'))
     required_parameters.remove(('Tomography','tomography_excitation_frequency'))
     required_parameters.remove(('StateReadout','repeat_each_measurement'))
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(excitation_729)
+        self.excite = self.make_experiment(excitation)
         self.excite.initialize(cxn, context, ident)
         total_iterations = 3
         self.scan = range(total_iterations)
@@ -49,13 +45,14 @@ class rabi_tomography(experiment):
         self.data_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
-        flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
+        deph = self.parameters.RamseyDephaseCheckCoherence
         trap = self.parameters.TrapFrequencies
-        if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
-        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
-        self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        frequency_1 = cm.frequency_from_line_selection('auto', None, deph.line_selection_1, self.drift_tracker)
+        frequency_1 = cm.add_sidebands(frequency_1, deph.sideband_selection_1, trap)
+        self.parameters['RamseyDephaseCheckCoherence.first_pulse_frequency'] = frequency_1
+        frequency_2 = cm.frequency_from_line_selection('auto', None, deph.line_selection_2, self.drift_tracker)
+        frequency_2 = cm.add_sidebands(frequency_2, deph.sideband_selection_2, trap)
+        self.parameters['RamseyDephaseCheckCoherence.second_pulse_frequency'] = frequency_2
         tom = self.parameters.Tomography
         frequency = cm.frequency_from_line_selection('auto', None, tom.line_selection, self.drift_tracker)
         self.parameters['Tomography.tomography_excitation_frequency'] = frequency
@@ -102,6 +99,6 @@ class rabi_tomography(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_tomography(cxn = cxn)
+    exprt = ramsey_dephase_check_coherence(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

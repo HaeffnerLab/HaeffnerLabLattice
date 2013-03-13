@@ -1,7 +1,7 @@
 from lattice.scripts.PulseSequences.ramsey_dephase_check_coherence import ramsey_dephase_check_coherence
 from excitation_729 import excitation_729
 
-class excitation_ramsey_dephase(excitation_729):
+class excitation_ramsey_dephase_check_coherence(excitation_729):
     
     name = 'ExcitationRamseyDephaseCheckCoherence'
     
@@ -31,6 +31,6 @@ if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = excitation_ramsey_dephase(cxn = cxn)
+    exprt = excitation_ramsey_dephase_check_coherence(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

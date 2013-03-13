@@ -1,6 +1,6 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from spectrum import spectrum
-from labrad.untis import WithUnit
+from labrad.units import WithUnit
 
 class drift_tracker(experiment):
     
@@ -41,7 +41,10 @@ class drift_tracker(experiment):
         self.spectrum.set_progress_limits(0, 50.0)
         self.spectrum.run(cxn, context)
         if self.spectrum.should_stop: return
-        center1 = WithUnit[self.spectrum.fit_lorentzian(timeout = 30)[1], 'MHz']
+#        try:
+#            center1 = WithUnit[self.spectrum.fit_lorentzian(timeout = 15)[1], 'MHz']
+#        except TypeError:
+#            center1 = None
         self.parameters['Spectrum.line_selection'] = dt.line_selection_2
         self.parameters['Spectrum.sensitivity_selection'] = dt.sensitivity_selection_2
         self.parameters['Spectrum.window_name'] = ['Drift Tracker {0}'.format(dt.line_selection_2)]
@@ -49,8 +52,11 @@ class drift_tracker(experiment):
         self.spectrum.set_progress_limits(50.0, 100.0)
         self.spectrum.run(cxn, context)
         if self.spectrum.should_stop: return
-        center2 = WithUnit[self.spectrum.fit_lorentzian(timeout = 30)[1], 'MHz']
-        self.submit_centers(center1, center2)
+#        try:
+#            center2 = WithUnit[self.spectrum.fit_lorentzian(timeout = 30)[1], 'MHz']
+#        except TypeError:
+#            center2 = None
+#        self.submit_centers(center1, center2)
     
     def submit_centers(self, center1, center2):
         dt = self.parameters.DriftTracker

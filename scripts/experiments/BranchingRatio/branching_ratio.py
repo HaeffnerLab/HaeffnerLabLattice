@@ -37,8 +37,9 @@ class branching_ratio(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.spectrum_save_context)
+        self.dv.cd(directory ,True, context = self.timetag_save_context)
         self.dv.new('Timetags {}'.format(datasetNameAppend),[('Time', 'sec')],[('Photons','Arb','Arb')], context = self.timetag_save_context)
+        self.dv.cd(directory , context = self.timetag_save_context)
         self.dv.cd(directory , context = self.binned_save_context)
         
     def setup_initial_switches(self):
@@ -56,7 +57,7 @@ class branching_ratio(experiment):
         self.start_recording_timetags = pulse_sequence.start_recording_timetags
         self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
 
-    def run(self):
+    def run(self, cxn, context):
         back_to_back = int(self.parameters.BranchingRatio.pulse_sequences_per_timetag_transfer)
         total_timetag_transfers = int(self.parameters.BranchingRatio.total_timetag_transfers)
         for index in range(total_timetag_transfers):  
@@ -69,6 +70,8 @@ class branching_ratio(experiment):
             timetags = self.pulser.get_timetags().asarray
             if timetags.size >= self.parameters.BranchingRatio.max_timetags_per_transfer:
                 raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
+            else:
+                print 'got timetags', timetags.size
             iters = index * numpy.ones_like(timetags)
             self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
             #collapse the timetags onto a single cycle starting at 0
@@ -87,12 +90,12 @@ class branching_ratio(experiment):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         self.dv.new('Binned {}'.format(datasetNameAppend),[('Time', 'us')],[('CountRate','Counts/sec','Counts/sec')], context = self.binned_save_context)
-        self.dv.add_parameter('plotLive',self.p.plot_live_parameter, context = self.binned_save_context)
-        self.dv.add_parameter('Window', self.p.window_name, context = self.binned_save_context)
+        self.dv.add_parameter('plotLive', True , context = self.binned_save_context)
+        self.dv.add_parameter('Window', ['BranchingRatio Histogram'], context = self.binned_save_context)
         self.dv.add(numpy.vstack((bins,hist)).transpose(), context = self.binned_save_context)
     
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.timetag_save_context)
     
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / float(self.parameters.BranchingRatio.total_timetag_transfers)
