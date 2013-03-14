@@ -4,6 +4,7 @@ from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.scriptLibrary.fly_processing import Binner
 import time
 import numpy
+import labrad
        
 class branching_ratio(experiment):
     
@@ -75,8 +76,9 @@ class branching_ratio(experiment):
             iters = index * numpy.ones_like(timetags)
             self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
             #collapse the timetags onto a single cycle starting at 0
-            timetags = timetags - self.start_recording_timetags
-            timetags = timetags % self.timetag_record_cycle
+            timetags = timetags - self.start_recording_timetags['s']
+            timetags = timetags % self.timetag_record_cycle['s']
+            print self.start_recording_timetags, self.timetag_record_cycle
             self.binner.add(timetags, back_to_back * self.parameters.BranchingRatio.cycles_per_sequence)
             self.timetags_since_last_binsave += timetags.size
             if self.timetags_since_last_binsave > self.bin_every:
@@ -107,7 +109,6 @@ class branching_ratio(experiment):
         dvParameters.saveParameters(dv, dict(self.parameters), context)          
 
 if __name__ == '__main__':
-    import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
     exprt = branching_ratio(cxn = cxn)
