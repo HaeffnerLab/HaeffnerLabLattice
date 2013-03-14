@@ -22,6 +22,7 @@ else:
 		pulser = cxn.servers[pulser_name]
 		for dds_channel in pulser.get_dds_channels():
 			channel_state = [pulser.frequency(dds_channel), pulser.amplitude(dds_channel) , pulser.output(dds_channel)]
+			print 'initial setting', channel_state
 			dds_state[dds_channel] = channel_state
 		line_trig_state = pulser.line_trigger_state()
 		print 'restarting pulser'
@@ -31,6 +32,6 @@ else:
 		cxn.refresh()
 		pulser = cxn.servers[pulser_name]
 		for channel, (freq, ampl, output) in dds_state.iteritems():
-			print channel, ampl
+			print 'setting', channel, freq, ampl, output
 			[pulser.frequency(channel, freq), pulser.amplitude(channel, ampl) , pulser.output(channel, output)]
 		pulser.line_trigger_state(line_trig_state)
