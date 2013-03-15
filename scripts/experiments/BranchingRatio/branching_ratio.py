@@ -25,6 +25,7 @@ class branching_ratio(experiment):
         self.pulser = cxn.pulser
         self.timetag_save_context = cxn.context()
         self.binned_save_context = cxn.context()
+        self.total_timetag_save_context = cxn.context()
         self.timetags_since_last_binsave = 0
         self.bin_every = self.parameters.BranchingRatio.bin_every
         self.setup_data_vault()
@@ -40,6 +41,10 @@ class branching_ratio(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.timetag_save_context)
         self.dv.new('Timetags {}'.format(datasetNameAppend),[('Time', 'sec')],[('Photons','Arb','Arb')], context = self.timetag_save_context)
+        self.dv.cd(directory , context = self.total_timetag_save_context)
+        self.dv.new('Total Timetags Per Transfer {}'.format(datasetNameAppend),[('Time', 'sec')],[('Total timetags','Arb','Arb')], context = self.total_timetag_save_context)
+        self.dv.add_parameter('plotLive', True, context = self.total_timetag_save_context)
+        self.dv.add_parameter('Window', ['BranchingRatio Timetags Per Transfer'], context = self.total_timetag_save_context)
         self.dv.cd(directory , context = self.timetag_save_context)
         self.dv.cd(directory , context = self.binned_save_context)
         
@@ -72,7 +77,7 @@ class branching_ratio(experiment):
             if timetags.size >= self.parameters.BranchingRatio.max_timetags_per_transfer:
                 raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
             else:
-                print 'got timetags', timetags.size
+                self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
             iters = index * numpy.ones_like(timetags)
             self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
             #collapse the timetags onto a single cycle starting at 0
