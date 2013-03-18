@@ -46,6 +46,9 @@ class branching_ratio(pulse_sequence):
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
         start_recording_timetags = self.end
         for cycle in range(cycles):
+            ###hong add this. This is the pulse where 866 is off.####
+            self.addTTL('866DP',self.end, 5*between+2*(dur397_1+dur397_2))
+            ####
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':between}))
             self.addDDS('397',self.end, dur397_1, freq397, ampl397_1)
             self.end += dur397_1
@@ -59,15 +62,12 @@ class branching_ratio(pulse_sequence):
             self.addDDS('397',self.end, dur397_2, freq397, ampl397_2)
             self.end += dur397_2
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':between}))            
-            self.addDDS('866',self.end, dur866, freq866, ampl866)
-            
-            ### this is modified by hong to include RF switch for 866 ###
-            self.addTTL('866DP',self.end, dur866)
-            
+            self.addDDS('866',self.end, dur866, freq866, ampl866)  
             self.end += dur866
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
         #record timetags while cycling takes place
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
+        #self.addTTL('866DP',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
         self.timetag_record_cycle = 5 * between + 2 * dur397_1 + 2 * dur397_2 + dur866
