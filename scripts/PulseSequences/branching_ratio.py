@@ -60,6 +60,10 @@ class branching_ratio(pulse_sequence):
             self.end += dur397_2
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':between}))            
             self.addDDS('866',self.end, dur866, freq866, ampl866)
+            
+            ### this is modified by hong to include RF switch for 866 ###
+            self.addTTL('866DP',self.end, dur866)
+            
             self.end += dur866
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
