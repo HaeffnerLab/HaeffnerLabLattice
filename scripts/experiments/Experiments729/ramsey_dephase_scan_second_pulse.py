@@ -69,11 +69,18 @@ class ramsey_dephase_scan_second_pulse(experiment):
         window_name = self.parameters.get('RamseyDephaseScanSecondPulse.window_name', ['Rabi Flopping'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
+    
+    def reload_trap(self):
+        old_rad1 = self.parameters.TrapFrequencies.radial_frequency_1
+        rad1 = self.pv.get_parameter('TrapFrequencies', 'radial_frequency_1')
+        self.parameters['Excitation_729.rabi_excitation_frequency'] = self.parameters['Excitation_729.rabi_excitation_frequency'] - old_rad1 + rad1
+        self.parameters.TrapFrequencies.radial_frequency_1 = rad1
         
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,duration in enumerate(self.scan):
+            self.reload_trap()
             should_stop = self.pause_or_stop()
             if should_stop: break
             self.parameters['RamseyDephase.second_pulse_duration'] = duration
