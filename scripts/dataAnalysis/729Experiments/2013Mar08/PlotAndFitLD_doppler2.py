@@ -39,11 +39,11 @@ date = '2013Mar08'
 
 #provide list of Rabi flops - all need to have same x-axis
 flop_directory = ['','Experiments','RabiFlopping',date]
-flop_files = ['1446_43','1443_38','1449_49','1452_55','1456_01','1459_08','1502_13','1505_19']
+flop_files = ['1749_12','1752_06','1755_00','1757_54','1800_49','1803_42','1806_37','1809_31','1812_25','1815_19']
 
 #provide list of evolutions with different phases - all need to have same x-axis
 dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
-dephase_files = ['1445_21','1448_26','1451_32','1454_38','1457_44','1500_51','1503_57']
+dephase_files = ['1750_43','1753_37','1756_31','1759_26','1802_19','1805_13','1808_08','1811_02','1813_56']
 
 
 flop_numbers = range(len(flop_files))
@@ -55,10 +55,10 @@ trap_frequency = U.WithUnit(2.85,'MHz')
 amax=2000.0
 f_Rabi_init = U.WithUnit(82.2,'kHz')
 nb_init = 3.0
-delta_init = U.WithUnit(4.0,'Hz')
+delta_init = U.WithUnit(1.0,'kHz')
 fit_range_min=U.WithUnit(0.0,'us')
-fit_range_max=U.WithUnit(250.0,'us')
-delta_fluc_init=U.WithUnit(5,'Hz')
+fit_range_max=U.WithUnit(80.0,'us')
+delta_fluc_init=U.WithUnit(0,'Hz')
 dephasing_time_offset=U.WithUnit(0.0,'us')
 
 #SET PARAMETERS
