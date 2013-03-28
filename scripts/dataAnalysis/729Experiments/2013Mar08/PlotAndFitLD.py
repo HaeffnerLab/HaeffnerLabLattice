@@ -135,10 +135,10 @@ print "The detuning is centered around {} kHz and spreads with a variance of {} 
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 #
 deph_fit_y_axis = evo.deph_evolution_fluc(deph_x_axis, t0,nb(),f_Rabi(),delta(),delta_fluc())
-pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
+#pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
 
 flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),delta_fluc())
-pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
+#pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 

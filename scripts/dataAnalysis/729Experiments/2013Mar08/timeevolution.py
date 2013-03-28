@@ -11,11 +11,10 @@ class time_evolution():#contains all relevant functions for thermal states, rabi
         self.sideband_order = sideband_order
         self.n = np.linspace(0, nmax,nmax +1)
         self.eta = 2.*np.cos(np.pi/4)*np.pi/wavelength['m']*np.sqrt(hbar['J*s']/(2.*m['kg']*2.*np.pi*trap_frequency['Hz']))
-        self.rabi_coupling=self.rabi_coupling()
+        self.rabi_coupling=self.effective_rabi_coupling(self.n)
         
-    def rabi_coupling(self):
+    def effective_rabi_coupling(self,n):
         eta = self.eta
-        n = self.n
         sideband=np.abs(self.sideband_order)
         x=1
         for k in np.linspace(1,sideband,sideband):

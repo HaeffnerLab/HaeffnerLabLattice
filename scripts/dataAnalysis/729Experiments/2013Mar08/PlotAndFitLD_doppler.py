@@ -37,6 +37,8 @@ dv = cxn.data_vault
 # set to right date
 date = '2013Mar08'
 
+
+# DRIFTED OUT
 #provide list of Rabi flops - all need to have same x-axis
 flop_directory = ['','Experiments','RabiFlopping',date]
 flop_files = ['1446_43','1443_38','1449_49','1452_55','1456_01','1459_08','1502_13','1505_19']
