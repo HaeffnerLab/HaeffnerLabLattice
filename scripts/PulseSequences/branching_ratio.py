@@ -47,7 +47,7 @@ class branching_ratio(pulse_sequence):
         start_recording_timetags = self.end
         for cycle in range(cycles):
             self.addTTL('866DP',self.end, 5*between+2*(dur397_1+dur397_2))
-            self.addTTL('110DP',self.end, between)
+            #self.addTTL('110DP',self.end, between)
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':between}))
             self.addDDS('397',self.end, dur397_1, freq397, ampl397_1)
             self.end += dur397_1
