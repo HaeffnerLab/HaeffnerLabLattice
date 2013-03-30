@@ -78,19 +78,18 @@ class drift_tracker_ramsey_oneline(experiment):
             excitations.append(excitation)
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning
-        print corrected_frequency, average_excitation
+#        print corrected_frequency, average_excitation
         return corrected_frequency,average_excitation
     
     def calculate_detuning(self, excitations):
         dt = self.parameters.DriftTrackerRamsey
         average = (excitations[0] + excitations[1]) / 2.0
-        #deviation = (excitations[0] - excitations[1]) / 2.0
         deviation = (excitations[0] - excitations[1])
         detuning = -arcsin(deviation) / (2.0 * pi * dt.gap_time['s'])
         detuning = WithUnit(detuning, 'Hz')
-        print [time.time(), average, deviation]
+#        print [time.time(), average, deviation]
         self.dv.add([time.time(), average, deviation])
-        print 'calculated detuning', detuning
+#        print 'calculated detuning', detuning
         return detuning, average
     
     def update_progress(self, iteration):
