@@ -85,7 +85,7 @@ class drift_tracker_ramsey_oneline(experiment):
         dt = self.parameters.DriftTrackerRamsey
         average = (excitations[0] + excitations[1]) / 2.0
         deviation = (excitations[0] - excitations[1])
-        detuning = -arcsin(deviation) / (2.0 * pi * dt.gap_time['s'])
+        detuning = arcsin(deviation) / (2.0 * pi * dt.gap_time['s'])
         detuning = WithUnit(detuning, 'Hz')
 #        print [time.time(), average, deviation]
         self.dv.add([time.time(), average, deviation])
