@@ -27,14 +27,36 @@ density_matrx = np.array([[z, x + 1j*y],[x - 1j*y, 1 - z]])
 real = np.real(density_matrx)
 imag = np.imag(density_matrx)
 
+#make the figure
+#this uses the qutip routine as the baseline but then makes modifications for bigger font sizes
 fig = pyplot.figure()
+
 labels = ['|D>','|S>']
+zlim = [-1,1]
+norm = matplotlib.colors.Normalize(zlim[0], zlim[1])
+#first plot
 ax = fig.add_subplot(121, projection = '3d')
 ax.set_title('Real', fontsize = 30)
-q.matrix_histogram(real,  limits = [-1,1], fig = fig, ax = ax, xlabels = labels, ylabels = labels)
+q.matrix_histogram(real,  limits = zlim, fig = fig, ax = ax, colorbar = False)
+ax.set_xticklabels(labels, fontsize = 22)
+ax.set_yticklabels(labels, fontsize = 22)
+ax.tick_params(axis='z', labelsize=22)
+cax, kw = matplotlib.colorbar.make_axes(ax, shrink=.75, pad=.0)
+cb1 = matplotlib.colorbar.ColorbarBase(cax, norm = norm)
+cl = pyplot.getp(cax, 'ymajorticklabels') 
+pyplot.setp(cl, fontsize=22)
+#next subplot
 ax = fig.add_subplot(122, projection = '3d')
 ax.set_title('Imaginary', fontsize = 30)
-q.matrix_histogram(imag, limits = [-1,1], fig = fig, ax = ax, xlabels = labels, ylabels = labels)
+q.matrix_histogram(imag, limits = zlim, fig = fig, ax = ax, colorbar = False)
+ax.set_xticklabels(labels, fontsize = 22)
+ax.set_yticklabels(labels, fontsize = 22)
+ax.tick_params(axis='z', labelsize=22)
+cax, kw = matplotlib.colorbar.make_axes(ax, shrink=.75, pad=.0)
+cb1 = matplotlib.colorbar.ColorbarBase(cax, norm = norm)
+cl = pyplot.getp(cax, 'ymajorticklabels') 
+pyplot.setp(cl, fontsize=22)
+
 
 #ax = fig.add_subplot(133)
 #ax.get_xaxis().set_visible(False)
