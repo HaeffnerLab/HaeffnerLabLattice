@@ -10,6 +10,12 @@ from numpy import linspace
 class ramsey_dephase_scan_second_pulse(experiment):
     
     name = 'RamseyDephaseScanSecondPulse'
+    trap_frequencies = [
+                        ('TrapFrequencies','axial_frequency'),
+                        ('TrapFrequencies','radial_frequency_1'),
+                        ('TrapFrequencies','radial_frequency_2'),
+                        ('TrapFrequencies','rf_drive_frequency'),                       
+                        ]
     required_parameters = [
                            ('RamseyDephase', 'scan_second_pulse'),
                            
@@ -19,13 +25,8 @@ class ramsey_dephase_scan_second_pulse(experiment):
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','frequency_selection'),
                            ('RabiFlopping','sideband_selection'),
-                           
-                           ('TrapFrequencies','axial_frequency'),
-                           ('TrapFrequencies','radial_frequency_1'),
-                           ('TrapFrequencies','radial_frequency_2'),
-                           ('TrapFrequencies','rf_drive_frequency'),
                            ]
-
+    required_parameters.extend(trap_frequencies)
     required_parameters.extend(excitation_ramsey_dephase.required_parameters)
     #removing parameters we'll be overwriting, and they do not need to be loaded
     required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
@@ -45,12 +46,8 @@ class ramsey_dephase_scan_second_pulse(experiment):
         self.data_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
+        self.load_frequency()
         flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
-        trap = self.parameters.TrapFrequencies
-        if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)   
-        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
         minim,maxim,steps = self.parameters.RamseyDephase.scan_second_pulse
         minim = minim['us']; maxim = maxim['us']
@@ -69,6 +66,16 @@ class ramsey_dephase_scan_second_pulse(experiment):
         window_name = self.parameters.get('RamseyDephaseScanSecondPulse.window_name', ['Rabi Flopping'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
+    
+    def load_frequency(self):
+        #reloads trap frequencyies and gets the latest information from the drift tracker
+        self.reload_some_parameters(self.trap_frequencies) 
+        flop = self.parameters.RabiFlopping
+        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
+        trap = self.parameters.TrapFrequencies
+        if flop.frequency_selection == 'auto':
+            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
+        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         
     def run(self, cxn, context):
         self.setup_data_vault()
@@ -76,6 +83,7 @@ class ramsey_dephase_scan_second_pulse(experiment):
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
+            self.load_frequency()
             self.parameters['RamseyDephase.second_pulse_duration'] = duration
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
