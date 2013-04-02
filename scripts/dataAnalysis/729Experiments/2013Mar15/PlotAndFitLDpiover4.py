@@ -134,25 +134,42 @@ print "The detuning is centered around {} kHz and spreads with a variance of {} 
 #m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 ##
-deph_fit_y_axis = evo.deph_evolution_fluc(deph_x_axis, t0,nb(),f_Rabi(),delta(),delta_fluc())
-pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
+realtime = True
 
-flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),delta_fluc())
-pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
+if realtime:
+    timescale = 10**6
+    label = r'in $\mu s$'
+else:
+    timescale = evo.effective_rabi_coupling(nb())*f_Rabi()*2.0*np.pi
+    label = r'$\frac{\Omega t}{2\pi}$'
+
+detail_flop = np.linspace(flop_x_axis.min(),flop_x_axis.max(),1000)
+detail_deph = np.linspace(deph_x_axis.min(),deph_x_axis.max(),1000)
+
+deph_fit_y_axis = evo.deph_evolution_fluc(detail_deph, t0,nb(),f_Rabi(),delta(),delta_fluc())
+pyplot.plot(detail_deph*timescale,deph_fit_y_axis,'b--')
+
+flop_fit_y_axis = evo.state_evolution_fluc(detail_flop, nb(), f_Rabi(), delta(),delta_fluc())
+pyplot.plot(detail_flop*timescale,flop_fit_y_axis,'r-')
+
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
-print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
+print 'Flop maximum at {:.2f} us'.format(detail_flop[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(detail_flop[m]/2.0*10**6)
 print 'Actual t0 = {}'.format(t0)
 
-pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
-pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
-pyplot.xlabel(r'Excitation Duration ($\mu s$)', fontsize = 22)
-pyplot.ylim((0,1))
-pyplot.ylabel('Population in the D-5/2 state', fontsize = 22)
-#pyplot.legend()
-pyplot.text(xmax*0.70*10**6,0.83, 'nbar = {:.1f}'.format(nb()), fontsize = 22)
-pyplot.text(xmax*0.70*10**6,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = 22)
+pyplot.plot(np.array(flop_x_axis)*timescale,flop_y_axis, 'ro')
 
-pyplot.title('Local detection on the first blue sideband', fontsize = 30)
-pyplot.tick_params(axis='x', labelsize=20)
-pyplot.tick_params(axis='y', labelsize=20)
+yerrflop = np.sqrt((1-flop_y_axis)*flop_y_axis/(100.0*len(flop_files)))
+pyplot.errorbar(np.array(flop_x_axis)*timescale, flop_y_axis, yerr=yerrflop, xerr=0,fmt='ro')
+yerrdeph = np.sqrt((1-deph_y_axis)*deph_y_axis/(100.0*len(dephase_files)))
+pyplot.errorbar(np.array(deph_x_axis)*timescale, deph_y_axis, yerr=yerrdeph, xerr=0,fmt='bo')
+pyplot.plot(np.array(deph_x_axis)*timescale,deph_y_axis, 'bs')
+pyplot.xlabel('Excitation Duration '+label, fontsize = 44)
+pyplot.ylim((0,1))
+pyplot.ylabel('Population in the D-5/2 state', fontsize = 44)
+#pyplot.legend()
+pyplot.text(xmax*0.70*timescale,0.83, 'nbar = {:.2f}'.format(nb()), fontsize = 44)
+pyplot.text(xmax*0.70*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = 44)
+pyplot.title('Local detection on the first blue sideband', fontsize = 60)
+pyplot.tick_params(axis='x', labelsize=40)
+pyplot.tick_params(axis='y', labelsize=40)
 pyplot.show()

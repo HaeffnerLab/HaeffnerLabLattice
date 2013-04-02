@@ -134,7 +134,7 @@ print "The detuning is centered around {} kHz and spreads with a variance of {} 
 #m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 #
-realtime = False
+realtime = True
 
 if realtime:
     timescale = 10**6
