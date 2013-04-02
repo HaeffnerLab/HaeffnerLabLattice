@@ -10,6 +10,12 @@ from numpy import linspace
 class rabi_flopping(experiment):
     
     name = 'RabiFlopping'
+    trap_frequencies = [
+                        ('TrapFrequencies','axial_frequency'),
+                        ('TrapFrequencies','radial_frequency_1'),
+                        ('TrapFrequencies','radial_frequency_2'),
+                        ('TrapFrequencies','rf_drive_frequency'),                       
+                        ]
     required_parameters = [
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','manual_scan'),
@@ -18,13 +24,8 @@ class rabi_flopping(experiment):
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','frequency_selection'),
                            ('RabiFlopping','sideband_selection'),
-                           
-                           ('TrapFrequencies','axial_frequency'),
-                           ('TrapFrequencies','radial_frequency_1'),
-                           ('TrapFrequencies','radial_frequency_2'),
-                           ('TrapFrequencies','rf_drive_frequency'),
                            ]
-    
+    required_parameters.extend(trap_frequencies)
     optional_parmeters = [
                           ('RabiFlopping', 'window_name')
                           ]
@@ -48,12 +49,8 @@ class rabi_flopping(experiment):
         self.rabi_flop_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
+        self.load_frequency()
         flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
-        trap = self.parameters.TrapFrequencies
-        if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
-        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
         minim,maxim,steps = flop.manual_scan
         minim = minim['us']; maxim = maxim['us']
@@ -73,19 +70,23 @@ class rabi_flopping(experiment):
         self.dv.add_parameter('Window', window_name, context = self.rabi_flop_save_context)
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
     
-    def reload_trap(self):
-        old_rad1 = self.parameters.TrapFrequencies.radial_frequency_1
-        rad1 = self.pv.get_parameter('TrapFrequencies', 'radial_frequency_1')
-        self.parameters['Excitation_729.rabi_excitation_frequency'] = self.parameters['Excitation_729.rabi_excitation_frequency'] - old_rad1 + rad1
-        self.parameters.TrapFrequencies.radial_frequency_1 = rad1
+    def load_frequency(self):
+        #reloads trap frequencyies and gets the latest information from the drift tracker
+        self.reload_some_parameters(self.trap_frequencies) 
+        flop = self.parameters.RabiFlopping
+        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
+        trap = self.parameters.TrapFrequencies
+        if flop.frequency_selection == 'auto':
+            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
+        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,duration in enumerate(self.scan):
-            self.reload_trap()
             should_stop = self.pause_or_stop()
             if should_stop: break
+            self.load_frequency()
             self.parameters['Excitation_729.rabi_excitation_duration'] = duration
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
