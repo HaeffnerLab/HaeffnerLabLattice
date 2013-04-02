@@ -43,7 +43,7 @@ class ramsey_dephase_complete(experiment):
         rabi_maxim = maxim + self.parameters.RamseyDephase.first_pulse_duration['us']
         rabi_steps = rabi_maxim / float(resolution)
         self.rabi.set_parameters(
-                                 TreeDict.fromdict({'RabiFlopping.manual_scan':(self.parameters.RamseyDephase.first_pulse_duration, WithUnit(rabi_maxim, 'us'), rabi_steps)})
+                                 TreeDict.fromdict({'RabiFlopping.manual_scan':(WithUnit(0, 'us'), WithUnit(rabi_maxim, 'us'), rabi_steps)})
                                  )
     
     def run(self, cxn, context):
