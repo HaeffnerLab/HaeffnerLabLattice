@@ -145,9 +145,9 @@ print 'Actual t0 = {}'.format(t0)
 
 #pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
 #pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
-pyplot.xlabel(r'Excitation Duration ($\mu s$)', fontsize = 22)
+pyplot.xlabel(r'Excitation Duration ($\mu s$)', fontsize = 44)
 pyplot.ylim((0,1))
-pyplot.ylabel('Population in the D-5/2 state', fontsize = 22)
+pyplot.ylabel('Population in the D-5/2 state', fontsize = 44)
 #pyplot.legend()
 
 subseq_evolution=np.where(flop_x_axis>=t0-0.00001)
@@ -160,10 +160,9 @@ theo_diff = 2.0*np.abs(flop_fit_y_axis-deph_fit_y_axis)**2
 pyplot.plot(10**6*(deph_x_axis-t0),exp_diff,'ko')
 pyplot.plot(10**6*(nicer_resolution-t0),theo_diff,'k-')
 
-
-pyplot.text(xmax*0.50*10**6,0.83, 'nbar = {:.1f}'.format(nb()), fontsize = 22)
-pyplot.text(xmax*0.50*10**6,0.88, 'Rabi Frequency f = {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = 22)
-pyplot.title(r'Operator Distance for Dephasing at $\pi / 2$ Time', fontsize = 30)
-pyplot.tick_params(axis='x', labelsize=20)
-pyplot.tick_params(axis='y', labelsize=20)
+pyplot.text(xmax*0.4*10**6,0.80, 'nbar = {:.1f}'.format(nb()), fontsize = 44)
+pyplot.text(xmax*0.4*10**6,0.88, 'Rabi Frequency f = {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = 44)
+pyplot.title(r'Operator Distance for Dephasing at $\pi / 2$ Time', fontsize = 60)
+pyplot.tick_params(axis='x', labelsize=40)
+pyplot.tick_params(axis='y', labelsize=40)
 pyplot.show()

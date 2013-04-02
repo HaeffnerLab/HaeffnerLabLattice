@@ -5,7 +5,7 @@ from labrad.units import WithUnit
 import numpy as np
 from treedict import TreeDict
 
-class ramsey_dephase_complete(experiment):
+class ramsey_dephase_complete_abridged(experiment):
     
     name = 'RamseyDephaseCompleteAbridged'
     required_parameters = [
@@ -63,6 +63,6 @@ if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = ramsey_dephase_complete(cxn = cxn)
+    exprt = ramsey_dephase_complete_abridged(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
