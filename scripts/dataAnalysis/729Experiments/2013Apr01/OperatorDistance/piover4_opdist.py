@@ -39,12 +39,11 @@ date = '2013Mar15'
 
 #provide list of Rabi flops - all need to have same x-axis
 flop_directory = ['','Experiments','RabiFlopping',date]
-flop_files = ['1909_27','1914_49','1919_51','1924_54','1930_12','1935_15','1940_18','1945_21','1950_23','1955_44']
+flop_files = ['2033_35','2038_57','2044_27','2056_46','2102_17','2107_39','2113_01','2118_31','2123_53']
 
 #provide list of evolutions with different phases - all need to have same x-axis
 dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
-dephase_files = ['1912_14','1917_27','1922_39','1927_41','1933_00','1938_02','1943_05','1948_08','1953_11','1958_22']
-
+dephase_files = ['2036_26','2041_48','2047_18','2052_40','2059_37','2104_59','2110_30','2115_52','2121_22']
 
 flop_numbers = range(len(flop_files))
 dephase_numbers = range(len(dephase_files))
@@ -134,42 +133,41 @@ print "The detuning is centered around {} kHz and spreads with a variance of {} 
 #m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 #
-realtime = False
+deph_fit_y_axis = evo.deph_evolution_fluc(deph_x_axis, t0,nb(),f_Rabi(),delta(),delta_fluc())
+#pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
 
-if realtime:
-    timescale = 10**6
-    label = r'in $\mu s$'
-else:
-    timescale = evo.effective_rabi_coupling(nb())*f_Rabi()*2.0*np.pi
-    label = r'$\frac{\Omega t}{2\pi}$'
-
-detail_flop = np.linspace(flop_x_axis.min(),flop_x_axis.max(),1000)
-detail_deph = np.linspace(deph_x_axis.min(),deph_x_axis.max(),1000)
-
-deph_fit_y_axis = evo.deph_evolution_fluc(detail_deph, t0,nb(),f_Rabi(),delta(),delta_fluc())
-pyplot.plot(detail_deph*timescale,deph_fit_y_axis,'b--')
-
-flop_fit_y_axis = evo.state_evolution_fluc(detail_flop, nb(), f_Rabi(), delta(),delta_fluc())
-pyplot.plot(detail_flop*timescale,flop_fit_y_axis,'r-')
-
+flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),delta_fluc())
+#pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
-print 'Flop maximum at {:.2f} us'.format(detail_flop[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(detail_flop[m]/2.0*10**6)
+print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 print 'Actual t0 = {}'.format(t0)
 
-pyplot.plot(np.array(flop_x_axis)*timescale,flop_y_axis, 'ro')
-
-yerrflop = np.sqrt((1-flop_y_axis)*flop_y_axis/(100.0*len(flop_files)))
-pyplot.errorbar(np.array(flop_x_axis)*timescale, flop_y_axis, yerr=yerrflop, xerr=0,fmt='ro')
-yerrdeph = np.sqrt((1-deph_y_axis)*deph_y_axis/(100.0*len(dephase_files)))
-pyplot.errorbar(np.array(deph_x_axis)*timescale, deph_y_axis, yerr=yerrdeph, xerr=0,fmt='bo')
-pyplot.plot(np.array(deph_x_axis)*timescale,deph_y_axis, 'bs')
-pyplot.xlabel('Excitation Duration '+label, fontsize = 44)
-pyplot.ylim((0,1))
-pyplot.ylabel('Population in the D-5/2 state', fontsize = 44)
+#pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
+#pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
+pyplot.xlabel('t in us')
+pyplot.ylim((0,0.25))
+pyplot.ylabel('Operator Distance')
 #pyplot.legend()
-pyplot.text(xmax*0.70*timescale,0.83, 'nbar = {:.2f}'.format(nb()), fontsize = 44)
-pyplot.text(xmax*0.70*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = 44)
-pyplot.title('Local detection on the first blue sideband', fontsize = 60)
-pyplot.tick_params(axis='x', labelsize=40)
-pyplot.tick_params(axis='y', labelsize=40)
+
+subseq_evolution=np.where(flop_x_axis>=t0)
+nicer_resolution = np.linspace(t0,flop_x_axis.max(),1000)
+deph_fit_y_axis = evo.deph_evolution_fluc(nicer_resolution, t0,nb(),f_Rabi(),delta(),delta_fluc())
+flop_fit_y_axis = evo.state_evolution_fluc(nicer_resolution, nb(), f_Rabi(), delta(),delta_fluc())
+exp_diff = 2.0*np.abs(np.interp(deph_x_axis,flop_x_axis[subseq_evolution],flop_y_axis[subseq_evolution])-deph_y_axis)**2
+theo_diff = 2.0*np.abs(flop_fit_y_axis-deph_fit_y_axis)**2
+
+
+average_where=np.where((deph_x_axis-t0)*f_Rabi()<=23.9)
+time_average=np.average(exp_diff[average_where])
+print 'average distance = {}'.format(time_average)
+print '[{},{}]'.format(f_Rabi()*t0,time_average)
+print 'nbar = {}'.format(nb())
+
+pyplot.plot(f_Rabi()*(deph_x_axis-t0),exp_diff,'ko')
+pyplot.plot(f_Rabi()*(nicer_resolution-t0),theo_diff,'k-')
+
+
+pyplot.text(xmax*0.70,0.83, 'nbar = {:.2f}'.format(nb()))
+pyplot.text(xmax*0.70,0.88, 'Rabi Frequency f = {:.2f} kHz'.format(f_Rabi()*10**(-3)))
+pyplot.title('Operator Distance for Dephasing at Pi/4 Time')
 pyplot.show()
