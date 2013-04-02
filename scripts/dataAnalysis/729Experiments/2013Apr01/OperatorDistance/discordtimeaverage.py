@@ -106,7 +106,7 @@ figure = pyplot.figure()
 fake_f = 100000
 
 timescale = evo.effective_rabi_coupling(nb())*2.0*np.pi
-label = r'$\frac{\Omega_{eff} t}{2}$'
+label = r'$\Omega t$'
 
 pyplot.xlabel(r'Excitation time '+label,fontsize=44)
 pyplot.ylim((0,1))
@@ -121,8 +121,8 @@ pyplot.plot(np.array(times)*timescale,2.0*np.array(averages),'ko',label='Time-Av
 pyplot.plot(fake_times*fake_f*timescale,discord,'k-',label='Discord between Qubit and Motion')
 pyplot.plot(fake_times*fake_f*timescale,flop,'b-',label='Blue Sideband Rabi Flop, nbar = {:.2f}'.format(nbar))
 
-pyplot.legend(loc=2,prop={'size':40})
-pyplot.title('Time-Averaged Distance to Assess Quantum Discord',fontsize=60)
+pyplot.legend(loc=2,prop={'size':25})
+pyplot.title('Time-Averaged Distance to Assess Quantum Discord',fontsize=50)
 pyplot.tick_params(axis='x', labelsize=40)
 pyplot.tick_params(axis='y', labelsize=40)
 pyplot.xticks([np.pi/4.0,3.0*np.pi/4.0,np.pi/2.0,np.pi,5.0*np.pi/4.0,3.0*np.pi/2.0],[r'$\frac{\pi}{4}$',r'$\frac{3\pi}{4}$',r'$\frac{\pi}{2}$',r'$\pi$',r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$'])
