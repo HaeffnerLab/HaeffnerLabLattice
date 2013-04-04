@@ -8,6 +8,38 @@ from scipy import optimize
 import timeevolution as tp
 from labrad import units as U
 
+# set to right date
+date1 = '2013Mar15'
+date2 = '2013Mar16'
+
+#provide list of Rabi flops - all need to have same x-axis
+flop_directory = ['','Experiments','RabiFlopping']
+flop_files = [[date1,'2310_22'],[date1,'2317_38'],[date1,'2323_28'],[date1,'2338_10'],[date1,'2345_26'],[date1,'2351_16'],[date1,'2358_32'],[date2,'0005_54'],[date2,'0011_35']]
+parameter_file = [date1,'2308_00']
+
+#provide list of evolutions with different phases - all need to have same x-axis
+dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse']
+dephase_files = [[date1,'2313_32'],[date1,'2320_57'],[date1,'2328_13'],[date1,'2335_30'],[date1,'2341_20'],[date1,'2348_36'],[date1,'2356_01'],[date2,'0001_51'],[date2,'0009_04']]
+
+#Plotting and averaging parameter
+ymax = 0.5
+size = 0.5
+average_until = 23.9
+realtime = True
+dephasing_time_string = r'$\frac{3\pi}{4}$'
+
+#parameters and initial guesses for fit
+sideband = 1.0
+amax=2000.0
+f_Rabi_init = U.WithUnit(85.0,'kHz')
+nb_init = 0.1
+delta_init = U.WithUnit(1000.0,'Hz')
+fit_range_min=U.WithUnit(0.0,'us')
+fit_range_max=U.WithUnit(350.0,'us')
+delta_fluc_init=U.WithUnit(100.0,'Hz')
+dephasing_time_offset=U.WithUnit(0,'us')
+
+#actual script starts here
 class Parameter:
     def __init__(self, value):
             self.value = value
@@ -30,32 +62,6 @@ def fit(function, parameters, y, x = None):
     p = [param() for param in parameters]
     return optimize.leastsq(f, p)
 
-# set to right date
-date = '2013Mar15'
-
-#provide list of Rabi flops - all need to have same x-axis
-flop_directory = ['','Experiments','RabiFlopping',date]
-flop_files = ['2033_35','2038_57','2044_27','2056_46','2102_17','2107_39','2113_01','2118_31','2123_53']
-parameter_file='2018_52'
-
-#provide list of evolutions with different phases - all need to have same x-axis
-dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
-dephase_files = ['2036_26','2041_48','2047_18','2052_40','2059_37','2104_59','2110_30','2115_52','2121_22']
-
-#Plotting and averaging parameter
-ymax=0.25
-average_until=23.9
-
-#parameters and initial guesses for fit
-sideband = 1.0
-amax=2000.0
-f_Rabi_init = U.WithUnit(85.0,'kHz')
-nb_init = 0.1
-delta_init = U.WithUnit(1000.0,'Hz')
-fit_range_min=U.WithUnit(0.0,'us')
-fit_range_max=U.WithUnit(350.0,'us')
-delta_fluc_init=U.WithUnit(100.0,'Hz')
-dephasing_time_offset=U.WithUnit(0,'us')
 
 flop_numbers = range(len(flop_files))
 dephase_numbers = range(len(dephase_files))
@@ -91,7 +97,7 @@ for i in flop_numbers:
     dv.open(1)
     data = dv.get().asarray
     flop_y_axis_list.append(data[:,1])
-    dv.cd(1)
+    dv.cd(2)
 
 flop_y_axis = np.sum(flop_y_axis_list,axis=0)/np.float32(len(flop_files))
 flop_x_axis=data[:,0]*10**(-6)
@@ -106,7 +112,7 @@ for i in dephase_numbers:
     dv.open(1)
     data = dv.get().asarray
     deph_y_axis_list.append(data[:,1])
-    dv.cd(1)
+    dv.cd(2)
 
 deph_y_axis = np.sum(deph_y_axis_list,axis=0)/np.float32(len(dephase_files))
 deph_x_axis=data[:,0]*10**(-6)+dephasing_time_offset['s']
@@ -141,9 +147,9 @@ print '2pi time {}'.format(flop_x_axis[m]*f_Rabi()*2.0)
 
 #pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
 #pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
-pyplot.xlabel('t in us')
+pyplot.xlabel(r'Subsequent evolution time $\frac{\Omega t}{2\pi}$',fontsize=size*22)
 pyplot.ylim((0,ymax))
-pyplot.ylabel('Operator Distance')
+pyplot.ylabel('Local Hilbert-Schmidt Distance',fontsize=size*22)
 #pyplot.legend()
 
 subseq_evolution=np.where(flop_x_axis>=t0)
@@ -161,11 +167,8 @@ exp_diff_errs = np.sqrt(8.0*exp_diff*(e_flop**2+e_deph**2))
 
 average_where=np.where((deph_x_axis-t0)*f_Rabi()<=average_until)
 time_average=np.average(exp_diff[average_where])
-print 'average distance = {}'.format(time_average)
-print '[{},{}]'.format(f_Rabi()*t0,time_average)
-print 'mean error = {}'.format(1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)))
-print 'nbar = {}'.format(nb())
-print 'trap_frequency = {}'.format(trap_frequency)
+print 'parameters for time average: [t0,time_average,error,nbar,trap_frequency]'
+print '[{},{},{},{},{}]'.format(f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz'])
 
 pyplot.plot(f_Rabi()*(deph_x_axis-t0),exp_diff,'ko')
 pyplot.plot(f_Rabi()*(nicer_resolution-t0),theo_diff,'k-')
@@ -173,5 +176,46 @@ pyplot.errorbar(f_Rabi()*(deph_x_axis-t0), exp_diff, exp_diff_errs, xerr = 0, fm
 
 pyplot.text(xmax*0.70,0.83, 'nbar = {:.2f}'.format(nb()))
 pyplot.text(xmax*0.70,0.88, 'Rabi Frequency f = {:.2f} kHz'.format(f_Rabi()*10**(-3)))
-pyplot.title('Operator Distance for Dephasing at Pi/4 Time')
+pyplot.tick_params(axis='x', labelsize=size*20)
+pyplot.tick_params(axis='y', labelsize=size*20)
+pyplot.title('Operator Distance for Dephasing at '+dephasing_time_string+' Time',fontsize=size*30)
+
+fig2 = pyplot.figure()
+
+if realtime:
+    timescale = 10**6
+    label = r'in $\mu s$'
+else:
+    timescale = evo.effective_rabi_coupling(nb())*f_Rabi()*2.0*np.pi
+    label = r'$\frac{\Omega t}{2\pi}$'
+
+detail_flop = np.linspace(flop_x_axis.min(),flop_x_axis.max(),1000)
+detail_deph = np.linspace(deph_x_axis.min(),deph_x_axis.max(),1000)
+
+deph_fit_y_axis = evo.deph_evolution_fluc(detail_deph, t0,nb(),f_Rabi(),delta(),delta_fluc())
+pyplot.plot(detail_deph*timescale,deph_fit_y_axis,'b--')
+
+flop_fit_y_axis = evo.state_evolution_fluc(detail_flop, nb(), f_Rabi(), delta(),delta_fluc())
+pyplot.plot(detail_flop*timescale,flop_fit_y_axis,'r-')
+
+#m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
+#print 'Flop maximum at {:.2f} us'.format(detail_flop[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(detail_flop[m]/2.0*10**6)
+#print 'Actual t0 = {}'.format(t0)
+
+pyplot.plot(np.array(flop_x_axis)*timescale,flop_y_axis, 'ro')
+
+yerrflop = np.sqrt((1-flop_y_axis)*flop_y_axis/(100.0*len(flop_files)))
+pyplot.errorbar(np.array(flop_x_axis)*timescale, flop_y_axis, yerr=yerrflop, xerr=0,fmt='ro')
+yerrdeph = np.sqrt((1-deph_y_axis)*deph_y_axis/(100.0*len(dephase_files)))
+pyplot.errorbar(np.array(deph_x_axis)*timescale, deph_y_axis, yerr=yerrdeph, xerr=0,fmt='bo')
+pyplot.plot(np.array(deph_x_axis)*timescale,deph_y_axis, 'bs')
+pyplot.xlabel('Excitation Duration '+label, fontsize = size*22)
+pyplot.ylim((0,1))
+pyplot.ylabel('Population in the D-5/2 state', fontsize = size*22)
+#pyplot.legend()
+pyplot.text(xmax*0.60*timescale,0.80, 'nbar = {:.2f}'.format(nb()), fontsize = size*22)
+pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = size*22)
+pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
+pyplot.tick_params(axis='x', labelsize=size*20)
+pyplot.tick_params(axis='y', labelsize=size*20)
 pyplot.show()

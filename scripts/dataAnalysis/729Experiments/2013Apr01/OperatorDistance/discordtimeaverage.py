@@ -52,10 +52,12 @@ fit_params = [nb,f_Rabi,delta,delta_fluc]
 #Times (Pi/4,Pi/2,3Pi/4,Pi,3Pi/2)
 times = [0,2.82713003685,5.27355837955,8.8792654291,11.2252501165,17.2867104081]
 averages = [0,0.0497868898282,0.154861025572,0.0655491449449,0.0163914766524,0.144347495801]
+errors = [0,0.00261032973942,0.00409218262306,0.00341273149921,0.00176529911012,0.00525374485925]
+
 nbars =[0.185631982212,0.198141427699,0.123993486485,0.167394549013,0.217396568974]
 
 nbar = np.average(nbars)
-print nbar
+
 #fit Rabi Flops to theory
 evo=tp.time_evolution(trap_frequency, sideband,nmax = 1000)
 def f(x):
@@ -120,6 +122,7 @@ flop = evo.state_evolution(fake_times, nbar, fake_f)
 pyplot.plot(np.array(times)*timescale,2.0*np.array(averages),'ko',label='Time-Averaged Qubit Distance')
 pyplot.plot(fake_times*fake_f*timescale,discord,'k-',label='Discord between Qubit and Motion')
 pyplot.plot(fake_times*fake_f*timescale,flop,'b-',label='Blue Sideband Rabi Flop, nbar = {:.2f}'.format(nbar))
+pyplot.errorbar(np.array(times)*timescale, 2.0*np.array(averages), 2.0*np.array(errors), xerr=0, fmt='ko')
 
 pyplot.legend(loc=2,prop={'size':25})
 pyplot.title('Time-Averaged Distance to Assess Quantum Discord',fontsize=50)

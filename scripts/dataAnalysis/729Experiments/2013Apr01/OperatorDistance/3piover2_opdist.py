@@ -148,25 +148,27 @@ pyplot.xlabel('t in us')
 pyplot.ylim((0,0.4))
 pyplot.ylabel('Population in the D-5/2 state')
 #pyplot.legend()
-
-subseq_evolution=np.where(flop_x_axis>0)
+subseq_evolution=np.where(flop_x_axis>=t0)
 nicer_resolution = np.linspace(t0,flop_x_axis.max(),1000)
 deph_fit_y_axis = evo.deph_evolution_fluc(nicer_resolution, t0,nb(),f_Rabi(),delta(),delta_fluc())
 flop_fit_y_axis = evo.state_evolution_fluc(nicer_resolution, nb(), f_Rabi(), delta(),delta_fluc())
-exp_diff = 2.0*np.abs(np.interp(deph_x_axis,flop_x_axis[subseq_evolution],flop_y_axis[subseq_evolution])-deph_y_axis)**2
+
+flop_interpolated = np.interp(deph_x_axis,flop_x_axis[subseq_evolution],flop_y_axis[subseq_evolution])
+
+exp_diff = 2.0*np.abs(flop_interpolated-deph_y_axis)**2
 theo_diff = 2.0*np.abs(flop_fit_y_axis-deph_fit_y_axis)**2
+e_flop = np.sqrt(flop_interpolated*(1-flop_interpolated)/(100.0*len(flop_files)))
+e_deph = np.sqrt(deph_y_axis*(1-deph_y_axis)/(100.0*len(dephase_files)))
+exp_diff_errs = np.sqrt(8.0*exp_diff*(e_flop**2+e_deph**2))
 
 average_where=np.where((deph_x_axis-t0)*f_Rabi()<=24.27)
 time_average=np.average(exp_diff[average_where])
 print 'average distance = {}'.format(time_average)
 print '[{},{}]'.format(f_Rabi()*t0,time_average)
+print 'mean error = {}'.format(1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)))
 print 'nbar = {}'.format(nb())
 
 pyplot.plot(f_Rabi()*(deph_x_axis-t0),exp_diff,'ko')
 pyplot.plot(f_Rabi()*(nicer_resolution-t0),theo_diff,'k-')
-
-
-pyplot.text(xmax*0.70,0.83, 'nbar = {:.2f}'.format(nb()))
-pyplot.text(xmax*0.70,0.88, 'Rabi Frequency f = {:.2f} kHz'.format(f_Rabi()*10**(-3)))
-pyplot.title('Local detection on the first blue sideband')
+pyplot.errorbar(f_Rabi()*(deph_x_axis-t0), exp_diff, exp_diff_errs, xerr = 0, fmt='ko')
 pyplot.show()
