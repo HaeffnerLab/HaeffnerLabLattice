@@ -216,4 +216,16 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+
+#save data to text file
+folder = 'pi'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()

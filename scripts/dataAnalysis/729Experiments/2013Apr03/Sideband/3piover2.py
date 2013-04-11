@@ -7,6 +7,7 @@ from scipy import optimize
 #from scipy.stats import chi2
 import timeevolution as tp
 from labrad import units as U
+from getnbar import get_nbar
 
 # set to right date
 date = '2013Mar16'
@@ -15,6 +16,7 @@ date = '2013Mar16'
 flop_directory = ['','Experiments','RabiFlopping',date]
 flop_files = ['0155_44','0203_47','0211_47','0219_33','0227_33','0235_03','0251_10','0259_23','0307_10']
 parameter_file = '0151_10'
+red_file='0139_51'
 
 #0231_30 point 190mus MUST BE DELETED! DEPHASING WAS SLIGHTLY OFF AFTER THE WHOLE SET OF MEASUREMENTS
 # DONE, SEE BELOW!
@@ -33,7 +35,7 @@ dephasing_time_string = r'$\frac{3\pi}{2}$'
 sideband = 1.0
 amax=2000.0
 f_Rabi_init = U.WithUnit(85.0,'kHz')
-nb_init = 0.1
+nb_init = get_nbar(flop_directory, parameter_file, red_file,fit_until=U.WithUnit(200.0,'us'),show=True)
 delta_init = U.WithUnit(1000.0,'Hz')
 fit_range_min=U.WithUnit(150.0,'us')
 fit_range_max=U.WithUnit(450.0,'us')
@@ -236,4 +238,16 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+
+#save data to text file
+folder = '3piover2'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()
