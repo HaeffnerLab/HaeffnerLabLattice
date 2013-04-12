@@ -4,7 +4,6 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot, pylab
 import numpy as np
 from scipy import optimize
-#from scipy.stats import chi2
 import timeevolution as tp
 from labrad import units as U
 
@@ -44,8 +43,8 @@ dephasing_time_string = r'$\frac{\pi}{4}$'
 #parameters and initial guesses for fit
 sideband = 1.0
 amax=2000.0
-f_Rabi_init = U.WithUnit(85.0,'kHz')
-nb_init = 0.1
+f_Rabi_init = U.WithUnit(102.0,'kHz')
+nb_init = 0.5
 delta_init = U.WithUnit(1000.0,'Hz')
 fit_range_min=U.WithUnit(0.0,'us')
 fit_range_max=U.WithUnit(350.0,'us')
@@ -63,18 +62,33 @@ class Parameter:
     def __call__(self):
             return self.value
         
-def fit(function, parameters, y, x = None):
-    def f(params):
+def fit(function, parameters, y, yerr,x = None):
+    if x is None: x = np.arange(y.shape[0])
+    restrict_to = np.nonzero(yerr)
+    y=y[restrict_to]
+    x=x[restrict_to]
+    yerr=yerr[restrict_to]
+    def f(params,x):
         i = 0
         for p in parameters:
             p.set(params[i])
             i += 1
-        return y - function(x)
-
-    if x is None: x = np.arange(y.shape[0])
+        return function(x)
+    fitfunc = lambda p, x: f(p,x)
+    errfunc = lambda p,x,y,err: (y - fitfunc(p,x))/err
     p = [param() for param in parameters]
-    return optimize.leastsq(f, p)
+    return optimize.leastsq(errfunc, p,args=(x,y,yerr),full_output=True)
 
+#def chi_square(data,fit_for_data,data_errs,reduced = True, number_of_params=0):
+#    if reduced:
+#        dof = np.float32(len(data)-number_of_params)
+#    else:
+#        dof = 1.0
+#    nonzero_region = np.nonzero(data_errs)
+#    data_errs = np.ones_like(data)
+#    dof = 1.0
+#    chi_square = np.sum(((data[nonzero_region]-fit_for_data[nonzero_region])/data_errs[nonzero_region])**2,axis=0)/dof
+#    return chi_square
 
 flop_numbers = range(len(flop_files))
 dephase_numbers = range(len(dephase_files))
@@ -137,11 +151,10 @@ def f(x):
     return evolution
 
 fitting_region = np.where((flop_x_axis >= fit_range_min['s'])&(flop_x_axis <= fit_range_max['s']))
+flop_errors = np.sqrt(flop_y_axis*(1-flop_y_axis)/(100.0*len(flop_files)))
 print 'Fitting...'
-p,success = fit(f, fit_params, y = flop_y_axis[fitting_region], x = flop_x_axis[fitting_region])
+p,cov,infodict,mesg,success = fit(f, fit_params, y = flop_y_axis[fitting_region], yerr=flop_errors[fitting_region],x = flop_x_axis[fitting_region])
 print 'Fitting DONE.'
-
-figure = pyplot.figure()
 
 #print "nbar = {}".format(nb())
 #print "Rabi Frequency = {} kHz".format(f_Rabi()*10**(-3))
@@ -151,6 +164,15 @@ deph_fit_y_axis = evo.deph_evolution_fluc(deph_x_axis, t0,nb(),f_Rabi(),delta(),
 #pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
 
 flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),delta_fluc())
+
+#red_chi2 = chi_square(flop_y_axis[fitting_region], flop_fit_y_axis[fitting_region], flop_errors[fitting_region], True,len(fit_params))
+figure = pyplot.figure()
+
+i=0
+for par in fit_params:
+    print 'P[{}] = {} +- {}'.format(i,par(),np.sqrt(cov[i][i]))
+    i+=1
+
 #pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)

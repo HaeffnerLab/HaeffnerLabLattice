@@ -35,6 +35,8 @@ for folder in points:
     dist_y_data_errs = np.loadtxt('data/'+folder+'/dist_y_data_errs.txt')
     dist_x_theory = np.loadtxt('data/'+folder+'/dist_x_theory.txt')
     dist_y_theory = np.loadtxt('data/'+folder+'/dist_y_theory.txt')
+    #parameter = [nbar,enbar,t0,et0,time_average,error,trap_frequency,eta]
+#    parameter = np.loadtxt('data/'+folder+'/parameter.txt')
 #    pyplot.plot(dist_x_data,dist_y_data)
     pyplot.errorbar(2.0*np.pi*dist_x_data,dist_y_data,yerr=dist_y_data_errs,xerr=0,fmt='o',color=col,mew=3,capsize=5,ms=8)
     pyplot.plot(2.0*np.pi*dist_x_theory,dist_y_theory,'-',color=col)

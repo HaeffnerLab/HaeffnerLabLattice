@@ -67,7 +67,7 @@ def fit(function, parameters, y, x = None):
 
     if x is None: x = np.arange(y.shape[0])
     p = [param() for param in parameters]
-    return optimize.leastsq(f, p)
+    return optimize.leastsq(f, p,full_output=True)
 
 
 flop_numbers = range(len(flop_files))
@@ -124,7 +124,7 @@ def f(x):
 
 fitting_region = np.where((flop_x_axis >= fit_range_min['s'])&(flop_x_axis <= fit_range_max['s']))
 print 'Fitting...'
-p,success = fit(f, fit_params, y = flop_y_axis[fitting_region], x = flop_x_axis[fitting_region])
+out = fit(f, fit_params, y = flop_y_axis[fitting_region], x = flop_x_axis[fitting_region])
 print 'Fitting DONE.'
 
 figure = pyplot.figure()
