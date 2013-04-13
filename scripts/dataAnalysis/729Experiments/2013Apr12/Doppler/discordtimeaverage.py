@@ -12,10 +12,10 @@ for folder in points:
     data.append(np.loadtxt('data/'+folder+'/parameter.txt'))
       
 
-times = [0]
-etimes = [0]
-averages = [0]
-errors = [0]
+times = []
+etimes = []
+averages = []
+errors = []
 nbars=[]
 enbars=[]
 trap_frequencies=[]
@@ -32,8 +32,8 @@ for x in data:
     trap_frequencies.append(x[6])
     etas.append(x[7])
 
-print times
-print etimes
+print nbars
+print enbars
 
 size=.85
 
@@ -97,7 +97,7 @@ pyplot.tick_params(axis='x', labelsize=size*33)
 pyplot.tick_params(axis='y', labelsize=size*33)
 #pyplot.xticks([np.pi/4.0,3.0*np.pi/4.0,np.pi/2.0,np.pi,5.0*np.pi/4.0,3.0*np.pi/2.0],[r'$\frac{\pi}{4}$',r'$\frac{3\pi}{4}$',r'$\frac{\pi}{2}$',r'$\pi$',r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$'])
 
-print 'parameters:\n nbar = {} \n trap frequency = {}'.format(nbar,trap_frequency)
+print 'parameters:\n nbar = {} \n trap frequency = {}\n eta = {}'.format(nbar,trap_frequency,eta)
 print 'measured times are {}'.format(np.array(times)*timescale)
 
 pyplot.show()
