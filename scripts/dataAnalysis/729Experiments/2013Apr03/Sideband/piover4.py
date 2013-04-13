@@ -4,21 +4,34 @@ matplotlib.use('Qt4Agg')
 from matplotlib import pyplot, pylab
 import numpy as np
 from scipy import optimize
-#from scipy.stats import chi2
 import timeevolution as tp
 from labrad import units as U
 
+# RETAKEN DATA, BAD HEATING RATE, HIGH NBAR
 # set to right date
-date = '2013Mar15'
+date = '2013Apr05'
 
 #provide list of Rabi flops - all need to have same x-axis
 flop_directory = ['','Experiments','RabiFlopping',date]
-flop_files = ['2033_35','2038_57','2044_27','2056_46','2102_17','2107_39','2113_01','2118_31','2123_53']
-parameter_file='2018_52'
+flop_files = ['1553_45','1600_26','1607_17','1615_25','1622_07','1630_15','1637_06','1653_10','1700_10']
+parameter_file='1549_00'
 
 #provide list of evolutions with different phases - all need to have same x-axis
 dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
-dephase_files = ['2036_26','2041_48','2047_18','2052_40','2059_37','2104_59','2110_30','2115_52','2121_22']
+dephase_files = ['1556_26','1604_43','1611_25','1619_33','1626_15','1634_23','1641_14','1650_36','1657_36']
+
+
+## OLDER DATA, GOOD NBAR AND HEATING RATE BUT SOME SHIFT IN DEPHASING
+#date = '2013Mar15'
+#
+##provide list of Rabi flops - all need to have same x-axis
+#flop_directory = ['','Experiments','RabiFlopping',date]
+#flop_files = ['2033_35','2038_57','2044_27','2056_46','2102_17','2107_39','2113_01','2118_31','2123_53']
+#parameter_file='2018_52'
+#
+##provide list of evolutions with different phases - all need to have same x-axis
+#dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
+#dephase_files = ['2036_26','2041_48','2047_18','2052_40','2059_37','2104_59','2110_30','2115_52','2121_22']
 
 #Plotting and averaging parameter
 ymax = 0.25
@@ -30,8 +43,8 @@ dephasing_time_string = r'$\frac{\pi}{4}$'
 #parameters and initial guesses for fit
 sideband = 1.0
 amax=2000.0
-f_Rabi_init = U.WithUnit(85.0,'kHz')
-nb_init = 0.1
+f_Rabi_init = U.WithUnit(102.0,'kHz')
+nb_init = 0.5
 delta_init = U.WithUnit(1000.0,'Hz')
 fit_range_min=U.WithUnit(0.0,'us')
 fit_range_max=U.WithUnit(350.0,'us')
@@ -49,18 +62,33 @@ class Parameter:
     def __call__(self):
             return self.value
         
-def fit(function, parameters, y, x = None):
-    def f(params):
+def fit(function, parameters, y, yerr,x = None):
+    if x is None: x = np.arange(y.shape[0])
+    restrict_to = np.nonzero(yerr)
+    y=y[restrict_to]
+    x=x[restrict_to]
+    yerr=yerr[restrict_to]
+    def f(params,x):
         i = 0
         for p in parameters:
             p.set(params[i])
             i += 1
-        return y - function(x)
-
-    if x is None: x = np.arange(y.shape[0])
+        return function(x)
+    fitfunc = lambda p, x: f(p,x)
+    errfunc = lambda p,x,y,err: (y - fitfunc(p,x))/err
     p = [param() for param in parameters]
-    return optimize.leastsq(f, p)
+    return optimize.leastsq(errfunc, p,args=(x,y,yerr),full_output=True)
 
+#def chi_square(data,fit_for_data,data_errs,reduced = True, number_of_params=0):
+#    if reduced:
+#        dof = np.float32(len(data)-number_of_params)
+#    else:
+#        dof = 1.0
+#    nonzero_region = np.nonzero(data_errs)
+#    data_errs = np.ones_like(data)
+#    dof = 1.0
+#    chi_square = np.sum(((data[nonzero_region]-fit_for_data[nonzero_region])/data_errs[nonzero_region])**2,axis=0)/dof
+#    return chi_square
 
 flop_numbers = range(len(flop_files))
 dephase_numbers = range(len(dephase_files))
@@ -123,11 +151,10 @@ def f(x):
     return evolution
 
 fitting_region = np.where((flop_x_axis >= fit_range_min['s'])&(flop_x_axis <= fit_range_max['s']))
+flop_errors = np.sqrt(flop_y_axis*(1-flop_y_axis)/(100.0*len(flop_files)))
 print 'Fitting...'
-p,success = fit(f, fit_params, y = flop_y_axis[fitting_region], x = flop_x_axis[fitting_region])
+p,cov,infodict,mesg,success = fit(f, fit_params, y = flop_y_axis[fitting_region], yerr=flop_errors[fitting_region],x = flop_x_axis[fitting_region])
 print 'Fitting DONE.'
-
-figure = pyplot.figure()
 
 #print "nbar = {}".format(nb())
 #print "Rabi Frequency = {} kHz".format(f_Rabi()*10**(-3))
@@ -137,6 +164,15 @@ deph_fit_y_axis = evo.deph_evolution_fluc(deph_x_axis, t0,nb(),f_Rabi(),delta(),
 #pyplot.plot(deph_x_axis*10**6,deph_fit_y_axis,'b--')
 
 flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),delta_fluc())
+
+#red_chi2 = chi_square(flop_y_axis[fitting_region], flop_fit_y_axis[fitting_region], flop_errors[fitting_region], True,len(fit_params))
+figure = pyplot.figure()
+
+i=0
+for par in fit_params:
+    print 'P[{}] = {} +- {}'.format(i,par(),np.sqrt(cov[i][i]))
+    i+=1
+
 #pyplot.plot(flop_x_axis*10**6,flop_fit_y_axis,'r-')
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
@@ -216,4 +252,15 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+#save data to text file
+folder = 'piover4'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()

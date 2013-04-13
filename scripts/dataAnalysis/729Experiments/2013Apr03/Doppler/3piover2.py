@@ -20,7 +20,6 @@ parameter_file = '2202_42'
 dephase_directory = ['','Experiments','RamseyDephaseScanSecondPulse',date]
 dephase_files = ['2207_31','2209_49','2212_51','2215_18','2218_19','2221_21','2223_48','2226_50','2229_08']
 
-
 #Plotting and averaging parameter
 ymax = 0.2
 size = 0.75
@@ -142,7 +141,7 @@ flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 #print 'Actual t0 = {}'.format(t0)
-print '2pi time {}'.format(flop_x_axis[m]*f_Rabi()*2.0)
+print 'dephasing time {}'.format(t0*f_Rabi()*2.0*np.pi)
 
 #pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
 #pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
@@ -217,4 +216,16 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+
+#save data to text file
+folder = '3piover2'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()

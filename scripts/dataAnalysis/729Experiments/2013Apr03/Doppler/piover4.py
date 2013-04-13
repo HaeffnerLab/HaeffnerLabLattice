@@ -30,8 +30,8 @@ dephasing_time_string = r'$\frac{\pi}{4}$'
 #parameters and initial guesses for fit
 sideband = 1.0
 amax=2000.0
-f_Rabi_init = U.WithUnit(85.0,'kHz')
-nb_init = 5
+f_Rabi_init = U.WithUnit(176157.568436,'Hz')
+nb_init = 5.93398590461
 delta_init = U.WithUnit(1000.0,'Hz')
 fit_range_min=U.WithUnit(0.0,'us')
 fit_range_max=U.WithUnit(350.0,'us')
@@ -85,7 +85,7 @@ f_Rabi = Parameter(f_Rabi_init['Hz'])
 delta = Parameter(delta_init['Hz'])
 delta_fluc=Parameter(delta_fluc_init['Hz'])
 #which to fit?
-fit_params = [nb,f_Rabi,delta,delta_fluc]
+fit_params = [f_Rabi,delta,delta_fluc]
 
 # take list of Rabi flops and average
 dv.cd(flop_directory)
@@ -165,6 +165,7 @@ exp_diff_errs = np.sqrt(8.0*exp_diff*(e_flop**2+e_deph**2))
 
 average_where=np.where((deph_x_axis-t0)*f_Rabi()<=average_until)
 time_average=np.average(exp_diff[average_where])
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
 print 'parameters for time average: [t0,time_average,error,nbar,trap_frequency]'
 print '[{},{},{},{},{}]'.format(f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz'])
 
@@ -216,4 +217,15 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+
+#save data to text file
+folder = 'piover4'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()

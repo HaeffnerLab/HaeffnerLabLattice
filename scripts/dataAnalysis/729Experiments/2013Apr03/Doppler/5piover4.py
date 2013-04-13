@@ -30,13 +30,13 @@ dephasing_time_string = r'$\frac{5\pi}{4}$'
 #parameters and initial guesses for fit
 sideband = 1.0
 amax=2000.0
-f_Rabi_init = U.WithUnit(140.0,'kHz')
-nb_init = 8.28682525321
-delta_init = U.WithUnit(10.0,'Hz')
+f_Rabi_init = U.WithUnit(146136.945953,'Hz')
+nb_init = 5.50221186188
+delta_init = U.WithUnit(100.0,'Hz')
 fit_range_min=U.WithUnit(0.0,'us')
-fit_range_max=U.WithUnit(150.0,'us')
-delta_fluc_init=U.WithUnit(10.0,'Hz')
-dephasing_time_offset=U.WithUnit(0,'us')
+fit_range_max=U.WithUnit(120.0,'us')
+delta_fluc_init=U.WithUnit(1000.0,'Hz')
+dephasing_time_offset=U.WithUnit(0.0,'us')
 
 #actual script starts here
 class Parameter:
@@ -86,7 +86,7 @@ f_Rabi = Parameter(f_Rabi_init['Hz'])
 delta = Parameter(delta_init['Hz'])
 delta_fluc=Parameter(delta_fluc_init['Hz'])
 #which to fit?
-fit_params = [f_Rabi,delta,delta_fluc]
+fit_params = [delta,delta_fluc]
 
 # take list of Rabi flops and average
 dv.cd(flop_directory)
@@ -120,11 +120,13 @@ t0 = deph_x_axis.min()+dephasing_time_offset['s']
 #fit Rabi Flops to theory
 evo=tp.time_evolution(trap_frequency, sideband,nmax = 1000)
 def f(x):
+#    evolution = evo.deph_evolution_fluc(x,t0,nb(),f_Rabi(),delta(),delta_fluc())
     evolution = evo.state_evolution_fluc(x,nb(),f_Rabi(),delta(),delta_fluc())
     return evolution
 
 fitting_region = np.where((flop_x_axis >= fit_range_min['s'])&(flop_x_axis <= fit_range_max['s']))
 print 'Fitting...'
+#p,success = fit(f, fit_params, y = deph_y_axis[fitting_region], x = deph_x_axis[fitting_region])
 p,success = fit(f, fit_params, y = flop_y_axis[fitting_region], x = flop_x_axis[fitting_region])
 print 'Fitting DONE.'
 
@@ -142,7 +144,7 @@ flop_fit_y_axis = evo.state_evolution_fluc(flop_x_axis, nb(), f_Rabi(), delta(),
 m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(flop_x_axis[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(flop_x_axis[m]/2.0*10**6)
 #print 'Actual t0 = {}'.format(t0)
-print '2pi time {}'.format(flop_x_axis[m]*f_Rabi()*2.0)
+print 'dephasing time (dimensionless) {}'.format(t0*f_Rabi()*2.0*np.pi)
 
 #pyplot.plot(flop_x_axis*10**6,flop_y_axis, 'ro')
 #pyplot.plot(deph_x_axis*10**6,deph_y_axis, 'bs')
@@ -217,4 +219,16 @@ pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi(
 pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
+
+#save data to text file
+folder = '5piover4'
+print 'saving data to text files'
+np.savetxt('data/'+folder+'/dist_x_data.txt',f_Rabi()*(deph_x_axis-t0))
+np.savetxt('data/'+folder+'/dist_y_data.txt',exp_diff)
+np.savetxt('data/'+folder+'/dist_y_data_errs.txt',exp_diff_errs)
+np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
+np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
+parameter_for_average = [f_Rabi()*t0,time_average,1.0/len(exp_diff[average_where])*np.sqrt(np.sum(exp_diff_errs**2)),nb(),trap_frequency['MHz']]
+np.savetxt('data/average/'+folder+'.txt',parameter_for_average)
+
 pyplot.show()
