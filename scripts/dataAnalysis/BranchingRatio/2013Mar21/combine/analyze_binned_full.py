@@ -4,8 +4,7 @@ import matplotlib
 #from constants import constants as c
 matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
-
-
+from scipy.optimize import curve_fit
 #load binned information from the file
 #data in the form of [filename , total transfers , sequences per transfer, cycles per sequence]
 data = [
@@ -13,17 +12,17 @@ data = [
         ['2018_08_first.npy', 370, 1500, 50],
         ['2018_08_second.npy', 380, 1500, 50],         
          ]
-#pmt_deadtime = 16.5*10**-9# seconds
-pmt_deadtime = 16.5*10**-9
+pmt_deadtime = 16.5*10**-9 * 1
 binned_resolution = 10**-8 #10ns
 data_arrays = []
-for file, transfers, seq_per_transfer, cycles_per_seq in data:
+for datafile, transfers, seq_per_transfer, cycles_per_seq in data:
     #load
-    arr = np.load(file)
+    arr = np.load(datafile)
     #deadtime correction
     recordtime_per_bin = binned_resolution * cycles_per_seq * seq_per_transfer * transfers
     arr[:,1] = arr[:,1] / (1- pmt_deadtime *arr[:,1]/recordtime_per_bin)
     data_arrays.append(arr)
+
 
 bins = data_arrays[0][:,0]*1e6 #time now in mus
 hist_arrays = tuple([arr[:,1] for arr in data_arrays])
@@ -40,7 +39,7 @@ background_level_sigma = np.sqrt(background_level / background_bins.size)
 print 'background level: {0:.2f}, sigma {1:.2f}, relative sigma {2:.2e}'.format(background_level, background_level_sigma, background_level_sigma / background_level)
 
 #calculate the area of 866 peak
-peak_866 = (86.0, 100.0)
+peak_866 = (86.0, 100)
 peak_866_where = np.where((peak_866[0] <= bins) * (bins <= peak_866[1]))
 peak_866_bins,peak_866_counts = bins[peak_866_where], hist[peak_866_where]
 peak_866_with_background = np.sum(peak_866_counts)
@@ -48,7 +47,7 @@ area_866_sigma = np.sqrt(peak_866_with_background)
 #subtracking background per bin
 background_subtrated_866_area = peak_866_with_background - peak_866_counts.size * background_level
 background_subtrated_866_sigma = np.sqrt( area_866_sigma**2 +  (peak_866_counts.size * background_level_sigma)**2 )
-toprint =  'N_r {0:.2e}, total sigma {1:.2e} sigma from area {2:.2e} and sigma background {3:.2e}. Relative sigma {4:.2e}'
+toprint =  'N_r {0:.6e}, total sigma {1:.2e} sigma from area {2:.2e} and sigma background {3:.2e}. Relative sigma {4:.2e}'
 summary_866 = 'Area 866:  {0:.4e}, relative uncertainty {4:.4e}'
 print toprint.format(background_subtrated_866_area, background_subtrated_866_sigma, area_866_sigma, peak_866_counts.size * background_level_sigma, background_subtrated_866_sigma / background_subtrated_866_area)
 summary_866 = summary_866.format(background_subtrated_866_area, background_subtrated_866_sigma, area_866_sigma, peak_866_counts.size * background_level_sigma, background_subtrated_866_sigma / background_subtrated_866_area)
@@ -77,10 +76,8 @@ summary_397 = 'Area 397:  {0:.1e}, relative uncertainty {2:.1e}'.format(backgrou
 branching_fraction = background_subtracted_397_area / (background_subtracted_397_area + background_subtrated_866_area)
 z = background_subtrated_866_area / background_subtracted_397_area
 branching_fraction_error = branching_fraction**2 * z * np.sqrt((background_subtracted_397_area_sigma/background_subtracted_397_area)**2 + (background_subtrated_866_sigma/background_subtrated_866_area)**2)
-print branching_fraction_error
-branching_str = u'Branching: {0:.6f} \261 {1:.6f}'.format(  branching_fraction, branching_fraction_error) 
-
-
+branching_str = u'Branching: {0:.5f} \261 {1:.5f}'.format(  branching_fraction, branching_fraction_error)
+print 'Uncorrected fraction', branching_str
 #pyplot.plot(bins, hist, '.k', markersize=0.7)
 pyplot.plot(bins, hist, markersize=0.7)
 pyplot.annotate(branching_str, xy=(0.55, 0.80), xycoords='axes fraction')
@@ -92,4 +89,13 @@ pyplot.ylim(ymin = 0)
 pyplot.title('Branching Ratio 13 ions')
 pyplot.xlabel(u'Time \265s')
 pyplot.ylabel('Photons per bin of 10 ns')
+
+systematic_limit_397 = 1.36356467395e-06
+systematic_limit_866 = -1.59713328508e-05
+print 'limit correction', systematic_limit_397 + systematic_limit_866
+corrected_branching = branching_fraction + systematic_limit_397 + systematic_limit_866
+branching_str_corrected = u'Branching With Sys: {0:.5f} \261 {1:.5f}'.format(  corrected_branching, branching_fraction_error)
+pyplot.annotate(branching_str_corrected, xy=(0.55, 0.70), xycoords='axes fraction')
+print 'Uncorrected fraction', branching_str_corrected
+print corrected_branching, 1 - corrected_branching
 pyplot.show()
