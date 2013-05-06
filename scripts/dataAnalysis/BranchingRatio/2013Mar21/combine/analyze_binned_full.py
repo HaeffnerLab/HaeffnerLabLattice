@@ -94,8 +94,19 @@ systematic_limit_397 = 1.36356467395e-06
 systematic_limit_866 = -1.59713328508e-05
 print 'limit correction', systematic_limit_397 + systematic_limit_866
 corrected_branching = branching_fraction + systematic_limit_397 + systematic_limit_866
-branching_str_corrected = u'Branching With Sys: {0:.5f} \261 {1:.5f}'.format(  corrected_branching, branching_fraction_error)
-pyplot.annotate(branching_str_corrected, xy=(0.55, 0.70), xycoords='axes fraction')
-print 'Uncorrected fraction', branching_str_corrected
+
+
 print corrected_branching, 1 - corrected_branching
+
+
+biref_error = branching_fraction_error
+pmt_error = 3e-6
+lifetime_error = 2e-6
+extinction_error = 5e-6
+duration_error = 6e-6
+combined_error = np.sqrt(branching_fraction_error**2 +  biref_error**2 + pmt_error**2 + lifetime_error**2 + extinction_error**2 + duration_error**2)
+branching_str_corrected = u'Branching With Sys: {0:.5f} \261 {1:.5f}'.format(  corrected_branching, combined_error)
+print 'Uncorrected fraction', branching_str_corrected
+pyplot.annotate(branching_str_corrected, xy=(0.55, 0.70), xycoords='axes fraction')
+
 pyplot.show()
