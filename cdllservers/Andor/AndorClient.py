@@ -816,7 +816,7 @@ class AndorClient():
     
     @inlineCallbacks
     def setupCamera(self):
-        temp = yield self.server.get_current_temperature()
+        temp = yield self.server.get_temperature()
         print temp
 
         try:
