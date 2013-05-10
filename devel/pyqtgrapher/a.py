@@ -6,13 +6,15 @@ app = QtGui.QApplication([])
 win = QtGui.QMainWindow()
 v = pg.GraphicsView()
 
-img = np.random.random((100,150))
 
 plt = pg.PlotItem()
 plt.showAxis('top')
 plt.hideAxis('bottom')
 view = pg.ImageView(view=plt)
+
+img = np.random.random((100,150))
 view.setImage(img)
+
 plt.setAspectLocked(False)
 
 v.setCentralItem(plt)
@@ -35,6 +37,7 @@ plt.addItem(vLine, ignoreBounds=True)
 plt.addItem(hLine, ignoreBounds=True)
 
 def mouseClicked(event):
+    print 'clicked'
     pos = event[0].pos()
     if plt.sceneBoundingRect().contains(pos) and event[0].double():
         vb = plt.vb

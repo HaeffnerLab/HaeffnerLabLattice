@@ -25,8 +25,8 @@ class AndorInfo(object):
         self.accumulate_cycle_time  = None
         self.kinetic_cycle_time     = None
         self.image_region           = None
+        self.number_kinetics        = None
         
-        self.acquired_size          = 0
                
 class AndorCamera(object):
     """
@@ -311,13 +311,15 @@ class AndorCamera(object):
     
     def abort_acquisition(self):
         error = self.dll.AbortAcquisition()
-        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+        if (ERROR_CODE[error] in ['DRV_SUCCESS', 'DRV_IDLE']):
             return
         else:
             raise Exception(ERROR_CODE[error])
 
-    def get_acquired_data(self):  
-        dim = self.info.width * self.info.height
+    def get_acquired_data(self, num_images):  
+        hbin, vbin, hstart, hend, vstart, vend = self.info.image_region
+        dim = ( hend - hstart + 1 ) * (vend - vstart + 1) / float(hbin * vbin)
+        dim = int(num_images * dim)
         image_struct = c.c_int * dim
         image = image_struct()
         error = self.dll.GetAcquiredData(c.pointer(image),dim)
@@ -325,175 +327,45 @@ class AndorCamera(object):
             image = image[:]
             return image
         else:
-            raise Exception(ERROR_CODE[error])       
-
-#      def SetNumberKinetics(self, numKin):
-#          error = self.dll.SetNumberKinetics(numKin)
-#          if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#              self.numberKinetics = numKin      
-# #         else:
-#              raise Exception(ERROR_CODE[error])
-                   
-#      def SetKineticCycleTime(self, time):
-#         error = self.dll.SetKineticCycleTime(c_float(time))
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             self.kineticCycleTime = time      
-#         else:
-#             raise Exception(ERROR_CODE[error]) 
-#     
-#     def GetAcquiredDataKinetic(self, numKin):  
-#         dim = self.width * self.height * numKin
-#         cimageArray = c_int * dim
-#         cimage = cimageArray()
-#         #self.dll.WaitForAcquisition()
-#         errohttps://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=4&ved=0CEwQFjAD&url=http%3A%2F%2Fpyandor.googlecode.com%2Ffiles%2FAndor_iDus_XP.py&ei=zBeMUd_zA-KCjALnxoGoBA&usg=AFQjCNEw-hml_3kS0TdScA3JvK_HSEd1jQ&sig2=mCyDqmuTxZ9PNzP2yfJAHAr = self.dll.GetAcquiredData(pointer(cimage),dim)
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             self.currentImageArray = cimage[:]
-#             self.imageArray.append(cimage[:])
-#             print 'acquired kinetic!'
-#         else:
-#             raise Exception(ERROR_CODE[error]) 
-#    
-#     def GetMostRecentImage(self):
-#         #self.dll.WaitForAcquisition()
-#         dim = self.width * self.height
-#         cimageArray = c_int * dim
-#         cimage = cimageArray()
-#         error = self.dll.GetMostRecentImage(pointer(cimage),dim)
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             #self.imageArray = cimage[:]
-#             return cimage[:]
-#         else:
-#             raise Exception(ERROR_CODE[error])
-
-#         
-#     def SetSingleScan(self):
-#         self.SetReadMode(4)
-#         self.SetAcquisitionMode(1)
-#         self.SetImage(1,1,1,self.width,1,self.height)
-# 
-# 
-#     def SaveAsTxt(self, path):
-#                      
-#         file = open(path, 'w')
-#         
-#         # self.imageArray is 1 dimensional!
-#         count = 0
-#         for i in self.imageArray:
-#             file.write(str(int(i)))
-#             count += 1
-#             if (count == self.height):
-#                 file.write("\n")
-#                 count = 0
-#             else:
-#                 file.write(' ')
-# 
-#         file.close()
-#         
-#         #np.savetxt(path, np.reshape(self.imageArray, (self.height, self.width)))
-#         
-#     def SaveAsTxtKinetic(self, path, kinSet, numKin):
-# #        # split up the image array into an array of arrays
-# #        # ASSUMES CURRENT WIDTH AND HEIGHT ARE CORRECT FOR THE IMAGE!!!
-# #        print 'from saveastxtkinetc numKin: ', numKin
-# #        print 'from saveastxtkinetic len(imarray): ', len(self.imageArray)
-# #        imageArray = np.reshape(self.imageArray, (numKin, 1, (len(self.imageArray)/numKin)))
-# #        cnt = 0
-# #        for image in np.arange(numKin):
-# #            file = open(path + str(cnt), 'w')
-# #            
-# #            # self.imageArray is 1 dimensional!
-# #            count = 0
-# #            for i in imageArray[image][0]:
-# #                file.write(str(int(i)))
-# #                count += 1
-# #                if (count == self.width):
-# #                    file.write("\n")
-# #                    count = 0
-# #                else:
-# #                    file.write(' ')
-# #
-# #            file.close()
-# #            cnt += 1
-#         
-#          """ saving scheme: name-kinSet-numKin
-#                         Ex: image-1-1
-#                         Ex: image-1-27
-#          """
-#         
-#          imageArray = np.reshape(self.currentImageArray, (numKin, self.height, self.width))
-#          for image in np.arange(numKin):
-#              np.savetxt(path+'-'+str(kinSet+1)+'-'+str(image+1), imageArray[image], fmt='%d')           
-#             
-#     def OpenAsTxt(self, path):
-#         self.singleImageArray = np.ravel(np.loadtxt(path)) 
-#         
-#     def OpenAsTxtKinetic(self, path, kinSet, numKin):
-#         """Assumes a series of txt files with a consecutive numbers appended to the end. Ex: image1, image2, image3..etc. 
-#             
-#             image12 means kinetic set 1, image 2
-#             image122 means kinetic set 1, image 22
-#             
-#             The image array returned is 1 dimensional, with the images in sequential order. The images are sliced into rows.
-#             
-#             Ex: 2 sets of 3 images of size (2 rows, 3 cols)
-#                 array of shape: (2, 3, 2, 3) -> (36)
-#                 
-#                 
-#         
-#             """
-#         self.imageArray = []
-#         imageArray = [[] for i in np.arange(numKin)]
-#         for kinSetNumber in np.arange(kinSet):
-#             for imageNumber in np.arange(numKin):
-#                 imageArray[imageNumber] = np.loadtxt(path+'-'+str(kinSetNumber + 1)+'-'+str(imageNumber+1))
-# #            imageArray = np.array(imageArray)
-#             self.imageArray.append(np.ravel(np.array(imageArray))) #since labRAD doesn't like to transfer around multidimensional arrays (sorry!)
-#         del imageArray
-#         
-#     @inlineCallbacks
-#     def SaveToDataVault(self, directory, name):
-#         dv = self.parent.client.data_vault
-#         t1 = time.clock() 
-#         width = np.arange(self.width + 1) + 1
-#         height = np.arange(self.height + 1) + 1
-# 
-#         lenWidth = len(width)
-#         lenHeight = len(height)
-# 
-#         Width = np.ravel([width]*lenHeight)
-#         Height = []
-#         for i in height:
-#             Height.append([i]*lenWidth)
-#         Height = np.ravel(np.array(Height))
-#         
-#         yield dv.cd(directory)
-# #        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
-# #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
-# 
-#         yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])    
-# 
-#          
-#         toDataVault = np.array(np.vstack((Height, Width, self.currentSingleImageArray)).transpose(), dtype=float)
-#         yield dv.add(toDataVault)
-#         t2 = time.clock()
-#         print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
-#         print 'saved!'        
-
-    def GetStatus(self):
-        status = c_int()
-        error = self.dll.GetStatus(byref(status))
+            raise Exception(ERROR_CODE[error])
+    
+    def get_most_recent_image(self):  
+        hbin, vbin, hstart, hend, vstart, vend = self.info.image_region
+        dim = ( hend - hstart + 1 ) * (vend - vstart + 1) / float(hbin * vbin)
+        dim = int(dim)
+        image_struct = c.c_int * dim
+        image = image_struct()
+        error = self.dll.GetMostRecentImage(c.pointer(image),dim)
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.status = ERROR_CODE[status.value]      
+            image = image[:]
+            return image
+        else:
+            raise Exception(ERROR_CODE[error])        
+
+    def set_number_kinetics(self, numKin):
+        error = self.dll.SetNumberKinetics(c.c_int(int(numKin)))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.info.number_kinetics = numKin
         else:
             raise Exception(ERROR_CODE[error])
-        
-    def GetSeriesProgress(self):
-        acc = c_long()
-        series = c_long()
-        error = self.dll.GetAcquisitionProgress(byref(acc),byref(series))
+    
+    def get_number_kinetics(self):
+        return self.info.number_kinetics
+
+    def get_status(self):
+        status = c.c_int()
+        error = self.dll.GetStatus(c.byref(status))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            return ERROR_CODE[status.value]      
+        else:
+            raise Exception(ERROR_CODE[error])
+         
+    def get_series_progress(self):
+        acc = c.c_long()
+        series = c.c_long()
+        error = self.dll.GetAcquisitionProgress(c.byref(acc),c.byref(series))
         if ERROR_CODE[error] == "DRV_SUCCESS":
-            self.seriesProgress = series.value
+            return acc.value, series.value
         else:
             raise Exception(ERROR_CODE[error])
 

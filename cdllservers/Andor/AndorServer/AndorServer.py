@@ -5,8 +5,9 @@ a = QtGui.QApplication( [])
 import qt4reactor
 qt4reactor.install()
 #import server libraries
-from twisted.internet.defer import returnValue, DeferredLock
+from twisted.internet.defer import returnValue, DeferredLock, Deferred
 from twisted.internet.threads import deferToThread
+from twisted.internet import reactor
 from labrad.server import LabradServer, setting
 from AndorCamera import AndorCamera
 from labrad.units import WithUnit
@@ -20,7 +21,7 @@ class AndorServer(LabradServer):
     
     def initServer(self):
         self.listeners = set()
-#         self.camera = AndorCamera()
+        self.camera = AndorCamera()
         self.lock = DeferredLock()
         self.gui = AndorVideo(self)
     
@@ -177,7 +178,7 @@ class AndorServer(LabradServer):
         
     @setting(5, "Set Exposure Time", expTime = 'v[s]', returns = 'v[s]')
     def setExposureTime(self, c, expTime):
-        """Sets Current Exposure Time"""
+        """Sets Current Exposure Time"""       
         yield self.lock.acquire()
         try:
             yield deferToThread(self.camera.set_exposure_time, expTime['s'])
@@ -223,20 +224,22 @@ class AndorServer(LabradServer):
         finally:
             self.lock.release()
         
-    @setting(98, "Abort Acquisition", returns = 's')
+    @setting(98, "Abort Acquisition", returns = '')
     def abortAcquisition(self, c):
+        if c is not None and self.gui.live_update_running:
+            yield self.gui.stop_live_display()
         yield self.lock.acquire()
         try:
             yield deferToThread(self.camera.abort_acquisition)
         finally:
             self.lock.release()
     
-    @setting(27, "Get Acquired Data", returns = '*i')
-    def getAcquiredData(self, c):
-        """Get all Data"""
+    @setting(27, "Get Acquired Data", num_images = 'i',returns = '*i')
+    def getAcquiredData(self, c, num_images = 1):
+        """Get the acquired images"""
         yield self.lock.acquire()
         try:
-            image = yield deferToThread(self.camera.get_acquired_data)
+            image = yield deferToThread(self.camera.get_acquired_data, num_images)
         finally:
             self.lock.release()
         returnValue(image)
@@ -249,135 +252,57 @@ class AndorServer(LabradServer):
         """Gets Camera Serial Number"""
         return self.camera.get_camera_serial_number()
     
-    @setting(101, "Test", returns = '')
-    def test(self, c):
-        """Gets Camera Serial Number"""
-        print self.plot_window
-        self.plot_window.setImage(np.array([[2,3],[4,5]]))
+    @setting(28, "Get Most Recent Image", returns = '*i')
+    def getMostRecentImage(self, c):
+        """Get all Data"""
+        yield self.lock.acquire()
+        try:
+            image = yield deferToThread(self.camera.get_most_recent_image)
+        finally:
+            self.lock.release()
+        returnValue(image)
+    
+    @setting(109, "Start Live Display", returns = '')
+    def startLiveDisplay(self, c):
+        """Get all Data"""
+        yield self.gui.start_live_display()
     
     
-#     @setting(17, "Get Number Kinetics", returns = 'i')
-#     def getNumberKinetics(self, c):
-#         """Gets Number Of Scans In A Kinetic Cycle"""
-#         c['Number Kinetics'] = self.camera.numberKinetics
-#         return c['Number Kinetics']
-#     
-#     @setting(18, "Set Number Kinetics", numKin = 'i', returns = 'i')
-#     def setNumberKinetics(self, c, numKin):
-#         """Sets Number Of Scans In A Kinetic Cycle"""
-#         yield deferToThread(self.camera.SetNumberKinetics, numKin)
-#         c['Number Kinetics'] = self.camera.numberKinetics
-#         returnValue(c['Number Kinetics'])
-# 
-#     @setting(19, "Get Kinetic Cycle Time", returns = 'v')
-#     def getKineticCycleTime(self, c):
-#         """Gets Time Between Kinetic Cycles"""
-#         c['Kinetic Cycle Time'] = self.camera.kineticCycleTime
-#         return c['Kinetic Cycle Time']
-#     
-#     @setting(20, "Set Kinetic Cycle Time", kinCycleTime = 'v', returns = 'v')
-#     def setKineticCycleTime(self, c, kinCycleTime):
-#         """Sets Time Between Kinetic Cycles"""
-#         yield deferToThread(self.camera.SetKineticCycleTime, kinCycleTime)
-#         c['Kinetic Cycle Time'] = self.camera.numberKinetics
-#         returnValue(c['Kinetic Cycle Time'])
-# 
-#     @setting(21, "Get Status", returns = 's')
-#     def getStatus(self, c):
-#         """Gets Current Camera Status"""
-#         yield deferToThread(self.camera.GetStatus)
-#         c['Status'] = self.camera.status
-#         returnValue(c['Status'])
-# 
-#     @setting(22, "Get Series Progress", returns = 'w')
-#     def getSeriesProgress(self, c):
-#         """Gets Current Scan In Series"""
-#         yield deferToThread(self.camera.GetSeriesProgress)
-#         c['Series Progress'] = self.camera.seriesProgress
-#         returnValue(c['Series Progress'])
-#     
-#     @setting(25, "Get Most Recent Image", returns = '*i')
-#     def getMostRecentImage(self, c):
-#         """Gets Most Recent Image"""
-#         #yield deferToThread(self.camera.GetMostRecentImage)
-#         imageArray = yield deferToThread(self.camera.GetMostRecentImage)
-#         #returnValue(self.camera.imageArray)
-#         returnValue(imageArray)
-# 
-#     @setting(28, "Save As Text", path = 's', returns = '')
-#     def saveAsText(self, c, path):
-#         """Saves Current Image As A Text File"""
-#         yield deferToThread(self.camera.SaveAsTxt, path) 
-#         
-
-#     
-#     @setting(30, "Get Detector Dimensions", returns = '*i')
-#     def getDetectorDimensions(self, c):
-#         c['Detector Dimensions'] = self.camera.detectorDimensions
-#         returnValue(c['Detector Dimensions'])
-#        
-#     @setting(31, "Get Acquired Data Kinetic", numKin = 'i', returns = '')
-#     def getAcquiredDataKinetic(self, c, numKin):
-#         """Get all Data for a Number of Scans"""
-#         yield deferToThread(self.camera.GetAcquiredDataKinetic, numKin)
-# #        returnValue(self.camera.imageArray)
-# 
-#     @setting(32, "Start Acquisition Kinetic", numKin = 'i', returns = '')
-#     def startAcquisitionKinetic(self, c, numKin):
-#         yield deferToThread(self.camera.StartAcquisitionKinetic, numKin)
-#         self.onKineticFinish("Number Scans: {0}".format(numKin), self.listeners)
-#             #not sure yet
-# 
-#     @setting(33, "Save As Text Kinetic", path = 's', kinSet = 'i', numKin = 'i', returns = '')
-#     def saveAsTextKinetic(self, c, path, kinSet, numKin):
-#         """Saves a Series of Images As Text Files"""
-#         yield deferToThread(self.camera.SaveAsTxtKinetic, path, kinSet, numKin) 
-# 
-#     @setting(34, "Open As Text", path = 's', returns = '')
-#     def openAsText(self, c, path):
-#         """Opens a Text File as Image"""
-#         yield deferToThread(self.camera.OpenAsTxt, path) 
-#     
-#     @setting(35, "Open As Text Kinetic", path = 's', kinSet = 'i', numKin = 'i', returns = '')
-#     def openAsTextKinetic(self, c, path, kinSet, numKin):
-#         """Opens a Series of Text Files As Images"""
-#         yield deferToThread(self.camera.OpenAsTxtKinetic, path, kinSet, numKin) 
-# 
-#     @setting(36, "Start Acquisition Kinetic External", returns = '')
-#     def startAcquisitionKineticExternal(self, c):
-#         yield deferToThread(self.camera.StartAcquisitionKineticExternal)
-# 
-#     @setting(37, "Save To Data Vault", directory = 's', name = 's', returns = '')
-#     def saveToDataVault(self, c, directory, name):
-#         """Save Current Single Image To Data Vault"""
-#         directory = list(eval(directory))
-#         yield deferToThread(self.camera.SaveToDataVault, directory, name) 
-# 
-#     @setting(38, "Save To Data Vault Kinetic", directory = 's', name = 's', numKin = 'i', returns = '')
-#     def saveToDataVaultKinetic(self, c, directory, name, numKin):
-#         """Saves a Series of Images As Text Files"""
-#         directory = list(eval(directory))
-#         yield self.camera.SaveToDataVaultKinetic(directory, name, numKin) 
-# 
-#     @setting(39, "Open From Data Vault", directory = 's', dataset = 'i', returns = '')
-#     def openFromDataVault(self, c, directory, dataset):
-#         """Opens a Single Image From Data Vault"""
-#         directory = list(eval(directory))
-#         yield deferToThread(self.camera.OpenFromDataVault, directory, dataset) 
-# 
-#     @setting(40, "Open From Data Vault Kinetic", directory = 's', numKin = 'i', returns = '')
-#     def openFromDataVaultKinetic(self, c, directory, numKin):
-#         """Opens a Series of Images From Data Vault"""
-#         directory = list(eval(directory))
-#         print 'dir: ', directory
-#         yield self.camera.OpenFromDataVaultKinetic(directory, numKin) 
-#     
-#     @setting(41, "Clear Image Array", returns = '')
-#     def clearImageArray(self, c):
-#         yield deferToThread(self.camera.ClearImageArray)             
-# 
-
-   
+    @setting(17, "Get Number Kinetics", returns = 'i')
+    def getNumberKinetics(self, c):
+        """Gets Number Of Scans In A Kinetic Cycle"""
+        return self.camera.get_number_kinetics()
+     
+    @setting(18, "Set Number Kinetics", numKin = 'i', returns = '')
+    def setNumberKinetics(self, c, numKin):
+        """Sets Number Of Scans In A Kinetic Cycle"""
+        yield self.lock.acquire()
+        try:
+            yield deferToThread(self.camera.set_number_kinetics, numKin)
+        finally:
+            self.lock.release()
+    
+    @setting(110, "Wait For Kinetic", timeout = 'v[s]',returns = 'b')
+    def waitForKinetic(self, c, timeout = WithUnit(10,'s')):
+        '''Waits until the given number of kinetic images are completed'''
+        requestCalls = int(timeout['s'] / 0.050 ) #number of request calls
+        for i in range(requestCalls):
+            yield self.lock.acquire()
+            try:
+                status = yield deferToThread(self.camera.get_status)
+            finally:
+                self.lock.release()
+            if status == 'DRV_IDLE':
+                returnValue(True)
+            yield self.wait(0.050)
+        returnValue(False)
+        
+    def wait(self, seconds, result=None):
+        """Returns a deferred that will be fired later"""
+        d = Deferred()
+        reactor.callLater(seconds, d.callback, result)
+        return d
+        
     def stopServer(self):  
         """Shuts down camera before closing"""
         try:
