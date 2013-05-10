@@ -2,6 +2,8 @@ import ctypes as c
 from configuration import andor_configuration as config
 import os
 
+'''Adoped from https://code.google.com/p/pyandor/'''
+
 class AndorInfo(object):
     
     def __init__(self):
@@ -19,27 +21,12 @@ class AndorInfo(object):
         self.read_mode              = None
         self.acquisition_mode       = None
         self.trigger_mode           = None
-#         self.preampgain         = None
-#         self.channel            = None
-#         self.outamp             = None
-#         self.hsspeed            = None
-#         self.vsspeed            = None
-#         self.serial             = ''
-#         self.seriesProgress     = 0
-#         self.exposureTime       = .1 # seconds
-#         self.accumulate         = None
-#         self.kinetic            = None
-#         self.numberKinetics     = 1
-#         self.kineticCycleTime   = 0.01
-
-
-#         
-#         self.imageRegion        = [1, 1, 1, None, 1, None]
-#         self.imageArray         = []
-#         self.singleImageArray   = []
-#         self.currentImageArray  = []
-
-
+        self.exposure_time          = None
+        self.accumulate_cycle_time  = None
+        self.kinetic_cycle_time     = None
+        self.image_region           = None
+        
+        self.acquired_size          = 0
                
 class AndorCamera(object):
     """
@@ -60,11 +47,15 @@ class AndorCamera(object):
             self.info = AndorInfo()
             self.get_detector_dimensions()
             self.get_temperature_range()
-            self.get_camera_serial_number()
+            self.acquire_camera_serial_number()
             self.get_camera_em_gain_range()
             self.get_emccd_gain()
             self.set_read_mode(config.read_mode)
             self.set_acquisition_mode(config.acquisition_mode)
+            self.set_trigger_mode(config.trigger_mode)
+            self.set_exposure_time(config.exposure_time)
+            #set image to full size with the default binning
+            self.set_image(config.binning[0], config.binning[0], 1, self.info.width, 1, self.info.height)
             self.set_cooler_on()
             self.set_temperature(config.set_temperature)
             self.get_cooler_state()
@@ -192,13 +183,16 @@ class AndorCamera(object):
         else:
             raise Exception(ERROR_CODE[error])
         
-    def get_camera_serial_number(self):
+    def acquire_camera_serial_number(self):
         serial_number = c.c_int()
         error = self.dll.GetCameraSerialNumber(c.byref(serial_number))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.info.serial_number = serial_number.value  
+            self.info.serial_number = serial_number.value
         else:
             raise Exception(ERROR_CODE[error])
+    
+    def get_camera_serial_number(self):
+        return self.info.serial_number
     
     def get_camera_em_gain_range(self):
         min_gain = c.c_int()
@@ -255,106 +249,104 @@ class AndorCamera(object):
         return self.info.acquisition_mode
     
     def set_trigger_mode(self, mode):
-        error = self.dll.SetTriggerMode(mode)
+        try:
+            mode_number = TriggerMode[mode]
+        except KeyError:
+            raise Exception("Incorrect trigger mode {}".format(mode))
+        error = self.dll.SetTriggerMode(c.c_int(mode_number))
         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-            self.triggerMode = mode
+            self.info.trigger_mode = mode
         else:
             raise Exception(ERROR_CODE[error])
     
+    def get_trigger_mode(self):
+        return self.info.trigger_mode
+    
+    def set_exposure_time(self, time):
+        error = self.dll.SetExposureTime(c.c_float(time))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.get_acquisition_timings()   
+        else:
+            raise Exception(ERROR_CODE[error])
+    
+    def get_exposure_time(self):
+        return self.info.exposure_time
+    
+    def get_acquisition_timings(self):
+        exposure = c.c_float()
+        accumulate = c.c_float()
+        kinetic = c.c_float()
+        error = self.dll.GetAcquisitionTimings(c.byref(exposure), c.byref(accumulate), c.byref(kinetic))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.info.exposure_time = exposure.value
+            self.info.accumulate_cycle_time = accumulate.value
+            self.info.kinetic_cycle_time = kinetic.value
+        else:
+            raise Exception(ERROR_CODE[error])
         
-#     #MR?
-#     def setDimensions(self, width, height):
-#         self.width = width
-#         self.height = height
-#     
-#     def AbortAcquisition(self):
-#         error = self.dll.AbortAcquisition()
-#         return ERROR_CODE[error]
+    def set_image(self, hbin, vbin, hstart, hend, vstart, vend):
+        hbin = int(hbin); vbin = int(vbin); hstart = int(hstart); hend = int(hend); vstart = int(vstart); vend = int(vend)
+        error = self.dll.SetImage(c.c_int(hbin), c.c_int(vbin), c.c_int(hstart), c.c_int(hend), c.c_int(vstart), c.c_int(vend))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            self.info.image_region = [hbin, vbin, hstart, hend, vstart, vend]
+        else:
+            raise Exception(ERROR_CODE[error])
+    
+    def get_image(self):
+        return self.info.image_region
+    
+    def start_acquisition(self):
+        error = self.dll.StartAcquisition()
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            return
+        else:
+            raise Exception(ERROR_CODE[error])
+    
+    def wait_for_acquisition(self):
+        error = self.dll.WaitForAcquisition()
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            return
+        else:
+            raise Exception(ERROR_CODE[error])
+    
+    def abort_acquisition(self):
+        error = self.dll.AbortAcquisition()
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            return
+        else:
+            raise Exception(ERROR_CODE[error])
 
-#     def SetNumberKinetics(self, numKin):
-#         error = self.dll.SetNumberKinetics(numKin)
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             self.numberKinetics = numKin      
-#         else:
-#             raise Exception(ERROR_CODE[error])
-#                   
-#     def SetKineticCycleTime(self, time):
+    def get_acquired_data(self):  
+        dim = self.info.width * self.info.height
+        image_struct = c.c_int * dim
+        image = image_struct()
+        error = self.dll.GetAcquiredData(c.pointer(image),dim)
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            image = image[:]
+            return image
+        else:
+            raise Exception(ERROR_CODE[error])       
+
+#      def SetNumberKinetics(self, numKin):
+#          error = self.dll.SetNumberKinetics(numKin)
+#          if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+#              self.numberKinetics = numKin      
+# #         else:
+#              raise Exception(ERROR_CODE[error])
+                   
+#      def SetKineticCycleTime(self, time):
 #         error = self.dll.SetKineticCycleTime(c_float(time))
 #         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
 #             self.kineticCycleTime = time      
 #         else:
-#             raise Exception(ERROR_CODE[error])
-# 
-#     def SetImage(self, hbin, vbin, hstart, hend, vstart, vend):
-#         error = self.dll.SetImage(hbin, vbin, hstart, hend, vstart, vend)
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             self.hstart = hstart
-#             self.hend = hend
-#             self.vstart = vstart
-#             self.vend = vend
-#             self.setDimensions((hend - hstart + 1), (vend - vstart + 1))
-#             self.imageRegion = [hbin, vbin, hstart, hend, vstart, vend]
-#         else:
-#             raise Exception(ERROR_CODE[error])
-# 
-#     def StartAcquisition(self):
-#         error = self.dll.StartAcquisition()
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             errorWait = self.dll.WaitForAcquisition()
-#             if (ERROR_CODE[errorWait] == 'DRV_SUCCESS'):
-#                 pass
-#             else:
-#                 raise Exception(ERROR_CODE[errorWait])                
-#         else:
-#             raise Exception(ERROR_CODE[error])
-# 
-#     def StartAcquisitionKinetic(self, numKin):
-#         cnt = 0
-#         error = self.dll.StartAcquisition()
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             # WaitForAcquisition finishes after ONE image is finished, this for loop will ensure
-#             # that this method will wait for all images to be taken.
-#             for i in range(numKin):
-#                 errorWait = self.dll.WaitForAcquisition()
-#                 if (ERROR_CODE[errorWait] != 'DRV_SUCCESS'):
-#                     raise Exception(ERROR_CODE[errorWait])
-#                 cnt += 1
-#                 self.parent.onAcquisitionEvent("Acquired: {0} of {1}".format(cnt, numKin), self.parent.listeners)
-#                 print "Acquired: {0} of {1}".format(cnt, numKin)                                
-#         else:
-#             raise Exception(ERROR_CODE[error])
-#         
-#     def StartAcquisitionKineticExternal(self):
-#         error = self.dll.StartAcquisition()
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             pass
-#         else:
-#             raise Exception(ERROR_CODE[error])
-# 
-#     def WaitForAcquisition(self):
-#         error = self.dll.WaitForAcquisition()
-#         return ERROR_CODE[error]
-#     
-#     def GetAcquiredData(self):  
-#         dim = self.width * self.height
-#         cimageArray = c_int * dim
-#         cimage = cimageArray()
-#         #self.dll.WaitForAcquisition()
-#         error = self.dll.GetAcquiredData(pointer(cimage),dim)
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             imageArray = cimage[:]
-#             self.currentSingleImageArray = imageArray
-#             self.singleImageArray.append(imageArray)
-#             del imageArray
-#         else:
-#             raise Exception(ERROR_CODE[error])        
+#             raise Exception(ERROR_CODE[error]) 
 #     
 #     def GetAcquiredDataKinetic(self, numKin):  
 #         dim = self.width * self.height * numKin
 #         cimageArray = c_int * dim
 #         cimage = cimageArray()
 #         #self.dll.WaitForAcquisition()
-#         error = self.dll.GetAcquiredData(pointer(cimage),dim)
+#         errohttps://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=4&ved=0CEwQFjAD&url=http%3A%2F%2Fpyandor.googlecode.com%2Ffiles%2FAndor_iDus_XP.py&ei=zBeMUd_zA-KCjALnxoGoBA&usg=AFQjCNEw-hml_3kS0TdScA3JvK_HSEd1jQ&sig2=mCyDqmuTxZ9PNzP2yfJAHAr = self.dll.GetAcquiredData(pointer(cimage),dim)
 #         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
 #             self.currentImageArray = cimage[:]
 #             self.imageArray.append(cimage[:])
@@ -373,13 +365,7 @@ class AndorCamera(object):
 #             return cimage[:]
 #         else:
 #             raise Exception(ERROR_CODE[error])
-# 
-#     def SetExposureTime(self, time):
-#         error = self.dll.SetExposureTime(c_float(time))
-#         if (ERROR_CODE[error] == 'DRV_SUCCESS'):
-#             self.exposureTime = time        
-#         else:
-#             raise Exception(ERROR_CODE[error])
+
 #         
 #     def SetSingleScan(self):
 #         self.SetReadMode(4)
@@ -493,79 +479,6 @@ class AndorCamera(object):
 #         t2 = time.clock()
 #         print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
 #         print 'saved!'        
-# 
-#     @inlineCallbacks
-#     def SaveToDataVaultKinetic(self, directory, name, numKin):
-#         dv = self.parent.client.data_vault
-#         print len(self.currentImageArray)
-#         print self.height
-#         print self.width
-#         print numKin
-#         imageArray = np.reshape(self.currentImageArray, (numKin, 1, (self.height * self.width))) # needs to be currentImageArray!!!
-#         for image in np.arange(numKin):
-#             t1 = time.clock() 
-#             print 'width: ', (self.width)
-#             print 'height: ', (self.height)
-#             width = np.arange(self.width) + 1
-#             height = np.arange(self.height) + 1
-#     
-#             lenWidth = len(width)
-#             lenHeight = len(height)
-#     
-#             Width = np.ravel([width]*lenHeight)
-#             Height = []
-#             for i in height:
-#                 Height.append([i]*lenWidth)
-#             Height = np.ravel(np.array(Height))
-#             
-#             yield dv.cd(directory, True)
-#     #        yield self.cxn.data_vault.new('Half-Life', [('x', 'in')], [('y','','in')])         
-#     #        yield self.cxn.data_vault.add([[0.0,0.2],[1.0,0.2],[2.4,2.3],[3.3,0.0],[4.7,0.4],[4.5,1.2],[3.8,1.0],[2.3,4.8],[1.1,4.8],[1.1,4.1],[1.7,4.1],[2.0,3.4],[0.0,0.2]] )
-#             yield dv.new(name, [('Pixels', '')], [('Pixels','',''), ('Counts','','')])      
-#             print 'Height: ', len(Height)
-#             print 'Width: ', len(Width)
-#             print 'shape: ', imageArray[image].shape   
-#             yield dv.add_parameter('hstart', self.hstart)
-#             yield dv.add_parameter('hend', self.hend)         
-#             yield dv.add_parameter('vstart', self.vstart)
-#             yield dv.add_parameter('vend', self.vend)
-#             toDataVault = np.array(np.vstack((Height, Width, imageArray[image])).transpose(), dtype=float)
-#             print toDataVault
-#             yield dv.add(toDataVault)
-#             t2 = time.clock()
-#             print 'time for an image of size : ', (self.width + 1), (self.height + 1), (t2-t1), ' sec'
-#             print 'saved!' 
-#     
-#     @inlineCallbacks
-#     def OpenFromDataVault(self, directory, dataset):
-#         dv = self.parent.client.data_vault
-#         yield dv.cd(directory)
-#         yield dv.open(dataset)
-#         Data = yield dv.get()
-#         data = Data.asarray
-#         zData = np.array([None]*len(data))
-#         for i in np.arange(len(data)):
-#             zData[i] = data[i][2]
-#             
-#         self.singleImageArray = zData       
-#         
-#     
-#     @inlineCallbacks
-#     def OpenFromDataVaultKinetic(self, directory, numKin):
-#         dv = self.parent.client.data_vault
-#         yield dv.cd(directory)
-#         for i in np.arange(numKin):
-#             yield dv.open(int(i+1))
-#             Data = yield dv.get()
-#             data = Data.asarray
-#             print data
-#             print 'lendata: ', len(data)
-#             zData = np.array([None]*len(data))
-#             for j in np.arange(len(data)):
-#                 zData[j] = data[j][2]
-#                 
-#             self.imageArray.append(zData)
-#             print 'done!'            
 
     def GetStatus(self):
         status = c_int()
@@ -655,3 +568,6 @@ TriggerMode = {
     'Software Trigger':10,
     'External Charge Shifting':12
                }
+
+if __name__ == '__main__':
+    camera = AndorCamera()
