@@ -40,13 +40,17 @@ data = ndi.gaussian_filter(np.random.normal(size=(256, 256)), (20, 20))
 for i in range(32):
     for j in range(32):
         data[i*8, j*8] += .1
-img = pg.ImageItem(data)
+img = pg.ImageItem(data, scale = [100,100])
 #data2 = np.zeros((2,) + data.shape + (2,))
 #data2[0,:,:,0] = data  ## make non-contiguous array for testing purposes
 #img = pg.ImageItem(data2[0,:,:,0])
 vb.addItem(img)
 vb.autoRange()
 
+x_axis = pg.AxisItem('bottom')
+
+
+l.addWidget(x_axis)
 w.setImageItem(img)
 
 
