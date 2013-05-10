@@ -5,6 +5,7 @@ from treedict import TreeDict
 from labrad.units import WithUnit
 from numpy import arcsin, pi
 import time
+from labrad.types import Error
 
 class drift_tracker_ramsey_oneline(experiment):
     
@@ -43,17 +44,27 @@ class drift_tracker_ramsey_oneline(experiment):
         self.dv = cxn.data_vault
         
     def setup_data_vault(self):
+        line_name = self.parameters.DriftTrackerRamsey.line_selection
+        #navigate to the directory
         localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        dirappend = [ time.strftime("%Y%b%d",localtime)]
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True)
-        self.dv.new('RameyDriftTrack {}'.format(datasetNameAppend),[('Time', 'Sec')],[('Excitation','Average','percent'),('Excitation','Deviation','percent')])
-        window_name = ['Ramey Drift Track {0}'.format(self.parameters.DriftTrackerRamsey.line_selection)]
-        self.dv.add_parameter('Window', window_name)
-        self.dv.add_parameter('plotLive', True)
+        #try opening the existing dataset
+        datasetname = 'RameyDriftTrack {}'.format(line_name)
+        datasets_in_folder = self.dv.dir()[1]
+        names = sorted([name for name in datasets_in_folder if datasetname in name])
+        if names:
+            #dataset with that name exist
+            self.dv.open_appendable(names[0])
+        else:
+            #dataset doesn't already exist
+            self.dv.new(datasetname,[('Time', 'Sec')],[('Excitation','Average','percent'),('Excitation','Deviation','percent')])
+            window_name = ['Ramey Drift Track {0}'.format(self.parameters.DriftTrackerRamsey.line_selection)]
+            self.dv.add_parameter('Window', window_name)
+            self.dv.add_parameter('plotLive', True)
 
     def run(self, cxn, context):
         self.setup_data_vault()
