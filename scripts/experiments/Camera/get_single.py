@@ -28,7 +28,7 @@ cam.wait_for_acquisition()
 image = cam.get_acquired_data().asarray
 image = np.reshape(image, (stop_x, stop_y))
 
-pyqtgraph.image(image)
+pyqtgraph.image(image.astype(np.int32))
 
 
 cam.set_exposure_time(initial_exposure)
