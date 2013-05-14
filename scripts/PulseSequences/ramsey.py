@@ -66,6 +66,7 @@ class ramsey(pulse_sequence):
                             ('StateReadout','state_readout_frequency_866'),
                             ('StateReadout','state_readout_amplitude_866'),
                             ('StateReadout','state_readout_duration'),
+                            ('StateReadout','use_camera_for_readout'),
                             
                             ('Tomography', 'rabi_pi_time'),
                             ('Tomography', 'iteration'),

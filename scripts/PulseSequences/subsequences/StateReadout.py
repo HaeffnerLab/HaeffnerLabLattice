@@ -1,6 +1,7 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from lattice.scripts.PulseSequences.subsequences.DopplerCooling import doppler_cooling
 from treedict import TreeDict
+from labrad.units import WithUnit
 
 class state_readout(pulse_sequence):
     
@@ -11,6 +12,7 @@ class state_readout(pulse_sequence):
                 ('StateReadout','state_readout_frequency_866'), 
                 ('StateReadout','state_readout_amplitude_866'), 
                 ('StateReadout','state_readout_duration'),
+                ('StateReadout','use_camera_for_readout'),
                 ]
 
     required_subsequences = [doppler_cooling]
@@ -26,3 +28,5 @@ class state_readout(pulse_sequence):
                    }
         self.addSequence(doppler_cooling, TreeDict.fromdict(replace))
         self.addTTL('ReadoutCount', self.start, st.state_readout_duration)
+        if st.use_camera_for_readout:
+            self.addTTL('camera', self.start, WithUnit(100, 'us'))
