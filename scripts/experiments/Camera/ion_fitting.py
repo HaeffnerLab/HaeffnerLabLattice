@@ -43,7 +43,6 @@ class linear_chain_fitter(object):
         return (model - data).ravel()
 
     def guess_parameters_and_fit(self, xx, yy, data, ion_number):
-        print xx
         params = lmfit.Parameters()
         params.add('ion_number', value = ion_number, vary = False)
         background_guess = np.average(data) #assumes that the data is mostly background apart from few peaks
@@ -54,15 +53,16 @@ class linear_chain_fitter(object):
         center_y_guess= peaks_y.mean()
         center_x_guess = peaks_x.mean()
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~1
-        spacing_guess = 5 * sigma_guess #assumes ions are separate
+        spacing_guess = 10 * sigma_guess #assumes ions are separate
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
-        params.add('rotation_angle', value = 0, min = 0.0, max = np.pi)
+        params.add('rotation_angle', value = 0, min = -np.pi, max = np.pi)
         params.add('center_x', value = center_x_guess, min = 0, max = 657)
         params.add('center_y', value = center_y_guess, min = 0, max = 495)
         params.add('spacing', value = spacing_guess, min = 0.0, max = 495)
         params.add('sigma', value = sigma_guess, min = 0.0, max = 400)
-        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))
+        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data), **{'xtol':1e-30, 'ftol':1e-30})
+        print result.nfev, result.success, result.redchi
         return result, params
     
     def report(self, params):
