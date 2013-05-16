@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.PulseSequences.spectrum_rabi import spectrum_rabi
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+from lattice.scripts.experiments.Camera.ion_fitting import linear_chain_fitter
 import numpy
 import time
        
@@ -22,6 +23,22 @@ class excitation_729(experiment):
                            
                            ('StateReadout', 'repeat_each_measurement'),
                            ('StateReadout', 'state_readout_threshold'),
+                           ('StateReadout', 'use_camera_for_readout'),
+                           ('StateReadout', 'state_readout_duration'),
+                           
+                           ('IonsOnCamera','vertical_min'),
+                           ('IonsOnCamera','vertical_max'),
+                           ('IonsOnCamera','horizontal_min'),
+                           ('IonsOnCamera','horizontal_max'),
+                           ('IonsOnCamera','ion_number'),
+                           
+                           ('IonsOnCamera','fit_amplitude'),
+                           ('IonsOnCamera','fit_background_level'),
+                           ('IonsOnCamera','fit_center_horizontal'),
+                           ('IonsOnCamera','fit_center_vertical'),
+                           ('IonsOnCamera','fit_rotation_angle'),
+                           ('IonsOnCamera','fit_sigma'),
+                           ('IonsOnCamera','fit_spacing'),
                            ]
     pulse_sequence = spectrum_rabi
     required_parameters.extend(pulse_sequence.required_parameters)
@@ -40,6 +57,42 @@ class excitation_729(experiment):
         self.setup_sequence_parameters()
         self.setup_initial_switches()
         self.setup_data_vault()
+        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        if self.use_camera:
+            self.initialize_camera(cxn)
+            
+    def initialize_camera(self, cxn):
+        import lmfit
+        self.camera = cxn.andor_server
+        self.fitter = linear_chain_fitter()
+        self.camera.abort_acquisition()
+        self.initial_exposure = self.camera.get_exposure_time()
+        exposure = self.parameters.StateReadout.state_readout_duration
+        self.camera.set_exposure_time(exposure)
+        self.initial_region = self.camera.get_image_region()
+        p = self.parameters.IonsOnCamera
+        self.image_region = [
+                             1,#bin_x
+                             1,#bin_y
+                             int(p.horizontal_min),
+                             int(p.horizontal_max),
+                             int(p.vertical_min),
+                             int(p.vertical_max),
+                             ]
+        
+        self.fit_parameters = lmfit.Parameters()
+        self.fit_parameters.add('ion_number', value = int(p.ion_number))
+        self.fit_parameters.add('background_level', value = p.fit_background_level)
+        self.fit_parameters.add('amplitude', value = p.fit_amplitude)
+        self.fit_parameters.add('rotation_angle', p.fit_rotation_angle)
+        self.fit_parameters.add('center_x', value = p.fit_center_horizontal)
+        self.fit_parameters.add('center_y', value = p.fit_center_vertical)
+        self.fit_parameters.add('spacing', value = p.fit_spacing)
+        self.fit_parameters.add('sigma', value = p.fit_sigma)
+        self.camera.set_image_region(*self.image_region)
+        self.camera.set_acquisition_mode('Kinetics')
+        self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
+        self.camera.start_acquisition()
 
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -65,7 +118,7 @@ class excitation_729(experiment):
     def setup_initial_switches(self):
         self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-        self.pulser.switch_manual('crystallization',  False)
+#         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
         
@@ -78,16 +131,48 @@ class excitation_729(experiment):
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         readouts = self.pulser.get_readout_counts().asarray
-        if len(readouts):
-            perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-        else:
-            #got no readouts
-            perc_excited = -1.0
         self.save_data(readouts)
+        if not self.use_camera:
+            #get percentage of the excitation using the PMT threshold
+            if len(readouts):
+                perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+            else:
+                #got no readouts
+                perc_excited = -1.0
+            perc_excited = [perc_excited]
+        else:
+            #get the percentage of excitation using the camera state readout
+            self.camera.wait_for_kinetic()
+            images = self.camera.get_acquired_data(repetitions).asarray
+            x_pixels = self.image_region[3] - self.image_region[2] + 1
+            y_pixels = self.image_region[5] - self.image_region[4] + 1
+            images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
+            ion_number = int(self.parameters.IonsOnCamera.ion_number)
+            bright_ions = numpy.empty((repetitions, ion_number))
+            all_differences = []
+            x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1)
+            y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1)
+            xx,yy = numpy.meshgrid(x_axis, y_axis)
+            for current, image in enumerate(images):
+                current_bright, current_differences = self.fitter.state_detection(xx, yy, image, self.fit_parameters)
+                all_differences.extend(current_differences)
+                bright_ions[current] = current_bright
+            perc_excited = numpy.average(bright_ions, axis = 0)
+            self.save_data(all_differences)
         return perc_excited
     
+    @property
+    def output_size(self):
+        if self.use_camera:
+            return int(self.parameters.IonsOnCamera.ion_number)
+        else:
+            return 1
+    
     def finalize(self, cxn, context):
-        pass
+        if self.use_camera:
+            self.camera.set_exposure_time(self.initial_exposure)
+            self.camera.set_image_region(self.initial_region)
+            self.camera.start_live_display()
               
     def save_data(self, readouts):
         #save the current readouts

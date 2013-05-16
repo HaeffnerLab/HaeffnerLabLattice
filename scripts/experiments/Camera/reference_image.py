@@ -54,7 +54,7 @@ class reference_camera_image(experiment):
         result, params = self.fitter.guess_parameters_and_fit(xx, yy, image, p.ion_number)
         self.fitter.report(params)
         from multiprocessing import Process
-        p = Process(target = self.fitter.graph, args = (x_axis, y_axis, image, result))
+        p = Process(target = self.fitter.graph, args = (x_axis, y_axis, image, params, result))
         #self.fitter.graph(x_axis, y_axis, image, result)
         p.start()
         self.pv.set_parameter('IonsOnCamera','fit_background_level', params['background_level'].value)

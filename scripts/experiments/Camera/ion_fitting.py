@@ -80,16 +80,19 @@ class linear_chain_fitter(object):
         '''
         ion_number = reference_image_params['ion_number'].value
         bright_ions = np.empty(ion_number)
+        differences = np.empty(ion_number)
+        #evaluate chi squred for an all-dark state
         dark_state = np.zeros(ion_number)
         chi_dark = ((self.ion_chain_fit(reference_image_params, xx, yy, image, dark_state))**2).sum()
         for current_ion in range(ion_number):
-            #cycling over each ion comparing chi squred with that ion dark or bright
+            #cycling over each ion comparing chi squred with each one bright with the all-dark state
             bright_state = np.zeros(ion_number)
             bright_state[current_ion] = 1
             chi_bright = ((self.ion_chain_fit(reference_image_params, xx, yy, image, bright_state))**2).sum()
             #current ion is bright if bright chi squared is less than dark
             bright_ions[current_ion] = chi_bright <= chi_dark
-        return bright_ions
+            differences[current_ion] = (chi_bright - chi_dark) / chi_dark
+        return bright_ions, differences
         
     def report(self, params):
         lmfit.report_errors(params)

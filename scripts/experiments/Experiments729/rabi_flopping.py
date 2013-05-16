@@ -65,7 +65,9 @@ class rabi_flopping(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
-        self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')],[('Excitation Probability','Arb','Arb')], context = self.rabi_flop_save_context)
+        output_size = self.excite.output_size
+        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+        self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
         window_name = self.parameters.get('RabiFlopping.window_name', ['Rabi Flopping'])
         self.dv.add_parameter('Window', window_name, context = self.rabi_flop_save_context)
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
@@ -90,11 +92,14 @@ class rabi_flopping(experiment):
             self.parameters['Excitation_729.rabi_excitation_duration'] = duration
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
-            self.dv.add((duration, excitation), context = self.rabi_flop_save_context)
+            submission = [duration['us']]
+            submission.extend(excitation)
+            self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
      
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
