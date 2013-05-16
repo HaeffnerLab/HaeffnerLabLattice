@@ -40,7 +40,8 @@ class linear_chain_fitter(object):
 
     def ion_chain_fit(self, params , xx, yy,  data):
         model = self.ion_model(params, xx, yy)
-        return (model - data).ravel()
+        scaled_difference = (model - data) / np.sqrt(data)
+        return scaled_difference.ravel()
 
     def guess_parameters_and_fit(self, xx, yy, data, ion_number):
         params = lmfit.Parameters()
@@ -59,24 +60,25 @@ class linear_chain_fitter(object):
         params.add('rotation_angle', value = 0, min = -np.pi, max = np.pi)
         params.add('center_x', value = center_x_guess, min = 0, max = 657)
         params.add('center_y', value = center_y_guess, min = 0, max = 495)
-        params.add('spacing', value = spacing_guess, min = 0.0, max = 495)
-        params.add('sigma', value = sigma_guess, min = 0.0, max = 400)
-        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data), **{'xtol':1e-30, 'ftol':1e-30})
-        print result.nfev, result.success, result.redchi
+        params.add('spacing', value = spacing_guess, min = 2.0, max = 495)
+        params.add('sigma', value = sigma_guess, min = 0.0, max = 10.0)
+        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))#, **{'xtol':1e-30, 'ftol':1e-30})
         return result, params
     
     def report(self, params):
         lmfit.report_errors(params)
     
-    def graph(self, x_axis, y_axis, image, result):
+    def graph(self, x_axis, y_axis, image, params, result):
         #plot the sample data
         import matplotlib
         matplotlib.use('Qt4Agg')
         from matplotlib import pyplot
         pyplot.contourf(x_axis, y_axis, image, alpha = 0.5)
-        result = image + np.reshape(result.residual, (y_axis.size, x_axis.size))
         #plot the fit
-        pyplot.contour(x_axis, y_axis, result, colors = 'k')
+        xx, yy = np.meshgrid(x_axis, y_axis)
+        fit = self.ion_model(params, xx, yy)
+        pyplot.contour(x_axis, y_axis, fit, colors = 'k')
+        pyplot.annotate('chi sqr {}'.format(result.redchi), (0.5,0.8), xycoords = 'axes fraction')
         pyplot.show()
 
 if __name__ == '__main__':
@@ -91,7 +93,7 @@ if __name__ == '__main__':
     sample_params.add('rotation_angle', value = 5 * np.pi / 180.0)
     sample_params.add('center_x', value = 50.0)
     sample_params.add('center_y', value = 75.0)
-    sample_params.add('spacing', value = 5.0)
+    sample_params.add('spacing', value = 12.0)
     sample_params.add('sigma', value = 1.0)
     fitter = linear_chain_fitter()
     sample_data = fitter.ion_model(sample_params, xx, yy)
@@ -102,8 +104,8 @@ if __name__ == '__main__':
     pyplot.contourf(x_axis, y_axis, sample_data, alpha = 0.1)
     #perform the fit with some some guessed starting parameters
     result, params = fitter.guess_parameters_and_fit(xx, yy, sample_data, ion_number = 5)
+    print result.nfev, result.success, result.redchi
     fitter.report(params)
-    result = sample_data + np.reshape(result.residual, (y_axis.size, x_axis.size))
     #plot the fit
-    pyplot.contour(x_axis, y_axis, result, 5)
+    fitter.graph(x_axis, y_axis, sample_data, result)
     pyplot.show()

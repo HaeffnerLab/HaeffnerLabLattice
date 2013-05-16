@@ -52,7 +52,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget = QtGui.QWidget()
         from ENDCAP_CONTROL import ENDCAP_CONTROL as endcapWidget 
         from COMPENSATION_CONTROL import COMPENSATION_CONTROL as compensationWidget
-        from HV_CONTROL import hvWidget
         from common.clients.CAVITY_CONTROL import cavityWidget
         from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from common.clients.PMT_CONTROL import pmtWidget
@@ -62,7 +61,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(endcapWidget(reactor, cxn),        0,0,1,1)
         gridLayout.addWidget(compensationWidget(reactor, cxn),  1,0,1,1)
-        gridLayout.addWidget(hvWidget(reactor),                 2,0,1,1)
         gridLayout.addWidget(cavityWidget(reactor),             0,1,3,2)
         gridLayout.addWidget(multiplexerWidget(reactor),        0,3,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,1)
