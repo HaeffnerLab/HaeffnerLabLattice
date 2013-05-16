@@ -13,12 +13,15 @@ class linear_chain_fitter(object):
         result = amplitude * np.exp( - (xx - x_center)**2 / (2 * sigma_x**2)) *  np.exp( - (yy - y_center)**2 / (2 * sigma_y**2))
         return result
 
-    def ion_model(self, params, xx, yy):
+    def ion_model(self, params, xx, yy, include_ions = True):
         '''
         model for fitting ions on the CCD image
         xx and yy are the provided meshgrid of the coordinate system and zz are the values
+        include_ions is True to include all the ions. can also be an ion-long array of booleans of which ions to include
         '''
         ion_number = int(params['ion_number'].value)
+        if include_ions is True:
+            include_ions = [True] * ion_number
         background_level = params['background_level'].value
         amplitude = params['amplitude'].value #all ions are assumsed to have the same amplitude
         rotation_angle = params['rotation_angle'].value #angle of the ion axis with respect to the xx and yy coordinate system
@@ -33,13 +36,13 @@ class linear_chain_fitter(object):
         
         fit = np.ones_like(xx) * background_level
         for i in range(ion_number):
-            x_center = ion_center_x + spacing * position_dict[ion_number][i]
+            x_center = ion_center_x + spacing * position_dict[ion_number][i] * include_ions[i]
             y_center = ion_center_y
             fit += self.ion_gaussian(xx_rotated, yy_rotated, x_center, y_center, sigma, sigma, amplitude)
         return fit
 
-    def ion_chain_fit(self, params , xx, yy,  data):
-        model = self.ion_model(params, xx, yy)
+    def ion_chain_fit(self, params , xx, yy,  data, include_ions = True):
+        model = self.ion_model(params, xx, yy, include_ions)
         scaled_difference = (model - data) / np.sqrt(data)
         return scaled_difference.ravel()
 
@@ -57,14 +60,37 @@ class linear_chain_fitter(object):
         spacing_guess = 10 * sigma_guess #assumes ions are separate
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
-        params.add('rotation_angle', value = 0, min = -np.pi, max = np.pi)
+        params.add('rotation_angle', value = 0.0, min = -np.pi, max = np.pi, vary = False)
         params.add('center_x', value = center_x_guess, min = 0, max = 657)
         params.add('center_y', value = center_y_guess, min = 0, max = 495)
         params.add('spacing', value = spacing_guess, min = 2.0, max = 495)
         params.add('sigma', value = sigma_guess, min = 0.0, max = 10.0)
-        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))#, **{'xtol':1e-30, 'ftol':1e-30})
+        #first fit without the angle
+        lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))
+        #allow angle to vary and then fit again
+        params['rotation_angle'].vary = True
+        result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))
         return result, params
     
+    
+    def state_detection(self, xx, yy, image, reference_image_params):
+        '''
+        given the image and the parameters of the reference images with all ions bright, determines
+        which ions are currently darks
+        '''
+        ion_number = reference_image_params['ion_number'].value
+        bright_ions = np.empty(ion_number)
+        dark_state = np.zeros(ion_number)
+        chi_dark = ((self.ion_chain_fit(reference_image_params, xx, yy, image, dark_state))**2).sum()
+        for current_ion in range(ion_number):
+            #cycling over each ion comparing chi squred with that ion dark or bright
+            bright_state = np.zeros(ion_number)
+            bright_state[current_ion] = 1
+            chi_bright = ((self.ion_chain_fit(reference_image_params, xx, yy, image, bright_state))**2).sum()
+            #current ion is bright if bright chi squared is less than dark
+            bright_ions[current_ion] = chi_bright <= chi_dark
+        return bright_ions
+        
     def report(self, params):
         lmfit.report_errors(params)
     
@@ -75,9 +101,12 @@ class linear_chain_fitter(object):
         from matplotlib import pyplot
         pyplot.contourf(x_axis, y_axis, image, alpha = 0.5)
         #plot the fit
-        xx, yy = np.meshgrid(x_axis, y_axis)
+        #sample the fit with more precision
+        x_axis_fit = np.linspace(x_axis.min(), x_axis.max(), x_axis.size * 5)
+        y_axis_fit = np.linspace(y_axis.min(), y_axis.max(), y_axis.size * 5)
+        xx, yy = np.meshgrid(x_axis_fit, y_axis_fit)
         fit = self.ion_model(params, xx, yy)
-        pyplot.contour(x_axis, y_axis, fit, colors = 'k')
+        pyplot.contour(x_axis_fit, y_axis_fit, fit, colors = 'k', alpha = 0.75)
         pyplot.annotate('chi sqr {}'.format(result.redchi), (0.5,0.8), xycoords = 'axes fraction')
         pyplot.show()
 
