@@ -4,7 +4,7 @@ Fitter for Carrier and Sideband Rabi Flopping or Ramsey Fringes.####
 import numpy as np
 from scipy import optimize
 import matplotlib 
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot, pylab
 import labrad
 from labrad import units as U

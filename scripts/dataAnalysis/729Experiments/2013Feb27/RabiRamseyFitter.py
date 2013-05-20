@@ -5,7 +5,7 @@ import numpy as np
 from scipy.special.orthogonal import eval_genlaguerre as laguer
 from scipy import optimize
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 import labrad
 from labrad import units as U

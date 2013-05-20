@@ -1,8 +1,6 @@
 import labrad
 import numpy as np
 import time
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 '''Calibrates double passes using the power meter server'''

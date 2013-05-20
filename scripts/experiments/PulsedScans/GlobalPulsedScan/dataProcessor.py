@@ -1,8 +1,5 @@
 import numpy as np
-import matplotlib
-matplotlib.use('Qt4Agg')
-from matplotlib import pyplot
-from scipy.cluster.vq import whiten, kmeans, vq
+from scipy.cluster.vq import whiten, kmeans
 
 class freqscan():
     '''Allows to plot a histogram of the timetags between self.start and self.end'''

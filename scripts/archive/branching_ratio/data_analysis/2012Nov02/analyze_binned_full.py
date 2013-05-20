@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib
 from constants import constants as c
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 f = np.load(c.bin_filename)

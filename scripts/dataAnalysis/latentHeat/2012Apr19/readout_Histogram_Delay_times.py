@@ -5,7 +5,7 @@ dv = cxn.data_vault
 import matplotlib
 from scipy.stats import norm
 import matplotlib.mlab as mlab
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 totalTraces = 50

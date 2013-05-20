@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 import qutip as q
 import numpy as np

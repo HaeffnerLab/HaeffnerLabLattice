@@ -6,7 +6,7 @@ Created on Tue Mar 20 17:18:54 2012
 """
 import matplotlib
 import numpy as np
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot 
 
 t1 = np.arange(45,86,10) #30

@@ -2,7 +2,7 @@
 from constants import constants as c
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 

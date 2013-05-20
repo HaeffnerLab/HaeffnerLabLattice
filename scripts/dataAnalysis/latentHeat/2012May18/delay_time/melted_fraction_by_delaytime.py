@@ -3,7 +3,7 @@ import labrad
 cxn = labrad.connect()
 dv = cxn.data_vault
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 #info in the format, [(label, melting threshold, totalTraces, list of datasets),...]

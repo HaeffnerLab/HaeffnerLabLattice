@@ -4,7 +4,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 dv.cd(['','Experiments','LatentHeat_no729_autocrystal','2012Mar08_1919_12'])
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 minFreq = 1504.0*10**3 #Hz

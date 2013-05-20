@@ -2,8 +2,6 @@ import labrad
 import numpy
 from scipy import optimize
 from scipy.interpolate import interp1d
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 import math
 

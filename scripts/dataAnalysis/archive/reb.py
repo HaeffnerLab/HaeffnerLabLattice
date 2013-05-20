@@ -2,7 +2,7 @@ import labrad
 import os
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 from matplotlib import cm
 import time

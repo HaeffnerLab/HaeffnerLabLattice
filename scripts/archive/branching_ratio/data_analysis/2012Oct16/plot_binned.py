@@ -1,7 +1,7 @@
 #plot the binned timetags
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 binned_file = '00001 - Timetags 2012Oct16_2036_59_binned.npy'
 f = np.load(binned_file)

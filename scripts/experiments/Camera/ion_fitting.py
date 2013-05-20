@@ -100,8 +100,6 @@ class linear_chain_fitter(object):
     
     def graph(self, x_axis, y_axis, image, params, result):
         #plot the sample data
-        import matplotlib
-        matplotlib.use('Qt4Agg')
         from matplotlib import pyplot
         pyplot.contourf(x_axis, y_axis, image, alpha = 0.5)
         #plot the fit
@@ -131,8 +129,6 @@ if __name__ == '__main__':
     fitter = linear_chain_fitter()
     sample_data = fitter.ion_model(sample_params, xx, yy)
     #plot the sample data
-    import matplotlib
-    matplotlib.use('Qt4Agg')
     from matplotlib import pyplot
     pyplot.contourf(x_axis, y_axis, sample_data, alpha = 0.1)
     #perform the fit with some some guessed starting parameters
@@ -140,5 +136,5 @@ if __name__ == '__main__':
     print result.nfev, result.success, result.redchi
     fitter.report(params)
     #plot the fit
-    fitter.graph(x_axis, y_axis, sample_data, result)
+    fitter.graph(x_axis, y_axis, sample_data, params, result)
     pyplot.show()

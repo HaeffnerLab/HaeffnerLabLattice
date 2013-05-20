@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import optimize
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 fig_title = '2012Aug20: first measurements, trap_freq ~ 1MHz'

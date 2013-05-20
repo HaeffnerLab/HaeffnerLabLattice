@@ -3,7 +3,7 @@ import labrad
 cxn = labrad.connect()
 dv = cxn.data_vault
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 kb = 2.08366*10**10 #botlzmann contant in units of Hz / Kelvin

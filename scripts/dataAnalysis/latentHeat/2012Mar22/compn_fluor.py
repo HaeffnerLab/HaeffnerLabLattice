@@ -8,7 +8,7 @@ import numpy
 import labrad
 cxn = labrad.connect()
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 datasets = ['2012Mar22_2040_07','2012Mar22_2017_29','2012Mar22_2014_37','2012Mar22_1946_14','2012Mar22_1925_02']

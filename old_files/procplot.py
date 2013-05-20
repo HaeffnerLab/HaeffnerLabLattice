@@ -46,7 +46,7 @@ timeResolution = 5*10**-9
 
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 figure = pyplot.figure()
 figure.clf()

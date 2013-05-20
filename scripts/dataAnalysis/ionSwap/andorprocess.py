@@ -2,7 +2,7 @@ import numpy as np
 from scipy import optimize
 from scipy.interpolate import interp1d
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from pylab import *
 from matplotlib import pyplot
 

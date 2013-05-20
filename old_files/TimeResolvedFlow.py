@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from twisted.internet.threads import deferToThread
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 import time
 

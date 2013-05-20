@@ -11,7 +11,7 @@ import sys
 cxn = labrad.connect()
 dv = cxn.data_vault
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 from scripts.simpleMeasurements.FFT.FFT import measureFFT
 

@@ -21,8 +21,6 @@
 #
 #print rho_ee
 import numpy as np
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 data = np.loadtxt('/home/lattice/Simulation/trajectories')
 x = np.arange(len(data))

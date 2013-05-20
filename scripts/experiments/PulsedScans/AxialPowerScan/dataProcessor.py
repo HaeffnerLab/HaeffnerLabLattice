@@ -1,7 +1,5 @@
 import numpy as np
 import labrad
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 from scripts.scriptLibrary import dvParameters
 from scipy.interpolate import interp1d 

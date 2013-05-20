@@ -4,7 +4,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 dv.cd(['','Experiments','EnergyTransportv2','2011Dec15_2056_11','timetags'])
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 minFreq = 0.0*10**3 #Hz

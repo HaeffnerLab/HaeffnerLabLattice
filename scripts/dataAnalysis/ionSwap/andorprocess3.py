@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from pylab import *
 from matplotlib import pyplot
 from scipy import ndimage

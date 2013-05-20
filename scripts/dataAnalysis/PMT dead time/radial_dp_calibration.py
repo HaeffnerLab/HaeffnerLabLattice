@@ -1,7 +1,5 @@
 import numpy as np
 from labrad.units import WithUnit as U
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 #220 MHz
 calibration = [

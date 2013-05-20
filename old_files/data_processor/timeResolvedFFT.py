@@ -2,7 +2,7 @@ from dataProcess import dataProcess
 import numpy as np
 
 import matplotlib
-matplotlib.use('qt4agg')
+
 from matplotlib import pyplot
 
 class timeResolvedFFT(dataProcess):

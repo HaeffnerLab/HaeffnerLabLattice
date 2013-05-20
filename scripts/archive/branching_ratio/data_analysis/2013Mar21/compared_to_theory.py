@@ -2,7 +2,7 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 Arora = np.array([0.9350])

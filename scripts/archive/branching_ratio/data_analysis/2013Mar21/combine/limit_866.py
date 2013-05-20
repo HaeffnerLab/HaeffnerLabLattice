@@ -1,6 +1,6 @@
 import matplotlib
 import numpy as np
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 import lmfit
 

@@ -1,6 +1,6 @@
 from __future__ import division
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np

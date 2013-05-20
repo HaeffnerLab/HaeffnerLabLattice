@@ -2,7 +2,7 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 BR = np.array([0.9357,0.9357,0.9357,0.9356,0.9356,0.9357])

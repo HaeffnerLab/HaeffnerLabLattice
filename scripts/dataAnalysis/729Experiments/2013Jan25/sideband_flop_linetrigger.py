@@ -1,7 +1,7 @@
 import labrad
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 #get access to servers
 cxn = labrad.connect()

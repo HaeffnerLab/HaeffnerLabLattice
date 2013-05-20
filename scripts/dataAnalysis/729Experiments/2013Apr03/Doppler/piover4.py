@@ -1,6 +1,6 @@
 import labrad
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot, pylab
 import numpy as np
 from scipy import optimize

@@ -1,7 +1,7 @@
 import labrad
 import numpy as np
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 from scipy.optimize import curve_fit
 from scipy.stats import chi2

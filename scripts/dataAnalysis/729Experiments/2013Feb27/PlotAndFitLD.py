@@ -1,6 +1,6 @@
 import labrad
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot, pylab
 from scipy.special.orthogonal import eval_genlaguerre as laguer
 import numpy as np

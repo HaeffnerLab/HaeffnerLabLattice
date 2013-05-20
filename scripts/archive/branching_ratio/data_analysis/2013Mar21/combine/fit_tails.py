@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import matplotlib
 #from constants import constants as c
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 import lmfit
 #load binned information from the file

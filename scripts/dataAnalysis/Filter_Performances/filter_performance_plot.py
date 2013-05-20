@@ -1,6 +1,4 @@
-import matplotlib
 import numpy
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 
 figure = pyplot.figure()

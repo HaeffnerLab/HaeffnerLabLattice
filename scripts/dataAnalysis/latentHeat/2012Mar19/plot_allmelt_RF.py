@@ -3,7 +3,7 @@
 Created on Tue Mar 20 17:18:54 2012
 """
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot 
 
 t1 = [50, 60, 70, 80, 90, 100, 110, 120]

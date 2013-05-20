@@ -15,7 +15,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 dv.cd(DIRECTORY)
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 #data processing on the fly

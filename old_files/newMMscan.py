@@ -1,6 +1,6 @@
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 import matplotlib.pyplot as plt
 import labrad
 

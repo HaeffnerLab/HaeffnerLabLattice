@@ -1,7 +1,7 @@
 import numpy as np
 import labrad
 import matplotlib
-matplotlib.use('Qt4Agg')
+
 from matplotlib import pyplot
 
 class dataProcessor():

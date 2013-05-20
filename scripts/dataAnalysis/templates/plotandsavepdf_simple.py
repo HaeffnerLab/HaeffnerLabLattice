@@ -1,6 +1,4 @@
 import labrad
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot
 import numpy as np
 from scipy.optimize import curve_fit

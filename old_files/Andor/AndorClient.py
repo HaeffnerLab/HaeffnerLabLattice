@@ -2,7 +2,7 @@
 #import sys
 #import numpy as np
 #import matplotlib
-#matplotlib.use('Qt4Agg')
+#
 #from pylab import *
 #import matplotlib.pyplot as plt 
 #import matplotlib.animation as animation
@@ -371,7 +371,7 @@
 #from twisted.internet.threads import deferToThread
 #
 #import matplotlib
-#matplotlib.use('Qt4Agg')
+#
 #from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 #from matplotlib.figure import Figure
 #from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
