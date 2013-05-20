@@ -96,7 +96,9 @@ class spectrum(experiment):
             self.parameters['Excitation_729.rabi_excitation_frequency'] = freq
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
-            self.dv.add((freq, excitation), context = self.spectrum_save_context)
+            submission = [freq['MHz']]
+            submission.extend(excitation)
+            self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
     
     def fit_lorentzian(self, timeout):
