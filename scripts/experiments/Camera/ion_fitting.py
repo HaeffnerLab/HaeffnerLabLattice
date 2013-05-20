@@ -36,9 +36,9 @@ class linear_chain_fitter(object):
         
         fit = np.ones_like(xx) * background_level
         for i in range(ion_number):
-            x_center = ion_center_x + spacing * position_dict[ion_number][i] * include_ions[i]
+            x_center = ion_center_x + spacing * position_dict[ion_number][i]
             y_center = ion_center_y
-            fit += self.ion_gaussian(xx_rotated, yy_rotated, x_center, y_center, sigma, sigma, amplitude)
+            fit += self.ion_gaussian(xx_rotated, yy_rotated, x_center, y_center, sigma, sigma, amplitude) * include_ions[i]
         return fit
 
     def ion_chain_fit(self, params , xx, yy,  data, include_ions = True):
@@ -89,6 +89,7 @@ class linear_chain_fitter(object):
             bright_state = np.zeros(ion_number)
             bright_state[current_ion] = 1
             chi_bright = ((self.ion_chain_fit(reference_image_params, xx, yy, image, bright_state))**2).sum()
+#             print bright_state, chi_bright, chi_dark, chi_bright <= chi_dark
             #current ion is bright if bright chi squared is less than dark
             bright_ions[current_ion] = chi_bright <= chi_dark
             differences[current_ion] = (chi_bright - chi_dark) / chi_dark
