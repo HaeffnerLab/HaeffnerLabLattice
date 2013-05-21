@@ -91,8 +91,9 @@ class excitation_729(experiment):
         self.fit_parameters.add('sigma', value = p.fit_sigma)
         self.camera.set_image_region(*self.image_region)
         self.camera.set_acquisition_mode('Kinetics')
+        self.initial_trigger_mode = self.camera.get_trigger_mode()
+        self.camera.set_trigger_mode('External')
         self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
-        self.camera.start_acquisition()
 
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -116,9 +117,9 @@ class excitation_729(experiment):
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
     
     def setup_initial_switches(self):
-        self.pulser.switch_auto('110DP',  False) #high TTL corresponds to light OFF
+        self.pulser.switch_auto('global397',  False) #high TTL corresponds to light OFF
         self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
-#         self.pulser.switch_manual('crystallization',  False)
+        self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
         
@@ -127,6 +128,9 @@ class excitation_729(experiment):
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
+        if self.use_camera:
+            print 'starting acquisition'
+            self.camera.start_acquisition()
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
@@ -140,10 +144,17 @@ class excitation_729(experiment):
                 #got no readouts
                 perc_excited = -1.0
             perc_excited = [perc_excited]
+            print perc_excited
         else:
             #get the percentage of excitation using the camera state readout
-            self.camera.wait_for_kinetic()
+            print 'waiting for kinetics'
+            proceed = self.camera.wait_for_kinetic()
+            while not proceed:
+                print 'still waiting for kinetics'
+                proceed = self.camera.wait_for_kinetic()
+            print 'proceeding to analyze'
             images = self.camera.get_acquired_data(repetitions).asarray
+            self.camera.abort_acquisition()
             x_pixels = self.image_region[3] - self.image_region[2] + 1
             y_pixels = self.image_region[5] - self.image_region[4] + 1
             images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
@@ -153,12 +164,22 @@ class excitation_729(experiment):
             x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1)
             y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1)
             xx,yy = numpy.meshgrid(x_axis, y_axis)
+#             from matplotlib import pyplot
+#             numpy.save('readout', images)####
             for current, image in enumerate(images):
+#                 pyplot.figure()
+#                 pyplot.contour(image)
                 current_bright, current_differences = self.fitter.state_detection(xx, yy, image, self.fit_parameters)
                 all_differences.extend(current_differences)
                 bright_ions[current] = current_bright
-            perc_excited = numpy.average(bright_ions, axis = 0)
-            self.save_data(all_differences)
+            all_differences = numpy.array(all_differences)
+#             print all_differences.max(), all_differences.min()
+#             print all_differences
+#             pyplot.show()
+             
+            perc_excited = 1 - numpy.average(bright_ions, axis = 0)
+            print perc_excited
+#             self.save_data(all_differences)
         return perc_excited
     
     @property
@@ -170,10 +191,11 @@ class excitation_729(experiment):
     
     def finalize(self, cxn, context):
         if self.use_camera:
+            self.camera.set_trigger_mode(self.initial_trigger_mode)
             self.camera.set_exposure_time(self.initial_exposure)
             self.camera.set_image_region(self.initial_region)
             self.camera.start_live_display()
-              
+               
     def save_data(self, readouts):
         #save the current readouts
         iters = numpy.ones_like(readouts) * self.readout_save_iteration

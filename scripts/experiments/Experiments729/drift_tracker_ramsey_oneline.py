@@ -85,7 +85,7 @@ class drift_tracker_ramsey_oneline(experiment):
                                            })
             self.excitation.set_parameters(replace)
             self.update_progress(iter)
-            excitation = self.excitation.run(cxn, context)
+            excitation = self.excitation.run(cxn, context)[0]
             excitations.append(excitation)
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning
