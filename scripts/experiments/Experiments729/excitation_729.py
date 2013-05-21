@@ -135,6 +135,10 @@ class excitation_729(experiment):
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         readouts = self.pulser.get_readout_counts().asarray
+        #####debugging
+        perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+        print perc_excited
+        ######
         self.save_data(readouts)
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
@@ -178,7 +182,7 @@ class excitation_729(experiment):
 #             pyplot.show()
              
             perc_excited = 1 - numpy.average(bright_ions, axis = 0)
-            print perc_excited
+            print 'PMT', numpy.count_nonzero(readouts <= threshold) / float(len(readouts)), 'CAMERA', perc_excited
 #             self.save_data(all_differences)
         return perc_excited
     

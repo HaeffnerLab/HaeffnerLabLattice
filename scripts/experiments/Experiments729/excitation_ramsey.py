@@ -20,6 +20,22 @@ class excitation_ramsey(excitation_729):
                            
                            ('StateReadout', 'repeat_each_measurement'),
                            ('StateReadout', 'state_readout_threshold'),
+                           ('StateReadout', 'use_camera_for_readout'),
+                           ('StateReadout', 'state_readout_duration'),
+                           
+                           ('IonsOnCamera','vertical_min'),
+                           ('IonsOnCamera','vertical_max'),
+                           ('IonsOnCamera','horizontal_min'),
+                           ('IonsOnCamera','horizontal_max'),
+                           ('IonsOnCamera','ion_number'),
+                           
+                           ('IonsOnCamera','fit_amplitude'),
+                           ('IonsOnCamera','fit_background_level'),
+                           ('IonsOnCamera','fit_center_horizontal'),
+                           ('IonsOnCamera','fit_center_vertical'),
+                           ('IonsOnCamera','fit_rotation_angle'),
+                           ('IonsOnCamera','fit_sigma'),
+                           ('IonsOnCamera','fit_spacing'),
                            ]
     pulse_sequence = ramsey
     required_parameters.extend(pulse_sequence.required_parameters)

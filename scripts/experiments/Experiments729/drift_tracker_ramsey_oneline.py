@@ -17,6 +17,10 @@ class drift_tracker_ramsey_oneline(experiment):
                            ('DriftTrackerRamsey','amplitude'),
                            ('DriftTrackerRamsey','detuning'),
                            ('DriftTrackerRamsey','readouts'),
+                           
+                           ('StateReadout','camera_primary_ion'),
+                           ('StateReadout','use_camera_for_readout'),
+                           
                            ]
     
     required_parameters.extend(excitation_ramsey.required_parameters)
@@ -85,7 +89,12 @@ class drift_tracker_ramsey_oneline(experiment):
                                            })
             self.excitation.set_parameters(replace)
             self.update_progress(iter)
-            excitation = self.excitation.run(cxn, context)[0]
+            if not self.parameters.StateReadout.use_camera_for_readout:
+                #using PMT
+                excitation = self.excitation.run(cxn, context)[0]
+            else:
+                primary_ion = int(self.parameters.StateReadout.camera_primary_ion)
+                excitation = self.excitation.run(cxn, context)[primary_ion]
             excitations.append(excitation)
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning

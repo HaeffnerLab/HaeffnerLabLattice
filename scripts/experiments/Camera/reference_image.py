@@ -7,11 +7,12 @@ class reference_camera_image(experiment):
     name = 'Reference Camera Image'
     required_parameters = [
                            ('IonsOnCamera','ion_number'),
-                           ('IonsOnCamera','reference_exposure_time'),
                            ('IonsOnCamera','vertical_min'),
                            ('IonsOnCamera','vertical_max'),
                            ('IonsOnCamera','horizontal_min'),
                            ('IonsOnCamera','horizontal_max'),
+                           ('StateReadout','state_readout_duration'),
+                           ('StateReadout','repeat_each_measurement'),
                            ]
     
 
@@ -21,7 +22,7 @@ class reference_camera_image(experiment):
         self.camera = cxn.andor_server
         self.pv = cxn.parametervault
         p = self.parameters.IonsOnCamera
-        image_region = [
+        self.image_region = image_region = [
                              1,#bin_x
                              1,#bin_y
                              int(p.horizontal_min),
@@ -31,19 +32,24 @@ class reference_camera_image(experiment):
                              ]
         self.camera.abort_acquisition()
         self.initial_exposure = self.camera.get_exposure_time()
-        self.camera.set_exposure_time(p.reference_exposure_time)
+        self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
         self.camera.set_image_region(*image_region)
-        self.camera.set_acquisition_mode('Single Scan')
+        self.camera.set_acquisition_mode('Kinetics')
+        self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
 
     def run(self, cxn, context):
-        p = self.parameters.IonsOnCamera
+        repetitions = int(self.parameters.StateReadout.repeat_each_measurement) 
         self.camera.start_acquisition()
-        self.camera.wait_for_acquisition()
-        image = self.camera.get_acquired_data().asarray
-        pixels_x = p.horizontal_max - p.horizontal_min + 1
-        pixels_y = p.vertical_max - p.vertical_min + 1
-        image = np.reshape(image, (pixels_y, pixels_x))
+        proceed = self.camera.wait_for_kinetic()
+        while not proceed:
+            print 'still waiting for kinetics'
+            proceed = self.camera.wait_for_kinetic()
+        images = self.camera.get_acquired_data(repetitions).asarray
+        x_pixels = self.image_region[3] - self.image_region[2] + 1
+        y_pixels = self.image_region[5] - self.image_region[4] + 1
+        images = np.reshape(images, (repetitions, y_pixels, x_pixels))
+        image  = np.average(images, axis = 0)
         self.fit_and_plot(image)
         
     def fit_and_plot(self, image):
