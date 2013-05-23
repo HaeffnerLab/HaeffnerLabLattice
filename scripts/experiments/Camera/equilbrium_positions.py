@@ -1,5 +1,7 @@
 '''
 known relative positions of the ions within a linear ion chain
+
+Extension on Daniel James 'Quantum dynamics of cold trapped ions with application to quantum computation'. Table 1.
 '''
 position_dict = {
                 1:                                         [0],
@@ -24,12 +26,14 @@ position_dict = {
                 20: [-4.32811, -3.66892, -3.12761, -2.64451, -2.19679, -1.77255, -1.36446, -0.967463, -0.577733, -0.192132, 0.192129, 0.577731, 0.967461, 1.36446, 1.77255, 2.19679, 2.64451, 3.12761, 3.66892, 4.32811]
                 }
 
-
-
-
-
-
-
-
-
-  
+if __name__ == '__main__':
+    '''
+    example of how to convert these units to actual distances
+    '''
+    from labrad import units as U
+    from labrad.units import WithUnit
+    trap_frequency = 2 * U.pi * WithUnit(200, 'kHz')
+    atomic_chage = 1
+    atomic_mass = 40 * U.amu
+    length_scale = ((atomic_chage**2 * U.e ** 2) / (4 * U.pi * U.eps0 * atomic_mass * trap_frequency**2))**(1./3.)
+    print length_scale['um']
