@@ -5,6 +5,6 @@ class turn_off_all(pulse_sequence):
     
     def sequence(self):
         dur = WithUnit(50, 'us')
-        for channel in ['pump','729','397','854','866','radial','729_1']:
+        for channel in ['729','397','854','866','radial','729_1']:
             self.addDDS(channel, self.start, dur, WithUnit(0, 'MHz'), WithUnit(0, 'dBm') )
         self.end = self.start + dur
