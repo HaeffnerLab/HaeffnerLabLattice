@@ -35,11 +35,12 @@ class reference_camera_image(experiment):
         self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
         self.camera.set_image_region(*image_region)
+        self.initial_mode = self.camera.get_acquisition_mode()
         self.camera.set_acquisition_mode('Kinetics')
         self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
 
     def run(self, cxn, context):
-        repetitions = int(self.parameters.StateReadout.repeat_each_measurement) 
+        repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         self.camera.start_acquisition()
         proceed = self.camera.wait_for_kinetic()
         while not proceed:
@@ -72,6 +73,7 @@ class reference_camera_image(experiment):
         self.pv.set_parameter('IonsOnCamera','fit_sigma', params['sigma'].value)
 
     def finalize(self, cxn, context):
+        self.camera.set_acquisition_mode(self.initial_mode)
         self.camera.set_exposure_time(self.initial_exposure)
         self.camera.set_image_region(self.initial_region)
         self.camera.start_live_display()

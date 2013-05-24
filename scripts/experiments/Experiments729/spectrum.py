@@ -82,7 +82,9 @@ class spectrum(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
-        self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Freq', 'MHz')],[('Excitation Probability','Arb','Arb')], context = self.spectrum_save_context)
+        output_size = self.excite.output_size
+        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+        self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
         window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
         self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
@@ -116,6 +118,7 @@ class spectrum(experiment):
             return None
         
     def finalize(self, cxn, context):
+        self.excite.finalize(cxn, context)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
 
     def update_progress(self, iteration):
