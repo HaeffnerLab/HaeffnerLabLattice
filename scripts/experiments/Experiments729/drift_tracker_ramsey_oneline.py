@@ -5,7 +5,6 @@ from treedict import TreeDict
 from labrad.units import WithUnit
 from numpy import arcsin, pi
 import time
-from labrad.types import Error
 
 class drift_tracker_ramsey_oneline(experiment):
     
@@ -38,6 +37,29 @@ class drift_tracker_ramsey_oneline(experiment):
     required_parameters.remove(('TrapFrequencies','radial_frequency_1')),
     required_parameters.remove(('TrapFrequencies','radial_frequency_2')),
     required_parameters.remove(('TrapFrequencies','rf_drive_frequency')),
+    #will be disabling sideband cooling automatically
+    required_parameters.remove(('SidebandCooling','sideband_cooling_enable')),
+    required_parameters.remove(('SidebandCooling','frequency_selection')),
+    required_parameters.remove(('SidebandCooling','manual_frequency_729')),
+    required_parameters.remove(('SidebandCooling','line_selection')),
+    required_parameters.remove(('SidebandCooling','sideband_selection')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_type')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_cycles')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_frequency_854')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_amplitude_854')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_frequency_866')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_amplitude_866')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_amplitude_729')),
+    required_parameters.remove(('SidebandCooling','sideband_cooling_optical_pumping_duration')),
+    required_parameters.remove(('SidebandCoolingContinuous','sideband_cooling_continuous_duration')),             
+    required_parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729')),
+    required_parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_cycles')),
+    required_parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps')),
+    required_parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866')),
+    required_parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses')),                          
+    #will be enable optical pumping automatically
+    required_parameters.remove(('OpticalPumping', 'optical_pumping_enable'))
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
@@ -86,6 +108,7 @@ class drift_tracker_ramsey_oneline(experiment):
                                            'Tomography.iteration':0.0,
                                            'StateReadout.repeat_each_measurement':dt.readouts,
                                            'SidebandCooling.sideband_cooling_enable':False,
+                                           'OpticalPumping.optical_pumping_enable':True,
                                            })
             self.excitation.set_parameters(replace)
             self.update_progress(iter)
