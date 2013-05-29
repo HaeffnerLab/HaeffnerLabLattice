@@ -51,12 +51,8 @@ class linear_chain_fitter(object):
         params.add('ion_number', value = ion_number, vary = False)
         background_guess = np.average(data) #assumes that the data is mostly background apart from few peaks
         background_std = np.std(data)
-        amplitude_guess = background_guess + 3 * background_std
-        where_peak = np.where(data > amplitude_guess)
-        peaks_y, peaks_x = yy[where_peak], xx[where_peak]
-        center_y_guess= peaks_y.mean()
-        center_x_guess = peaks_x.mean()
-        sigma_guess = 1#assume it's hard to resolve the ion, sigma ~1
+        center_x_guess,center_y_guess,amplitude_guess = self.guess_centers(data, background_guess, background_std, xx, yy)
+        sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
         spacing_guess = 10 * sigma_guess #assumes ions are separate
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
@@ -72,6 +68,27 @@ class linear_chain_fitter(object):
         result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))
         return result, params
     
+    def guess_centers(self, data, background, background_std, xx, yy):
+        '''
+        guesses the center of the ion from the data
+        
+        starts with a threshold of 3 standard deviations above the background and gets 
+        the average positions of all pixels higher than this value
+        
+        if none are found, lowers the threshold
+        '''
+        thresholds = np.arange(3,0,-1)
+        for threshold in thresholds:
+            #print threshold
+            amplitude_guess = background + threshold * background_std
+            where_peak = np.where(data > amplitude_guess)
+            peaks_y, peaks_x = yy[where_peak], xx[where_peak]
+            if peaks_x.size and peaks_y.size:
+                center_y_guess= peaks_y.mean()
+                center_x_guess = peaks_x.mean()
+                amplitude_guess = threshold * background_std
+                return center_x_guess, center_y_guess, amplitude_guess
+        raise Exception("Unable to guess ion center from the data")
     
     def state_detection(self, xx, yy, image, reference_image_params):
         '''

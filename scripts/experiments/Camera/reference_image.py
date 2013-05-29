@@ -1,18 +1,34 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from lattice.scripts.PulseSequences.subsequences.StateReadout import state_readout
+from lattice.scripts.PulseSequences.subsequences.TurnOffAll import turn_off_all
 import numpy as np
 from ion_fitting import linear_chain_fitter
+from labrad.units import WithUnit
+from multiprocessing import Process
 
 class reference_camera_image(experiment):
     
     name = 'Reference Camera Image'
     required_parameters = [
                            ('IonsOnCamera','ion_number'),
+                           ('IonsOnCamera','reference_exposure_factor'),
+                           
                            ('IonsOnCamera','vertical_min'),
                            ('IonsOnCamera','vertical_max'),
+                           ('IonsOnCamera','vertical_bin'),
+                           
                            ('IonsOnCamera','horizontal_min'),
                            ('IonsOnCamera','horizontal_max'),
+                           ('IonsOnCamera','horizontal_bin'),
+                           
                            ('StateReadout','state_readout_duration'),
                            ('StateReadout','repeat_each_measurement'),
+                           ('StateReadout','state_readout_amplitude_397'),
+                           ('StateReadout','state_readout_frequency_397'),
+                           ('StateReadout','state_readout_amplitude_866'),
+                           ('StateReadout','state_readout_frequency_866'),
+                           ('DopplerCooling','doppler_cooling_repump_additional'),
                            ]
     
 
@@ -20,11 +36,12 @@ class reference_camera_image(experiment):
         self.fitter = linear_chain_fitter()
         self.ident = ident
         self.camera = cxn.andor_server
+        self.pulser = cxn.pulser
         self.pv = cxn.parametervault
         p = self.parameters.IonsOnCamera
         self.image_region = image_region = [
-                             1,#bin_x
-                             1,#bin_y
+                             int(p.horizontal_bin),
+                             int(p.vertical_bin),
                              int(p.horizontal_min),
                              int(p.horizontal_max),
                              int(p.vertical_min),
@@ -34,35 +51,47 @@ class reference_camera_image(experiment):
         self.initial_exposure = self.camera.get_exposure_time()
         self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
-        self.camera.set_image_region(*image_region)
         self.initial_mode = self.camera.get_acquisition_mode()
+        self.initial_trigger_mode = self.camera.get_trigger_mode()
+        
         self.camera.set_acquisition_mode('Kinetics')
-        self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
-
+        self.camera.set_image_region(*image_region)
+        self.camera.set_trigger_mode('External')
+        #self.camera.set_trigger_mode
+        self.exposures = int(p.reference_exposure_factor) * int(self.parameters.StateReadout.repeat_each_measurement)
+        self.camera.set_number_kinetics(self.exposures)
+        #generate the pulse sequence
+        self.parameters.StateReadout.use_camera_for_readout = True
+        start_time = WithUnit(5, 'ms') #do nothing in the beginning to let the camera transfer each image
+        self.sequence = pulse_sequence(self.parameters, start = start_time)
+        self.sequence.required_subsequences = [state_readout, turn_off_all]
+        self.sequence.addSequence(turn_off_all)
+        self.sequence.addSequence(state_readout)
+        
     def run(self, cxn, context):
-        repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         self.camera.start_acquisition()
+        self.sequence.programSequence(self.pulser)
+        self.pulser.start_number(self.exposures)
+        self.pulser.wait_sequence_done()
+        self.pulser.stop_sequence()
         proceed = self.camera.wait_for_kinetic()
-        while not proceed:
-            print 'still waiting for kinetics'
-            proceed = self.camera.wait_for_kinetic()
-        images = self.camera.get_acquired_data(repetitions).asarray
-        x_pixels = self.image_region[3] - self.image_region[2] + 1
-        y_pixels = self.image_region[5] - self.image_region[4] + 1
-        images = np.reshape(images, (repetitions, y_pixels, x_pixels))
+        if not proceed: raise Exception ("Did not get all kinetic images from camera")
+        images = self.camera.get_acquired_data(self.exposures).asarray
+        x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
+        y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
+        images = np.reshape(images, (self.exposures, y_pixels, x_pixels))
         image  = np.average(images, axis = 0)
         self.fit_and_plot(image)
         
     def fit_and_plot(self, image):
         p = self.parameters.IonsOnCamera
-        x_axis = np.arange(p.horizontal_min, p.horizontal_max + 1)
-        y_axis = np.arange(p.vertical_min, p.vertical_max + 1)
+        x_axis = np.arange(p.horizontal_min, p.horizontal_max + 1, self.image_region[0])
+        y_axis = np.arange(p.vertical_min, p.vertical_max + 1, self.image_region[1])
         xx, yy = np.meshgrid(x_axis, y_axis)
         result, params = self.fitter.guess_parameters_and_fit(xx, yy, image, p.ion_number)
         self.fitter.report(params)
-        from multiprocessing import Process
+        #ideally graphing should be done by saving to data vault and using the grapher
         p = Process(target = self.fitter.graph, args = (x_axis, y_axis, image, params, result))
-        #self.fitter.graph(x_axis, y_axis, image, result)
         p.start()
         self.pv.set_parameter('IonsOnCamera','fit_background_level', params['background_level'].value)
         self.pv.set_parameter('IonsOnCamera','fit_amplitude', params['amplitude'].value)
@@ -73,6 +102,7 @@ class reference_camera_image(experiment):
         self.pv.set_parameter('IonsOnCamera','fit_sigma', params['sigma'].value)
 
     def finalize(self, cxn, context):
+        self.camera.set_trigger_mode(self.initial_trigger_mode)
         self.camera.set_acquisition_mode(self.initial_mode)
         self.camera.set_exposure_time(self.initial_exposure)
         self.camera.set_image_region(self.initial_region)

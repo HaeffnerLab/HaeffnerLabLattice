@@ -26,11 +26,13 @@ class excitation_729(experiment):
                            ('StateReadout', 'use_camera_for_readout'),
                            ('StateReadout', 'state_readout_duration'),
                            
+                           ('IonsOnCamera','ion_number'),
                            ('IonsOnCamera','vertical_min'),
                            ('IonsOnCamera','vertical_max'),
+                           ('IonsOnCamera','vertical_bin'),
                            ('IonsOnCamera','horizontal_min'),
                            ('IonsOnCamera','horizontal_max'),
-                           ('IonsOnCamera','ion_number'),
+                           ('IonsOnCamera','horizontal_bin'),
                            
                            ('IonsOnCamera','fit_amplitude'),
                            ('IonsOnCamera','fit_background_level'),
@@ -72,8 +74,8 @@ class excitation_729(experiment):
         self.initial_region = self.camera.get_image_region()
         p = self.parameters.IonsOnCamera
         self.image_region = [
-                             1,#bin_x
-                             1,#bin_y
+                             int(p.horizontal_bin),
+                             int(p.vertical_bin),
                              int(p.horizontal_min),
                              int(p.horizontal_max),
                              int(p.vertical_min),
@@ -129,16 +131,12 @@ class excitation_729(experiment):
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
         if self.use_camera:
-            print 'starting acquisition'
+            #print 'starting acquisition'
             self.camera.start_acquisition()
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         readouts = self.pulser.get_readout_counts().asarray
-        #####debugging
-        perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
-        print perc_excited
-        ######
         self.save_data(readouts)
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
@@ -148,42 +146,37 @@ class excitation_729(experiment):
                 #got no readouts
                 perc_excited = -1.0
             perc_excited = [perc_excited]
-            print perc_excited
         else:
             #get the percentage of excitation using the camera state readout
-            print 'waiting for kinetics'
             proceed = self.camera.wait_for_kinetic()
-            while not proceed:
-                print 'still waiting for kinetics'
-                proceed = self.camera.wait_for_kinetic()
-            print 'proceeding to analyze'
+            if not proceed: raise Exception ("Did not get all kinetic images from camera")
             images = self.camera.get_acquired_data(repetitions).asarray
             self.camera.abort_acquisition()
-            x_pixels = self.image_region[3] - self.image_region[2] + 1
-            y_pixels = self.image_region[5] - self.image_region[4] + 1
+            x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
+            y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
             images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
             ion_number = int(self.parameters.IonsOnCamera.ion_number)
             bright_ions = numpy.empty((repetitions, ion_number))
             all_differences = []
-            x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1)
-            y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1)
+            x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1, self.image_region[0])
+            y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1, self.image_region[1])
             xx,yy = numpy.meshgrid(x_axis, y_axis)
-#             from matplotlib import pyplot
-#             numpy.save('readout', images)####
+            #useful for debugging, saving the images
+            #numpy.save('readout', images)
             for current, image in enumerate(images):
-#                 pyplot.figure()
-#                 pyplot.contour(image)
                 current_bright, current_differences = self.fitter.state_detection(xx, yy, image, self.fit_parameters)
+                #debugging by plotting the image along with its chi squared difference
+                #print current_bright, current_differences
+                #from matplotlib import pyplot
+                #pyplot.figure()
+                #pyplot.contourf(image, vmin = 500, vmax = 750)
+                #pyplot.show()
                 all_differences.extend(current_differences)
                 bright_ions[current] = current_bright
             all_differences = numpy.array(all_differences)
-#             print all_differences.max(), all_differences.min()
-#             print all_differences
-#             pyplot.show()
-             
             perc_excited = 1 - numpy.average(bright_ions, axis = 0)
-            print 'PMT', numpy.count_nonzero(readouts <= threshold) / float(len(readouts)), 'CAMERA', perc_excited
-#             self.save_data(all_differences)
+            #useful for debugging to print PMT readout vs Camera readout
+            #print 'PMT', numpy.count_nonzero(readouts <= threshold) / float(len(readouts)), 'CAMERA', perc_excited
         return perc_excited
     
     @property

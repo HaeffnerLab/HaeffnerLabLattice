@@ -23,11 +23,13 @@ class excitation_blue_heat_rabi(excitation_729):
                            ('StateReadout', 'use_camera_for_readout'),
                            ('StateReadout', 'state_readout_duration'),
                            
+                           ('IonsOnCamera','ion_number'),
                            ('IonsOnCamera','vertical_min'),
                            ('IonsOnCamera','vertical_max'),
+                           ('IonsOnCamera','vertical_bin'),
                            ('IonsOnCamera','horizontal_min'),
                            ('IonsOnCamera','horizontal_max'),
-                           ('IonsOnCamera','ion_number'),
+                           ('IonsOnCamera','horizontal_bin'),
                            
                            ('IonsOnCamera','fit_amplitude'),
                            ('IonsOnCamera','fit_background_level'),
