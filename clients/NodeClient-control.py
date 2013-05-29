@@ -20,7 +20,7 @@ else:
 		print "No Nodes Running"
 	for node in nodeDict.keys():
 		#make sure all node servers are up
-		if not node in cxn.servers:'{} is not running'.format(node)
+		if not node in cxn.servers: print '{} is not running'.format(node)
 		else:
 			print '\nWorking on {} \n '.format(node)
 			cxn.servers[node].refresh_servers()
