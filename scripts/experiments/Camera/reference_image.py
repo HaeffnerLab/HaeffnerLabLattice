@@ -47,7 +47,9 @@ class reference_camera_image(experiment):
                              int(p.vertical_min),
                              int(p.vertical_max),
                              ]
+        print 'aborting'
         self.camera.abort_acquisition()
+        print 'aborted'
         self.initial_exposure = self.camera.get_exposure_time()
         self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
@@ -62,7 +64,7 @@ class reference_camera_image(experiment):
         self.camera.set_number_kinetics(self.exposures)
         #generate the pulse sequence
         self.parameters.StateReadout.use_camera_for_readout = True
-        start_time = WithUnit(5, 'ms') #do nothing in the beginning to let the camera transfer each image
+        start_time = WithUnit(20, 'ms') #do nothing in the beginning to let the camera transfer each image
         self.sequence = pulse_sequence(self.parameters, start = start_time)
         self.sequence.required_subsequences = [state_readout, turn_off_all]
         self.sequence.addSequence(turn_off_all)

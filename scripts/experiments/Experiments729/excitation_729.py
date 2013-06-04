@@ -119,8 +119,6 @@ class excitation_729(experiment):
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
     
     def setup_initial_switches(self):
-        self.pulser.switch_auto('global397',  False) #high TTL corresponds to light OFF
-        self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
