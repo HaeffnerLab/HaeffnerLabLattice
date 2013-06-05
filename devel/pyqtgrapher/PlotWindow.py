@@ -4,13 +4,15 @@ import numpy as np
 from DatasetList import DatasetList
 from util import color_chooser
 
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k')
+# pg.setConfigOption('background', 'w')
+# pg.setConfigOption('foreground', 'k')
+pg.functions.USE_WEAVE = False
+
 
 class dataset_info(object):
     '''stores information about the dataset'''
-    plot_item = None
-    legend_items = None
+    plot_data_item = None
+    hidden = False
     
 class PlotWindow(QtGui.QWidget):
     '''
@@ -58,16 +60,26 @@ class PlotWindow(QtGui.QWidget):
     def hide_dataset(self, dataset):
         dataset = str(dataset)
         dataset_info = self.datasets[dataset]
-        self.plot_widget.removeItem(dataset_info.plot_item)
+        self.remove_all_shown()
+        dataset_info.hidden = True
+        self.add_all_shown()
+        
+    def remove_all_shown(self):
+        for dataset in self.datasets.itervalues():
+            if not dataset.hidden:
+                self.plot_widget.removeItem(dataset.plot_data_item)
+        #clears the legend entirely
         self.plot_widget.plotItem.legend.items = []
-        dataset_info.legend_items = []
-#        for legend_item in dataset_info.legend_items:
-#            self.plot_widget.plotItem.legend.items.remove(legend_item)
     
+    def add_all_shown(self):
+        for dataset in self.datasets.itervalues():
+            if not dataset.hidden:
+                self.plot_widget.addItem(dataset.plot_data_item)
+
     def unhide_dataset(self, dataset):
         dataset = str(dataset)
         dataset_info = self.datasets[dataset]
-        self.plot_widget.addItem(dataset_info.plot_item)
+        self.plot_widget.addItem(dataset_info.plot_data_item)
     
     def connect_layout(self):
         self.dataset_list.on_dataset_checked.connect(self.user_dataset_checked)
@@ -80,32 +92,38 @@ class PlotWindow(QtGui.QWidget):
     def on_change(self, value):
 #        self.plot_widget.removeItem(self.a)
         #clear legend
-        s = set(self.plot_widget.plotItem.legend.items)
-        print s
+#         s = set(self.plot_widget.plotItem.legend.items)
 #        old_legend = set(self.plot_widget.plotItem.legend.items)
         pen = pg.mkPen(color = self.colors.next_color(), width = 1.0)
 #        self.plot_widget.plotItem.legend.items = []
-        a = self.plot_widget.plot(name = 'another curve ' + str(value))
-        a.setPen(pen)
-        a.setData(value + np.array([1,2,3,4]), 
-                       symbol = 'o', symbolPen = pen, symbolSize = 5.0)
-        new_legend = set(self.plot_widget.plotItem.legend.items)
+        new_plot_data_item = self.plot_widget.plot(name = 'another curve ' + str(value))
+        new_plot_data_item.setPen(pen)
+        new_plot_data_item.setData(value + np.arange(1000), symbol = 'o', symbolSize = 5.0)#,   symbol = 'o', symbolPen = pen)#, 
+#                        symbol = 'o', symbolPen = pen, symbolSize = 5.0)
+#         new_legend = set(self.plot_widget.plotItem.legend.items)
         d = dataset_info()
-        d.plot_item = a
-        d.legend_items = new_legend - s
-        print  d.legend_items
+        d.plot_data_item = new_plot_data_item
+#         d.legend_items = new_legend - s
+#         print  d.legend_items
         
         self.datasets[str(value)] = d
         self.dataset_list.add_dataset(str(value))
-
-#        self.b = self.a
     
-if __name__=="__main__":
+# if __name__=="__main__":
+#     a = QtGui.QApplication( [] )
+#     import common.clients.qt4reactor as qt4reactor
+#     qt4reactor.install()
+#     from twisted.internet import reactor
+#     latticeGUI = PlotWindow()
+#     latticeGUI.setWindowTitle('Grapher')
+#     latticeGUI.show()
+#     reactor.run()
+## Start Qt event loop unless running in interactive mode.
+if __name__ == '__main__':
+#     import sys
     a = QtGui.QApplication( [] )
-    import common.clients.qt4reactor as qt4reactor
-    qt4reactor.install()
-    from twisted.internet import reactor
     latticeGUI = PlotWindow()
-    latticeGUI.setWindowTitle('Grapher')
     latticeGUI.show()
-    reactor.run()
+    QtGui.QApplication.instance().exec_()
+#     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+#         QtGui.QApplication.instance().exec_()
