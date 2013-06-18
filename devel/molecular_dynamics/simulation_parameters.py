@@ -12,6 +12,6 @@ class simulation_parameters(object):
     f_y = 2.9 * 10**6#Hz
     f_z = 0.3 * 10**6#Hz
     
-    simulation_duration = 0.300#seconds
+    simulation_duration = 0.010#seconds
     timestep = (1 / f_drve) /100#seconds
     total_steps = int(simulation_duration / timestep)
