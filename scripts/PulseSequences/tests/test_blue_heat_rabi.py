@@ -21,7 +21,7 @@ class test_parameters(object):
               ('OpticalPumping','optical_pumping_frequency_854'):WithUnit(80.0, 'MHz'),
               ('OpticalPumping','optical_pumping_frequency_866'):WithUnit(80.0, 'MHz'),
               ('OpticalPumping','optical_pumping_amplitude_729'):WithUnit(-10.0, 'dBm'),
-              ('OpticalPumping','optical_pumping_amplitude_854'):WithUnit(-3.0, 'dBm'),
+              ('OpticalPumping','optical_pumping_amplitude_854'):WithUnit(-5.0, 'dBm'),
               ('OpticalPumping','optical_pumping_amplitude_866'):WithUnit(-11.0, 'dBm'),
               ('OpticalPumping','optical_pumping_type'):'continuous',
               
@@ -54,7 +54,7 @@ class test_parameters(object):
               ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'):WithUnit(10, 'us'),
               ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'):WithUnit(5, 'us'),
        
-              ('Heating', 'blue_heating_type'):'local',
+              ('Heating', 'blue_heating_type'):'local_pulsed',
               ('Heating', 'blue_heating_delay_before'):WithUnit(10.0, 'us'),
               ('Heating', 'blue_heating_delay_after'):WithUnit(10.0, 'us'),
               ('Heating', 'blue_heating_duration'):WithUnit(10.0, 'us'),
@@ -66,9 +66,14 @@ class test_parameters(object):
               ('Heating', 'blue_heating_frequency_866'):WithUnit(80.0, 'MHz'),
               ('Heating', 'blue_heating_amplitude_866'):WithUnit(-15.0, 'dBm'),
               
+              ('Heating', 'steady_state_duration'):WithUnit(1.0, 'ms'),
+              
+              ('Heating', 'pulsed_duration_each'):WithUnit(50.0, 'us'),
+              ('Heating', 'pulsed_period'):WithUnit(100.0, 'us'),
+              ('Heating', 'pulsed_number'):5,
               
               ('Excitation_729','rabi_excitation_frequency'):WithUnit(10.0, 'MHz'),
-              ('Excitation_729','rabi_excitation_amplitude'):WithUnit(-3.0, 'dBm'),
+              ('Excitation_729','rabi_excitation_amplitude'):WithUnit(-5.0, 'dBm'),
               ('Excitation_729','rabi_excitation_duration'):WithUnit(10.0, 'us'),
               ('Excitation_729','rabi_excitation_phase'):WithUnit(0.0, 'deg'),
               

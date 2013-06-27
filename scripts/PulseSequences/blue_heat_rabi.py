@@ -25,6 +25,12 @@ class blue_heat_rabi(pulse_sequence):
                         ('Heating', 'local_blue_heating_frequency_397'),
                         ('Heating', 'blue_heating_frequency_866'),
                         ('Heating', 'blue_heating_amplitude_866'),
+                        
+                        ('Heating', 'steady_state_duration'),
+                        
+                        ('Heating', 'pulsed_duration_each'),
+                        ('Heating', 'pulsed_period'),
+                        ('Heating', 'pulsed_number'),
 
                         ('RepumpD_5_2','repump_d_duration'),
                         ('RepumpD_5_2','repump_d_frequency_854'),

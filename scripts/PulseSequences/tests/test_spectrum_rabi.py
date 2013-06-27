@@ -21,7 +21,7 @@ class test_parameters(object):
               ('OpticalPumping','optical_pumping_frequency_854'):WithUnit(80.0, 'MHz'),
               ('OpticalPumping','optical_pumping_frequency_866'):WithUnit(80.0, 'MHz'),
               ('OpticalPumping','optical_pumping_amplitude_729'):WithUnit(-10.0, 'dBm'),
-              ('OpticalPumping','optical_pumping_amplitude_854'):WithUnit(-3.0, 'dBm'),
+              ('OpticalPumping','optical_pumping_amplitude_854'):WithUnit(-5.0, 'dBm'),
               ('OpticalPumping','optical_pumping_amplitude_866'):WithUnit(-11.0, 'dBm'),
               ('OpticalPumping','optical_pumping_type'):'continuous',
               
@@ -34,7 +34,7 @@ class test_parameters(object):
               ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_additional_866'):WithUnit(20, 'us'),
               ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_between_pulses'):WithUnit(5, 'us'),
 
-              ('SidebandCooling','sideband_cooling_enable'):True,
+              ('SidebandCooling','sideband_cooling_enable'):False,
               ('SidebandCooling','sideband_cooling_cycles'): 4.0,
               ('SidebandCooling','sideband_cooling_type'):'continuous',
               ('SidebandCooling','sideband_cooling_duration_729_increment_per_cycle'):WithUnit(0, 'us'),
@@ -57,8 +57,8 @@ class test_parameters(object):
               ('Heating','background_heating_time'):WithUnit(0.0, 'ms'),
               
               ('Excitation_729','rabi_excitation_frequency'):WithUnit(10.0, 'MHz'),
-              ('Excitation_729','rabi_excitation_amplitude'):WithUnit(-3.0, 'dBm'),
-              ('Excitation_729','rabi_excitation_duration'):WithUnit(10.0, 'us'),
+              ('Excitation_729','rabi_excitation_amplitude'):WithUnit(-5.0, 'dBm'),
+              ('Excitation_729','rabi_excitation_duration'):WithUnit(0.5, 'us'),
               ('Excitation_729','rabi_excitation_phase'):WithUnit(0.0, 'deg'),
               
               ('StateReadout','state_readout_frequency_397'):WithUnit(90.0, 'MHz'),
