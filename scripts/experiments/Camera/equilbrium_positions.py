@@ -32,8 +32,9 @@ if __name__ == '__main__':
     '''
     from labrad import units as U
     from labrad.units import WithUnit
-    trap_frequency = 2 * U.pi * WithUnit(200, 'kHz')
+    trap_frequency = 2 * U.pi * WithUnit(100, 'kHz')
     atomic_chage = 1
     atomic_mass = 40 * U.amu
     length_scale = ((atomic_chage**2 * U.e ** 2) / (4 * U.pi * U.eps0 * atomic_mass * trap_frequency**2))**(1./3.)
     print length_scale['um']
+    print length_scale['um'] * position_dict[3][0]

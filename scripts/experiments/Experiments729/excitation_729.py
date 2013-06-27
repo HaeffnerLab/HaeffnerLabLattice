@@ -128,6 +128,13 @@ class excitation_729(experiment):
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
+        #to plot the excitation as it happens
+#         from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+#         dds = cxn.pulser.human_readable_dds()
+#         ttl = cxn.pulser.human_readable_ttl()
+#         channels = cxn.pulser.get_channels().asarray
+#         sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+#         sp.makePlot()
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.start_acquisition()
@@ -144,10 +151,14 @@ class excitation_729(experiment):
                 #got no readouts
                 perc_excited = -1.0
             perc_excited = [perc_excited]
+#             print readouts
         else:
             #get the percentage of excitation using the camera state readout
             proceed = self.camera.wait_for_kinetic()
-            if not proceed: raise Exception ("Did not get all kinetic images from camera")
+            if not proceed:
+                self.camera.abort_acquisition()
+                self.finalize(cxn, context)
+                raise Exception ("Did not get all kinetic images from camera")
             images = self.camera.get_acquired_data(repetitions).asarray
             self.camera.abort_acquisition()
             x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )

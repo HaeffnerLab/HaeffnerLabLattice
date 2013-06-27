@@ -47,9 +47,7 @@ class reference_camera_image(experiment):
                              int(p.vertical_min),
                              int(p.vertical_max),
                              ]
-        print 'aborting'
         self.camera.abort_acquisition()
-        print 'aborted'
         self.initial_exposure = self.camera.get_exposure_time()
         self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
@@ -77,7 +75,10 @@ class reference_camera_image(experiment):
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         proceed = self.camera.wait_for_kinetic()
-        if not proceed: raise Exception ("Did not get all kinetic images from camera")
+        if not proceed:
+            self.camera.abort_acquisition()
+            self.finalize(cxn, context)
+            raise Exception ("Did not get all kinetic images from camera")
         images = self.camera.get_acquired_data(self.exposures).asarray
         x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
