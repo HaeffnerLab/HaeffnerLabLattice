@@ -65,8 +65,9 @@ class ramsey_scanphase(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.data_save_context)
-        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Second pulse phase', 'deg')],[('Excitation Probability','Arb','Arb')], context = self.data_save_context)
+        output_size = self.excite.output_size
+        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Second pulse phase', 'deg')], dependants , context = self.data_save_context)
         window_name = self.parameters.get('RamseyScanPhase.window_name', ['Ramsey Phase Scan'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
@@ -79,8 +80,17 @@ class ramsey_scanphase(experiment):
             self.parameters['Ramsey.second_pulse_phase'] = duration
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
-            self.dv.add((duration, excitation), context = self.data_save_context)
+            submission = [duration['deg']]
+            submission.extend(excitation)
+            self.dv.add(submission, context = self.data_save_context)
             self.update_progress(i)
+            
+    @property
+    def output_size(self):
+        if self.use_camera:
+            return int(self.parameters.IonsOnCamera.ion_number)
+        else:
+            return 1
      
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)

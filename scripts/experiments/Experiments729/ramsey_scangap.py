@@ -67,8 +67,9 @@ class ramsey_scangap(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.data_save_context)
-        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')],[('Excitation Probability','Arb','Arb')], context = self.data_save_context)
+        output_size = self.excite.output_size
+        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
         window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
@@ -81,7 +82,9 @@ class ramsey_scangap(experiment):
             self.parameters['Ramsey.ramsey_time'] = duration
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
-            self.dv.add((duration, excitation), context = self.data_save_context)
+            submission = [duration['us']]
+            submission.extend(excitation)
+            self.dv.add(submission, context = self.data_save_context)
             self.update_progress(i)
      
     def finalize(self, cxn, context):

@@ -62,7 +62,7 @@ class reference_camera_image(experiment):
         self.camera.set_number_kinetics(self.exposures)
         #generate the pulse sequence
         self.parameters.StateReadout.use_camera_for_readout = True
-        start_time = WithUnit(5, 'ms') #do nothing in the beginning to let the camera transfer each image
+        start_time = WithUnit(20, 'ms') #do nothing in the beginning to let the camera transfer each image
         self.sequence = pulse_sequence(self.parameters, start = start_time)
         self.sequence.required_subsequences = [state_readout, turn_off_all]
         self.sequence.addSequence(turn_off_all)
@@ -75,7 +75,10 @@ class reference_camera_image(experiment):
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
         proceed = self.camera.wait_for_kinetic()
-        if not proceed: raise Exception ("Did not get all kinetic images from camera")
+        if not proceed:
+            self.camera.abort_acquisition()
+            self.finalize(cxn, context)
+            raise Exception ("Did not get all kinetic images from camera")
         images = self.camera.get_acquired_data(self.exposures).asarray
         x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
