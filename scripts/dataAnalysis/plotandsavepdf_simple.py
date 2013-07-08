@@ -5,9 +5,7 @@ from matplotlib import pyplot
 cxn = labrad.connect()
 dv = cxn.data_vault
 
-#change directory
-#dv.cd(['','QuickMeasurements', 'Power Monitoring'])
-dv.cd(['','Experiments','Spectrum729','2013Mar13','1623_50'])
+dv.cd(['','Experiments','RabiFlopping','2013May24','1159_49'])
 dv.open(1)
 data = dv.get().asarray
 x = data[:,0]
@@ -16,7 +14,8 @@ figure = pyplot.figure()
 figure.clf()
 pyplot.plot(x, y,'o-')
 
-figure.suptitle('Spectrum 2013Mar13 1623_50, 10ms excitation')
-pyplot.xlabel('Frequency (MHz)')
-pyplot.ylabel('Excitation percentage')
+pyplot.title('Fast Rabi Flops', fontsize = 40)
+pyplot.xlabel(r'Time $\mu s$', fontsize = 32)
+pyplot.ylabel('Excitation percentage', fontsize = 32)
+pyplot.tick_params(axis='both', which='major', labelsize=20)
 pyplot.show()
