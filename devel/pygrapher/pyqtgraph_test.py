@@ -6,6 +6,8 @@ import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.ptime import time
 app = QtGui.QApplication([])
+pg.functions.USE_WEAVE = False
+
 
 
 my_widget = QtGui.QWidget()
