@@ -4,8 +4,6 @@ from matplotlib import pyplot
 cxn = labrad.connect()
 dv = cxn.data_vault
 
-'This is phase oscillation due to AC Stark shift for local detection experiment'
-
 dv.cd(['','Experiments','RamseyDephaseScanDuration','2013Apr05','1545_16'])
 dv.open(1)
 data = dv.get().asarray
