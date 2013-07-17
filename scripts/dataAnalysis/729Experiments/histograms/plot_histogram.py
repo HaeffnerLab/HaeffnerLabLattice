@@ -1,6 +1,5 @@
 import labrad
 from matplotlib import pyplot
-import numpy as np
 #get access to servers
 cxn = labrad.connect()
 dv = cxn.data_vault
@@ -16,13 +15,10 @@ dv.open(filename)
 data = dv.get().asarray
 readout_counts = data[:,1]
 n, bins, patches = pyplot.hist(readout_counts, 30, histtype='stepfilled')
-# print n, bins, patches
 
 
-# pyplot.plot(x_axis,y_axis, 'k*')
 pyplot.vlines(20, 0, 1000, color = 'red', linewidth = 5)
-pyplot.gca().get_xaxis().set_visible(False)
-pyplot.gca().get_yaxis().set_visible(False)
-# pyplot.xlabel( 'Collected Counts')
-# pyplot.ylabel('Occurence')
+pyplot.xlabel( 'Collected Counts', fontsize = 60)
+pyplot.ylabel('Occurence', fontsize = 60)
+pyplot.tick_params('both', labelsize = 40)
 pyplot.show()
