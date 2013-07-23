@@ -48,39 +48,6 @@ class local_blue_heating(pulse_sequence):
         self.addDDS ('866',self.start, repump_duration, h.blue_heating_frequency_866, h.blue_heating_amplitude_866)
         self.end = self.start + repump_duration
 
-class steady_state_heating(pulse_sequence):
-    
-    required_subsequences = [global_blue_heating]
-    
-    required_parameters = [
-                            ('Heating','local_blue_heating_frequency_397'), 
-                            ('Heating','local_blue_heating_amplitude_397'), 
-                            ('Heating','steady_state_duration'),
-                          ]
-    def sequence(self):
-        h = self.parameters.Heating
-        self.addSequence(global_blue_heating, TreeDict.fromdict({'Heating.blue_heating_duration':h.steady_state_duration}))
-        self.addDDS('radial',self.start, h.steady_state_duration, h.local_blue_heating_frequency_397, h.local_blue_heating_amplitude_397)
-
-class local_pulsed_heating(pulse_sequence):
-    
-    required_parameters = [
-                    ('Heating','pulsed_duration_each'), 
-                    ('Heating','pulsed_number'), 
-                    ('Heating','pulsed_period'), 
-                  ]
-    
-    required_subsequences = [local_blue_heating]
-    
-    def sequence(self):
-        h = self.parameters.Heating
-        replacement = TreeDict.fromdict({'Heating.blue_heating_duration':h.pulsed_duration_each,
-                                         'Heating.blue_heating_repump_additional':h.pulsed_period - h.pulsed_duration_each
-                                         })
-        repetitions = int(h.pulsed_number)
-        for i in range(repetitions):
-            self.addSequence(local_blue_heating, replacement)
-
 class blue_heating(pulse_sequence):
     
     required_parameters = [
@@ -89,8 +56,7 @@ class blue_heating(pulse_sequence):
                         ('Heating','blue_heating_delay_after'), 
                       ]
     
-    
-    required_subsequences = [global_blue_heating, local_blue_heating, steady_state_heating, local_pulsed_heating, empty_sequence]
+    required_subsequences = [global_blue_heating, local_blue_heating, empty_sequence]
     
     def sequence(self):
         h = self.parameters.Heating
@@ -99,10 +65,6 @@ class blue_heating(pulse_sequence):
             self.addSequence(global_blue_heating)
         elif h.blue_heating_type =='local':
             self.addSequence(local_blue_heating)
-        elif h.blue_heating_type == 'steady_state':
-            self.addSequence(steady_state_heating)
-        elif h.blue_heating_type == 'local_pulsed':
-            self.addSequence(local_pulsed_heating)
         else:
             raise Exception("Incorrect Heating Type")
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':h.blue_heating_delay_after}))
