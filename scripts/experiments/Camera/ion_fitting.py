@@ -53,7 +53,7 @@ class linear_chain_fitter(object):
         background_std = np.std(data)
         center_x_guess,center_y_guess,amplitude_guess = self.guess_centers(data, background_guess, background_std, xx, yy)
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
-        spacing_guess = 20 * sigma_guess #assumes ions are separate
+        spacing_guess = 15 * sigma_guess #assumes ions are separate
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
         params.add('rotation_angle', value = 0.0, min = -np.pi, max = np.pi, vary = False)

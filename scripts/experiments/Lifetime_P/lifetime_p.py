@@ -49,7 +49,7 @@ class lifetime_p(experiment):
         self.dv.cd(directory , context = self.binned_save_context)
         
     def setup_initial_switches(self):
-        self.pulser.switch_auto('866DP', False) #high TTL corresponds to light OFF
+        self.pulser.switch_auto('866DP', True) #high TTL corresponds to light OFF
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
@@ -60,6 +60,7 @@ class lifetime_p(experiment):
         pulse_sequence.programSequence(self.pulser)
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
         self.start_recording_timetags = pulse_sequence.start_recording_timetags
+        print self.start_recording_timetags
         self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
 
     def run(self, cxn, context):
