@@ -42,13 +42,13 @@ class rabi_flop():
         self.n = np.arange(0, nmax +1) #how many vibrational states to consider
         self.eta = self.lamb_dicke() / np.sqrt(ionnumber)
         self.rabi_coupling = self.rabi_coupling()
-        print self.rabi_coupling
+        print self.eta
         
     def rabi_coupling(self):
         order = self.sideband_order
         eta = self.eta
         n = self.n
-        print eta
+        print 'eta', eta
         print order
         #lists of the generalized laguere polynomails of the corresponding order evaluated at eta**2
         L = np.array([laguer(i, order, eta**2) for i in n])
@@ -80,7 +80,7 @@ class rabi_flop():
         frequency = self.trap_frequency
         hbar = U.hbar['J*s']
         k = 2.*np.pi/wavelength
-        eta = k*np.sqrt(U.hbar/(2*mass*2*np.pi*frequency))*np.abs(np.cos(theta*2.*np.pi / 360.0))
+        eta = k*np.sqrt(U.hbar/(2*mass*2*np.pi*frequency))*np.abs(np.sin(theta*2.*np.pi / 360.0))
         return eta
         
     def compute_state_evolution(self, nbar, delta, T_Rabi, t):
@@ -113,7 +113,7 @@ nbar = Parameter(25); delta = 0; T_Rabi = Parameter(16.0e-6);
 #info = ('Carrier', 0, 50.0, ('2012Aug20','2321_53'), {})
 #nbar = Parameter(270); delta = Parameter(0.15); T_Rabi = Parameter(21.0e-6);
 
-trap_frequency = T.Value(0.972, 'MHz') #Hz
+trap_frequency = T.Value(3.0, 'MHz') #Hz
 projection_angle = 45 #degrees
 sideband_order = 0
 flop = rabi_flop(trap_frequency = trap_frequency, projection_angle = projection_angle, sideband_order = sideband_order)
