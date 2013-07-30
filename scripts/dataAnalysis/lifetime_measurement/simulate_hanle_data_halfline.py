@@ -22,7 +22,7 @@ def hanle_fit(params , x, data, err):
     model = hanle_model(params, x)
     return (model - data)/err
 
-x_data = np.array([10,20,30])
+x_data = np.array([5,10,15,20,25])
 
 result_error = 0.0
 result_gamma = 0.0
@@ -30,7 +30,7 @@ k=1000
 
 for i in range(0,k):
     params = lmfit.Parameters()
-    params.add('amplitude', value = 1000000)
+    params.add('amplitude', value = 100000)
     params.add('gamma', value = 22.416)
 
     'generate data'
