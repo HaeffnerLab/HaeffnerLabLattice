@@ -67,6 +67,7 @@ class excitation_729(experiment):
         import lmfit
         self.camera = cxn.andor_server
         self.fitter = linear_chain_fitter()
+        self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.initial_exposure = self.camera.get_exposure_time()
         exposure = self.parameters.StateReadout.state_readout_duration
@@ -197,10 +198,12 @@ class excitation_729(experiment):
     
     def finalize(self, cxn, context):
         if self.use_camera:
+            #if used the camera, return it to the original settings
             self.camera.set_trigger_mode(self.initial_trigger_mode)
             self.camera.set_exposure_time(self.initial_exposure)
             self.camera.set_image_region(self.initial_region)
-            self.camera.start_live_display()
+            if self.camera_initially_live_display:
+                self.camera.start_live_display()
                
     def save_data(self, readouts):
         #save the current readouts

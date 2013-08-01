@@ -2,8 +2,9 @@ from PyQt4 import QtGui
 from twisted.internet.defer import inlineCallbacks
 
 class LATTICE_GUI(QtGui.QMainWindow):
-    def __init__(self, reactor, parent=None):
+    def __init__(self, reactor, clipboard, parent=None):
         super(LATTICE_GUI, self).__init__(parent)
+        self.clipboard = clipboard
         self.reactor = reactor
         self.connect_labrad()
 
@@ -34,7 +35,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     
     def make_drift_tracker_widget(self, reactor, cxn):
         from common.clients.drift_tracker.drift_tracker import drift_tracker
-        widget = drift_tracker(reactor, cxn)
+        widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
         return widget
     
     def make_histogram_widget(self, reactor, cxn):
@@ -75,10 +76,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
+    clipboard = a.clipboard()
     import common.clients.qt4reactor as qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    latticeGUI = LATTICE_GUI(reactor)
+    latticeGUI = LATTICE_GUI(reactor, clipboard)
     latticeGUI.setWindowTitle('Lattice GUI')
     latticeGUI.show()
     reactor.run()
