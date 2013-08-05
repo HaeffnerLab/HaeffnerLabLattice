@@ -25,6 +25,7 @@ class lifetime_p(pulse_sequence):
                   ('DopplerCooling', 'doppler_cooling_frequency_866'),
                   ('DopplerCooling', 'doppler_cooling_amplitude_866'),
                   ('DopplerCooling', 'doppler_cooling_repump_additional'),
+                  #('DopplerCooling', 10000),
                   ('DopplerCooling', 'doppler_cooling_duration'),
                   ]
     required_subsequences = [doppler_cooling, turn_off_all, empty_sequence]

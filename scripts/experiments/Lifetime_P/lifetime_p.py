@@ -74,6 +74,7 @@ class lifetime_p(experiment):
             self.pulser.stop_sequence()
             #get timetags and save
             timetags = self.pulser.get_timetags().asarray
+            #print self.parameter.DopplerCooling.doppler_cooling_duration
             if timetags.size >= self.parameters.LifetimeP.max_timetags_per_transfer:
                 raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
             else:
