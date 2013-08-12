@@ -25,7 +25,6 @@ class lifetime_p(pulse_sequence):
                   ('DopplerCooling', 'doppler_cooling_frequency_866'),
                   ('DopplerCooling', 'doppler_cooling_amplitude_866'),
                   ('DopplerCooling', 'doppler_cooling_repump_additional'),
-                  #('DopplerCooling', 10000),
                   ('DopplerCooling', 'doppler_cooling_duration'),
                   ]
     required_subsequences = [doppler_cooling, turn_off_all, empty_sequence]
@@ -37,6 +36,14 @@ class lifetime_p(pulse_sequence):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling)
+        ### add hack before the new parsing method ####
+        frequency_advance_duration = WithUnit(6, 'us')
+        ampl_off = WithUnit(-63.0, 'dBm')
+        self.addDDS('global397',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
+        self.addDDS('radial',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off)
+        self.end += frequency_advance_duration
+        ### hack done ###########
+        
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
         start_recording_timetags = self.end
         for i in range(cycles):
@@ -48,6 +55,7 @@ class lifetime_p(pulse_sequence):
             self.end += l.duration_866_pulse
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
+        print start_recording_timetags, stop_recording_timetags
         #record timetags while cycling takes place
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags

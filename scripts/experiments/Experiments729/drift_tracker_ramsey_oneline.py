@@ -108,7 +108,8 @@ class drift_tracker_ramsey_oneline(experiment):
                                            'Tomography.iteration':0.0,
                                            'StateReadout.repeat_each_measurement':dt.readouts,
                                            'SidebandCooling.sideband_cooling_enable':False,
-                                           'OpticalPumping.optical_pumping_enable':True,
+                                           'OpticalPumping.optical_pumping_enable':False,
+                                           #'OpticalPumping.optical_pumping_enable':True,
                                            })
             self.excitation.set_parameters(replace)
             self.update_progress(iter)
@@ -126,6 +127,10 @@ class drift_tracker_ramsey_oneline(experiment):
     
     def calculate_detuning(self, excitations):
         dt = self.parameters.DriftTrackerRamsey
+        #hong add here
+        excitations[0] = excitations[0]*2.0
+        excitations[1] = excitations[1]*2.0
+        #############
         average = (excitations[0] + excitations[1]) / 2.0
         deviation = (excitations[0] - excitations[1])
         detuning = arcsin(deviation) / (2.0 * pi * dt.gap_time['s'])
