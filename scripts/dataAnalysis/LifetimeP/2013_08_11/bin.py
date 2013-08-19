@@ -42,7 +42,7 @@ dv.open(1)
 # start_recording_timetags = dv.get_parameter('start_recording_timetags')
 # cycle_time = dv.get_parameter('timetag_record_cycle')
 start_recording_timetags = 0.000666 #doppler cooling , doppler cooling repump additional, sequence start, turn of all time
-cycle_time = 0.000076
+cycle_time = 0.000046
 bin_size = 10e-9
 print timetags.min()
 print timetags.max()

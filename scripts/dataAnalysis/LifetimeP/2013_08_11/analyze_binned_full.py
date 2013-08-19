@@ -23,7 +23,7 @@ background_level_sigma = np.sqrt(np.sum(background_total)) /  float(background_b
 print 'Calculated background level to be {0:.2f} with sigma of {1:.2f}, relative uncertainty {2:.2e}'.format(background_level, background_level_sigma, background_level_sigma / background_level)
 
 #calculate the area of 866 peak
-peak_866 = (16.5, 74)
+peak_866 = (18.5, 30)
 peak_866_where = np.where((peak_866[0] <= bins) * (bins <= peak_866[1]))
 peak_866_bins,peak_866_counts = bins[peak_866_where], hist[peak_866_where]
 area_866_sigma = np.sqrt(np.sum(peak_866_counts))
