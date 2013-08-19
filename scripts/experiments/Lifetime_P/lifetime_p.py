@@ -15,8 +15,10 @@ class lifetime_p(experiment):
                            ('LifetimeP','pulse_sequences_per_timetag_transfer'),
                            ('LifetimeP','total_timetag_transfers'),
                            ('LifetimeP','max_timetags_per_transfer'),
+                           ('LifetimeP','doppler_cooling_duration'),
                            ]
     required_parameters.extend(sequence.required_parameters)
+    required_parameters.remove(('DopplerCooling','doppler_cooling_duration'))
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
@@ -56,6 +58,7 @@ class lifetime_p(experiment):
         
     def program_pulser(self):
         self.pulser.reset_timetags()
+        self.parameters['DopplerCooling.doppler_cooling_duration'] = self.parameters.LifetimeP.doppler_cooling_duration
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
