@@ -56,15 +56,15 @@ class lifetime_p(experiment):
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
         
-    def program_pulser(self):
+    def program_pulser(self, reprogram = False):
         self.pulser.reset_timetags()
         self.parameters['DopplerCooling.doppler_cooling_duration'] = self.parameters.LifetimeP.doppler_cooling_duration
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
-        self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
-        self.start_recording_timetags = pulse_sequence.start_recording_timetags
-        print self.start_recording_timetags
-        self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
+        if not reprogram:
+            self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
+            self.start_recording_timetags = pulse_sequence.start_recording_timetags
+            self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
 
     def run(self, cxn, context):
         back_to_back = int(self.parameters.LifetimeP.pulse_sequences_per_timetag_transfer)
@@ -72,6 +72,7 @@ class lifetime_p(experiment):
         for index in range(total_timetag_transfers):  
             should_stop = self.pause_or_stop()
             if should_stop: break
+            self.program_pulser(reprogram = True)
             self.pulser.start_number(back_to_back)
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
