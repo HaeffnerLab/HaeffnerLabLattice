@@ -32,7 +32,6 @@ class lifetime_p(experiment):
         self.bin_every = self.parameters.LifetimeP.bin_every
         self.setup_data_vault()
         self.setup_initial_switches()
-        self.program_pulser()
     
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -64,6 +63,8 @@ class lifetime_p(experiment):
         if not reprogram:
             self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
             self.start_recording_timetags = pulse_sequence.start_recording_timetags
+            print self.timetag_record_cycle
+            print self.start_recording_timetags
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
 
     def run(self, cxn, context):
@@ -72,7 +73,12 @@ class lifetime_p(experiment):
         for index in range(total_timetag_transfers):  
             should_stop = self.pause_or_stop()
             if should_stop: break
-            self.program_pulser(reprogram = True)
+            if index == 0: #on the first run, need to do some setting up
+                print 'programming'
+                self.program_pulser(reprogram = False)
+            else:
+                print 'reprogramming'
+                self.program_pulser(reprogram = True)
             self.pulser.start_number(back_to_back)
             self.pulser.wait_sequence_done()
             self.pulser.stop_sequence()
