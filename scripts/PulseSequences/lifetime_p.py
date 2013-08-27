@@ -55,7 +55,6 @@ class lifetime_p(pulse_sequence):
             self.end += l.duration_866_pulse
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
-        print start_recording_timetags, stop_recording_timetags
         #record timetags while cycling takes place
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
