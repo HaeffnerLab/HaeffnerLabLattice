@@ -16,6 +16,7 @@ class motional_distribution(object):
     
     @classmethod
     def _thermal(cls, nbar, n):
+        #level population probability for a given nbar, see Leibfried 2003 (57)
         return 1./ (nbar + 1.0) * (nbar / (nbar + 1.0))**n
     
     @classmethod
