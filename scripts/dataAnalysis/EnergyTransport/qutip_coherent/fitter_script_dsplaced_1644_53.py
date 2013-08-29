@@ -9,7 +9,7 @@ from matplotlib import pyplot
 '''
 script parameters
 '''
-info = ('No Heating', ('2013Aug26','1637_15'))
+info = ('Heat 30 mus', ('2013Aug26','1644_53'))
 trap_frequency = T.Value(3.0, 'MHz')
 projection_angle = 45 #degrees
 offset_time = 0.8
@@ -31,8 +31,8 @@ params = lmfit.Parameters()
 params.add('excitation_scaling', value = 0.5, vary = False)
 params.add('detuning', value = 0, vary = False) #units of rabi frequency
 params.add('time_2pi', value = 7.6, vary = False) #microseconds
-params.add('nbar', value = 3, min = 0.0, max = 200.0, vary = True)
-params.add('alpha', value = 0.0, min = 0.0, max = 200.0, vary = False)
+params.add('nbar', value =  11.06, min = 0.0, max = 200.0, vary = 0)
+params.add('alpha', value = 15.0, min = 0.0, max = 200.0, vary = 1)
 '''
 load the dataset
 '''
