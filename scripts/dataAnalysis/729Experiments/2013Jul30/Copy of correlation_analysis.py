@@ -2,7 +2,7 @@ import labrad
 from matplotlib import pyplot
 import numpy as np
 
-info = [('2013Aug26', '2140_48')]
+info = [('2013Jul30', '1637_53')]
 
 cxn = labrad.connect()
 dv = cxn.data_vault
