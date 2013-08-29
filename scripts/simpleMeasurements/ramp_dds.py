@@ -5,7 +5,7 @@ import time
 
 cxn = labrad.connect()
 pulser = cxn.pulser
-start = 100 #MHz
+start = 90 #MHz
 stop = 120 #MHz
 steps = 100
 iterations = 200
