@@ -51,9 +51,8 @@ class linear_chain_fitter(object):
         params.add('ion_number', value = ion_number, vary = False)
         background_guess = np.average(data) #assumes that the data is mostly background apart from few peaks
         background_std = np.std(data)
-        center_x_guess,center_y_guess,amplitude_guess = self.guess_centers(data, background_guess, background_std, xx, yy)
+        center_x_guess,center_y_guess,amplitude_guess, spacing_guess = self.guess_centers(data, background_guess, background_std, xx, yy, ion_number)
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
-        spacing_guess = 15 * sigma_guess #assumes ions are separate
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
         params.add('rotation_angle', value = 0.0, min = -np.pi, max = np.pi, vary = False)
@@ -68,7 +67,7 @@ class linear_chain_fitter(object):
         result = lmfit.minimize(self.ion_chain_fit, params, args = (xx, yy, data))
         return result, params
     
-    def guess_centers(self, data, background, background_std, xx, yy):
+    def guess_centers(self, data, background, background_std, xx, yy, ion_number):
         '''
         guesses the center of the ion from the data
         
@@ -87,7 +86,13 @@ class linear_chain_fitter(object):
                 center_y_guess= peaks_y.mean()
                 center_x_guess = peaks_x.mean()
                 amplitude_guess = threshold * background_std
-                return center_x_guess, center_y_guess, amplitude_guess
+                if not ion_number == 1:
+                    #see Michael Ramm writeup, spacing guess for this
+                    std = np.sqrt(peaks_x.std()**2 + peaks_y.std()**2)
+                    spacing_guess =std * np.sqrt(12. / (ion_number**2 - 1) )
+                else:
+                    spacing_guess = 0
+                return center_x_guess, center_y_guess, amplitude_guess, spacing_guess
         raise Exception("Unable to guess ion center from the data")
     
     def state_detection(self, xx, yy, image, reference_image_params):
@@ -105,7 +110,10 @@ class linear_chain_fitter(object):
             #cycling over each ion comparing chi squred with each one bright with the all-dark state
             bright_state = np.zeros(ion_number)
             bright_state[current_ion] = 1
+            import time
+            t1 = time.time()
             chi_bright = ((self.ion_chain_fit(reference_image_params, xx, yy, image, bright_state))**2).sum()
+            print t1 - time.time()
 #             print bright_state, chi_bright, chi_dark, chi_bright <= chi_dark
             #current ion is bright if bright chi squared is less than dark
             bright_ions[current_ion] = chi_bright <= chi_dark

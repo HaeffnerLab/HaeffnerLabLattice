@@ -16,10 +16,15 @@ fitter = linear_chain_fitter()
 xx,yy = np.meshgrid(x_axis, y_axis)
 
 result, params = fitter.guess_parameters_and_fit(xx, yy, image, 8)
+fitter.report(params)
 
+import time
+t1=  time.time()
 state, chi_diffs = fitter.state_detection(xx, yy, image, params)
-print state
-print chi_diffs
+print time.time() - t1
+
+# print state
+# print chi_diffs
 
 # fitter.report(params)
 fitter.graph(x_axis, y_axis, image, params, result)
