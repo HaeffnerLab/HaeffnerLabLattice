@@ -110,10 +110,10 @@ class linear_chain_fitter(object):
             #cycling over each ion comparing chi squred with each one bright with the all-dark state
             bright_state = np.zeros(ion_number)
             bright_state[current_ion] = 1
-            import time
-            t1 = time.time()
+#             import time
+#             t1 = time.time()
             chi_bright = ((self.ion_chain_fit(reference_image_params, xx, yy, image, bright_state))**2).sum()
-            print t1 - time.time()
+#             print t1 - time.time()
 #             print bright_state, chi_bright, chi_dark, chi_bright <= chi_dark
             #current ion is bright if bright chi squared is less than dark
             bright_ions[current_ion] = chi_bright <= chi_dark

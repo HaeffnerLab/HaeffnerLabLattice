@@ -1,34 +1,25 @@
 import numpy as np
 from ion_fitting import linear_chain_fitter
-# import time
+from quick_test import ion_state_detector
 
 #load the full image and truncate it to to test image procesing of a partial image
 # image = np.load('single.npy')
+
 image = np.load('chain.npy')
 image = np.reshape(image, (496, 658))
-image = image[200:299, 300:400]
+image = image[242:255, 310:390]
 
-x_axis = np.arange(300,400)
-y_axis = np.arange(200,299)
-
-#perform the fitting routine
-fitter = linear_chain_fitter()
+x_axis = np.arange(310,390)
+y_axis = np.arange(242,255)
 xx,yy = np.meshgrid(x_axis, y_axis)
 
-result, params = fitter.guess_parameters_and_fit(xx, yy, image, 8)
-fitter.report(params)
+detector = ion_state_detector(8)
+result, params = detector.guess_parameters_and_fit(xx, yy, image)
+detector.state_detection(image)
+detector.report(params)
+detector.graph(x_axis, y_axis, image, params, result)
 
-import time
-t1=  time.time()
-state, chi_diffs = fitter.state_detection(xx, yy, image, params)
-print time.time() - t1
-
-# print state
-# print chi_diffs
-
-# fitter.report(params)
-fitter.graph(x_axis, y_axis, image, params, result)
-# for number in range(1, 15):
-#     result, params = fitter.guess_parameters_and_fit(xx, yy, image, number)
-#     print number, result.redchi
-#     fitter.graph(x_axis, y_axis, image, params, result)
+new_detector = ion_state_detector(8)
+new_detector.set_fitted_parameters(params, xx, yy)
+state, confidence = new_detector.state_detection(image)
+print state, confidence
