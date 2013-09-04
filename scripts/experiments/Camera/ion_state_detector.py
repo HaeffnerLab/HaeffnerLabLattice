@@ -77,11 +77,6 @@ class ion_state_detector(object):
     def fitting_error(self, params , xx, yy,  data):
         model = self.ion_model(params, xx, yy)
         scaled_difference = (model - data) / np.sqrt(data)
-        if np.isnan(model).any():
-            print params['center_x'].value
-            print params['center_y'].value
-            print params['spacing'].value
-            print params['sigma'].value
         return scaled_difference.ravel()
     
     def fitting_error_state(self, selection, image):

@@ -23,6 +23,8 @@ detector.state_detection(image)
 detector.report(params)
 detector.graph(x_axis, y_axis, image, params, result)
 
+
+
 best_states, confidences = detector.state_detection(series_of_images)
 excitation_probability = 1 - best_states.mean(axis = 0)
 print excitation_probability, confidences
