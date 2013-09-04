@@ -77,6 +77,11 @@ class ion_state_detector(object):
     def fitting_error(self, params , xx, yy,  data):
         model = self.ion_model(params, xx, yy)
         scaled_difference = (model - data) / np.sqrt(data)
+        if np.isnan(model).any():
+            print params['center_x'].value
+            print params['center_y'].value
+            print params['spacing'].value
+            print params['sigma'].value
         return scaled_difference.ravel()
     
     def fitting_error_state(self, selection, image):
@@ -93,11 +98,6 @@ class ion_state_detector(object):
         confidence = 1 - lowest_chi / second_lowest_chi
         return best_states, confidence
 
-    def fitting_error(self, params , xx, yy,  data):
-        model = self.ion_model(params, xx, yy)
-        scaled_difference = (model - data) / np.sqrt(data)
-        return scaled_difference.ravel()
-
     def guess_parameters_and_fit(self, xx, yy, data):
         params = lmfit.Parameters() 
         background_guess = data[0].mean() #assumes that there are no ions at the edge of the image
@@ -107,10 +107,10 @@ class ion_state_detector(object):
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
         params.add('rotation_angle', value = 0.0, min = -np.pi, max = np.pi, vary = False)
-        params.add('center_x', value = center_x_guess, min = 0, max = 657)
-        params.add('center_y', value = center_y_guess, min = 0, max = 495)
-        params.add('spacing', value = spacing_guess, min = 2.0, max = 495)
-        params.add('sigma', value = sigma_guess, min = 0.0, max = 10.0)
+        params.add('center_x', value = center_x_guess, min = xx.min(), max = xx.max())
+        params.add('center_y', value = center_y_guess, min = yy.min(), max = yy.max())
+        params.add('spacing', value = spacing_guess, min = 2.0, max = 30)
+        params.add('sigma', value = sigma_guess, min = 0.01, max = 10.0)
         #first fit without the angle
         lmfit.minimize(self.fitting_error, params, args = (xx, yy, data))
         #allow angle to vary and then fit again

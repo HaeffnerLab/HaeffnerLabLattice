@@ -1,6 +1,6 @@
 import numpy as np
 # from ion_fitting import linear_chain_fitter
-from quick_test import ion_state_detector
+from ion_state_detector import ion_state_detector
 
 #load the full image and truncate it to to test image procesing of a partial image
 # image = np.load('single.npy')
@@ -20,8 +20,8 @@ series_of_images = np.repeat(shaped_image, 100, axis = 0)
 detector = ion_state_detector(8)
 result, params = detector.guess_parameters_and_fit(xx, yy, image)
 detector.state_detection(image)
-# detector.report(params)
-# detector.graph(x_axis, y_axis, image, params, result)
+detector.report(params)
+detector.graph(x_axis, y_axis, image, params, result)
 
 best_states, confidences = detector.state_detection(series_of_images)
 excitation_probability = 1 - best_states.mean(axis = 0)
