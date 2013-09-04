@@ -83,13 +83,15 @@ class ion_state_detector(object):
         '''
         '''
         sum_selected_gaussians = self.background + np.tensordot(selection, self.fitted_gaussians, axes = (1, 0))
-        chi_sq = (sum_selected_gaussians - image)**2 / image / float(image.size)
-        chi_sq = chi_sq.sum(axis = (1,2))
-        best_state = selection[np.argmax(chi_sq)]
-        chi_sq.sort()
-        top_two = chi_sq[0:2]
-        confidence = top_two[1] / top_two[0]
-        return best_state, confidence
+        sum_selected_gaussians = sum_selected_gaussians[:, None, :, :]
+        image_size = float(image.shape[1] * image.shape[2]) 
+        chi_sq = (sum_selected_gaussians - image)**2 / image / image_size
+        chi_sq = chi_sq.sum(axis = (2,3))
+        best_states = selection[np.argmin(chi_sq, axis = 0)]
+        sorted_chi = np.sort(chi_sq, axis = 0)
+        lowest_chi,second_lowest_chi = sorted_chi[0:2]
+        confidence = 1 - lowest_chi / second_lowest_chi
+        return best_states, confidence
 
     def fitting_error(self, params , xx, yy,  data):
         model = self.ion_model(params, xx, yy)
@@ -156,6 +158,9 @@ class ion_state_detector(object):
         '''
         if self.fitted_gaussians is None:
             raise Exception("Fitted parameters not provided")
+        if image.ndim == 2:
+            #if only a single image is provided, shape it to be a 1-long sequence
+            image = image.reshape((1, image.shape[0],image.shape[1]))
         state, confidence = self.fitting_error_state(self.all_state_combinations, image)
         return state, confidence
 
