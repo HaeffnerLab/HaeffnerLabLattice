@@ -2,6 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from lattice.scripts.PulseSequences.subsequences.DopplerCooling import doppler_cooling
 from EmptySequence import empty_sequence
 from treedict import TreeDict
+from labrad.units import WithUnit
 
 class global_blue_heating(pulse_sequence):
     
@@ -43,8 +44,12 @@ class local_blue_heating(pulse_sequence):
     
     def sequence(self):
         h = self.parameters.Heating
-        repump_duration = h.blue_heating_duration + h.blue_heating_repump_additional
-        self.addDDS('radial',self.start, h.blue_heating_duration, h.local_blue_heating_frequency_397, h.local_blue_heating_amplitude_397)
+        frequency_advance_duration = WithUnit(6, 'us')
+        ampl_off = WithUnit(-63.0, 'dBm')
+        #make sure light turns on immediately with no delay
+        repump_duration = frequency_advance_duration + h.blue_heating_duration + h.blue_heating_repump_additional
+        self.addDDS('radial',self.start, frequency_advance_duration, h.local_blue_heating_frequency_397, ampl_off)
+        self.addDDS('radial',self.start + frequency_advance_duration, h.blue_heating_duration, h.local_blue_heating_frequency_397, h.local_blue_heating_amplitude_397)
         self.addDDS ('866',self.start, repump_duration, h.blue_heating_frequency_866, h.blue_heating_amplitude_866)
         self.end = self.start + repump_duration
 
