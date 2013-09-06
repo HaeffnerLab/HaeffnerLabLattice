@@ -35,9 +35,9 @@ class ion_state_detector(object):
         ion_center_y = params['center_y'].value #center of the ions
         spacing = params['spacing'].value #spacing constant of the ions
         sigma = params['sigma'].value #width along the axis
-        #first we rotate the data by the rotation_angle
-        xx_rotated = xx * np.cos(rotation_angle) - yy  * np.sin(rotation_angle)
-        yy_rotated = xx * np.sin(rotation_angle) + yy  * np.cos(rotation_angle)
+        #first we rotate the data by the rotation_angle about the ion center
+        xx_rotated = ion_center_x +  (xx - ion_center_x) * np.cos(rotation_angle) - (yy - ion_center_y) * np.sin(rotation_angle)
+        yy_rotated = ion_center_y +  (xx - ion_center_x) * np.sin(rotation_angle) + (yy - ion_center_y) * np.cos(rotation_angle)
         for i in range(self.ion_number):
             ion_gaussians[i] = self.gaussian_2D(xx_rotated, yy_rotated, ion_center_x + spacing * self.spacing_dict[i], ion_center_y, sigma, sigma, amplitude)
         return ion_gaussians
@@ -162,7 +162,7 @@ class ion_state_detector(object):
     def report(self, params):
         lmfit.report_errors(params)
     
-    def graph(self, x_axis, y_axis, image, params, result):
+    def graph(self, x_axis, y_axis, image, params, result = None):
         #plot the sample data
         from matplotlib import pyplot
         pyplot.contourf(x_axis, y_axis, image, alpha = 0.5)
@@ -173,5 +173,7 @@ class ion_state_detector(object):
         xx, yy = np.meshgrid(x_axis_fit, y_axis_fit)
         fit = self.ion_model(params, xx, yy)
         pyplot.contour(x_axis_fit, y_axis_fit, fit, colors = 'k', alpha = 0.75)
-        pyplot.annotate('chi sqr {}'.format(result.redchi), (0.5,0.8), xycoords = 'axes fraction')
+        if result is not None:
+            pyplot.annotate('chi sqr {}'.format(result.redchi), (0.5,0.8), xycoords = 'axes fraction')
+        pyplot.tight_layout()
         pyplot.show()
