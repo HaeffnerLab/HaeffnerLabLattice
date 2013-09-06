@@ -177,7 +177,7 @@ class excitation_729(experiment):
             ions_bright, confidences = self.fitter.state_detection(images)
             ion_state = 1 - ions_bright.mean(axis = 0)
             #useful for debugging, saving the images
-            #numpy.save('readout', images)
+#             numpy.save('readout {}'.format(int(time.time())), images)
             self.save_confidences(confidences)
         return ion_state
     
@@ -216,8 +216,8 @@ class excitation_729(experiment):
         saves confidences readings for the camera state detection
         '''
         self.total_camera_confidences.extend(confidences)
-        if (len(self.total_camera_confidences) >= 100):
-            hist, bins = numpy.histogram(self.total_camera_confidences, 50)
+        if (len(self.total_camera_confidences) >= 300):
+            hist, bins = numpy.histogram(self.total_camera_confidences, 30)
             self.dv.cd(self.save_directory ,True, context = self.histogram_save_context)
             self.dv.new('Histogram Camera {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')], context = self.histogram_save_context )
             self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
