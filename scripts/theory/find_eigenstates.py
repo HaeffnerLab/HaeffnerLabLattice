@@ -4,7 +4,7 @@ from matplotlib import pyplot
 
 number_of_spins = 10
 alpha = 1.0
-B = 0.0
+B = 0.5
 
 from qutip import qeye, sigmax, sigmay, tensor, expect
 N = number_of_spins
@@ -28,6 +28,12 @@ for n in range(N):
 
 calc = ising_calculator(number_of_spins, alpha, B)
 H = calc.get_H()
-energy,state = H.groundstate()
+# energy,state = H.groundstate()
+# print energy, state
+# print state[0:10]
+# print state.norm()
+# print expect(sx_list[3] , state)
 
-print expect(sx_list[3] , state)
+energies, states = H.eigenstates(sort = 'low', eigvals = 5)
+for i in range(number_of_spins):
+    print expect(sy_list[i] , states[3])
