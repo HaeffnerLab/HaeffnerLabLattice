@@ -1,7 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.PulseSequences.spectrum_rabi import spectrum_rabi
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
-from lattice.scripts.experiments.Camera.ion_fitting import linear_chain_fitter
+from lattice.scripts.experiments.Camera.ion_state_detector import ion_state_detector
 import numpy
 import time
        
@@ -64,16 +64,18 @@ class excitation_729(experiment):
             self.initialize_camera(cxn)
             
     def initialize_camera(self, cxn):
-        import lmfit
+        self.total_camera_confidences = []
+        p = self.parameters.IonsOnCamera
+        from lmfit import Parameters as lmfit_Parameters
         self.camera = cxn.andor_server
-        self.fitter = linear_chain_fitter()
+        self.fitter = ion_state_detector(int(p.ion_number))
         self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.initial_exposure = self.camera.get_exposure_time()
         exposure = self.parameters.StateReadout.state_readout_duration
         self.camera.set_exposure_time(exposure)
         self.initial_region = self.camera.get_image_region()
-        p = self.parameters.IonsOnCamera
+
         self.image_region = [
                              int(p.horizontal_bin),
                              int(p.vertical_bin),
@@ -83,7 +85,7 @@ class excitation_729(experiment):
                              int(p.vertical_max),
                              ]
         
-        self.fit_parameters = lmfit.Parameters()
+        self.fit_parameters = lmfit_Parameters()
         self.fit_parameters.add('ion_number', value = int(p.ion_number))
         self.fit_parameters.add('background_level', value = p.fit_background_level)
         self.fit_parameters.add('amplitude', value = p.fit_amplitude)
@@ -92,6 +94,10 @@ class excitation_729(experiment):
         self.fit_parameters.add('center_y', value = p.fit_center_vertical)
         self.fit_parameters.add('spacing', value = p.fit_spacing)
         self.fit_parameters.add('sigma', value = p.fit_sigma)
+        x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1, self.image_region[0])
+        y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1, self.image_region[1])
+        xx,yy = numpy.meshgrid(x_axis, y_axis)
+        self.fitter.set_fitted_parameters(self.fit_parameters, xx, yy)
         self.camera.set_image_region(*self.image_region)
         self.camera.set_acquisition_mode('Kinetics')
         self.initial_trigger_mode = self.camera.get_trigger_mode()
@@ -123,29 +129,32 @@ class excitation_729(experiment):
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
         self.pulser.output('729DP', False)
+    
+    def plot_current_sequence(self, cxn):
+        from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+        dds = cxn.pulser.human_readable_dds()
+        ttl = cxn.pulser.human_readable_ttl()
+        channels = cxn.pulser.get_channels().asarray
+        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        sp.makePlot()
         
     def run(self, cxn, context):
         threshold = int(self.parameters.StateReadout.state_readout_threshold)
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
-        #to plot the excitation as it happens
-#         from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
-#         dds = cxn.pulser.human_readable_dds()
-#         ttl = cxn.pulser.human_readable_ttl()
-#         channels = cxn.pulser.get_channels().asarray
-#         sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
-#         sp.makePlot()
+#         self.plot_current_sequence(cxn)
+
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.start_acquisition()
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
-        readouts = self.pulser.get_readout_counts().asarray
-        self.save_data(readouts)
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
+            readouts = self.pulser.get_readout_counts().asarray
+            self.save_data(readouts)
             if len(readouts):
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
             else:
@@ -165,29 +174,12 @@ class excitation_729(experiment):
             x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
             y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
             images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
-            ion_number = int(self.parameters.IonsOnCamera.ion_number)
-            bright_ions = numpy.empty((repetitions, ion_number))
-            all_differences = []
-            x_axis = numpy.arange(self.image_region[2], self.image_region[3] + 1, self.image_region[0])
-            y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1, self.image_region[1])
-            xx,yy = numpy.meshgrid(x_axis, y_axis)
+            ions_bright, confidences = self.fitter.state_detection(images)
+            ion_state = 1 - ions_bright.mean(axis = 0)
             #useful for debugging, saving the images
-            #numpy.save('readout', images)
-            for current, image in enumerate(images):
-                current_bright, current_differences = self.fitter.state_detection(xx, yy, image, self.fit_parameters)
-                #debugging by plotting the image along with its chi squared difference
-                #print current_bright, current_differences
-                #from matplotlib import pyplot
-                #pyplot.figure()
-                #pyplot.contourf(image, vmin = 500, vmax = 750)
-                #pyplot.show()
-                all_differences.extend(current_differences)
-                bright_ions[current] = current_bright
-            all_differences = numpy.array(all_differences)
-            perc_excited = 1 - numpy.average(bright_ions, axis = 0)
-            #useful for debugging to print PMT readout vs Camera readout
-            #print 'PMT', numpy.count_nonzero(readouts <= threshold) / float(len(readouts)), 'CAMERA', perc_excited
-        return perc_excited
+#             numpy.save('readout {}'.format(int(time.time())), images)
+            self.save_confidences(confidences)
+        return ion_state
     
     @property
     def output_size(self):
@@ -218,7 +210,20 @@ class excitation_729(experiment):
             self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
             self.dv.add_parameter('Histogram729', True, context = self.histogram_save_context )
             self.total_readouts = []
-
+    
+    def save_confidences(self, confidences):
+        '''
+        saves confidences readings for the camera state detection
+        '''
+        self.total_camera_confidences.extend(confidences)
+        if (len(self.total_camera_confidences) >= 300):
+            hist, bins = numpy.histogram(self.total_camera_confidences, 30)
+            self.dv.cd(self.save_directory ,True, context = self.histogram_save_context)
+            self.dv.new('Histogram Camera {}'.format(self.datasetNameAppend),[('Counts', 'Arb')],[('Occurence','Arb','Arb')], context = self.histogram_save_context )
+            self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
+            self.dv.add_parameter('HistogramCameraConfidence', True, context = self.histogram_save_context )
+            self.total_camera_confidences = []
+    
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()

@@ -3,7 +3,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from lattice.scripts.PulseSequences.subsequences.StateReadout import state_readout
 from lattice.scripts.PulseSequences.subsequences.TurnOffAll import turn_off_all
 import numpy as np
-from ion_fitting import linear_chain_fitter
+from ion_state_detector import ion_state_detector
 from labrad.units import WithUnit
 from multiprocessing import Process
 
@@ -33,12 +33,13 @@ class reference_camera_image(experiment):
     
 
     def initialize(self, cxn, context, ident):
-        self.fitter = linear_chain_fitter()
+        p = self.parameters.IonsOnCamera
+        self.fitter = ion_state_detector(int(p.ion_number))
         self.ident = ident
         self.camera = cxn.andor_server
         self.pulser = cxn.pulser
         self.pv = cxn.parametervault
-        p = self.parameters.IonsOnCamera
+
         self.image_region = image_region = [
                              int(p.horizontal_bin),
                              int(p.vertical_bin),
@@ -91,7 +92,7 @@ class reference_camera_image(experiment):
         x_axis = np.arange(p.horizontal_min, p.horizontal_max + 1, self.image_region[0])
         y_axis = np.arange(p.vertical_min, p.vertical_max + 1, self.image_region[1])
         xx, yy = np.meshgrid(x_axis, y_axis)
-        result, params = self.fitter.guess_parameters_and_fit(xx, yy, image, p.ion_number)
+        result, params = self.fitter.guess_parameters_and_fit(xx, yy, image)
         self.fitter.report(params)
         #ideally graphing should be done by saving to data vault and using the grapher
         p = Process(target = self.fitter.graph, args = (x_axis, y_axis, image, params, result))

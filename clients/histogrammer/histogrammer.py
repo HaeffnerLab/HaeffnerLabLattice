@@ -1,23 +1,9 @@
-import sys
 from PyQt4 import QtGui, QtCore
 from datavault import DataVaultWidget
 from matplotlib.figure import Figure
-from matplotlib import cm
-import matplotlib.pyplot as plt
-import time
-
-
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
-
-from twisted.internet.defer import inlineCallbacks, returnValue
-from twisted.internet.threads import deferToThread
-from datetime import datetime
-
-import matplotlib.pyplot as plt
-
-
-import numpy as np
+from twisted.internet.defer import inlineCallbacks
 
 class HistCanvas(FigureCanvas):
     """Matplotlib Figure widget to display CPU utilization"""

@@ -39,9 +39,14 @@ class LATTICE_GUI(QtGui.QMainWindow):
         return widget
     
     def make_histogram_widget(self, reactor, cxn):
+        histograms_tab = QtGui.QTabWidget()
         from common.clients.readout_histogram import readout_histogram
-        widget = readout_histogram(reactor, cxn)
-        return widget
+        pmt_readout = readout_histogram(reactor, cxn)
+        histograms_tab.addTab(pmt_readout, "PMT")
+        from lattice.clients.camera_histogram import camera_histogram
+        camera_histogram_widget = camera_histogram(reactor, cxn)
+        histograms_tab.addTab(camera_histogram_widget, "Camera")
+        return histograms_tab
     
     def makeTranslationStageWidget(self, reactor):
         widget = QtGui.QWidget()
