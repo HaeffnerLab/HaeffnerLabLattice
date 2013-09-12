@@ -1,4 +1,4 @@
-from ising_calculator import ising_calculator
+from ising_calculator import ising_calculator_AFM
 import numpy as np
 from matplotlib import pyplot
 
@@ -10,7 +10,7 @@ def calculate_and_save():
     energies = np.empty((B_list.size, 2**number_of_spins))
     for i,B in enumerate(B_list):
         print i
-        calc = ising_calculator(number_of_spins, alpha, B)
+        calc = ising_calculator_AFM(number_of_spins, alpha, B)
         energies[i,:] = calc.find_energies()
     np.save('energy_array', energies)
 
@@ -27,7 +27,7 @@ def load_and_plot():
     pyplot.xlim([-0.05, 0.75])
     pyplot.xlabel('B/J0')
     pyplot.ylabel('(E - E0)/J0')
-    pyplot.title('figure 1A')
+    pyplot.title('figure 1A, AFM coupling')
     pyplot.show()
     
     
