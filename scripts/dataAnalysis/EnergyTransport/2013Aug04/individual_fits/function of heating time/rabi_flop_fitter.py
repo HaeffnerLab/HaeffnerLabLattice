@@ -7,7 +7,7 @@ from scipy.special.orthogonal import eval_genlaguerre as laguerre
 
 class rabi_flop_time_evolution(object):
     
-    def __init__(self, sideband_order, eta, nmax = 1000):
+    def __init__(self, sideband_order, eta, nmax = 5000):
         self.sideband_order = sideband_order #0 for carrier, 1 for 1st sideband etc
         self.eta = eta
         self.nmax = nmax

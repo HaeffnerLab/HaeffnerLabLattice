@@ -13,7 +13,7 @@ info = ('Carrier Flops', ('2013Sep04','2209_47'))
 ion_selection = 1
 trap_frequency = T.Value(3.0, 'MHz')
 projection_angle = 45 #degrees
-offset_time = 0.8
+offset_time = 0.0
 sideband_order = -1
 fitting_region = (0, 4) #microseconds
 '''
@@ -31,8 +31,8 @@ create fitting parameters
 params = lmfit.Parameters()
 params.add('excitation_scaling', value = 0.7, vary = False)
 params.add('detuning', value = 0, vary = 0) #units of rabi frequency
-params.add('time_2pi', value = 1.824183, vary = 0) #microseconds
-params.add('nbar', value = 3.003566 , min = 0.0, max = 200.0, vary= 0)
+params.add('time_2pi', value = 1.949810, vary = 0) #microseconds
+params.add('nbar', value = 2.768531 , min = 0.0, max = 200.0, vary= 0)
 params.add('alpha', value = 5.0, min = 0.0, max = 200.0, vary = 1)
 '''
 load the dataset

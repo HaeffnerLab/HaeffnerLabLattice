@@ -13,7 +13,7 @@ info = ('Carrier Flops', ('2013Sep04','2211_19'))
 ion_selection = 2
 trap_frequency = T.Value(3.0, 'MHz')
 projection_angle = 45 #degrees
-offset_time = 0.8
+offset_time = 0.0
 sideband_order = -1
 fitting_region = (0, 40) #microseconds
 '''
