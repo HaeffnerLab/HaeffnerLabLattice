@@ -25,13 +25,8 @@ import numpy as np
 
 SIGNALID = 66060
 
-class compLineScan( LabradServer ):
-    """Allows for simple parameterized scanning of the compensation
-    The scans are in the form 
-    c1 = c1 + r*cos(theta)
-    c2 = c2 + r*sin(theta)
-    """
-    name = 'Compensation LineScan'
+class Electrode_Diagonalization( LabradServer ):
+    name = 'Electrode Diagonalization'
     onNewRange = Signal(SIGNALID, 'signal: new range', '(vv)')
     
     def initServer( self ):
@@ -45,21 +40,45 @@ class compLineScan( LabradServer ):
         '''
         load the matrix parameters from registry
         '''
-        yield None
-        pass
-        
+        reg = self.client.registry
+        yield reg.cd(['Servers','Electrode Diagonalization'])
+        for param in self.parameters:
+            self.parameters[param] = yield reg.get(param)
+    
+    @inlineCallbacks
+    def save_params_to_registry(self):
+        '''
+        save the matrix parameters to registry
+        '''
+        reg = self.client.registry
+        yield reg.cd(['Servers','Electrode Diagonalization'])
+        for param, value in self.parameters.iteritems():
+            yield reg.set(param, value.inUnitsOf('deg'))
+    
     @inlineCallbacks
     def intialize_connections(self):
         '''
         connect to DAC and COMPENSATION
         '''
-        self.server = self.client.compensation_box
-        self.rangec1 = yield self.server.getrange(1)
-        self.rangec2 = yield self.server.getrange(2)
-        yield self.setAmplitudeRange()
-
-
-    @setting(0, "Compensation Angle", angle = 'v[rad]', returns='v[rad')
+        try:
+            self.dac = self.client.dac
+        except AttributeError:
+            self.dac = None
+        else:
+            yield self.get_dac_voltages()
+        try:
+            self.comp = self.client.shq.shq_222m_server
+        except AttributeError:
+            self.comp = None
+        else:
+            yield self.get_comp_voltages()
+    
+    @inlineCallbacks
+    def get_comp_voltages(self):
+        try:
+            self.vol
+        
+    @setting(0, "Compensation Angle", angle = 'v[rad]', returns='v[rad]')
     def compensation_angle(self, c, angle = None):
         '''
         Set or get the compensation angle
@@ -68,7 +87,7 @@ class compLineScan( LabradServer ):
             self.parameters['comp_angle'] = angle['rad']
         return WithUnit(self.parameters['comp_angle'], 'rad')
     
-    @setting(1, "Endcap Angle", angle = 'v[rad]', returns='v[rad')
+    @setting(1, "Endcap Angle", angle = 'v[rad]', returns='v[rad]')
     def endcap_angle(self, c, angle = None):
         '''
         Set or get the compensation angle
@@ -78,8 +97,25 @@ class compLineScan( LabradServer ):
         return WithUnit(self.parameters['endcap_angle'], 'rad')
     
     @inlineCallbacks
+    def serverConnected( self, ID, name ):
+        """Connect to the server"""
+        if name == 'SHQ_222M_SERVER':
+            self.comp = self.client.shq_222m_server
+            yield self.get_comp_voltages()
+        if name == 'DAC':
+            self.dac = None
+            yield self.get_dac_voltages()
+
+    def serverDisconnected( self, ID, name ):
+        """Close connection"""
+        if name == 'SHQ_222M_SERVER':
+            self.comp = None
+        if name == 'DAC':
+            self.dac = None
+
+    @inlineCallbacks
     def stopServer(self):
-        yield None
+        yield self.save_params_to_registry()
         
     def initContext(self, c):
         self.listeners.add(c.ID)
@@ -88,8 +124,5 @@ class compLineScan( LabradServer ):
         self.listeners.remove(c.ID)
 
 if __name__ == "__main__":
-#     from labrad import util
-#     util.runServer(compLineScan())
-    arr = np.array([[1,-1],[1,1]])
-    print arr
-    print LA.inv(arr)
+    from labrad import util
+    util.runServer(Electrode_Diagonalization())
