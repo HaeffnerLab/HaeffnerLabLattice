@@ -130,7 +130,7 @@ class DAC(LabradServer):
             minim,maxim = chan.min_voltage,chan.max_voltage
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
-        return (WithUnit(minim,'V'), WithUnit(maxim), 'V')
+        return (WithUnit(minim,'V'), WithUnit(maxim, 'V'))
     
     def notifyOtherListeners(self, context, message, f):
         """
