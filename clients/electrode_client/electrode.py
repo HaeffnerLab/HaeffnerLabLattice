@@ -50,6 +50,8 @@ class electrode_widget(QtGui.QFrame, widget_ui):
         comp_angle = yield server.compensation_angle()
         endcap_angle = yield server.endcap_angle()
         voltage_priority = yield server.voltage_priority()
+        eps_yz = yield server.epsilon_yz()
+        self.set_widget_blocking(self.eps_yz, eps_yz)
         self.set_widget_blocking(self.comp_angle, comp_angle['deg'])
         self.set_widget_blocking(self.endcap_angle, endcap_angle['deg'])
         self.do_set_voltage_priority(voltage_priority)
@@ -91,7 +93,13 @@ class electrode_widget(QtGui.QFrame, widget_ui):
         self.combo.currentIndexChanged.connect(self.on_new_priority)
         self.endcap_angle.valueChanged.connect(self.on_new_endcap_angle)
         self.comp_angle.valueChanged.connect(self.on_new_comp_angle)
+        self.eps_yz.valueChanged.connect(self.on_new_eps_yz)
     
+    @inlineCallbacks
+    def on_new_eps_yz(self, value):
+        server = self.cxn.servers['Electrode Diagonalization']
+        yield server.epsilon_yz(value)
+         
     @inlineCallbacks
     def on_new_endcap_angle(self, value):
         server = self.cxn.servers['Electrode Diagonalization']
@@ -152,6 +160,8 @@ class electrode_widget(QtGui.QFrame, widget_ui):
             self.set_widget_blocking(self.comp_angle, value)
         elif name == 'endcap_angle':
             self.set_widget_blocking(self.endcap_angle, value)
+        elif name == 'eps_yz':
+            self.set_widget_blocking(self.eps_yz, value)
         elif name == 'priority':
             self.do_set_voltage_priority(value)
         

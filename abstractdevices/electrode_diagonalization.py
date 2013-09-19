@@ -30,7 +30,7 @@ class Electrode_Diagonalization( LabradServer ):
     on_new_value = Signal(SIGNALID, 'signal: new value', '(sv)')
     
     def initServer( self ):
-        self.parameters = {}.fromkeys(['comp_angle','endcap_angle'])
+        self.parameters = {}.fromkeys(['comp_angle','endcap_angle','eps_yz'])
         self.voltages = {}.fromkeys(['C1','C2','D1','D2'])
         self.fields = {}.fromkeys(['Ex','Ey','Ez','w_z_sq'])
         self.voltage_range_comp = None,None
@@ -58,7 +58,10 @@ class Electrode_Diagonalization( LabradServer ):
         reg = self.client.registry
         yield reg.cd(['','Servers','Electrode Diagonalization'])
         for param, value in self.parameters.iteritems():
-            yield reg.set(param, value.inUnitsOf('deg'))
+            if param in ['comp_angle','endcap_angle']:
+                yield reg.set(param, value.inUnitsOf('deg'))
+            else:
+                yield reg.set(param, value)
     
     @inlineCallbacks
     def intialize_connections(self):
@@ -147,6 +150,29 @@ class Electrode_Diagonalization( LabradServer ):
             self.notifyOtherListeners(c, ('endcap_angle',angle['deg']), self.on_new_value)
         returnValue(self.parameters['endcap_angle'])
     
+    @setting(11, "Epsilon yz", value = 'v', returns='v')
+    def epsilon_yz(self, c, value = None):
+        '''
+        Set or get the endcap angle
+        '''
+        if value is not None:
+            self.parameters['eps_yz'] = value
+            if self.voltage_priority:
+                new_fields = self.calculate_fields()
+                self.fields.update(new_fields)
+                self.on_new_fields()
+            else:
+                new_voltages = self.calculate_voltages()
+                #check range first, if this raises error we stop
+                for electrode, voltage in new_voltages.iteritems():
+                    self.check_range(electrode, voltage)
+                self.voltages.update(new_voltages)
+                for electrode, voltage in self.voltages.iteritems():
+                    yield self.do_set_voltage(electrode, voltage)
+                self.on_new_voltages()
+            self.notifyOtherListeners(c, ('eps_yz', value), self.on_new_value)
+        returnValue(self.parameters['eps_yz'])
+    
     @setting(2, "Voltage priority", voltage_priority='b')
     def voltage_priority(self, c, voltage_priority = None):
         '''
@@ -230,10 +256,11 @@ class Electrode_Diagonalization( LabradServer ):
     def rotation_matrx(self):
         theta_c = self.parameters['comp_angle']['rad']
         theta_d = self.parameters['endcap_angle']['rad']
+        eps_yz = self.parameters['eps_yz']
         m = np.array([
                      [cos(theta_c),     -sin(theta_c),      0,      0],
                      [sin(theta_c),      cos(theta_c),      0,      0],
-                     [0,                    0,              cos(theta_d),      -sin(theta_d)],
+                     [eps_yz * sin(theta_c),eps_yz * cos(theta_c),              cos(theta_d),      -sin(theta_d)],
                      [0,                    0,              sin(theta_d),       cos(theta_d)],
                       ])
         return m
