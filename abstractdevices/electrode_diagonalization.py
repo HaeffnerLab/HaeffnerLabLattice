@@ -20,7 +20,7 @@ from labrad.units import WithUnit
 from twisted.internet.defer import inlineCallbacks, returnValue
 from numpy import linalg as LA
 import numpy as np
-from numpy import cos, sin
+from numpy import cos, sin, sqrt
 
 SIGNALID = 66060
 
@@ -30,7 +30,7 @@ class Electrode_Diagonalization( LabradServer ):
     on_new_value = Signal(SIGNALID, 'signal: new value', '(sv)')
     
     def initServer( self ):
-        self.parameters = {}.fromkeys(['comp_angle','endcap_angle','eps_yz'])
+        self.parameters = {}.fromkeys(['endcap_angle','xz_angle','m0','m2'])
         self.voltages = {}.fromkeys(['C1','C2','D1','D2'])
         self.fields = {}.fromkeys(['Ex','Ey','Ez','w_z_sq'])
         self.voltage_range_comp = None,None
@@ -49,6 +49,7 @@ class Electrode_Diagonalization( LabradServer ):
         yield reg.cd(['','Servers','Electrode Diagonalization'])
         for param in self.parameters:
             self.parameters[param] = yield reg.get(param)
+        print self.parameters
     
     @inlineCallbacks
     def save_params_to_registry(self):
@@ -103,14 +104,14 @@ class Electrode_Diagonalization( LabradServer ):
     @inlineCallbacks
     def get_dac_range(self):
         self.voltage_range_dac = yield self.dac.get_range('comp1')
-
-    @setting(0, "Compensation Angle", angle = 'v[rad]', returns='v[rad]')
-    def compensation_angle(self, c, angle = None):
+    
+    @setting(0, "XZ Angle", angle = 'v[rad]', returns='v[rad]')
+    def xz_angle(self, c, angle = None):
         '''
         Set or get the compensation angle
         '''
         if angle is not None:
-            self.parameters['comp_angle'] = angle
+            self.parameters['xz_angle'] = angle
             if self.voltage_priority:
                 new_fields = self.calculate_fields()
                 self.fields.update(new_fields)
@@ -124,8 +125,8 @@ class Electrode_Diagonalization( LabradServer ):
                 for electrode, voltage in self.voltages.iteritems():
                     yield self.do_set_voltage(electrode, voltage)
                 self.on_new_voltages()
-            self.notifyOtherListeners(c, ('comp_angle',angle['deg']), self.on_new_value)
-        returnValue(self.parameters['comp_angle'])
+            self.notifyOtherListeners(c, ('xz_angle',angle['deg']), self.on_new_value)
+        returnValue(self.parameters['xz_angle'])
 
     @setting(1, "Endcap Angle", angle = 'v[rad]', returns='v[rad]')
     def endcap_angle(self, c, angle = None):
@@ -150,13 +151,10 @@ class Electrode_Diagonalization( LabradServer ):
             self.notifyOtherListeners(c, ('endcap_angle',angle['deg']), self.on_new_value)
         returnValue(self.parameters['endcap_angle'])
     
-    @setting(11, "Epsilon yz", value = 'v', returns='v')
-    def epsilon_yz(self, c, value = None):
-        '''
-        Set or get the endcap angle
-        '''
+    @setting(11, "slope m0", value = 'v', returns='v')
+    def m0(self, c, value = None):
         if value is not None:
-            self.parameters['eps_yz'] = value
+            self.parameters['m0'] = value
             if self.voltage_priority:
                 new_fields = self.calculate_fields()
                 self.fields.update(new_fields)
@@ -170,8 +168,28 @@ class Electrode_Diagonalization( LabradServer ):
                 for electrode, voltage in self.voltages.iteritems():
                     yield self.do_set_voltage(electrode, voltage)
                 self.on_new_voltages()
-            self.notifyOtherListeners(c, ('eps_yz', value), self.on_new_value)
-        returnValue(self.parameters['eps_yz'])
+            self.notifyOtherListeners(c, ('m0', value), self.on_new_value)
+        returnValue(self.parameters['m0'])
+    
+    @setting(12, "slope m2", value = 'v', returns='v')
+    def m1(self, c, value = None):
+        if value is not None:
+            self.parameters['m2'] = value
+            if self.voltage_priority:
+                new_fields = self.calculate_fields()
+                self.fields.update(new_fields)
+                self.on_new_fields()
+            else:
+                new_voltages = self.calculate_voltages()
+                #check range first, if this raises error we stop
+                for electrode, voltage in new_voltages.iteritems():
+                    self.check_range(electrode, voltage)
+                self.voltages.update(new_voltages)
+                for electrode, voltage in self.voltages.iteritems():
+                    yield self.do_set_voltage(electrode, voltage)
+                self.on_new_voltages()
+            self.notifyOtherListeners(c, ('m2', value), self.on_new_value)
+        returnValue(self.parameters['m2'])
     
     @setting(2, "Voltage priority", voltage_priority='b')
     def voltage_priority(self, c, voltage_priority = None):
@@ -254,31 +272,48 @@ class Electrode_Diagonalization( LabradServer ):
             raise Exception( "Voltage out of Range {}".format(electrode)) 
         
     def rotation_matrx(self):
-        theta_c = self.parameters['comp_angle']['rad']
+        '''
+        returns the rotation matrix M such that
+        Voltages = M * fields
+        '''
         theta_d = self.parameters['endcap_angle']['rad']
-        eps_yz = self.parameters['eps_yz']
-        m = np.array([
-                     [cos(theta_c),     -sin(theta_c),      0,      0],
-                     [sin(theta_c),      cos(theta_c),      0,      0],
-                     [eps_yz * sin(theta_c),eps_yz * cos(theta_c),              cos(theta_d),      -sin(theta_d)],
-                     [0,                    0,              sin(theta_d),       cos(theta_d)],
+        th = self.parameters['xz_angle']['rad']
+        m0 = self.parameters['m0']
+        m2 = self.parameters['m2']
+        norm = sqrt(m0 **2 + m2 **1 + 1**2)
+        R1 = np.array([
+                     [1,     0,      0,      0],
+                     [0,     1,      0,      0],
+                     [0,     0,     cos(theta_d),      sin(theta_d)],
+                     [0,     0,     -sin(theta_d),     cos(theta_d)],
                       ])
-        return m
+        v0 = m0 / norm
+        v1 = 1. / norm
+        v2 = m2 / norm
+        
+        R2 = np.array([
+                       [-v1*cos(th)-v0*v2*sin(th),  v0,     -v0*v2*cos(th)+v1*sin(th),  0.],
+                       [ v0*cos(th)-v1*v2*sin(th),  v1,     -v1*v2*cos(th)-v0*sin(th),  0.],
+                       [(v0**2 + v1**2)  *sin(th),  v2,     (v0**2 + v1**2)  *cos(th),  0.],
+                       [0.,                         0.,     0.,                         1.],
+                       ])
+        M = R1.dot(R2)
+        return M
     
     def calculate_fields(self):
-        m = self.rotation_matrx()
+        M = self.rotation_matrx()
+        M_inv = LA.inv(M)
         voltages = [self.voltages[key]['V'] for key in ['C1','C2','D1','D2']]
-        new_fields = m.dot(voltages)
+        new_fields = M_inv.dot(voltages)
         field_dict = {}
         for i,field in enumerate(['Ex','Ey','Ez','w_z_sq']):
             field_dict[field] = new_fields[i]
         return field_dict
     
     def calculate_voltages(self):
-        m = self.rotation_matrx()
-        m_inv = LA.inv(m)
+        M  = self.rotation_matrx()
         fields = [self.fields[key] for key in ['Ex','Ey','Ez','w_z_sq']]
-        new_voltages = m_inv.dot(fields)
+        new_voltages = M.dot(fields)
         voltage_dict = {}
         for i,voltage in enumerate(['C1','C2','D1','D2']):
             voltage_dict[voltage] = WithUnit(new_voltages[i], 'V')
