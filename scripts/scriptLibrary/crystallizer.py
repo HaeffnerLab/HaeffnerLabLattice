@@ -5,9 +5,9 @@ from labrad.units import WithUnit
 class Crystallizer(object):
     
     '''
-    class for handling recrystallation of ion chains
+    class for handling recrystallization of ion chains
     
-    @var thresholdPercentage: percentage of PMT counts below which the ions are considered melting
+    @var thresholdPercentage: percentage of PMT counts below which the ions are considered melted
     @var crystallization_attempts: how many attempts will be made to recrystallize before giving an error
     @var detect_time: how long to record fluorescence to determine crystallation
     @var far_red_time: how long to apply the far red beam while trying to crystalize
