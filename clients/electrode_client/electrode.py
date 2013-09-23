@@ -146,6 +146,7 @@ class electrode_widget(QtGui.QFrame, widget_ui):
         server = self.cxn.servers['Electrode Diagonalization']
         yield server.signal__new_value(SIGNALID, context = self.context)
         yield server.addListener(listener = self.followSignal, source = None, ID = SIGNALID, context = self.context)
+        self.initialized = True
 
     def followSignal(self, context, (name,value)):
         if name == 'C1':

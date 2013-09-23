@@ -63,8 +63,12 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.SWITCH_CONTROL import switchWidget
         from common.clients.DDS_CONTROL import DDS_CONTROL
         from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
+        from quick_actions.quick_actions import actions_widget
+        from indicator.indicator import indicator_widget
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(electrode_widget(reactor, cxn),        0,0,2,1)
+        gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,1)
+        gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,1)
+        gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,1)
         gridLayout.addWidget(cavityWidget(reactor),             0,1,3,2)
         gridLayout.addWidget(multiplexerWidget(reactor),        0,3,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,1)
