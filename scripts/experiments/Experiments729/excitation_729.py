@@ -75,7 +75,6 @@ class excitation_729(experiment):
         exposure = self.parameters.StateReadout.state_readout_duration
         self.camera.set_exposure_time(exposure)
         self.initial_region = self.camera.get_image_region()
-
         self.image_region = [
                              int(p.horizontal_bin),
                              int(p.vertical_bin),
@@ -84,7 +83,6 @@ class excitation_729(experiment):
                              int(p.vertical_min),
                              int(p.vertical_max),
                              ]
-        
         self.fit_parameters = lmfit_Parameters()
         self.fit_parameters.add('ion_number', value = int(p.ion_number))
         self.fit_parameters.add('background_level', value = p.fit_background_level)
@@ -144,7 +142,6 @@ class excitation_729(experiment):
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
 #         self.plot_current_sequence(cxn)
-
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.start_acquisition()
@@ -160,7 +157,7 @@ class excitation_729(experiment):
             else:
                 #got no readouts
                 perc_excited = -1.0
-            perc_excited = [perc_excited]
+            ion_state = [perc_excited]
 #             print readouts
         else:
             #get the percentage of excitation using the camera state readout

@@ -146,6 +146,21 @@ class ion_state_detector(object):
                 return center_x_guess, center_y_guess, amplitude_guess, spacing_guess
         raise Exception("Unable to guess ion center from the data")
     
+    def get_total_counts(self, image):
+        '''
+        returns the total number of ion counts
+        
+        This is done by multiplying the given image by the fit.
+        '''
+        if self.fitted_gaussians is None:
+            raise Exception("Fitted parameters not provided")
+        if image.ndim == 2:
+            #if only a single image is provided, shape it to be a 1-long sequence
+            image = image.reshape((1, image.shape[0],image.shape[1]))
+        
+        gaussians = self.fitted_gaussians / self.fitted_gaussians.max()
+        return np.sum(gaussians * image, axis = (1,2))
+        
     def state_detection(self, image):
         '''
         given the image and the parameters of the reference images with all ions bright, determines
