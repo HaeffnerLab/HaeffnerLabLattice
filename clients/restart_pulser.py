@@ -33,5 +33,8 @@ else:
 		pulser = cxn.servers[pulser_name]
 		for channel, (freq, ampl, output) in dds_state.iteritems():
 			print 'setting', channel, freq, ampl, output
-			[pulser.frequency(channel, freq), pulser.amplitude(channel, ampl) , pulser.output(channel, output)]
+			try:
+				[pulser.frequency(channel, freq), pulser.amplitude(channel, ampl) , pulser.output(channel, output)]
+			except Exception as e:
+				print e
 		pulser.line_trigger_state(line_trig_state)

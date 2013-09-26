@@ -238,8 +238,10 @@ class Electrode_Diagonalization( LabradServer ):
     def do_get_voltage(self, electrode):
         if electrode == 'C1':
             voltage = yield self.comp.voltage(1)
+            voltage = -voltage
         elif electrode == 'C2':
             voltage = yield self.comp.voltage(2)
+            voltage = -voltage
         elif electrode == 'D1':
             voltage = yield self.dac.get_voltage('comp1')
         elif electrode == 'D2':
@@ -252,8 +254,10 @@ class Electrode_Diagonalization( LabradServer ):
     def do_set_voltage(self,electrode, voltage):
         self.check_range(electrode, voltage)
         if electrode == 'C1':
+            voltage = -voltage
             yield self.comp.voltage(1, voltage)
         elif electrode == 'C2':
+            voltage = -voltage
             yield self.comp.voltage(2, voltage)
         elif electrode == 'D1':
             yield self.dac.set_voltage('comp1', voltage)
@@ -265,6 +269,8 @@ class Electrode_Diagonalization( LabradServer ):
     
     def check_range(self, electrode, voltage):
         if electrode in ['C1','C2']:
+            voltage = -voltage
+            print 'checkig range', electrode, voltage
             minim,maxim = self.voltage_range_comp
         elif electrode in ['D1','D2']:
             minim,maxim = self.voltage_range_dac
