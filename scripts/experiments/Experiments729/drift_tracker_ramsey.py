@@ -2,6 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from drift_tracker_ramsey_oneline import drift_tracker_ramsey_oneline
 from labrad.units import WithUnit
 from treedict import TreeDict
+import numpy as np
 
 class drift_tracker_ramsey(experiment):
     
@@ -45,21 +46,20 @@ class drift_tracker_ramsey(experiment):
                                        'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')
                                        })
         
-
+        replace_1,replace_2 = np.random.permutation([replace_1,replace_2])
         self.ramsey_dt.set_parameters(replace_1)
         self.ramsey_dt.set_progress_limits(0, 50.0)
         frequency_1,excitation = self.ramsey_dt.run(cxn, context)
         self.ramsey_dt.set_parameters(replace_2)
         self.ramsey_dt.set_progress_limits(50.0, 100.0)
         frequency_2,excitation = self.ramsey_dt.run(cxn, context)
-        self.submit_centers(frequency_1, frequency_2)
+        self.submit_centers(replace_1,frequency_1,replace_2,frequency_2)
 
-    def submit_centers(self, center1, center2):
-        dt = self.parameters.DriftTracker
+    def submit_centers(self, replace_1, center1, replace_2, center2):                
         if center1 is not None and center2 is not None:
             submission = [
-                          (dt.line_selection_1, center1),
-                          (dt.line_selection_2, center2),
+                          (replace_1.DriftTrackerRamsey.line_selection, center1),
+                          (replace_2.DriftTrackerRamsey.line_selection, center2),
                           ]
             self.drift_tracker.set_measurements(submission)
      
