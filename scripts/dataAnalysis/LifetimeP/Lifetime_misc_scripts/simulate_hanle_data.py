@@ -22,7 +22,7 @@ def hanle_fit(params , x, data, err):
     model = hanle_model(params, x)
     return (model - data)/err
 
-x_data = np.array([-24,-10,10,24])
+x_data = np.array([-26,-10,10,26])
 
 result_error = 0.0
 result_gamma = 0.0
