@@ -17,12 +17,12 @@ script parameters
 # info = ('No Heating', ('2013Sep27','1918_04')); alpha_guess = 14.0; max_range = 12
 # info = ('No Heating', ('2013Sep27','1918_54')); alpha_guess = 14.0; max_range = 20
 # info = ('No Heating', ('2013Sep27','1919_38')); alpha_guess = 14.0; max_range = 20
-# info = ('No Heating', ('2013Sep27','1920_22')); alpha_guess = 14.0; max_range = 20
+info = ('No Heating', ('2013Sep27','1920_22')); alpha_guess = 14.0; max_range = 20
 # info = ('No Heating', ('2013Sep27','1921_12')); alpha_guess = 14.0; max_range = 20
 # info = ('No Heating', ('2013Sep27','1922_45')); alpha_guess = 5.0; max_range = 15
 # info = ('No Heating', ('2013Sep27','1923_30')); alpha_guess = 5.0; max_range = 15
 # info = ('No Heating', ('2013Sep27','1924_14')); alpha_guess = 5.0; max_range = 15
-info = ('No Heating', ('2013Sep27','1925_22')); alpha_guess = 5.0; max_range = 15
+# info = ('No Heating', ('2013Sep27','1925_22')); alpha_guess = 5.0; max_range = 15
 
 trap_frequency = T.Value(3.0, 'MHz')
 projection_angle = 45 #degrees
@@ -76,6 +76,16 @@ region = (fitting_region[0] <= times) * (times <= fitting_region[1])
 result = lmfit.minimize(rabi_flop_fit_thermal, params, args = (times[region], prob[region]))
 fit_values = flop.compute_evolution_coherent(params['nbar'].value , params['alpha'].value, params['detuning'].value, params['time_2pi'].value, detailed_times - offset_time, excitation_scaling = params['excitation_scaling'].value)
 lmfit.report_errors(params)
+
+# 
+# alpha = params['alpha'].value
+# nbar = params['nbar'].value
+# t2pi = params['time_2pi']
+# op_eff = 0.5
+# 
+# y_values = op_eff * np.exp(-1./2*eta.value**2)**2 * (eta.value)**2 * (alpha**2 + nbar) * (np.pi / t2pi)**2 * (detailed_times- offset_time)**2
+
+
 '''
 make the plot
 '''
@@ -83,6 +93,8 @@ pyplot.figure()
 # pyplot.plot(detailed_times, guess_evolution, '--k', alpha = 0.5, label = 'initial guess')
 pyplot.plot(times, prob, 'ob', label = 'data')
 pyplot.plot(detailed_times, fit_values, 'r', label = 'fitted')
+# pyplot.plot(detailed_times, y_values, 'b', label = 'simplified')
+
 pyplot.legend()
 pyplot.title(title, fontsize = 16)
 pyplot.xlabel('time (us)', fontsize = 16)

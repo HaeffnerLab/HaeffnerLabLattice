@@ -71,16 +71,23 @@ if __name__ == '__main__':
     
     def thermal_example():
         eta = 0.05
-        times = np.linspace(0, 300, 1000)
+        times = np.linspace(0, 100, 1000)
         te = rabi_flop_time_evolution(-1 ,eta)
-        prob_red = te.compute_evolution_thermal(nbar = 3, delta = 0, time_2pi = 15, t = times)
+        prob_red = te.compute_evolution_thermal(nbar = 0.05, delta = 0, time_2pi = 15, t = times)
         te = rabi_flop_time_evolution(1 ,eta)
-        prob_blue = te.compute_evolution_thermal(nbar = 3, delta = 0, time_2pi = 15, t = times)
+        prob_blue = te.compute_evolution_thermal(nbar = 0.05, delta = 0, time_2pi = 15, t = times)
         te = rabi_flop_time_evolution(0 ,eta)
-        prob_car = te.compute_evolution_thermal(nbar = 3, delta = 0, time_2pi = 15, t = times)
+        prob_car = te.compute_evolution_thermal(nbar = 0.05, delta = 0, time_2pi = 15, t = times)
         pyplot.plot(times, prob_red, label = 'red sideband')
         pyplot.plot(times, prob_blue, label = 'carrier')
         pyplot.plot(times, prob_car, label = 'blue sideband')
+        
+        alpha = 0
+        nbar = 0.05
+        time_2pi = 15
+        y_values = np.exp(-1./2*eta**2)**2 * (eta)**2 * (alpha**2 + nbar + 1) * (np.pi / time_2pi)**2 * (times)**2
+        pyplot.plot(times,y_values, label = 'quadratic')
+        
         pyplot.legend()
         pyplot.show()
         #extracting back the temperature from the ratio of sidebands

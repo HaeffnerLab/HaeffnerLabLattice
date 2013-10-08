@@ -1,5 +1,5 @@
 import numpy as np
-from qutip import tensor, Qobj
+from qutip import tensor, Qobj, expect, qeye, sigmaz, sigmay, sigmax
 import itertools
 from scipy.misc import comb as choose
 
@@ -69,3 +69,23 @@ class state_quantifier(object):
         scaling = scaling.sum()
         m_x_bar = (scaling - m_x) / (scaling - 1)
         return m_x_bar
+    
+    def get_reduced_dms(self,states, spin):
+        '''
+        takes a number of states and returns a list of bloch vector of the 0th spin coordinates for each
+        '''
+        sz = sigmaz()
+        sy = sigmay()
+        sx = sigmax()
+        zs = []
+        ys = []
+        xs = []
+        for state in states:
+            ptrace = state.ptrace(spin)
+            zval = abs(expect(sz, ptrace ))
+            yval = abs(expect(sy, ptrace ))
+            xval = abs(expect(sx, ptrace ))
+            zs.append(zval)
+            ys.append(yval)
+            xs.append(xval)
+        return xs,ys,zs

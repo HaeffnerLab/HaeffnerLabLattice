@@ -45,9 +45,9 @@ def get_dms(states):
     xs = []
     for state in states:
         ptrace = state.ptrace(0)
-        zval = abs(expect(sz, ptrace ))
-        yval = abs(expect(sy, ptrace ))
-        xval = abs(expect(sx, ptrace ))
+        zval = expect(sz, ptrace )
+        yval = expect(sy, ptrace )
+        xval = expect(sx, ptrace )
         zs.append(zval)
         ys.append(yval)
         xs.append(xval)
@@ -116,9 +116,9 @@ def do_dephasing_dm(dm, number_spins):
     #proj is the projection onto th eigenbasis of particle 0
     dephased = projection0 * dm * projection0 + projection1 * dm * projection1
     #dephasing checks
-    environment = range(1,N)
-    print 'do partial traces agree?', [dm.ptrace(i) == dephased.ptrace(i) for i in range(N)], dm.ptrace(environment)  == dephased.ptrace(environment)
-    print 'but the dm is different?', not dephased == dm
+#     environment = range(1,N)
+#     print 'do partial traces agree?', [dm.ptrace(i) == dephased.ptrace(i) for i in range(N)], dm.ptrace(environment)  == dephased.ptrace(environment)
+#     print 'but the dm is different?', not dephased == dm
     return dephased
 
 def do_dephasing(state, number_spins):
