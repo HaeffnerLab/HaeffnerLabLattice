@@ -114,10 +114,10 @@ class excitation_729(experiment):
     
     def setup_sequence_parameters(self):
         op = self.parameters.OpticalPumping
-        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker)
+        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, op.optical_pumping_enable)
         self.parameters['OpticalPumping.optical_pumping_frequency_729'] = optical_pumping_frequency
         sc = self.parameters.SidebandCooling
-        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker)
+        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
         if sc.frequency_selection == 'auto': 
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)

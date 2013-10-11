@@ -1,8 +1,8 @@
 class common_methods_729(object):
     
     @staticmethod
-    def frequency_from_line_selection(frequency_selection, manual_frequency_729, line_selection, drift_tracker):
-        if frequency_selection == 'manual':
+    def frequency_from_line_selection(frequency_selection, manual_frequency_729, line_selection, drift_tracker, lookup_needed = True):
+        if not lookup_needed or frequency_selection == 'manual':
             return manual_frequency_729
         elif frequency_selection == 'auto':
             try:

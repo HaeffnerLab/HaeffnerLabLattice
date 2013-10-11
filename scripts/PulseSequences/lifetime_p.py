@@ -39,9 +39,9 @@ class lifetime_p(pulse_sequence):
         ### add hack before the new parsing method ####
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
-        self.addDDS('global397',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
-        self.addDDS('radial',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off)
-        self.end += frequency_advance_duration
+        #self.addDDS('global397',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
+        #self.addDDS('866',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off) ###changed from radial to 866 :Hong
+        #self.end += frequency_advance_duration
         ### hack done ###########
         
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
@@ -51,7 +51,7 @@ class lifetime_p(pulse_sequence):
             self.addDDS('global397',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
-            self.addDDS('radial',self.end, l.duration_866_pulse, l.frequency_866_pulse, l.amplitude_866_pulse)
+            self.addDDS('866',self.end, l.duration_866_pulse, l.frequency_866_pulse, l.amplitude_866_pulse) ###changed from radial to 866 :Hong
             self.end += l.duration_866_pulse
         stop_recording_timetags = self.end
         timetag_record_duration = stop_recording_timetags - start_recording_timetags
