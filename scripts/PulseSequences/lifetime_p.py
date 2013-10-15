@@ -39,16 +39,19 @@ class lifetime_p(pulse_sequence):
         ### add hack before the new parsing method ####
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
-        #self.addDDS('global397',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
-        #self.addDDS('866',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off) ###changed from radial to 866 :Hong
-        #self.end += frequency_advance_duration
+        self.addDDS('radial',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
+        self.addDDS('866',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off) ###changed from radial to 866 :Hong
+        self.end += frequency_advance_duration
         ### hack done ###########
         
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
         start_recording_timetags = self.end
         for i in range(cycles):
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
-            self.addDDS('global397',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
+            self.addDDS('radial',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
+            self.end += l.duration_397_pulse
+            self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
+            self.addDDS('radial',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
             self.addDDS('866',self.end, l.duration_866_pulse, l.frequency_866_pulse, l.amplitude_866_pulse) ###changed from radial to 866 :Hong
@@ -58,4 +61,4 @@ class lifetime_p(pulse_sequence):
         #record timetags while cycling takes place
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
-        self.timetag_record_cycle = 2 * l.between_pulses + l.duration_397_pulse + l.duration_866_pulse
+        self.timetag_record_cycle = 2 * (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses

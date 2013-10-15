@@ -83,6 +83,8 @@ class blue_heat_rabi(pulse_sequence):
                         ('StateReadout','state_readout_amplitude_866'),
                         ('StateReadout','state_readout_duration'),
                         ('StateReadout','use_camera_for_readout'),
+                        ('StateReadout','camera_trigger_width'),
+                        ('StateReadout','camera_transfer_additional'),
                         
                         ('Tomography', 'rabi_pi_time'),
                         ('Tomography', 'iteration'),
