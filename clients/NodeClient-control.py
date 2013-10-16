@@ -2,12 +2,25 @@ import labrad
 import numpy as np
 import time
 
-nodeDict = {'node_lattice_control':
-					['Serial Server','Data Vault', 'DAC', 'Pulser', 'NormalPMTFlow',
-					'ADCserver','SD Tracker','GPIB Device Manager', 
-					'ScriptScanner','ParameterVault','SHQ_222M_SERVER','Electrode Diagonalization','Crystallizer','Agilent 6030A Server'],
-		}
-
+nodeDict = {
+			'node_lattice_control':[
+								'Serial Server',
+								'Data Vault',
+								'DAC',
+								'Pulser',
+								'NormalPMTFlow',
+								'ADCserver',
+								'SD Tracker',
+								'GPIB Device Manager', 
+								'ScriptScanner',
+								'ParameterVault',
+								'SHQ_222M_SERVER',
+								'Electrode Diagonalization',
+								'Crystallizer',
+								'Agilent 6030A Server',
+								'Agilent E3633A',
+								],
+			}
 #connect to LabRAD
 errors = False
 try:
