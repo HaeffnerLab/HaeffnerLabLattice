@@ -19,6 +19,7 @@ nodeDict = {
 								'Crystallizer',
 								'Agilent 6030A Server',
 								'Agilent E3633A',
+								'Rigol DG4062 Server',
 								],
 			}
 #connect to LabRAD

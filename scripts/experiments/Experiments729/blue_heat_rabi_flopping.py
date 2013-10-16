@@ -26,7 +26,16 @@ class blue_heat_rabi_flopping(experiment):
                            ('RabiFlopping','frequency_selection'),
                            ('RabiFlopping','sideband_selection'),
                            
-                           ('Crystallization', 'auto_crystallization')
+                           ('Crystallization', 'auto_crystallization'),
+                           ('Crystallization', 'camera_record_exposure'),
+                           ('Crystallization', 'camera_threshold'),
+                           ('Crystallization', 'max_attempts'),
+                           ('Crystallization', 'max_duration'),
+                           ('Crystallization', 'min_duration'),
+                           ('Crystallization', 'pmt_record_duration'),
+                           ('Crystallization', 'pmt_threshold'),
+                           ('Crystallization', 'use_camera'),
+                           
                            ]
     required_parameters.extend(trap_frequencies)
     optional_parmeters = [
@@ -94,22 +103,27 @@ class blue_heat_rabi_flopping(experiment):
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.do_get_excitation(cxn, context, duration)
-            if self.parameters.Crystallization.auto_crystallization:
-                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
-                #if initially melted, redo the point
-                while initally_melted:
-                    if not got_crystallized:
-                        #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
-                        self.cxn.scriptscanner.pause_script(self.ident, True)
-                        should_stop = self.pause_or_stop()
-                        if should_stop: break
-                    excitation = self.do_get_excitation(cxn, context, duration)
-                    initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            excitation = self.get_excitation_crystallizing(context, duration)
+            if excitation is None: break 
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
+    
+    def get_excitation_crystallizing(self, context, duration):
+        excitation = self.do_get_excitation(cxn, context, duration)
+        if self.parameters.Crystallization.auto_crystallization:
+            initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            #if initially melted, redo the point
+            while initally_melted:
+                if not got_crystallized:
+                    #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
+                    self.cxn.scriptscanner.pause_script(self.ident, True)
+                    should_stop = self.pause_or_stop()
+                    if should_stop: return None
+                excitation = self.do_get_excitation(cxn, context, duration)
+                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+        return excitation
     
     def do_get_excitation(self, cxn, context, duration):
         self.load_frequency()
@@ -117,6 +131,7 @@ class blue_heat_rabi_flopping(experiment):
         self.excite.set_parameters(self.parameters)
         excitation = self.excite.run(cxn, context)
         return excitation
+    
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
         self.excite.finalize(cxn, context)

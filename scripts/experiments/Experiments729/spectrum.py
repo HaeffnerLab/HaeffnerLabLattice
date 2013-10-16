@@ -2,6 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitation_729 import excitation_729
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
+from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
 import labrad
 from labrad.units import WithUnit
@@ -28,6 +29,16 @@ class spectrum(experiment):
                            ('TrapFrequencies','radial_frequency_1'),
                            ('TrapFrequencies','radial_frequency_2'),
                            ('TrapFrequencies','rf_drive_frequency'),
+                           
+                           ('Crystallization', 'auto_crystallization'),
+                           ('Crystallization', 'camera_record_exposure'),
+                           ('Crystallization', 'camera_threshold'),
+                           ('Crystallization', 'max_attempts'),
+                           ('Crystallization', 'max_duration'),
+                           ('Crystallization', 'min_duration'),
+                           ('Crystallization', 'pmt_record_duration'),
+                           ('Crystallization', 'pmt_threshold'),
+                           ('Crystallization', 'use_camera'),
                            ]
     
     optional_parmeters = [
@@ -44,6 +55,9 @@ class spectrum(experiment):
         self.ident = ident
         self.excite = self.make_experiment(excitation_729)
         self.excite.initialize(cxn, context, ident)
+        if self.parameters.Crystallization.auto_crystallization:
+            self.crystallizer = self.make_experiment(crystallization)
+            self.crystallizer.initialize(cxn, context, ident)
         self.scan = []
         self.amplitude = None
         self.duration = None
@@ -95,13 +109,33 @@ class spectrum(experiment):
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            self.parameters['Excitation_729.rabi_excitation_frequency'] = freq
-            self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
+            excitation = self.get_excitation_crystallizing(context, freq)
+            if excitation is None: break
             submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
+    
+    def get_excitation_crystallizing(self, context, freq):
+        excitation = self.do_get_excitation(cxn, context, freq)
+        if self.parameters.Crystallization.auto_crystallization:
+            initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            #if initially melted, redo the point
+            while initally_melted:
+                if not got_crystallized:
+                    #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
+                    self.cxn.scriptscanner.pause_script(self.ident, True)
+                    should_stop = self.pause_or_stop()
+                    if should_stop: return None
+                excitation = self.do_get_excitation(cxn, context, freq)
+                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+        return excitation
+    
+    def do_get_excitation(self, cxn, context, freq):
+        self.parameters['Excitation_729.rabi_excitation_frequency'] = freq
+        self.excite.set_parameters(self.parameters)
+        excitation = self.excite.run(cxn, context)
+        return excitation
     
     def fit_lorentzian(self, timeout):
         #for lorentzian format is FWHM, center, height, offset

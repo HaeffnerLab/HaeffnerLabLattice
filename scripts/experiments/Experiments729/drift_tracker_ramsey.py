@@ -50,9 +50,13 @@ class drift_tracker_ramsey(experiment):
         self.ramsey_dt.set_parameters(replace_1)
         self.ramsey_dt.set_progress_limits(0, 50.0)
         frequency_1,excitation = self.ramsey_dt.run(cxn, context)
+        if not 0.3 <= excitation <= 0.60:
+            raise Exception("Incorrect Excitation {}".format(replace_1.DriftTrackerRamsey.line_selection)) 
         self.ramsey_dt.set_parameters(replace_2)
         self.ramsey_dt.set_progress_limits(50.0, 100.0)
         frequency_2,excitation = self.ramsey_dt.run(cxn, context)
+        if not 0.3 <= excitation <= 0.60:
+            raise Exception("Incorrect Excitation {}".format(replace_2.DriftTrackerRamsey.line_selection)) 
         self.submit_centers(replace_1,frequency_1,replace_2,frequency_2)
 
     def submit_centers(self, replace_1, center1, replace_2, center2):                
