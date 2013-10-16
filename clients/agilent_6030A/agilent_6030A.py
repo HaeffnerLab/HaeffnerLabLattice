@@ -7,8 +7,6 @@ basepath =  os.path.dirname(__file__)
 path = os.path.join(basepath, "agilent_6030A.ui")
 base, form = uic.loadUiType(path)
 
-SIGNALID = 345231
-
 class widget_ui(base, form):
     def __init__(self, parent = None):
         super(widget_ui, self).__init__(parent)

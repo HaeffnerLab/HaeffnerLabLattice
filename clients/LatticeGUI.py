@@ -65,16 +65,19 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
         from quick_actions.quick_actions import actions_widget
         from indicator.indicator import indicator_widget
+        from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,1)
-        gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,1)
-        gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,1)
-        gridLayout.addWidget(cavityWidget(reactor),             0,1,3,2)
-        gridLayout.addWidget(multiplexerWidget(reactor),        0,3,3,1)
-        gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,1)
-        gridLayout.addWidget(pmtWidget(reactor),                3,1,1,1)
-        gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,2,1,1)
-        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,3,1,1)
+        gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
+        gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
+        gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
+        gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
+        gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
+        gridLayout.addWidget(cavityWidget(reactor),             0,2,3,2)
+        gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
+        gridLayout.addWidget(switchWidget(reactor, cxn),        4,0,1,2)
+        gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
+        gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,3,1,1)
+        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,4,1,1)
         widget.setLayout(gridLayout)
         return widget
 
