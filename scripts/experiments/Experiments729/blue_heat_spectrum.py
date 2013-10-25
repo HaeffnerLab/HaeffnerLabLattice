@@ -110,14 +110,14 @@ class blue_heat_spectrum(experiment):
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(context, freq)
+            excitation = self.get_excitation_crystallizing(cxn, context, freq)
             if excitation is None: break
             submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
     
-    def get_excitation_crystallizing(self, context, freq):
+    def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)

@@ -102,15 +102,14 @@ class rabi_flopping(experiment):
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(context, duration)
+            excitation = self.get_excitation_crystallizing(cxn, context, duration)
             if excitation is None: break 
-            excitation = self.excite.run(cxn, context)
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
     
-    def get_excitation_crystallizing(self, context, duration):
+    def get_excitation_crystallizing(self, cxn, context, duration):
         excitation = self.do_get_excitation(cxn, context, duration)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)

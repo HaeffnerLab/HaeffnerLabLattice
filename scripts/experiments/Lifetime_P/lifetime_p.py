@@ -93,6 +93,7 @@ class lifetime_p(experiment):
             self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
             #collapse the timetags onto a single cycle starting at 0
             timetags = timetags - self.start_recording_timetags['s']
+            print self.start_recording_timetags
             #print self.start_recording_timetags
             timetags = timetags % self.timetag_record_cycle['s']
             #print self.start_recording_timetags, self.timetag_record_cycle

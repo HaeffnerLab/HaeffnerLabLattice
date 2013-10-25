@@ -28,6 +28,9 @@ class reference_camera_image(experiment):
                            ('StateReadout','state_readout_frequency_397'),
                            ('StateReadout','state_readout_amplitude_866'),
                            ('StateReadout','state_readout_frequency_866'),
+                           ('StateReadout','camera_trigger_width'),
+                           ('StateReadout','camera_transfer_additional'),
+                           
                            ('DopplerCooling','doppler_cooling_repump_additional'),
                            ]
     

@@ -61,4 +61,5 @@ class lifetime_p(pulse_sequence):
         #record timetags while cycling takes place
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
+        #self.timetag_record_cycle = 1 * (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses
         self.timetag_record_cycle = 2 * (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses
