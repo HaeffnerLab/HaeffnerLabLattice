@@ -3,8 +3,10 @@ from lattice.scripts.PulseSequences.bare_line_scan import bare_line_scan as sequ
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.scriptLibrary.fly_processing import Binner
 import time
-import numpy
+from numpy import linspace
+from labrad.units import WithUnit
 import labrad
+import numpy
        
 class bare_line_scan(experiment):
     
@@ -18,6 +20,7 @@ class bare_line_scan(experiment):
                            ('BareLineScan','doppler_cooling_duration'),
                            ('BareLineScan','frequency_scan'),
                            ]
+    
     required_parameters.extend(sequence.required_parameters)
     required_parameters.remove(('DopplerCooling','doppler_cooling_duration'))
     # this parameter will get scanned #
@@ -34,7 +37,7 @@ class bare_line_scan(experiment):
         self.binned_save_context = cxn.context()
         self.total_timetag_save_context = cxn.context()
         self.timetags_since_last_binsave = 0
-        self.bin_every = self.parameters.LifetimeP.bin_every
+        self.bin_every = self.parameters.BareLineScan.bin_every
         self.setup_data_vault()
         self.setup_initial_switches()
     
@@ -50,11 +53,12 @@ class bare_line_scan(experiment):
         self.dv.cd(directory , context = self.total_timetag_save_context)
         self.dv.new('Total Timetags Per Transfer {}'.format(datasetNameAppend),[('Time', 'sec')],[('Total timetags','Arb','Arb')], context = self.total_timetag_save_context)
         self.dv.add_parameter('plotLive', True, context = self.total_timetag_save_context)
-        self.dv.add_parameter('Window', ['LifetimeP Timetags Per Transfer'], context = self.total_timetag_save_context)
+        self.dv.add_parameter('Window', ['BareLineScan Timetags Per Transfer'], context = self.total_timetag_save_context)
         self.dv.cd(directory , context = self.timetag_save_context)
         self.dv.cd(directory , context = self.binned_save_context)
         
     def setup_initial_switches(self):
+
         self.pulser.switch_auto('866DP', True) #high TTL corresponds to light OFF
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
@@ -70,9 +74,10 @@ class bare_line_scan(experiment):
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
         
-    def program_pulser(self, reprogram = False):
+    def program_pulser(self, frequency_397, reprogram = False):
         self.pulser.reset_timetags()
-        self.parameters['DopplerCooling.doppler_cooling_duration'] = self.parameters.LifetimeP.doppler_cooling_duration
+        self.parameters['DopplerCooling.doppler_cooling_duration'] = self.parameters.BareLineScan.doppler_cooling_duration
+        self.parameters['BareLineScan.frequency_397_pulse'] = frequency_397
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
         if not reprogram:
@@ -83,42 +88,44 @@ class bare_line_scan(experiment):
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
 
     def run(self, cxn, context):
-        back_to_back = int(self.parameters.LifetimeP.pulse_sequences_per_timetag_transfer)
-        total_timetag_transfers = int(self.parameters.LifetimeP.total_timetag_transfers)
-        for index in range(total_timetag_transfers):  
-            should_stop = self.pause_or_stop()
-            if should_stop: break
-            if index == 0: #on the first run, need to do some setting up
-                print 'programming'
-                self.program_pulser(reprogram = False)
-            else:
-                print 'reprogramming'
-                self.program_pulser(reprogram = True)
-            self.pulser.start_number(back_to_back)
-            self.pulser.wait_sequence_done()
-            self.pulser.stop_sequence()
-            #get timetags and save
-            timetags = self.pulser.get_timetags().asarray
-            #print self.parameter.DopplerCooling.doppler_cooling_duration
-            if timetags.size >= self.parameters.LifetimeP.max_timetags_per_transfer:
-                raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
-            else:
-                self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
-            iters = index * numpy.ones_like(timetags)
-            self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
-            #collapse the timetags onto a single cycle starting at 0
-            timetags = timetags - self.start_recording_timetags['s']
-            print self.start_recording_timetags
-            #print self.start_recording_timetags
-            timetags = timetags % self.timetag_record_cycle['s']
-            #print self.start_recording_timetags, self.timetag_record_cycle
-            self.binner.add(timetags, back_to_back * self.parameters.LifetimeP.cycles_per_sequence)
-            self.timetags_since_last_binsave += timetags.size
-            if self.timetags_since_last_binsave > self.bin_every:
-                self.save_histogram()
-                self.timetags_since_last_binsave = 0
-                self.bin_every *= 2
-            self.update_progress(index)
+        self.setup_sequence_parameters()
+        back_to_back = int(self.parameters.BareLineScan.pulse_sequences_per_timetag_transfer)
+        total_timetag_transfers = int(self.parameters.BareLineScan.total_timetag_transfers)
+        for i,frequency_397 in enumerate(self.scan):
+            for index in range(total_timetag_transfers):  
+                should_stop = self.pause_or_stop()
+                if should_stop: break
+                if index == 0: #on the first run, need to do some setting up
+                    print 'programming'
+                    self.program_pulser(frequency_397, reprogram = False)
+                else:
+                    print 'reprogramming'
+                    self.program_pulser(frequency_397, reprogram = True)
+                self.pulser.start_number(back_to_back)
+                self.pulser.wait_sequence_done()
+                self.pulser.stop_sequence()
+                #get timetags and save
+                timetags = self.pulser.get_timetags().asarray
+                #print self.parameter.DopplerCooling.doppler_cooling_duration
+                if timetags.size >= self.parameters.BareLineScan.max_timetags_per_transfer:
+                    raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
+                else:
+                    self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
+                iters = index * numpy.ones_like(timetags)
+                self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
+                #collapse the timetags onto a single cycle starting at 0
+                timetags = timetags - self.start_recording_timetags['s']
+                print self.start_recording_timetags
+                #print self.start_recording_timetags
+                timetags = timetags % self.timetag_record_cycle['s']
+                #print self.start_recording_timetags, self.timetag_record_cycle
+                self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
+                self.timetags_since_last_binsave += timetags.size
+                if self.timetags_since_last_binsave > self.bin_every:
+                    self.save_histogram()
+                    self.timetags_since_last_binsave = 0
+                    self.bin_every *= 2
+                self.update_progress(i)
                 
     def save_histogram(self, force = False):
         bins, hist = self.binner.getBinned()
@@ -126,14 +133,14 @@ class bare_line_scan(experiment):
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         self.dv.new('Binned {}'.format(datasetNameAppend),[('Time', 'us')],[('CountRate','Counts/sec','Counts/sec')], context = self.binned_save_context)
         self.dv.add_parameter('plotLive', True , context = self.binned_save_context)
-        self.dv.add_parameter('Window', ['LifetimeP Histogram'], context = self.binned_save_context)
+        self.dv.add_parameter('Window', ['BareLineScan Histogram'], context = self.binned_save_context)
         self.dv.add(numpy.vstack((bins,hist)).transpose(), context = self.binned_save_context)
     
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.timetag_save_context)
     
     def update_progress(self, iteration):
-        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / float(self.parameters.LifetimeP.total_timetag_transfers)
+        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)
         
     def save_parameters(self, dv, cxn, cxnlab, context):
@@ -144,6 +151,6 @@ class bare_line_scan(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = lifetime_p(cxn = cxn)
+    exprt = bare_line_scan(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

@@ -132,12 +132,12 @@ class agilent_E3633A(QtGui.QFrame, widget_ui):
     
 class magnet_Control(agilent_E3633A):
     
-    GPIB_device_ID = 'lattice-imaging GPIB Bus - GPIB1::5'
+    GPIB_device_ID = 'lattice-imaging GPIB Bus - GPIB0::5'
     title_text = 'Main Coil'
 
 class oven_Control(agilent_E3633A):
     
-    GPIB_device_ID = 'lattice-imaging GPIB Bus - GPIB0::5'
+    GPIB_device_ID = 'lattice-imaging GPIB Bus - GPIB1::4'
     title_text = 'Oven'
         
 if __name__=="__main__":
