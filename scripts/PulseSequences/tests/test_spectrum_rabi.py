@@ -67,6 +67,10 @@ class test_parameters(object):
               ('StateReadout','state_readout_amplitude_866'):WithUnit(-11.0, 'dBm'),
               ('StateReadout','state_readout_duration'):WithUnit(3.0,'ms'),
               ('StateReadout','use_camera_for_readout'):True,
+              
+              ('StateReadout', 'camera_trigger_width_value'):WithUnit(2.0,'ms'),
+              ('StateReadout', 'camera_transfer_additional'):WithUnit(2.0,'ms'),
+              ('StateReadout', 'camera_trigger_width'):WithUnit(5.0,'us'),
                   
               ('Tomography', 'rabi_pi_time'):WithUnit(50.0, 'us'),
               ('Tomography', 'iteration'):0,

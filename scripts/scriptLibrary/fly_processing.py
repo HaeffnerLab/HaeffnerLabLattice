@@ -21,7 +21,7 @@ class Binner():
             binned = self.binned / float(self.binWidth)
             if not self.averaged == 0:
                 binned = binned / float(self.averaged)
-        return (self.binArray[0:-1], binned)
+        return (self.binArray[0:-1], self.binned)
 
 class Splicer():
     '''Helper class for maintaining a list of timetags during a readout period'''

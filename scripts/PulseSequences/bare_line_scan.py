@@ -39,7 +39,9 @@ class bare_line_scan(pulse_sequence):
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
         start_recording_timetags = self.end
         for i in range(cycles):
+            #add readout count for total number of blue photons
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
+            self.addTTL('ReadoutCount', self.end, l.duration_397_pulse)
             self.addDDS('397',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
