@@ -1,4 +1,4 @@
-import pyqtgraph as pg
+# 'import pyqtgraph as pg'
 
 class color_chooser(object):
     

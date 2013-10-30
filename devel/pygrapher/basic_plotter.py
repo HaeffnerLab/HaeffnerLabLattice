@@ -5,6 +5,9 @@ from matplotlib.backends.backend_qt4agg import (
 from PyQt4 import QtCore, QtGui
 import matplotlib.animation as animation
 
+from twisted.internet.threads import blockingCallFromThread
+from twisted.internet.defer import Deferred
+
 class Basic_Matplotlib_Plotter(QtGui.QWidget):
     def __init__(self, parent=None):
         super(Basic_Matplotlib_Plotter, self).__init__(parent)
@@ -13,6 +16,9 @@ class Basic_Matplotlib_Plotter(QtGui.QWidget):
         self.create_layout()
     
     def should_continue(self):
+        d = Deferred()
+        
+        blockingCallFromThread()
         while True:
             if self.should_stop: return
             yield True

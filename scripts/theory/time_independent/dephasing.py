@@ -58,7 +58,7 @@ def dephase_and_plot_evolution(number_of_spins, alpha, B, t_list):
 
 if __name__ == '__main__':
     def simple_plot():
-        number_of_spins = 5
+        number_of_spins = 10
         alpha = 1.0
         B = 1.0
         t_list = np.linspace(0, 20 , 500)
@@ -81,8 +81,8 @@ if __name__ == '__main__':
             max_distances.append(max_trace_distace)
         np.save('trace distances {} pts'.format(pts), (B_list,max_distances))
     
-    max_distance_for_B()
-#     simple_plot()
+#     max_distance_for_B()
+    simple_plot()
 
 
 #     integ = time_independent_simulator(number_of_spins, alpha, B)
