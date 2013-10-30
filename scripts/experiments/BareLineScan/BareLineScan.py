@@ -109,6 +109,8 @@ class bare_line_scan(experiment):
             
             self.program_pulser(frequency_397)
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
+            
+            total_readout = []
                 
             for index in range(total_timetag_transfers): 
                  
@@ -117,10 +119,9 @@ class bare_line_scan(experiment):
                 self.pulser.stop_sequence()
                 #get readout count = # of count from blue pulse
                 readouts = self.pulser.get_readout_counts().asarray
-                average_readouts = numpy.average(readouts)
-                print average_readouts
-                print frequency_397
-                self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
+                total_readout.extend(readouts)
+                
+               
                 
                 
                 #get timetags and save
@@ -142,7 +143,9 @@ class bare_line_scan(experiment):
                 self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
                 self.timetags_since_last_binsave += timetags.size
                 #if self.timetags_since_last_binsave > self.bin_every:
-            
+                
+            average_readouts = numpy.average(numpy.array(total_readout))
+            self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
             self.save_histogram()
             
                 #self.timetags_since_last_binsave = 0
