@@ -34,6 +34,7 @@ class bare_line_scan(experiment):
         self.dv = cxn.data_vault
         self.pulser = cxn.pulser
         self.scan = []
+        self.spectrum_counts = []
         self.timetag_save_context = cxn.context()
         self.binned_save_context = cxn.context()
         self.total_timetag_save_context = cxn.context()
@@ -42,6 +43,7 @@ class bare_line_scan(experiment):
         self.bin_every = self.parameters.BareLineScan.bin_every
         self.setup_data_vault()
         self.setup_initial_switches()
+        self.show_histogram = True
     
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -53,16 +55,11 @@ class bare_line_scan(experiment):
         self.dv.cd(directory ,True, context = self.timetag_save_context)
         self.dv.new('Timetags {}'.format(datasetNameAppend),[('Time', 'sec')],[('Photons','Arb','Arb')], context = self.timetag_save_context)
         self.dv.cd(directory , context = self.total_timetag_save_context)
-        self.dv.new('Total Timetags Per Transfer {}'.format(datasetNameAppend),[('Time', 'sec')],[('Total timetags','Arb','Arb')], context = self.total_timetag_save_context)
-        #self.dv.add_parameter('plotLive', True, context = self.total_timetag_save_context)
-        #self.dv.add_parameter('Window', ['BareLineScan Timetags Per Transfer'], context = self.total_timetag_save_context)
-        
+        self.dv.new('Total Timetags Per Transfer {}'.format(datasetNameAppend),[('Time', 'sec')],[('Total timetags','Arb','Arb')], context = self.total_timetag_save_context)       
         self.dv.cd(directory , context = self.spectrum_save_context)
         self.dv.new('BareLineSpectrum {}'.format(datasetNameAppend),[('Frequency', 'MHz')],[('Counts','Arb','Arb')], context = self.spectrum_save_context)
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
-        self.dv.add_parameter('Window', ['BareLineScan Spectrum'], context = self.spectrum_save_context)
-        
-        
+        self.dv.add_parameter('Window', ['BareLineScan Spectrum'], context = self.spectrum_save_context)      
         self.dv.cd(directory , context = self.timetag_save_context)
         self.dv.cd(directory , context = self.binned_save_context)
         self.dv.cd(directory , context = self.spectrum_save_context)
@@ -90,11 +87,10 @@ class bare_line_scan(experiment):
         self.parameters['BareLineScan.frequency_397_pulse'] = frequency_397
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)   
-        #if not reprogram:
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
         self.start_recording_timetags = pulse_sequence.start_recording_timetags
-        #print self.timetag_record_cycle
-        #print self.start_recording_timetags
+        print self.timetag_record_cycle
+        print self.start_recording_timetags
             
 
     def run(self, cxn, context):
@@ -112,18 +108,14 @@ class bare_line_scan(experiment):
             
             total_readout = []
                 
-            for index in range(total_timetag_transfers): 
-                 
+            for index in range(total_timetag_transfers):                
                 self.pulser.start_number(back_to_back)
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()
                 #get readout count = # of count from blue pulse
                 readouts = self.pulser.get_readout_counts().asarray
                 total_readout.extend(readouts)
-                
-               
-                
-                
+
                 #get timetags and save
                 timetags = self.pulser.get_timetags().asarray
                 #print self.parameter.DopplerCooling.doppler_cooling_duration
@@ -132,8 +124,7 @@ class bare_line_scan(experiment):
                 else:
                     self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
                 iters = index * numpy.ones_like(timetags)
-                self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)
-                
+                self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
                 #collapse the timetags onto a single cycle starting at 0
                 timetags = timetags - self.start_recording_timetags['s']
                 print self.start_recording_timetags
@@ -141,15 +132,15 @@ class bare_line_scan(experiment):
                 timetags = timetags % self.timetag_record_cycle['s']
                 #print self.start_recording_timetags, self.timetag_record_cycle
                 self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
-                self.timetags_since_last_binsave += timetags.size
-                #if self.timetags_since_last_binsave > self.bin_every:
-                
-            average_readouts = numpy.average(numpy.array(total_readout))
-            self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
-            self.save_histogram()
             
-                #self.timetags_since_last_binsave = 0
-                #self.bin_every *= 2
+            average_readouts = numpy.average(numpy.array(total_readout))
+            spectrum_counts.extend(average_readouts)
+            
+            self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
+            
+            if self.show_histogram:
+                self.save_histogram()
+
             self.update_progress(i)
                 
     def save_histogram(self, force = False):
