@@ -3,8 +3,8 @@ import numpy as np
 from matplotlib import pyplot
 
 
-Omega = 0.00001
-Delta_array = np.array([0.0,0.05,0.1])
+Omega_array = np.array([0.01,0.1])
+Delta_array = np.array([0.0])
 theta = np.pi/2.0
 gamma_array = np.array([0.0])
 # change to magnetic field
@@ -95,12 +95,13 @@ def get_coherence(Omega, Delta, theta, gamma, delta, p):
 	signal = BB[11]-BB[14]
 	return signal
 
-for gamma in gamma_array:
-	for Delta in Delta_array:	
-		signal_array = []
-		for delta in delta_array:
-			signal = get_coherence(Omega,Delta, theta, gamma,delta,p).imag
-			signal_array = np.append(signal_array,signal)
-		pyplot.plot(2.0*delta_array/3.0,signal_array)
+for Omega in Omega_array:
+	for gamma in gamma_array:
+		for Delta in Delta_array:	
+			signal_array = []
+			for delta in delta_array:
+				signal = get_coherence(Omega,Delta, theta, gamma,delta,p).imag
+				signal_array = np.append(signal_array,signal)
+			pyplot.plot(2.0*delta_array/3.0,signal_array)
 
 pyplot.show()
