@@ -35,13 +35,19 @@ class bare_line_scan(pulse_sequence):
         #turn off all the lights, then do doppler cooling
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
-        self.addSequence(doppler_cooling)      
+        self.addSequence(doppler_cooling)    
+        
+        frequency_advance_duration = WithUnit(6, 'us')
+        ampl_off = WithUnit(-63.0, 'dBm')
+        self.addDDS('397',self.end, frequency_advance_duration, l.frequency_397_pulse, ampl_off)
+        self.addDDS('866',self.end, frequency_advance_duration, l.frequency_866_pulse, ampl_off) ###changed from radial to 866 :Hong
+        self.end += frequency_advance_duration  
         #record timetags while switching while cycling 'wait, pulse 397, wait, pulse 866'
         start_recording_timetags = self.end
         for i in range(cycles):
             #add readout count for total number of blue photons
+            self.addTTL('ReadoutCount', self.end, l.duration_397_pulse+2*l.between_pulses)
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
-            self.addTTL('ReadoutCount', self.end, l.duration_397_pulse)
             self.addDDS('397',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))

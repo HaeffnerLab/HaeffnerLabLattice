@@ -20,6 +20,8 @@ class bare_line_scan(experiment):
                            ('BareLineScan','max_timetags_per_transfer'),
                            ('BareLineScan','doppler_cooling_duration'),
                            ('BareLineScan','frequency_scan'),
+                           ('BareLineScan','use_calibrated_power'),
+                           ('BareLineScan','calibrated_power_dataset'),
                            ]
     
     required_parameters.extend(sequence.required_parameters)
@@ -35,10 +37,13 @@ class bare_line_scan(experiment):
         self.pulser = cxn.pulser
         self.scan = []
         self.spectrum_counts = []
+        self.use_calibrated_power = self.parameters.BareLineScan.use_calibrated_power
+        self.calibrated_power_dataset = int(self.parameters.BareLineScan.calibrated_power_dataset)
         self.timetag_save_context = cxn.context()
         self.binned_save_context = cxn.context()
         self.total_timetag_save_context = cxn.context()
         self.spectrum_save_context = cxn.context()
+        self.load_calibrated_power_context = cxn.context()
         self.timetags_since_last_binsave = 0
         self.bin_every = self.parameters.BareLineScan.bin_every
         self.setup_data_vault()
@@ -79,31 +84,48 @@ class bare_line_scan(experiment):
         self.parameters['DopplerCooling.doppler_cooling_duration'] = self.parameters.BareLineScan.doppler_cooling_duration
         minim,maxim,steps = line_scan.frequency_scan
         minim = minim['MHz']; maxim = maxim['MHz']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
+        self.scan_no_unit = linspace(minim,maxim, steps)
+        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan_no_unit]
         
-    def program_pulser(self, frequency_397):
+    def program_pulser(self, frequency_397,amplitude_397):
         self.pulser.reset_timetags()
         self.parameters['BareLineScan.frequency_397_pulse'] = frequency_397
+        self.parameters['BareLineScan.amplitude_397_pulse'] = amplitude_397
+        print frequency_397,amplitude_397
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)   
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
         self.start_recording_timetags = pulse_sequence.start_recording_timetags
-        print self.timetag_record_cycle
-        print self.start_recording_timetags
-            
+
 
     def run(self, cxn, context):
         self.setup_sequence_parameters()
         back_to_back = int(self.parameters.BareLineScan.pulse_sequences_per_timetag_transfer)
         total_timetag_transfers = int(self.parameters.BareLineScan.total_timetag_transfers)
+        #calibrated_power=numpy.array([-16.96875,-17.2109375,  -17.59765625, -17.7265625 , -17.6953125, -17.49609375 ,-16.2890625,  -15.20703125 ,-14.64453125 ,-12.125])
         
+        if self.use_calibrated_power:
+            self.dv.cd(['','QuickMeasurements'] ,True, context = self.load_calibrated_power_context)
+            data_set_number = int(self.calibrated_power_dataset)
+            print data_set_number
+            self.dv.open(data_set_number, context = self.load_calibrated_power_context)
+            
+            data = self.dv.get(context = self.load_calibrated_power_context).asarray
+            print data
+            calibrated_power = data[:,1]
+        else:
+            amplitude_397=self.parameters['BareLineScan.amplitude_397_pulse']
+            calibrated_power = amplitude_397['dBm']*numpy.ones_like(self.scan_no_unit)
+        
+        #calibrated_power=numpy.array([-23.8203125, -23.8203125, -24.0703125, -24.0390625, -23.8828125, -23.6640625, -22.3515625, -21.203125,  -20.7421875, -18.2265625])
         for i,frequency_397 in enumerate(self.scan):
             #can stop between different frequency points
             should_stop = self.pause_or_stop()
             if should_stop: break
             
-            self.program_pulser(frequency_397)
+            self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
+            #self.program_pulser(frequency_397,WithUnit(-18,'dBm'))
+            #self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
             
             total_readout = []
@@ -127,14 +149,14 @@ class bare_line_scan(experiment):
                 self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
                 #collapse the timetags onto a single cycle starting at 0
                 timetags = timetags - self.start_recording_timetags['s']
-                print self.start_recording_timetags
+                #print self.start_recording_timetags
                 #print self.start_recording_timetags
                 timetags = timetags % self.timetag_record_cycle['s']
                 #print self.start_recording_timetags, self.timetag_record_cycle
                 self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
             
             average_readouts = numpy.average(numpy.array(total_readout))
-            spectrum_counts.extend(average_readouts)
+            #self.spectrum_counts.extend(average_readouts)
             
             self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
             
