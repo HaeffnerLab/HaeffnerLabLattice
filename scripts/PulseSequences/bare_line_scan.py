@@ -19,6 +19,8 @@ class bare_line_scan(pulse_sequence):
                   ('BareLineScan','duration_866_pulse'),
                   ('BareLineScan','frequency_866_pulse'),
                   ('BareLineScan','amplitude_866_pulse'),
+                  
+                  ('BareLineScan','line_to_scan'),
                  
                   ('DopplerCooling', 'doppler_cooling_frequency_397'),
                   ('DopplerCooling', 'doppler_cooling_amplitude_397'),
@@ -46,10 +48,13 @@ class bare_line_scan(pulse_sequence):
         start_recording_timetags = self.end
         for i in range(cycles):
             #add readout count for total number of blue photons
-            self.addTTL('ReadoutCount', self.end, l.duration_397_pulse+2*l.between_pulses)
+            if l.line_to_scan == 'blue':
+                self.addTTL('ReadoutCount', self.end, l.duration_397_pulse+l.between_pulses)
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
             self.addDDS('397',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
+            if l.line_to_scan == 'red':
+                self.addTTL('ReadoutCount', self.end, l.duration_866_pulse+l.between_pulses)
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
             self.addDDS('866',self.end, l.duration_866_pulse, l.frequency_866_pulse, l.amplitude_866_pulse) ###changed from radial to 866 :Hong
             self.end += l.duration_866_pulse

@@ -124,6 +124,7 @@ class bare_line_scan(experiment):
             if should_stop: break
             
             self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
+            print calibrated_power[i]
             #self.program_pulser(frequency_397,WithUnit(-18,'dBm'))
             #self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
