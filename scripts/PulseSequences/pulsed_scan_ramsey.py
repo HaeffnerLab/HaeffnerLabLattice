@@ -112,7 +112,10 @@ class pulsed_scan_ramsey(pulse_sequence):
         if p.SidebandCooling.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(local_blue_heating, TreeDict.fromdict({'Heating.blue_heating_duration':p.PulsedScanRamsey.pulse_duration}))
+        start_psk_ttl = self.end
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':p.PulsedScanRamsey.ramsey_time}))
         self.addSequence(local_blue_heating, TreeDict.fromdict({'Heating.blue_heating_duration':p.PulsedScanRamsey.pulse_duration}))
+        duration_psk_ttl = self.end - start_psk_ttl
+        self.addTTL('Phase_shift', start_psk_ttl, duration_psk_ttl)
         self.addSequence(rabi_excitation)
         self.addSequence(tomography_readout)

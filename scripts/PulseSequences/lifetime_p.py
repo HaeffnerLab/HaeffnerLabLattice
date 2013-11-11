@@ -50,9 +50,9 @@ class lifetime_p(pulse_sequence):
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
             self.addDDS('radial',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
             self.end += l.duration_397_pulse
-            self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
-            self.addDDS('radial',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
-            self.end += l.duration_397_pulse
+            #self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
+            #self.addDDS('radial',self.end, l.duration_397_pulse, l.frequency_397_pulse, l.amplitude_397_pulse)
+            #self.end += l.duration_397_pulse
             self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':l.between_pulses}))
             self.addDDS('866',self.end, l.duration_866_pulse, l.frequency_866_pulse, l.amplitude_866_pulse) ###changed from radial to 866 :Hong
             self.end += l.duration_866_pulse
@@ -62,4 +62,4 @@ class lifetime_p(pulse_sequence):
         self.addTTL('TimeResolvedCount',start_recording_timetags, timetag_record_duration)
         self.start_recording_timetags = start_recording_timetags
         #self.timetag_record_cycle = 1 * (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses
-        self.timetag_record_cycle = 2 * (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses
+        self.timetag_record_cycle = (l.between_pulses + l.duration_397_pulse) + l.duration_866_pulse+l.between_pulses

@@ -5,12 +5,12 @@ from scipy import linalg
 
 
 Omega_array = np.array([0.1])
-Delta_array = np.linspace(-1,1,50)
+Delta_array = np.linspace(-3,3,50)
 theta = np.pi/2.0
 gamma_array = np.array([0.0])
-delta_array = np.linspace(0.0,1.0,10)
+delta_array = np.array([0.5])#np.linspace(0.0,1.0,5)
 p = 0.93565
-time_array = np.arange(0,1.0,0.2)
+time_array = np.linspace(0,50.0,10)
 
 def get_coherence_right(Omega, Delta, theta, gamma, delta, p, time):
 	A = np.array([[0, 0, -(1/2.0)*1j*Omega*np.sin(theta), -(1/2.0)
@@ -177,7 +177,7 @@ def get_coherence_left(Omega, Delta, theta, gamma, delta, p, time):
   (1/2.0)*1j*Omega* np.sin(theta), 0, 1]])
 	B = linalg.expm(-A*time)
 	BB = 0.5*B[:,0]+0.5*B[:,5]
-	signal = (BB[15]+BB[11]).real+(BB[11]-BB[14]).imag
+	signal = (BB[15]+BB[11]).real#+(BB[11]-BB[14]).imag
 	return signal
 
 for Omega in Omega_array:

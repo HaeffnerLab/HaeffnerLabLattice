@@ -91,7 +91,6 @@ class bare_line_scan(experiment):
         self.pulser.reset_timetags()
         self.parameters['BareLineScan.frequency_397_pulse'] = frequency_397
         self.parameters['BareLineScan.amplitude_397_pulse'] = amplitude_397
-        print frequency_397,amplitude_397
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)   
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
@@ -107,11 +106,8 @@ class bare_line_scan(experiment):
         if self.use_calibrated_power:
             self.dv.cd(['','QuickMeasurements'] ,True, context = self.load_calibrated_power_context)
             data_set_number = int(self.calibrated_power_dataset)
-            print data_set_number
-            self.dv.open(data_set_number, context = self.load_calibrated_power_context)
-            
+            self.dv.open(data_set_number, context = self.load_calibrated_power_context)         
             data = self.dv.get(context = self.load_calibrated_power_context).asarray
-            print data
             calibrated_power = data[:,1]
         else:
             amplitude_397=self.parameters['BareLineScan.amplitude_397_pulse']
@@ -124,20 +120,13 @@ class bare_line_scan(experiment):
             if should_stop: break
             
             self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
-            print calibrated_power[i]
-            #self.program_pulser(frequency_397,WithUnit(-18,'dBm'))
-            #self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
             self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
-            
-            total_readout = []
+
                 
             for index in range(total_timetag_transfers):                
                 self.pulser.start_number(back_to_back)
                 self.pulser.wait_sequence_done()
                 self.pulser.stop_sequence()
-                #get readout count = # of count from blue pulse
-                readouts = self.pulser.get_readout_counts().asarray
-                total_readout.extend(readouts)
 
                 #get timetags and save
                 timetags = self.pulser.get_timetags().asarray
@@ -150,16 +139,14 @@ class bare_line_scan(experiment):
                 self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
                 #collapse the timetags onto a single cycle starting at 0
                 timetags = timetags - self.start_recording_timetags['s']
-                #print self.start_recording_timetags
-                #print self.start_recording_timetags
                 timetags = timetags % self.timetag_record_cycle['s']
-                #print self.start_recording_timetags, self.timetag_record_cycle
                 self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
-            
-            average_readouts = numpy.average(numpy.array(total_readout))
-            #self.spectrum_counts.extend(average_readouts)
-            
-            self.dv.add([frequency_397['MHz'],average_readouts], context = self.spectrum_save_context)
+         
+            blue_duration = self.parameters['BareLineScan.duration_397_pulse']['s']
+            gap_duration = self.parameters['BareLineScan.between_pulses']['s']
+            count = self.binner.getCount(gap_duration,2.0*gap_duration+blue_duration)
+            print count
+            self.dv.add([frequency_397['MHz'],count], context = self.spectrum_save_context)
             
             if self.show_histogram:
                 self.save_histogram()
