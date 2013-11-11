@@ -21,7 +21,16 @@ class Binner():
             binned = self.binned / float(self.binWidth)
             if not self.averaged == 0:
                 binned = binned / float(self.averaged)
-        return (self.binArray[0:-1], self.binned)
+        else:
+            binned = self.binned / float(self.binWidth)
+        return (self.binArray[0:-1], binned)
+    
+    def getCount(self, start_time, stop_time):   
+        count_where = numpy.where((start_time <= self.binArray) * (self.binArray <= stop_time))
+        count_counts = self.binned[count_where]
+        count_total = numpy.sum(count_counts)
+        return count_total
+        
 
 class Splicer():
     '''Helper class for maintaining a list of timetags during a readout period'''
