@@ -3,12 +3,12 @@ import numpy as np
 from matplotlib import pyplot
 
 
-Omega_array = np.array([0.01,0.1])
-Delta_array = np.array([0.0])
+Omega_array = np.array([0.5])
+Delta_array = np.linspace(0.0,-1.0,3)
 theta = np.pi/2.0
 gamma_array = np.array([0.0])
 # change to magnetic field
-delta_array = np.arange(-3.0,3.0,0.01)
+delta_array = np.linspace(0.1,3.0,40)
 p = 0.93565
 
 def get_coherence(Omega, Delta, theta, gamma, delta, p):
