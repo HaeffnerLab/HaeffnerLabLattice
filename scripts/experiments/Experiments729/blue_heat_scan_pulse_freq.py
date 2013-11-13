@@ -90,7 +90,7 @@ class blue_heat_scan_pulse_freq(experiment):
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Delay After', 'us')], dependants , context = self.rabi_flop_save_context)
-        window_name = ['Heating Delay Scan']
+        window_name = ['Scan Pulse Freq']
         self.dv.add_parameter('Window', window_name, context = self.rabi_flop_save_context)
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
     
