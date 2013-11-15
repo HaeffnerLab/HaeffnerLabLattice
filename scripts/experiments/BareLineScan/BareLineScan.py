@@ -2,6 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.PulseSequences.bare_line_scan import bare_line_scan as sequence
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.scriptLibrary.fly_processing import Binner
+from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
 import time
 from numpy import linspace
@@ -22,6 +23,17 @@ class bare_line_scan(experiment):
                            ('BareLineScan','frequency_scan'),
                            ('BareLineScan','use_calibrated_power'),
                            ('BareLineScan','calibrated_power_dataset'),
+                           
+                           ('Crystallization', 'auto_crystallization'),
+                           ('Crystallization', 'camera_record_exposure'),
+                           ('Crystallization', 'camera_threshold'),
+                           ('Crystallization', 'max_attempts'),
+                           ('Crystallization', 'max_duration'),
+                           ('Crystallization', 'min_duration'),
+                           ('Crystallization', 'pmt_record_duration'),
+                           ('Crystallization', 'pmt_threshold'),
+                           ('Crystallization', 'use_camera'),
+                           
                            ]
     
     required_parameters.extend(sequence.required_parameters)
@@ -49,6 +61,9 @@ class bare_line_scan(experiment):
         self.setup_data_vault()
         self.setup_initial_switches()
         self.show_histogram = True
+        if self.parameters.Crystallization.auto_crystallization:
+            self.crystallizer = self.make_experiment(crystallization)
+            self.crystallizer.initialize(cxn, context, ident)
     
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -96,11 +111,55 @@ class bare_line_scan(experiment):
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
         self.start_recording_timetags = pulse_sequence.start_recording_timetags
 
+    def get_spectrum_count_crystallizing(self, cxn, context, freq, power):
+        count = self.get_spectrum_count(freq,power)
+        if self.parameters.Crystallization.auto_crystallization:
+            initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            #if initially melted, redo the point
+            while initally_melted:
+                if not got_crystallized:
+                    #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
+                    self.cxn.scriptscanner.pause_script(self.ident, True)
+                    should_stop = self.pause_or_stop()
+                    if should_stop: return None
+                count = self.get_spectrum_count(freq,power)
+                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+        return count
+    
+    def get_spectrum_count(self, freq, power):
+        back_to_back = int(self.parameters.BareLineScan.pulse_sequences_per_timetag_transfer)
+        total_timetag_transfers = int(self.parameters.BareLineScan.total_timetag_transfers)
+        
+        self.program_pulser(freq,power)
+        self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
+        
+        for index in range(total_timetag_transfers):                
+            self.pulser.start_number(back_to_back)
+            self.pulser.wait_sequence_done()
+            self.pulser.stop_sequence()
+            #get timetags and save
+            timetags = self.pulser.get_timetags().asarray
+            #print self.parameter.DopplerCooling.doppler_cooling_duration
+            if timetags.size >= self.parameters.BareLineScan.max_timetags_per_transfer:
+                raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
+            else:
+                self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
+            iters = index * numpy.ones_like(timetags)
+            self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
+            #collapse the timetags onto a single cycle starting at 0
+            timetags = timetags - self.start_recording_timetags['s']
+            timetags = timetags % self.timetag_record_cycle['s']
+            self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
+            blue_duration = self.parameters['BareLineScan.duration_397_pulse']['s']
+            gap_duration = self.parameters['BareLineScan.between_pulses']['s']
+            count = self.binner.getCount(gap_duration,2.0*gap_duration+blue_duration)
+        
+        return count
+        
+
 
     def run(self, cxn, context):
         self.setup_sequence_parameters()
-        back_to_back = int(self.parameters.BareLineScan.pulse_sequences_per_timetag_transfer)
-        total_timetag_transfers = int(self.parameters.BareLineScan.total_timetag_transfers)
         #calibrated_power=numpy.array([-16.96875,-17.2109375,  -17.59765625, -17.7265625 , -17.6953125, -17.49609375 ,-16.2890625,  -15.20703125 ,-14.64453125 ,-12.125])
         
         if self.use_calibrated_power:
@@ -119,33 +178,8 @@ class bare_line_scan(experiment):
             should_stop = self.pause_or_stop()
             if should_stop: break
             
-            self.program_pulser(frequency_397,WithUnit(calibrated_power[i],'dBm'))
-            self.binner = Binner(self.timetag_record_cycle['s'], 100e-9)
+            count = self.get_spectrum_count_crystallizing(cxn,context,frequency_397,WithUnit(calibrated_power[i],'dBm'))
 
-                
-            for index in range(total_timetag_transfers):                
-                self.pulser.start_number(back_to_back)
-                self.pulser.wait_sequence_done()
-                self.pulser.stop_sequence()
-
-                #get timetags and save
-                timetags = self.pulser.get_timetags().asarray
-                #print self.parameter.DopplerCooling.doppler_cooling_duration
-                if timetags.size >= self.parameters.BareLineScan.max_timetags_per_transfer:
-                    raise Exception("Timetags Overflow, should reduce number of back to back pulse sequences")
-                else:
-                    self.dv.add([index, timetags.size], context = self.total_timetag_save_context)
-                iters = index * numpy.ones_like(timetags)
-                self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
-                #collapse the timetags onto a single cycle starting at 0
-                timetags = timetags - self.start_recording_timetags['s']
-                timetags = timetags % self.timetag_record_cycle['s']
-                self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
-         
-            blue_duration = self.parameters['BareLineScan.duration_397_pulse']['s']
-            gap_duration = self.parameters['BareLineScan.between_pulses']['s']
-            count = self.binner.getCount(gap_duration,2.0*gap_duration+blue_duration)
-            print count
             self.dv.add([frequency_397['MHz'],count], context = self.spectrum_save_context)
             
             if self.show_histogram:
