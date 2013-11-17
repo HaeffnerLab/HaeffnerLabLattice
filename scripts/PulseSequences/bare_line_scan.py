@@ -19,8 +19,6 @@ class bare_line_scan(pulse_sequence):
                   ('BareLineScan','duration_866_pulse'),
                   ('BareLineScan','frequency_866_pulse'),
                   ('BareLineScan','amplitude_866_pulse'),
-                  
-                  ('BareLineScan','line_to_scan'),
                  
                   ('DopplerCooling', 'doppler_cooling_frequency_397'),
                   ('DopplerCooling', 'doppler_cooling_amplitude_397'),

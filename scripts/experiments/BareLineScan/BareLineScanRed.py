@@ -10,9 +10,9 @@ from labrad.units import WithUnit
 import labrad
 import numpy
        
-class bare_line_scan(experiment):
+class bare_line_scan_red(experiment):
     
-    name = 'BareLineScan'
+    name = 'BareLineScanRed'
     
     required_parameters = [
                            ('BareLineScan','bin_every'),
@@ -39,8 +39,7 @@ class bare_line_scan(experiment):
     required_parameters.extend(sequence.required_parameters)
     required_parameters.remove(('DopplerCooling','doppler_cooling_duration'))
     # this parameter will get scanned #
-    required_parameters.remove(('BareLineScan','frequency_397_pulse'))
-    #required_parameters.remove(('BareLineScan','amplitude_397_pulse'))
+    required_parameters.remove(('BareLineScan','frequency_866_pulse'))
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
@@ -102,10 +101,10 @@ class bare_line_scan(experiment):
         self.scan_no_unit = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan_no_unit]
         
-    def program_pulser(self, frequency_397,amplitude_397):
+    def program_pulser(self, frequency_866,amplitude_866):
         self.pulser.reset_timetags()
-        self.parameters['BareLineScan.frequency_397_pulse'] = frequency_397
-        self.parameters['BareLineScan.amplitude_397_pulse'] = amplitude_397
+        self.parameters['BareLineScan.frequency_866_pulse'] = frequency_866
+        self.parameters['BareLineScan.amplitude_866_pulse'] = amplitude_866
         pulse_sequence = sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)   
         self.timetag_record_cycle = pulse_sequence.timetag_record_cycle
@@ -147,12 +146,16 @@ class bare_line_scan(experiment):
             iters = index * numpy.ones_like(timetags)
             self.dv.add(numpy.vstack((iters,timetags)).transpose(), context = self.timetag_save_context)              
             #collapse the timetags onto a single cycle starting at 0
-            timetags = timetags - self.start_recording_timetags['s']
-            timetags = timetags % self.timetag_record_cycle['s']
-            self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
+            
+            red_duration = self.parameters['BareLineScan.duration_866_pulse']['s']
             blue_duration = self.parameters['BareLineScan.duration_397_pulse']['s']
             gap_duration = self.parameters['BareLineScan.between_pulses']['s']
-            count = self.binner.getCount(gap_duration,2.0*gap_duration+blue_duration)
+            
+            timetags = timetags - self.start_recording_timetags['s'] - gap_duration - blue_duration ## shift zero to right before 866 peak
+            timetags = timetags % self.timetag_record_cycle['s']
+            self.binner.add(timetags, back_to_back * self.parameters.BareLineScan.cycles_per_sequence)
+
+            count = self.binner.getCount(gap_duration,2.0*gap_duration+red_duration)
         
         return count
         
@@ -169,21 +172,21 @@ class bare_line_scan(experiment):
             data = self.dv.get(context = self.load_calibrated_power_context).asarray
             calibrated_power = data[:,1]
         else:
-            amplitude_397=self.parameters['BareLineScan.amplitude_397_pulse']
-            calibrated_power = amplitude_397['dBm']*numpy.ones_like(self.scan_no_unit)
+            amplitude_866=self.parameters['BareLineScan.amplitude_866_pulse']
+            calibrated_power = amplitude_866['dBm']*numpy.ones_like(self.scan_no_unit)
         
         #calibrated_power=numpy.array([-23.8203125, -23.8203125, -24.0703125, -24.0390625, -23.8828125, -23.6640625, -22.3515625, -21.203125,  -20.7421875, -18.2265625])
-        for i,frequency_397 in enumerate(self.scan):
+        for i,frequency_866 in enumerate(self.scan):
             #can stop between different frequency points
             should_stop = self.pause_or_stop()
             if should_stop: break
             
-            count = self.get_spectrum_count_crystallizing(cxn,context,frequency_397,WithUnit(calibrated_power[i],'dBm'))
+            count = self.get_spectrum_count_crystallizing(cxn,context,frequency_866,WithUnit(calibrated_power[i],'dBm'))
 
-            self.dv.add([frequency_397['MHz'],count], context = self.spectrum_save_context)
+            self.dv.add([frequency_866['MHz'],count], context = self.spectrum_save_context)
             
-            #if self.show_histogram:
-            #    self.save_histogram()
+            if self.show_histogram:
+                self.save_histogram()
 
             self.update_progress(i)
                 
@@ -211,6 +214,6 @@ class bare_line_scan(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = bare_line_scan(cxn = cxn)
+    exprt = bare_line_scan_red(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
