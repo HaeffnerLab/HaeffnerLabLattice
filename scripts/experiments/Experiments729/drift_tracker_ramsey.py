@@ -61,7 +61,7 @@ class drift_tracker_ramsey(experiment):
             raise Exception("Incorrect Excitation {}".format(replace_2.DriftTrackerRamsey.line_selection)) 
         self.submit_centers(replace_1,frequency_1,replace_2,frequency_2)
 
-    def submit_centers(self, replace_1, center1, replace_2, center2):                
+    def submit_centers(self, replace_1, center1, replace_2, center2):     
         if center1 is not None and center2 is not None:
             submission = [
                           (replace_1.DriftTrackerRamsey.line_selection, center1),

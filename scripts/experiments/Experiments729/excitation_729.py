@@ -100,8 +100,7 @@ class excitation_729(experiment):
         self.camera.set_acquisition_mode('Kinetics')
         self.initial_trigger_mode = self.camera.get_trigger_mode()
         self.camera.set_trigger_mode('External')
-        self.camera.set_number_kinetics(int(self.parameters.StateReadout.repeat_each_measurement))
-
+        
     def setup_data_vault(self):
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -144,6 +143,7 @@ class excitation_729(experiment):
 #         self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
+            self.camera.set_number_kinetics(repetitions)
             self.camera.start_acquisition()
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()

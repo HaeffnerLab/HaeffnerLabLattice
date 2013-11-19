@@ -182,8 +182,8 @@ class bare_line_scan(experiment):
 
             self.dv.add([frequency_397['MHz'],count], context = self.spectrum_save_context)
             
-            #if self.show_histogram:
-            #    self.save_histogram()
+            if self.show_histogram:
+                self.save_histogram()
 
             self.update_progress(i)
                 
