@@ -37,6 +37,7 @@ class blue_heat_scan_delay(experiment):
                            ('Crystallization', 'use_camera'),
                            
                            ('Heating', 'scan_delay_after'),
+                           ('Heating','pulsing_frequency'),
                            ('RabiFlopping_Sit', 'sit_on_excitation'),
                            ('RabiFlopping','sideband_selection'),
                            ]
@@ -65,6 +66,12 @@ class blue_heat_scan_delay(experiment):
         self.duration = None
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
+        self.square_pulse_generator = cxn.rigol_dg4062_server
+        self.square_pulse_generator.select_device('lattice-imaging GPIB Bus - USB0::0x1AB1::0x0641::DG4D152500738')
+        self.init_pulsing_freq = self.square_pulse_generator.frequency()
+        self.init_pulsing_state = self.square_pulse_generator.output()
+        self.square_pulse_generator.frequency(self.parameters.Heating.pulsing_frequency)
+        self.square_pulse_generator.output(True)
         self.dv = cxn.data_vault
         self.rabi_flop_save_context = cxn.context()
     
@@ -140,6 +147,8 @@ class blue_heat_scan_delay(experiment):
     
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.square_pulse_generator.frequency(self.init_pulsing_freq)
+        self.square_pulse_generator.output(self.init_pulsing_state)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

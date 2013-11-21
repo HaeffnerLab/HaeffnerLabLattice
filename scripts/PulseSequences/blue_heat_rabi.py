@@ -14,13 +14,10 @@ class blue_heat_rabi(pulse_sequence):
                         ('OpticalPumping','optical_pumping_enable'), 
                         ('SidebandCooling','sideband_cooling_enable'),
                         
-                        ('Heating', 'blue_heating_type'),
                         ('Heating', 'blue_heating_delay_before'),
                         ('Heating', 'blue_heating_delay_after'),
                         ('Heating', 'blue_heating_duration'),
                         ('Heating', 'blue_heating_repump_additional'),
-                        ('Heating', 'global_blue_heating_amplitude_397'),
-                        ('Heating', 'global_blue_heating_frequency_397'),
                         ('Heating', 'local_blue_heating_amplitude_397'),
                         ('Heating', 'local_blue_heating_frequency_397'),
                         ('Heating', 'blue_heating_frequency_866'),
