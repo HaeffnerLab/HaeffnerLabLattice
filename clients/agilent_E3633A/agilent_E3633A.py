@@ -72,8 +72,8 @@ class agilent_E3633A(QtGui.QFrame, widget_ui):
         except Exception, e:
             print e
             self.setDisabled(True)
-        self.cxn.on_connect['Agilent E3633A'].append( self.reinitialize)
-        self.cxn.on_disconnect['Agilent E3633A'].append( self.disable)
+        yield self.cxn.add_on_connect('Agilent E3633A',self.reinitialize)
+        yield self.cxn.add_on_disconnect('Agilent E3633A',self.disable)
     
     @inlineCallbacks
     def initialize_gui(self):
@@ -84,7 +84,7 @@ class agilent_E3633A(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def populate_gui(self):
-        server = self.cxn.servers['Agilent E3633A']
+        server = yield self.cxn.get_server('Agilent E3633A')
         yield server.select_device(self.GPIB_device_ID, context = self.context)
         voltage = yield server.voltage(context = self.context)
         current = yield server.current(context = self.context)
@@ -106,17 +106,17 @@ class agilent_E3633A(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_new_current(self, current):
-        server = self.cxn.servers['Agilent E3633A']
+        server = yield self.cxn.get_server('Agilent E3633A')
         yield server.current(self.WithUnit(current, 'A'), context = self.context)
     
     @inlineCallbacks
     def on_new_voltage(self, voltage):
-        server = self.cxn.servers['Agilent E3633A']
+        server = yield self.cxn.get_server('Agilent E3633A')
         yield server.voltage(self.WithUnit(voltage, 'V'), context = self.context)
     
     @inlineCallbacks
     def on_new_output(self, output):
-        server = self.cxn.servers['Agilent E3633A']
+        server = yield self.cxn.get_server('Agilent E3633A')
         yield server.output(output, context = self.context)
             
     @inlineCallbacks

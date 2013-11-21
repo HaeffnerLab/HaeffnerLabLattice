@@ -45,13 +45,13 @@ class actions_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_crystallize(self):
-        xtal = self.cxn.servers['Crystallizer']
+        xtal = yield self.cxn.get_server('Crystallizer')
         yield xtal.crystallize_once()
     
     @inlineCallbacks
     def on_to_state(self):
-        pv = self.cxn.servers['ParameterVault']
-        pulser = self.cxn.servers['Pulser']
+        pv = yield self.cxn.get_server('ParameterVault')
+        pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pulser.amplitude('global397')
         ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
@@ -63,8 +63,8 @@ class actions_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_to_dc(self):
-        pv = self.cxn.servers['ParameterVault']
-        pulser = self.cxn.servers['Pulser']
+        pv = yield self.cxn.get_server('ParameterVault')
+        pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pulser.amplitude('global397')
         ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
@@ -76,8 +76,8 @@ class actions_widget(QtGui.QFrame, widget_ui):
         
     @inlineCallbacks
     def on_from_dc(self):
-        pv = self.cxn.servers['ParameterVault']
-        pulser = self.cxn.servers['Pulser']
+        pv = yield self.cxn.get_server('ParameterVault')
+        pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_amplitude_397'))
         ampl866 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_amplitude_866'))
         freq397 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_frequency_397'))
@@ -89,8 +89,8 @@ class actions_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_from_state(self):
-        pv = self.cxn.servers['ParameterVault']
-        pulser = self.cxn.servers['Pulser']
+        pv = yield self.cxn.get_server('ParameterVault')
+        pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pv.get_parameter(('StateReadout','state_readout_amplitude_397'))
         ampl866 = yield pv.get_parameter(('StateReadout','state_readout_amplitude_866'))
         freq397 = yield pv.get_parameter(('StateReadout','state_readout_frequency_397'))

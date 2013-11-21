@@ -41,12 +41,12 @@ class electrode_widget(QtGui.QFrame, widget_ui):
             print e
             print 'Electrode client: Electrode Diagonalization not available'
             self.setDisabled(True)
-        self.cxn.on_connect['Electrode Diagonalization'].append( self.reinitialize)
-        self.cxn.on_disconnect['Electrode Diagonalization'].append( self.disable)
+        yield self.cxn.add_on_connect('Electrode Diagonalization',self.reinitialize)
+        yield self.cxn.add_on_disconnect('Electrode Diagonalization',self.disable)
     
     @inlineCallbacks
     def initializeGUI(self):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         xz_angle = yield server.xz_angle()
         endcap_angle = yield server.endcap_angle()
         voltage_priority = yield server.voltage_priority()
@@ -75,14 +75,14 @@ class electrode_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def get_all_voltages(self):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         for name,widget in [('C1', self.comp1), ('C2',self.comp2),('D1', self.endcap1),('D2', self.endcap2)]:
             voltage = yield server.voltage(name)
             self.set_widget_blocking(widget, voltage['V'])
     
     @inlineCallbacks
     def get_all_fields(self):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         for name,widget in [('Ex', self.Ex), ('Ey',self.Ey),('Ez', self.Ez),('w_z_sq', self.w_z_sq)]:
             value = yield server.field(name)
             self.set_widget_blocking(widget, value)
@@ -100,27 +100,27 @@ class electrode_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_new_m0(self, value):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         yield server.slope_m0(value)
     
     @inlineCallbacks
     def on_new_m2(self, value):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         yield server.slope_m2(value)
          
     @inlineCallbacks
     def on_new_endcap_angle(self, value):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         yield server.endcap_angle(self.WithUnit(value,'deg'))
     
     @inlineCallbacks
     def on_new_xz_angle(self, value):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         yield server.xz_angle(self.WithUnit(value,'deg'))
     
     @inlineCallbacks
     def on_new_priority(self, index):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         if index == 0:
             yield server.voltage_priority(True)
         elif index == 1:
@@ -130,20 +130,20 @@ class electrode_widget(QtGui.QFrame, widget_ui):
     def voltage_setter(self, name):
         @inlineCallbacks
         def set_voltage(value):
-            server = self.cxn.servers['Electrode Diagonalization']
+            server = yield self.cxn.get_server('Electrode Diagonalization')
             yield server.voltage(name, self.WithUnit(value, 'V'))
         return set_voltage
     
     def field_setter(self, name):
         @inlineCallbacks
         def set_voltage(value):
-            server = self.cxn.servers['Electrode Diagonalization']
+            server = yield self.cxn.get_server('Electrode Diagonalization')
             yield server.field(name, value)
         return set_voltage
     
     @inlineCallbacks
     def setupListeners(self):
-        server = self.cxn.servers['Electrode Diagonalization']
+        server = yield self.cxn.get_server('Electrode Diagonalization')
         yield server.signal__new_value(SIGNALID, context = self.context)
         yield server.addListener(listener = self.followSignal, source = None, ID = SIGNALID, context = self.context)
         self.initialized = True
@@ -181,7 +181,7 @@ class electrode_widget(QtGui.QFrame, widget_ui):
         self.setDisabled(False)
         if self.initialized:
             yield self.initializeGUI()
-            server = self.cxn.servers['Electrode Diagonalization']
+            server = yield self.cxn.get_server('Electrode Diagonalization')
             yield server.signal__new_value(SIGNALID, context = self.context)
         else:
             yield self.initializeGUI()

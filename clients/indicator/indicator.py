@@ -39,8 +39,8 @@ class indicator_widget(QtGui.QFrame, widget_ui):
         except Exception, e:
             print e
             self.setDisabled(True)
-        self.cxn.on_connect['ParameterVault'].append( self.reinitialize)
-        self.cxn.on_disconnect['ParameterVault'].append( self.disable)
+        yield self.cxn.add_on_connect('ParameterVault', self.reinitialize)
+        yield self.cxn.add_on_disconnect('ParameterVault', self.disable)
     
     @inlineCallbacks
     def initialize_gui(self):
@@ -51,7 +51,7 @@ class indicator_widget(QtGui.QFrame, widget_ui):
         for cb in [self.sideband_cooling, self.optical_pumping, self.background_heating]:     
             cb.setDisabled(True)
         self.sideband_cooling.setDisabled(True)
-        pv = self.cxn.servers['ParameterVault']
+        pv = yield self.cxn.get_server('ParameterVault')
         op = yield pv.get_parameter(('OpticalPumping','optical_pumping_enable'))
         sb = yield pv.get_parameter(('SidebandCooling','sideband_cooling_enable'))
         heating = yield pv.get_parameter(('Heating','background_heating_time'))
@@ -61,14 +61,14 @@ class indicator_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def setupListeners(self):
-        server = self.cxn.servers['ParameterVault']
+        server = yield self.cxn.get_server('ParameterVault')
         yield server.signal__parameter_change(SIGNALID, context = self.context)
         yield server.addListener(listener = self.followSignal, source = None, ID = SIGNALID, context = self.context)
         self.initialized = True
 
     @inlineCallbacks
     def followSignal(self, context, name):
-        pv = self.cxn.servers['ParameterVault']
+        pv = yield self.cxn.get_server('ParameterVault')
         if name == ('OpticalPumping','optical_pumping_enable'):
             op = yield pv.get_parameter(name)
             self.optical_pumping.setChecked(op)
@@ -86,7 +86,7 @@ class indicator_widget(QtGui.QFrame, widget_ui):
         if not self.initialized:
             yield self.setupListeners()
         else:
-            server = self.cxn.servers['ParameterVault']
+            server = yield self.cxn.get_server('ParameterVault')
             yield server.signal__parameter_change(SIGNALID, context = self.context)
             
     def disable(self):

@@ -5,7 +5,14 @@ from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
 import numpy
-from camera_histogram_config import config_729_hist as c
+
+class config_729_hist(object):
+    #IDs for signaling
+    ID_A = 99998
+    #data vault comment
+    dv_parameter = 'HistogramCameraConfidence'
+
+c = config_729_hist
 
 class camera_histogram(QtGui.QWidget):
     def __init__(self, reactor, cxn = None, parent=None):
@@ -70,23 +77,26 @@ class camera_histogram(QtGui.QWidget):
         self.context = yield self.cxn.context()
         try:
             yield self.subscribe_data_vault()
-        except Exception:
+        except Exception,e:
+            print e
             self.setDisabled(True)
-        self.cxn.on_connect['Data Vault'].append( self.reinitialize_data_vault)
-        self.cxn.on_disconnect['Data Vault'].append( self.disable)
+        yield self.cxn.add_on_connect('Data Vault', self.reinitialize_data_vault)
+        yield self.cxn.add_on_disconnect('Data Vault', self.disable)
         
     @inlineCallbacks
     def subscribe_data_vault(self):
-        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(c.ID_A, context = self.context)
-        yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = c.ID_A, context = self.context)
+        server = yield self.cxn.get_server('Data Vault')
+        yield server.signal__new_parameter_dataset(c.ID_A, context = self.context)
+        yield server.addListener(listener = self.on_new_dataset, source = None, ID = c.ID_A, context = self.context)
         self.subscribed[0] = True
 
     @inlineCallbacks
     def reinitialize_data_vault(self):
         self.setDisabled(False)
-        yield self.cxn.servers['Data Vault'].signal__new_parameter_dataset(c.ID_A, context = self.context)
+        server = yield self.cxn.get_server('Data Vault')
+        yield server.signal__new_parameter_dataset(c.ID_A, context = self.context)
         if not self.subscribed[0]:
-            yield self.cxn.servers['Data Vault'].addListener(listener = self.on_new_dataset, source = None, ID = c.ID_A, context = self.context)
+            yield server.addListener(listener = self.on_new_dataset, source = None, ID = c.ID_A, context = self.context)
             self.subscribed[0] = True
 
     @inlineCallbacks
@@ -97,14 +107,15 @@ class camera_histogram(QtGui.QWidget):
     @inlineCallbacks
     def on_new_dataset(self, x, y):
         if y[3] == c.dv_parameter:
+            dv = yield self.cxn.get_server('Data Vault')
             dataset = y[0]
             directory = y[2]
-            yield self.cxn.servers['Data Vault'].cd(directory, context = self.context)
-            yield self.cxn.servers['Data Vault'].open(dataset, context = self.context)
-            data = yield self.cxn.servers['Data Vault'].get( context = self.context)
+            yield dv.cd(directory, context = self.context)
+            yield dv.open(dataset, context = self.context)
+            data = yield dv.get( context = self.context)
             data = data.asarray
             yield deferToThread(self.on_new_data, data)
-            yield self.cxn.servers['Data Vault'].cd([''], context = self.context)
+            yield dv.cd([''], context = self.context)
                                           
     def closeEvent(self, x):
         self.reactor.stop()  
