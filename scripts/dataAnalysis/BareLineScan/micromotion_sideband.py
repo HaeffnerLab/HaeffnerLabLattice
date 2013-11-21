@@ -10,7 +10,7 @@ import labrad
 #dv.cd('','Experiments','BareLine')
 
 Omega = 1.3
-beta_array = np.array([2.7])#np.linspace(1.7,2.3,6) # np.linspace(0,2,3)
+beta_array = np.array([0.8])#np.linspace(1.7,2.3,6) # np.linspace(0,2,3)
 Delta = np.linspace(-5.0,5.0,500)
 B_array = np.array([0.0]) ## magnetic field
 

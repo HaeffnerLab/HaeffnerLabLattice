@@ -32,7 +32,7 @@ def micro_fit(params , x, data, err):
     model = micro_model(params, x)
     return (model - data)/err
 
-cxn = labrad.connect()
+cxn = labrad.connect('192.168.169.197')
 dv = cxn.data_vault
 dv.cd('','Experiments','BareLineScan','2013Nov16','1443_44')
 dv.open(3)
