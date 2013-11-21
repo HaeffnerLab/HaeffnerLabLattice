@@ -61,12 +61,13 @@ define the fitting parameters, with initial guesses.
 Here can also specify if some parameters are fixed, and the range of allowed values
 '''
 params = lmfit.Parameters()
-params.add('area', value = 0.1, max = 2.0)
+params.add('area', value = 0.1, max=2.0)
 params.add('center', value = -18.0)
-params.add('linewidth', value = 1, min = 0.0)
+params.add('linewidth', value = 0.001, min=0.0)
 '''
 run the fitting
 '''
+print x_data
 result = lmfit.minimize(lorentzian_fit, params, args = (x_data, y_data))
 '''
 plot the result
