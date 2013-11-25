@@ -8,7 +8,8 @@ class ramsey_excitation(pulse_sequence):
     
     required_parameters = [ 
                            ('Ramsey','ramsey_time'),
-                           ('Ramsey','rabi_pi_time'),
+                           ('Ramsey','first_pulse_duration'),
+                           ('Ramsey','second_pulse_duration'),
                            ('Ramsey','second_pulse_phase'),
                           ]
 
@@ -17,13 +18,13 @@ class ramsey_excitation(pulse_sequence):
     def sequence(self):
         r = self.parameters.Ramsey
         replace = TreeDict.fromdict({
-                                     'Excitation_729.rabi_excitation_duration':r.rabi_pi_time / 2.0,
+                                     'Excitation_729.rabi_excitation_duration':r.first_pulse_duration,
                                      'Excitation_729.rabi_excitation_phase':WithUnit(0, 'deg'),
                                      })
         self.addSequence(rabi_excitation, replace)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':r.ramsey_time}))
         replace = TreeDict.fromdict({
-                             'Excitation_729.rabi_excitation_duration':r.rabi_pi_time / 2.0,
+                             'Excitation_729.rabi_excitation_duration':r.second_pulse_duration,
                              'Excitation_729.rabi_excitation_phase':r.second_pulse_phase,
                              })
         self.addSequence(rabi_excitation_no_offset, replace)
