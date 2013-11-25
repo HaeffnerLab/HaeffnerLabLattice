@@ -101,7 +101,8 @@ class drift_tracker_ramsey_oneline(experiment):
         frequency = frequency + dt.detuning
         for iter,phase in enumerate(self.phases):
             replace = TreeDict.fromdict({
-                                           'Ramsey.rabi_pi_time':dt.pi_time,
+                                           'Ramsey.first_pulse_duration':dt.pi_time / 2.0,
+                                           'Ramsey.second_pulse_duration':dt.pi_time / 2.0,
                                            'Ramsey.ramsey_time':dt.gap_time,
                                            'Ramsey.second_pulse_phase':phase,
                                            'Excitation_729.rabi_excitation_amplitude':dt.amplitude,

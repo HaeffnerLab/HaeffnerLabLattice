@@ -1,7 +1,7 @@
 from lattice.scripts.PulseSequences.blue_heat_ramsey import blue_heat_ramsey
-from excitation_729 import excitation_729
+from lattice.scripts.experiments.Experiments729.excitation_729 import excitation_729
 
-class excitation_ramsey_blue_heat(excitation_729):
+class excitation_blue_heat_ramsey(excitation_729):
     
     name = 'ExcitationRamsey'
     
@@ -49,6 +49,6 @@ if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = excitation_ramsey_blue_heat(cxn = cxn)
+    exprt = excitation_blue_heat_ramsey(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

@@ -47,6 +47,6 @@ lmfit.report_errors(params)
 #normalization = params['amplitude']/(params['gamma']/2.0)**2
 
 
-pyplot.errorbar(x1,beta,betaerr,linestyle='None',markersize = 3.0,fmt='o')
-pyplot.plot(np.arange(1.0,2.4,0.01),beta_model(params,np.arange(1.0,2.4,0.01)))
+pyplot.errorbar(x1,beta,betaerr,linestyle='None',markersize = 5.0,fmt='o')
+pyplot.plot(np.arange(1.0,2.4,0.01),beta_model(params,np.arange(1.0,2.4,0.01)),linewidth=2.0)
 pyplot.show()

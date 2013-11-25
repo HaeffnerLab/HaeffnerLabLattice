@@ -89,8 +89,8 @@ lmfit.report_errors(params)
 
 normalization = params['amplitude']/(params['gamma']/2.0)**2
 
-
-pyplot.errorbar(data_x-params['center'],data_y/normalization,data_yerr/normalization,linestyle='None',markersize = 3.0,fmt='o')
-pyplot.plot(np.arange(110,250,0.1)-params['center'],micro_model(params,np.arange(110,250,0.1))/normalization)
+pyplot.plot(np.arange(110,250,0.1)-params['center'],micro_model(params,np.arange(110,250,0.1))/normalization,linewidth=1.5)
+pyplot.errorbar(data_x-params['center'],data_y/normalization,data_yerr/normalization,linestyle='None',markersize = 4.0,fmt='o',color='black')
+pyplot.axis([-85,85,0.1,0.8])
 #pyplot.plot(np.arange(120,320,0.1)-params['center'],micro_model(params,np.arange(120,320,0.1)))
 pyplot.show()
