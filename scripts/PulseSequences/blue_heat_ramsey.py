@@ -11,13 +11,10 @@ from labrad.units import WithUnit
 class blue_heat_ramsey(pulse_sequence):
     
     required_parameters =  [
-                            ('Heating', 'blue_heating_type'),
                             ('Heating', 'blue_heating_delay_before'),
                             ('Heating', 'blue_heating_delay_after'),
                             ('Heating', 'blue_heating_duration'),
                             ('Heating', 'blue_heating_repump_additional'),
-                            ('Heating', 'global_blue_heating_amplitude_397'),
-                            ('Heating', 'global_blue_heating_frequency_397'),
                             ('Heating', 'local_blue_heating_amplitude_397'),
                             ('Heating', 'local_blue_heating_frequency_397'),
                             ('Heating', 'blue_heating_frequency_866'),
@@ -89,7 +86,8 @@ class blue_heat_ramsey(pulse_sequence):
                             ('Tomography', 'tomography_excitation_amplitude'),
                             
                             ('Ramsey','ramsey_time'),
-                            ('Ramsey','rabi_pi_time'),
+                            ('Ramsey','first_pulse_duration'),
+                            ('Ramsey','second_pulse_duration'),
                             ('Ramsey','second_pulse_phase'),
                             ]
 

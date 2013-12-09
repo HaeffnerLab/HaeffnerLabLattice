@@ -37,6 +37,7 @@ class reference_camera_image(experiment):
 
     def initialize(self, cxn, context, ident):
         p = self.parameters.IonsOnCamera
+        print int(p.ion_number)
         self.fitter = ion_state_detector(int(p.ion_number))
         self.ident = ident
         self.camera = cxn.andor_server
@@ -88,6 +89,7 @@ class reference_camera_image(experiment):
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         images = np.reshape(images, (self.exposures, y_pixels, x_pixels))
         image  = np.average(images, axis = 0)
+        np.save('37ions_global', image)
         self.fit_and_plot(image)
         
     def fit_and_plot(self, image):

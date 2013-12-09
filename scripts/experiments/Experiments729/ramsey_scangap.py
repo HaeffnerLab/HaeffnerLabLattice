@@ -55,6 +55,8 @@ class ramsey_scangap(experiment):
         frequency += self.parameters.RamseyScanGap.detuning
         self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        self.parameters['Ramsey.first_pulse_duration'] = self.parameters.Ramsey.rabi_pi_time / 2.0
+        self.parameters['Ramsey.second_pulse_duration'] = self.parameters.Ramsey.rabi_pi_time / 2.0
         minim,maxim,steps = self.parameters.RamseyScanGap.scangap
         minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
