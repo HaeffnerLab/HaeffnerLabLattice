@@ -5,13 +5,17 @@ date = '2013Nov22'; comparing_flops = ('1609_05', '1612_42'); repetitions = 100.
 Fitting Carrier rabi flops to extract pi times:
 
 info = ('Carrier Flops', ('2013Nov22','1600_31'))
-ion0: 6.02 mus
-ion1: 5.35 mus
+ion0: 5.9
+ion1: 5.5 mus
 
-info = ('Carrier Flops', ('2013Nov22','1523_22'))
-nbar = 6 pm 0.5
-detuning=0.07 doesn't matter as different ion
+Fitting Sideband reabi flop to extract nbar
 
-Delay scan 7.5 mus
+info = ('Carrier Flops', ('2013Nov22','1512_10')); sideband_order = -1
+using average 2pi time of 5.7
+nbar = 4.7
+
+Using these delay values, making conversion function for ion0 and ion1:
+
+
 
 

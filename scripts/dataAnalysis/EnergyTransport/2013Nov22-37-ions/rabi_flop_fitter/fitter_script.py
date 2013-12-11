@@ -9,12 +9,12 @@ from matplotlib import pyplot
 '''
 script parameters
 '''
-info = ('Carrier Flops', ('2013Nov22','1523_22')); sideband_order = -1
+info = ('Carrier Flops', ('2013Nov22','1512_10')); sideband_order = -1
 # info = ('Carrier Flops', ('2013Nov22','1600_31')); sideband_order = 0
-trap_frequency = T.Value(2.25, 'MHz')
+trap_frequency = T.Value(2.5, 'MHz')
 projection_angle = 45 #degrees
 offset_time = 0.2
-fitting_region = (0,20) #microseconds
+fitting_region = (0,30) #microseconds
 '''
 compute lamb dicke parameter
 '''
@@ -29,8 +29,8 @@ create fitting parameters
 '''
 params = lmfit.Parameters()
 params.add('excitation_scaling', value = 1.0, vary = False)
-params.add('detuning', value = 0, vary = True) #units of rabi frequency
-params.add('time_2pi', value = 7.0, vary = False, min = 0.0) #microseconds
+params.add('detuning', value = 0, vary = False) #units of rabi frequency
+params.add('time_2pi', value = 5.7, vary = False, min = 0.0) #microseconds
 params.add('nbar', value = 7, min = 0.0, max = 200.0, vary = True)
 '''
 load the dataset

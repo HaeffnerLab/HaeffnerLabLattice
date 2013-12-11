@@ -7,19 +7,21 @@ from scipy.interpolate import interp1d
 
 trap_frequency = WithUnit(2.25, 'MHz')
 projection_angle = 45
-nbar = 15.25
-time_2pi = 7.8#microseconds
+nbar = 4.7
+time_2pi = 5.5#microseconds for ion1
+# time_2pi = 5.9#microseconds for ion0
 delta = 0
 fixed_duration_time = 7.5#microseconds
 
 def displaced_thermal_example():
     eta = lamb_dicke.lamb_dicke(trap_frequency, projection_angle)
     excitations = np.array([])
-    alphas = np.linspace(0, 1, 10)
+    alphas = np.linspace(0, 1, 4)
     for alpha in alphas:
         te = rabi_flop_time_evolution(-1 ,eta)
         prob_excitation = te.compute_evolution_coherent(nbar = nbar, alpha = alpha, delta = delta, time_2pi = time_2pi, t = fixed_duration_time)
         excitations = np.append(excitations, prob_excitation)   
+    print excitations
 #     np.save('37_ions_1', (excitations, alphas)) 
     interpolation_function = interp1d(excitations, alphas, kind = 'cubic')
     pyplot.figure()
