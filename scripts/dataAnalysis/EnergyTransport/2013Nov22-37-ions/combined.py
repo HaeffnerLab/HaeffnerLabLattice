@@ -38,13 +38,12 @@ def plot_500():
     delays, ion1set2,ion2set2 = get_data(date,set2)
     ion1set1[remove] = ion1set2[remove]
     ion2set1[remove] = ion2set2[remove]
-    #pyplot.plot(delays, ion1set1,'o-')
-    #pyplot.plot(delays, ion1set2,'o-')
     averaged1 = (ion1set1 + ion1set2)/2
     averaged2 = (ion2set1 + ion2set2)/2
 #     print averaged1.min(), averaged2.min()
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
+#     pyplot.show()
     pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-')
     pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-')
     pyplot.ylim(0,25)
@@ -222,8 +221,8 @@ def plot_80250():
     pyplot.savefig('plot_80250.pdf')
     pyplot.show()
 
-# plot_500()
+plot_500()
 # plot_3500()
 # plot_19750()
 # plot_40250()
-plot_80250()
+# plot_80250()

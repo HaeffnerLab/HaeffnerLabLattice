@@ -9,12 +9,24 @@ from matplotlib import pyplot
 '''
 script parameters
 '''
-info = ('Carrier Flops', ('2013Nov20','1726_27')); sideband_order = -1
-# info = ('Carrier Flops', ('2013Nov20','1534_54')); sideband_order = 0 #2pitime 6.89
+#5 ions
+# info = ('Carrier Flops', ('2013Nov20','1544_37')); sideband_order = -1#13.727020 +/- 0.825951 (6.02%) 
+# info = ('Carrier Flops', ('2013Nov20','1534_54')); sideband_order = 0 #2pitime 7.87mus, left ion
+# info = ('Carrier Flops', ('2013Nov20','1612_55')); sideband_order = 0 #2pitime 7.4mus, center ion
+# info = ('Carrier Flops', ('2013Nov20','1641_20')); sideband_order = 0 #2pitime 7.9mus, right ion
+#15 ions
+# info = ('Carrier Flops', ('2013Nov20','1720_27')); sideband_order = 0 #2pitime 7.91mus, left ion
+# info = ('Carrier Flops', ('2013Nov20','1726_27')); sideband_order = -1#9.345554 +/- 0.882314
+# info = ('Carrier Flops', ('2013Nov20','1917_49')); sideband_order = 0 #2pitime 6.3mus, right ion
+#25 ions
+# info = ('Carrier Flops', ('2013Nov20','1949_33')); sideband_order = 0 #2pitime 7.6mus, left ion
+# info = ('Sideband Flops', ('2013Nov20','2000_41')); sideband_order = -1#5.505775 +/- 0.666371, excitation at 7.5: 0.09490763
+# info = ('Carrier Flops', ('2013Nov20','2132_23')); sideband_order = 0 #2pitime 7.6mus, left ion
+
 trap_frequency = T.Value(2.25, 'MHz')
 projection_angle = 45 #degrees
-offset_time = 0.0
-fitting_region = (0,15) #microseconds
+offset_time = 0.2
+fitting_region = (0,7) #microseconds
 '''
 compute lamb dicke parameter
 '''
@@ -30,8 +42,8 @@ create fitting parameters
 params = lmfit.Parameters()
 params.add('excitation_scaling', value = 1.0, vary = False)
 params.add('detuning', value = 0, vary = False) #units of rabi frequency
-params.add('time_2pi', value = 7.8, vary = False, min = 0.0) #microseconds
-params.add('nbar', value = 6.3, min = 0.0, max = 200.0, vary = True)
+params.add('time_2pi', value = 8.0, vary = True, min = 0.0) #microseconds
+params.add('nbar', value = 10., min = 0.0, max = 200.0, vary = False)
 '''
 load the dataset
 '''
@@ -44,7 +56,7 @@ data = dv.get().asarray.transpose()
 times,prob = data[0],data[1]
 # times,prob = data[0],data[2]
 tmin,tmax = times.min(), times.max()
-detailed_times = np.linspace(tmin, tmax, 1000)
+detailed_times = np.linspace(tmin, tmax, 1001)
 '''
 compute time evolution of the guessed parameters
 '''
@@ -55,7 +67,8 @@ define how to compare data to the function
 '''
 def rabi_flop_fit_thermal(params , t, data):
     model = flop.compute_evolution_thermal(params['nbar'].value, params['detuning'].value, params['time_2pi'].value, t, excitation_scaling = params['excitation_scaling'].value)
-    return model - data
+#     error = np.sqrt(data) * np.sqrt(1 - data) / np.sqrt(readouts)
+    return (model - data)# / error
 '''
 perform the fit
 '''
@@ -68,9 +81,10 @@ make the plot
 '''
 pyplot.figure()
 pyplot.plot(detailed_times, guess_evolution, '--k', alpha = 0.5, label = 'initial guess')
+print 'excitation at 7.5 mus', fit_values[(detailed_times <= 7.6) * (detailed_times >= 7.4)]
 pyplot.plot(times, prob, 'ob', label = 'data')
 pyplot.plot(detailed_times, fit_values, 'r', label = 'fitted')
-pyplot.legend()
+# pyplot.legend()
 pyplot.title(title)
 pyplot.xlabel('time (us)')
 pyplot.ylabel('D state occupation probability')
