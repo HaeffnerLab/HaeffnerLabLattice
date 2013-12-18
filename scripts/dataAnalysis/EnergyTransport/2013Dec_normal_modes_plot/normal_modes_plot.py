@@ -16,8 +16,8 @@ c25 = np.array([0.2, 0.360198, 0.450781, 0.465641, 0.421263, 0.343152, 0.255558,
 
 markersize = 7
 pyplot.plot(1 + np.arange(5), c5, 'o', label = '5 ions', markersize = markersize)
-pyplot.plot(1 + np.arange(15),c15,'o', label = '15 ions', markersize = markersize)
-pyplot.plot(1 + np.arange(25),c25, 'o', label = '25 ions', markersize = markersize)
+pyplot.plot(1 + np.arange(15),c15,'v', label = '15 ions', markersize = markersize)
+pyplot.plot(1 + np.arange(25),c25, 'D', label = '25 ions', markersize = markersize)
 pyplot.legend()
 pyplot.show()
 

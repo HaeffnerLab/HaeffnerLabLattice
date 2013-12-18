@@ -7,6 +7,9 @@ import numpy as np
 from simulation_parameters import simulation_parameters
 from equilbrium_positions import equilibrium_positions as equil
 from matplotlib import pyplot
+import matplotlib
+matplotlib.rc('xtick', labelsize=20) 
+matplotlib.rc('ytick', labelsize=20) 
 
 p = simulation_parameters()
 simulation = simulator(p)
@@ -19,6 +22,7 @@ starting_positions[:, 2] = equil.get_positions(p.number_ions, p.f_z, p)
 center_ion = p.number_ions / 2 +1
 heated_ion = 0
 starting_positions[heated_ion, 0] +=10e-9
+# starting_velocities[heated_ion, 0] +=1e-9
 # starting_positions[heated_ion+1, 0] +=10e-9
 
 positions,excitations = simulation.simulation(starting_positions, starting_velocities, random_seeding = 0)
@@ -68,6 +72,8 @@ pyplot.plot(time_axis_binned, energy_left, 'b', label = 'left ion')
 ymax = 120/114.311895325#making sure y-heights match
 pyplot.ylim(0,ymax)
 pyplot.xlim(-10, 610)
+ax = pyplot.gca()
+ax.xaxis.set_ticklabels([0,0,100,200,300,400,500])
 pyplot.subplot(122)
 pyplot.plot(time_axis_binned, energy_right, 'b', label = 'right ion')
 pyplot.xlim(-10, 610)
@@ -75,6 +81,7 @@ pyplot.xlim(-10, 610)
 pyplot.ylim(0,ymax)
 ax = pyplot.gca()
 ax.yaxis.set_ticklabels([])
+
 
 # np.save('energy_left5ms_5ions', energy_left)
 

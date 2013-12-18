@@ -1,4 +1,7 @@
 import labrad
+import matplotlib
+matplotlib.rc('xtick', labelsize=20) 
+matplotlib.rc('ytick', labelsize=20) 
 from matplotlib import pyplot
 import numpy as np
 from scipy.interpolate import interp1d
@@ -19,7 +22,7 @@ def excitation_to_energy(which_conversion):
     else:
         raise Exception("Wrong number of ions")
     excitations, alphas = np.load(filename)
-    func = interp1d(excitations, alphas**2)
+    func = interp1d(excitations, alphas**2, bounds_error = False, fill_value = np.NaN)
     return func
 
 def plot_5():
@@ -35,7 +38,11 @@ def plot_5():
     delays,excitations = data.transpose()
     excitations = excitations / OP_reduction_left
     energy = excitation_to_energy(5)(excitations)
-    pyplot.plot(delays,energy,'o-', label = '5')
+    sigma =  np.sqrt(excitations) * np.sqrt(1 - excitations) / np.sqrt(500)
+    plus_error = excitation_to_energy(5)(excitations + sigma) - energy
+    minus_error =  excitation_to_energy(5)(excitations - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = '5')
     ax = pyplot.gca()
     ax.xaxis.set_ticklabels([])
 #     ax.yaxis.set_ticks_position('left')
@@ -44,7 +51,7 @@ def plot_5():
 #     pyplot.title('left ion')
 #     pyplot.grid(True, 'both')
     pyplot.xlim(-10, 610)
-    pyplot.ylim(0,120)
+    pyplot.ylim(0,125)
     #center, 5
 #     pyplot.subplot(312)
 #     dv.cd(['','Experiments','Blue Heat ScanDelay',date,center])
@@ -65,9 +72,14 @@ def plot_5():
     delays,excitations = data.transpose()
     excitations = excitations / OP_reduction_right
     energy = excitation_to_energy(5)(excitations)
-    pyplot.plot(delays,energy,'o-', label = '5 ions')
+    sigma =  np.sqrt(excitations) * np.sqrt(1 - excitations) / np.sqrt(500)
+    plus_error = excitation_to_energy(5)(excitations + sigma) - energy
+    minus_error =  excitation_to_energy(5)(excitations - sigma) - energy
+    minus_error[0] = energy[0] #error can't extend below zero
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = '5')
     pyplot.xlim(-10, 610)
-    pyplot.ylim(0,120)
+    pyplot.ylim(0,125)
     ax = pyplot.gca()
     ax.yaxis.set_ticklabels([])
     ax.xaxis.set_ticklabels([])
@@ -84,7 +96,12 @@ pyplot.tight_layout()
 # plot_15()
 # plot_25()
 pyplot.subplots_adjust(wspace = 0)
-fig = pyplot.gcf()
-fig.set_size_inches(19.2,5.4)
-pyplot.savefig('comparison_theory_top.pdf')
+
+save = True
+if not save:
+    print 'NOT SAVING'
+else:
+    fig = pyplot.gcf()
+    fig.set_size_inches(19.2,5.4) 
+    pyplot.savefig('comparison_theory_top.pdf')
 pyplot.show()
