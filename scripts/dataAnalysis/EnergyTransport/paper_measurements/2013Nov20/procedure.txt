@@ -1,0 +1,44 @@
+Extracting OP effect on the ions.
+
+5ions:
+	date = '2013Nov20'
+	
+	Carrier flops to extract 2pi time.
+	
+	info = ('Carrier Flops', ('2013Nov20','1534_54')); sideband_order = 0 #2pitime 7.87mus, left ion
+	info = ('Carrier Flops', ('2013Nov20','1612_55')); sideband_order = 0 #2pitime 7.4mus, center ion
+	info = ('Carrier Flops', ('2013Nov20','1641_20')); sideband_order = 0 #2pitime 7.9mus, right ion
+	
+	Sideband interaction to extract nbar
+	
+	info = ('Sideband Flops', ('2013Nov20','1544_37')); sideband_order = -1#nbar 13.727020 +/- 0.825951 (6.02%) , excitation at 7.5: 0.221
+	
+	lowest excitation: center ion 0.1419, max center 0.4
+	
+	lowest nbar consistent is 12.7nbar, within error
+	conversion:
+	nbar = 12.7
+	time_2pi = 7.9#microseconds for ion1
+	lphas = np.linspace(0, 14, 50)
+	
+
+15ions:
+date = '2013Nov20'
+	info = ('Carrier Flops', ('2013Nov20','1726_27')); sideband_order = -1#11.474691 +/- 1.136956, 0.16863424
+	lowest_excitation center ion 0.08389262
+	
+	nbar = 9.3
+	time_2pi = 7.9#microseconds for ion1
+	alphas = np.linspace(0, 14, 50)
+	
+
+25ions:
+	date = '2013Nov20'
+	
+	# info = ('Carrier Flops', ('2013Nov20','1949_33')); sideband_order = 0 #2pitime 7.6mus, left ion
+	info = ('Sideband Flops', ('2013Nov20','2000_41')); sideband_order = -1#5.505775 +/- 0.666371, excitation at 7.5: 0.09490763
+	lowest_excitation center ion 0.04618938, 0.2886836
+	conversion
+	nbar = 5.5
+	time_2pi = 7.6#microseconds for ion1
+	alphas = np.linspace(0, 14, 50) 
