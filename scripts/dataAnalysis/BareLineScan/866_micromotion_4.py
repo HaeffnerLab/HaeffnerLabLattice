@@ -65,9 +65,9 @@ params = lmfit.Parameters()
 params.add('amplitude', value = 6700)
 params.add('gamma', value = 24.6)
 params.add('offset', value = 0.104)
-params.add('beta', value = 0.0, vary=False)
+params.add('beta', value = 0.02, min=0.01)
 params.add('Omega', value = 30.704, vary = False)
-params.add('B', value = 1.68,vary=False)
+params.add('B', value = 1.68)
 params.add('center', value = 160)
 
 

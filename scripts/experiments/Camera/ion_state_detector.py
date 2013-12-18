@@ -98,13 +98,15 @@ class ion_state_detector(object):
         background_guess = data[0].mean() #assumes that there are no ions at the edge of the image
         background_std = np.std(data[0])
         center_x_guess,center_y_guess,amplitude_guess, spacing_guess = self.guess_centers(data, background_guess, background_std, xx, yy)
+        print spacing_guess
+        spacing_guess = 10
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
-        params.add('rotation_angle', value = 0.0, min = -np.pi, max = np.pi, vary = False)
+        params.add('rotation_angle', value = 0.0001, min = -np.pi, max = np.pi, vary = False)
         params.add('center_x', value = center_x_guess, min = xx.min(), max = xx.max())
         params.add('center_y', value = center_y_guess, min = yy.min(), max = yy.max())
-        params.add('spacing', value = spacing_guess, min = 2.0, max = 30)
+        params.add('spacing', value = spacing_guess, min = 2.0, max = 60)
         params.add('sigma', value = sigma_guess, min = 0.01, max = 10.0)
         #first fit without the angle
         lmfit.minimize(self.fitting_error, params, args = (xx, yy, data))

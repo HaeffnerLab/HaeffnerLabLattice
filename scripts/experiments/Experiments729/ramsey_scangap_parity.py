@@ -7,9 +7,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class ramsey_scangap(experiment):
+class ramsey_scangap_parity(experiment):
     
-    name = 'RamseyScanGap'
+    name = 'RamseyScanGapParity'
     required_parameters = [
                            ('RamseyScanGap', 'detuning'),
                            ('RamseyScanGap', 'scangap'),
@@ -44,6 +44,7 @@ class ramsey_scangap(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
+        self.parity_save_context = cxn.context()
         self.setup_data_vault()
     
     def setup_sequence_parameters(self):
@@ -72,10 +73,14 @@ class ramsey_scangap(experiment):
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.cd(directory, True,context = self.data_save_context)
+        self.dv.cd(directory, True,context = self.parity_save_context)
         self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
+        self.dv.new('{0} {1} Parity'.format(self.name, datasetNameAppend),[('Excitation', 'us')], [('Parity','Parity','Probability')] , context = self.parity_save_context)
         window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
+        self.dv.add_parameter('Window', window_name, context = self.parity_save_context)
+        self.dv.add_parameter('plotLive', True, context = self.parity_save_context)
         
     def run(self, cxn, context):
         self.setup_sequence_parameters()
@@ -84,11 +89,21 @@ class ramsey_scangap(experiment):
             if should_stop: break
             self.parameters['Ramsey.ramsey_time'] = duration
             self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
+            excitation,readouts = self.excite.run(cxn, context)
+            parity = self.compute_parity(readouts)
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)
+            self.dv.add([duration['us'], parity], context = self.parity_save_context)
             self.update_progress(i)
+    
+    def compute_parity(self, readouts):
+        '''
+        computes the parity of the provided readouts
+        '''
+        total = readouts.sum(axis = 1)
+        parity = (total % 2 == 0).mean() - (total % 2 == 1).mean()
+        return parity
      
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
@@ -105,6 +120,6 @@ class ramsey_scangap(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = ramsey_scangap(cxn = cxn)
+    exprt = ramsey_scangap_parity(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

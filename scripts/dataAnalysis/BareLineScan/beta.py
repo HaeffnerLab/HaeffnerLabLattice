@@ -32,11 +32,14 @@ beta = np.array([2.65,2.04,1.59,1.22,0.99,0.70])
 
 betaerr = np.ones_like(x1)*0.03
 
+betaerr = np.array([0.01,0.01,0.01,0.01,0.02,0.03])+beta*0.03
+
 params = lmfit.Parameters()
 params.add('A', value = 12.0)
 params.add('C', value = 0.0)
 
 x1 = (x1+x2)/2.0
+print x1
 
 result = lmfit.minimize(beta_fit, params, args = (x1, beta, betaerr))
 
@@ -47,6 +50,8 @@ lmfit.report_errors(params)
 #normalization = params['amplitude']/(params['gamma']/2.0)**2
 
 
-pyplot.errorbar(x1,beta,betaerr,linestyle='None',markersize = 5.0,fmt='o')
+pyplot.errorbar(x1,beta,betaerr,linestyle='None',markersize = 7.0,fmt='o')
 pyplot.plot(np.arange(1.0,2.4,0.01),beta_model(params,np.arange(1.0,2.4,0.01)),linewidth=2.0)
+pyplot.xlim((1.0,2.42))
+pyplot.ylim((0.5,3.51))
 pyplot.show()
