@@ -12,7 +12,7 @@ time_2pi = 7.9#microseconds for ion1
 alphas = np.linspace(0, 20, 20)
 # time_2pi = 5.9#microseconds for ion0
 delta = 0.0
-fixed_duration_time = 7.5#microseconds
+fixed_duration_time = 2.0#microseconds
 
 def displaced_thermal_example():
     eta = lamb_dicke.lamb_dicke(trap_frequency, projection_angle)

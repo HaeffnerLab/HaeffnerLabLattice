@@ -19,7 +19,7 @@ def excitation_to_energy(which_ion):
     else:
         raise Exception("Wrong number of ions")
     excitations, alphas = np.load(filename)
-    func = interp1d(excitations, alphas**2)
+    func = interp1d(excitations, alphas**2, bounds_error = False, fill_value = np.NaN)
     return func
 
 def get_data(date, dataset):
@@ -44,11 +44,23 @@ def plot_500():
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
 #     pyplot.show()
-    pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-')
-    pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-')
+    energy = excitation_to_energy(0)(averaged1)
+    sigma =  np.sqrt(averaged1) * np.sqrt(1 - averaged1) / np.sqrt(500)
+    plus_error = excitation_to_energy(0)(averaged1 + sigma) - energy
+    minus_error =  excitation_to_energy(0)(averaged1 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-')
+    
+    energy = excitation_to_energy(1)(averaged2)
+    sigma =  np.sqrt(averaged2) * np.sqrt(1 - averaged2) / np.sqrt(500)
+    plus_error = excitation_to_energy(1)(averaged2 + sigma) - energy
+    minus_error =  excitation_to_energy(1)(averaged2 - sigma) - energy
+    minus_error[1] = averaged2[1]
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-')
+    
     pyplot.ylim(0,25)
     pyplot.xlim(0,550)
-#     pyplot.grid(True, which = 'major', axis = 'y')
     ax = pyplot.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
@@ -77,8 +89,19 @@ def plot_3500():
 #     print averaged1.min(), averaged2.min()
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
-    pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-')
-    pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-')
+    energy = excitation_to_energy(0)(averaged1)
+    sigma =  np.sqrt(averaged1) * np.sqrt(1 - averaged1) / np.sqrt(500)
+    plus_error = excitation_to_energy(0)(averaged1 + sigma) - energy
+    minus_error =  excitation_to_energy(0)(averaged1 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-')
+    
+    energy = excitation_to_energy(1)(averaged2)
+    sigma =  np.sqrt(averaged2) * np.sqrt(1 - averaged2) / np.sqrt(500)
+    plus_error = excitation_to_energy(1)(averaged2 + sigma) - energy
+    minus_error =  excitation_to_energy(1)(averaged2 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-')
 #     pyplot.grid(True, 'both')
     ax = pyplot.gca()
     ax.spines['right'].set_visible(False)
@@ -112,8 +135,20 @@ def plot_19750():
 #     print averaged1.min(), averaged2.min()
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
-    pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-')
-    pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-')
+    energy = excitation_to_energy(0)(averaged1)
+    sigma =  np.sqrt(averaged1) * np.sqrt(1 - averaged1) / np.sqrt(500)
+    plus_error = excitation_to_energy(0)(averaged1 + sigma) - energy
+    minus_error =  excitation_to_energy(0)(averaged1 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-')
+    
+    energy = excitation_to_energy(1)(averaged2)
+    sigma =  np.sqrt(averaged2) * np.sqrt(1 - averaged2) / np.sqrt(500)
+    plus_error = excitation_to_energy(1)(averaged2 + sigma) - energy
+    minus_error =  excitation_to_energy(1)(averaged2 - sigma) - energy
+    minus_error[1] = averaged2[1]
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-')
 #     pyplot.grid(True, 'both')
     pyplot.xlim(19450,19650)
     pyplot.ylim(0,25)
@@ -146,8 +181,20 @@ def plot_40250():
     pyplot.figure()
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
-    pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-')
-    pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-')
+    energy = excitation_to_energy(0)(averaged1)
+    sigma =  np.sqrt(averaged1) * np.sqrt(1 - averaged1) / np.sqrt(500)
+    plus_error = excitation_to_energy(0)(averaged1 + sigma) - energy
+    minus_error =  excitation_to_energy(0)(averaged1 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-')
+    
+    energy = excitation_to_energy(1)(averaged2)
+    sigma =  np.sqrt(averaged2) * np.sqrt(1 - averaged2) / np.sqrt(500)
+    plus_error = excitation_to_energy(1)(averaged2 + sigma) - energy
+    minus_error =  excitation_to_energy(1)(averaged2 - sigma) - energy
+    minus_error[1] = averaged2[1]
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-')
 #     pyplot.grid(True, 'both')
     pyplot.xlim(39950,40150)
     pyplot.ylim(0,25)
@@ -167,7 +214,7 @@ def plot_40250():
 #     pyplot.plot(delays1, ion1set1,'o-')
 #     pyplot.plot(delays2, ion1set2,'o-')
     pyplot.plot(delays, excitation_to_energy(0)(ion1set1), 'o-')
-    pyplot.plot(delays, excitation_to_energy(1)(ion1set2), 'o-')
+    pyplot.plot(delays, excitation_to_energy(1)(ion1set2), 'v-')
     pyplot.grid(True, 'both')
     pyplot.xlim(40000,40100)
     pyplot.ylim(0,25)
@@ -196,8 +243,20 @@ def plot_80250():
     pyplot.figure()
 #     pyplot.plot(delays, averaged1, 'o-')
 #     pyplot.plot(delays, averaged2, 'o-')
-    pyplot.plot(delays, excitation_to_energy(0)(averaged1), 'o-', label = 'rightmost ion')
-    pyplot.plot(delays, excitation_to_energy(1)(averaged2), 'o-', label = 'ion second from right')
+    energy = excitation_to_energy(0)(averaged1)
+    sigma =  np.sqrt(averaged1) * np.sqrt(1 - averaged1) / np.sqrt(500)
+    plus_error = excitation_to_energy(0)(averaged1 + sigma) - energy
+    minus_error =  excitation_to_energy(0)(averaged1 - sigma) - energy
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = 'rightmost ion')
+    
+    energy = excitation_to_energy(1)(averaged2)
+    sigma =  np.sqrt(averaged2) * np.sqrt(1 - averaged2) / np.sqrt(500)
+    plus_error = excitation_to_energy(1)(averaged2 + sigma) - energy
+    minus_error =  excitation_to_energy(1)(averaged2 - sigma) - energy
+    minus_error[1] = averaged2[1]
+    yerr = np.vstack((-minus_error, plus_error))
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-', label = 'ion second from right')
 #     pyplot.grid(True, 'both')
     pyplot.xlim(79850,80150)
 #     pyplot.ylim(0,1)
@@ -221,8 +280,8 @@ def plot_80250():
     pyplot.savefig('plot_80250.pdf')
     pyplot.show()
 
-plot_500()
+# plot_500()
 # plot_3500()
 # plot_19750()
 # plot_40250()
-# plot_80250()
+plot_80250()
