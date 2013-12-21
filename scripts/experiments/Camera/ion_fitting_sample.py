@@ -19,15 +19,13 @@ series_of_images = np.repeat(shaped_image, 1, axis = 0)
 detector = ion_state_detector(8)
 result, params = detector.guess_parameters_and_fit(xx, yy, image)
 
-# detector.report(params)
+detector.report(params)
 detector.graph(x_axis, y_axis, image, params, result)
 
 
 best_states, confidences = detector.state_detection(image)
-# best_states, confidences = detector.state_detection(series_of_images)
 excitation_probability = 1 - best_states.mean(axis = 0)
 print excitation_probability, confidences
-
 
 left_ion_dark_image = np.array(image)
 left_ion_dark_image[:,0:10] = 793
@@ -35,3 +33,9 @@ detector.graph(x_axis, y_axis, left_ion_dark_image, params, result)
 best_states, confidences = detector.state_detection(left_ion_dark_image)
 excitation_probability = 1 - best_states.mean(axis = 0)
 print excitation_probability, confidences
+
+two_ions = np.array(image)
+two_ions[:,0:55] = 793
+detector = ion_state_detector(2)
+result, params = detector.guess_parameters_and_fit(xx, yy, two_ions)
+detector.graph(x_axis, y_axis, two_ions, params, result)

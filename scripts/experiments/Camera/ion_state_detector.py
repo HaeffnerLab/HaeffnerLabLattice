@@ -98,8 +98,6 @@ class ion_state_detector(object):
         background_guess = data[0].mean() #assumes that there are no ions at the edge of the image
         background_std = np.std(data[0])
         center_x_guess,center_y_guess,amplitude_guess, spacing_guess = self.guess_centers(data, background_guess, background_std, xx, yy)
-        print spacing_guess
-        spacing_guess = 10
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
@@ -140,9 +138,8 @@ class ion_state_detector(object):
                     where_peak = np.where(data > amplitude_guess)
                     peaks_y, peaks_x = yy[where_peak], xx[where_peak]
                     std = np.sqrt(peaks_x.std()**2 + peaks_y.std()**2)
-                    spacing_guess = std * np.sqrt(12. / (self.ion_number**2 - 1) )
-                    #convert spacing guess in pixels to units of the spacing_dict by making sure outer ions are in the correct place
-                    spacing_guess = spacing_guess * self.ion_number / np.abs(self.spacing_dict[0] - self.spacing_dict[-1])
+                    sumsq = np.sum(np.array(self.spacing_dict)**2)
+                    spacing_guess = std * np.sqrt(self.ion_number / sumsq)
                 else:
                     spacing_guess = 0
                 return center_x_guess, center_y_guess, amplitude_guess, spacing_guess
