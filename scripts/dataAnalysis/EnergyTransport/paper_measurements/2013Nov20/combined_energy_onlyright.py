@@ -51,7 +51,7 @@ def plot_15():
     plus_error = excitation_to_energy(15)(excitations + sigma) - energy
     minus_error =  excitation_to_energy(15)(excitations - sigma) - energy
     yerr = np.vstack((-minus_error, plus_error))
-    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = '15 ions')
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-', label = '15 ions')
     
 def plot_25():
     date = '2013Nov20'
@@ -67,7 +67,7 @@ def plot_25():
     plus_error = excitation_to_energy(25)(excitations + sigma) - energy
     minus_error =  excitation_to_energy(25)(excitations - sigma) - energy
     yerr = np.vstack((-minus_error, plus_error))
-    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = '25 ions')
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'D-', label = '25 ions')
     pyplot.legend()
 
 plot_5()

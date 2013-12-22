@@ -18,6 +18,12 @@ markersize = 7
 pyplot.plot(1 + np.arange(5), c5, 'o', label = '5 ions', markersize = markersize)
 pyplot.plot(1 + np.arange(15),c15,'v', label = '15 ions', markersize = markersize)
 pyplot.plot(1 + np.arange(25),c25, 'D', label = '25 ions', markersize = markersize)
-pyplot.legend()
+pyplot.legend(fontsize = 20)
+fig = pyplot.gcf()
+ax = pyplot.gca()
+ax.tick_params(axis='x', labelsize=20)
+ax.tick_params(axis='y', labelsize=20)
+pyplot.savefig('excited_normal_modes.pdf', dpi = 600)
+
 pyplot.show()
 
