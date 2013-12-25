@@ -15,17 +15,16 @@ def micro_model(params, x):
     amplitude=params['amplitude'].value
     offset=params['offset'].value
     center=params['center'].value
+    grad=params['grad'].value
     x = x-center
     flour = np.zeros_like(x)
     
     for n in np.arange(-50,51,1):
-        flour_temp1 = bessel.jv(n,beta)**2/((x+n*Omega-14.0*B/10.0)**2+(gamma/2.0)**2)
-        flour_temp2 = bessel.jv(n,beta)**2/((x+n*Omega-6.0*B/10.0)**2+(gamma/2.0)**2)
-        flour_temp3 = bessel.jv(n,beta)**2/((x+n*Omega-2.0*B/10.0)**2+(gamma/2.0)**2)
-        flour_temp4 = bessel.jv(n,beta)**2/((x+n*Omega+2.0*B/10.0)**2+(gamma/2.0)**2)
-        flour_temp5 = bessel.jv(n,beta)**2/((x+n*Omega+6.0*B/10.0)**2+(gamma/2.0)**2)
-        flour_temp6 = bessel.jv(n,beta)**2/((x+n*Omega+14.0*B/10.0)**2+(gamma/2.0)**2)
-        flour = flour+amplitude*(flour_temp1+flour_temp2+flour_temp3+flour_temp4+flour_temp5+flour_temp6)/6.0+offset
+        flour_temp1 = (bessel.jv(n,beta)**2+grad*beta**2*(bessel.jv(n-1,beta)-bessel.jv(n+1,beta))**2)/((x+n*Omega-4.0*B/3.0)**2+(gamma/2.0)**2)
+        flour_temp2 = (bessel.jv(n,beta)**2+grad*beta**2*(bessel.jv(n-1,beta)-bessel.jv(n+1,beta))**2)/((x+n*Omega-2.0*B/3.0)**2+(gamma/2.0)**2)
+        flour_temp3 = (bessel.jv(n,beta)**2+grad*beta**2*(bessel.jv(n-1,beta)-bessel.jv(n+1,beta))**2)/((x+n*Omega+4.0*B/3.0)**2+(gamma/2.0)**2)
+        flour_temp4 = (bessel.jv(n,beta)**2+grad*beta**2*(bessel.jv(n-1,beta)-bessel.jv(n+1,beta))**2)/((x+n*Omega+2.0*B/3.0)**2+(gamma/2.0)**2)
+        flour = flour+amplitude*(flour_temp1+flour_temp2+flour_temp3+flour_temp4)/4.0+offset
     return flour
 '''
 define how to compare data to the function
@@ -34,27 +33,27 @@ def micro_fit(params , x, data, err):
     model = micro_model(params, x)
     return (model - data)/err
 
-cxn = labrad.connect()
+cxn = labrad.connect('192.168.169.197')
 dv = cxn.data_vault
-dv.cd('','Experiments','BareLineScanRed','2013Nov18','1923_14')
+dv.cd('','Experiments','BareLineScan','2013Nov16','1527_37')
 dv.open(3)
 data1=dv.get().asarray
 
 data1_x = data1[:,0]
-data1_yerr = np.sqrt(data1[:,1])/60.0
-data1_y = data1[:,1]/60.0
+data1_yerr = np.sqrt(data1[:,1])/35.0
+data1_y = data1[:,1]/35.0
 
 data1_y = data1_y[:-3]
 data1_yerr = data1_yerr[:-3]
 data1_x = data1_x[:-3]
 
-dv.cd('','Experiments','BareLineScanRed','2013Nov18','1942_13')
+dv.cd('','Experiments','BareLineScan','2013Nov16','1538_12')
 dv.open(3)
 data2=dv.get().asarray
 
-data2_y = data2[:,1]/50.0
-data2_yerr = np.sqrt(data2[:,1])/50.0
-data2_x = data2[:,0]+14.5
+data2_y = data2[:,1]/30.0
+data2_yerr = np.sqrt(data2[:,1])/30.0
+data2_x = data2[:,0]+42.6
 
 data2_y = data2_y[6:]
 data2_yerr = data2_yerr[6:]
@@ -68,17 +67,18 @@ y_err = np.sqrt(data_y)
 
 #pyplot.plot(data1_x,data1_y)
 #pyplot.plot(data2_x,data2_y)
-#pyplot.plot(data_x-180,data_y)
+#pyplot.plot(data_x,data_y)
 
 
 params = lmfit.Parameters()
-params.add('amplitude', value = 2800)
-params.add('gamma', value = 24.0, vary = False)
+params.add('amplitude', value = 46583)
+params.add('gamma', value = 24.0,vary = False)
 params.add('offset', value = 0.016961)
-params.add('beta', value = 1.0)
+params.add('beta', value = 0.24, vary=False)
 params.add('Omega', value = 30.704, vary = False)
-params.add('B', value = 1.68,min=0)
-params.add('center', value = 180)
+params.add('B', value = 1.77)
+params.add('center', value = 227)
+params.add('grad', value = 0.3)
 
 
 result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, y_err))
@@ -89,8 +89,7 @@ lmfit.report_errors(params)
 
 normalization = params['amplitude']/(params['gamma']/2.0)**2
 
-pyplot.plot(np.arange(110,250,0.1)-params['center'],micro_model(params,np.arange(110,250,0.1))/normalization,linewidth=1.5)
+pyplot.plot(np.arange(120,340,0.1)-params['center'],micro_model(params,np.arange(120,340,0.1))/normalization, linewidth=1.5)
 pyplot.errorbar(data_x-params['center'],data_y/normalization,data_yerr/normalization,linestyle='None',markersize = 4.0,fmt='o',color='black')
-pyplot.axis([-85,85,0.1,0.8])
-#pyplot.plot(np.arange(120,320,0.1)-params['center'],micro_model(params,np.arange(120,320,0.1)))
+pyplot.axis([-110,110,0.00,1.1])
 pyplot.show()
