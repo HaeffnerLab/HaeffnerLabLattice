@@ -8,26 +8,18 @@ from labrad.units import WithUnit
 class lifetime_p(pulse_sequence):
 
     required_parameters = [
-                  #number of cycles, where each cycle is a complete transfer from S to P to D and then back to S
-                  ('LifetimeP','cycles_per_sequence'),
-                  ('LifetimeP','between_pulses'),
-                  
-                  ('LifetimeP','duration_397_pulse'),
-                  ('LifetimeP','frequency_397_pulse'),
-                  ('LifetimeP','amplitude_397_pulse'),
-                  
-                  ('LifetimeP','duration_866_pulse'),
-                  ('LifetimeP','frequency_866_pulse'),
-                  ('LifetimeP','amplitude_866_pulse'),
-                 
-                  ('DopplerCooling', 'doppler_cooling_frequency_397'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_397'),
-                  ('DopplerCooling', 'doppler_cooling_frequency_866'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_866'),
-                  ('DopplerCooling', 'doppler_cooling_repump_additional'),
-                  ('DopplerCooling', 'doppler_cooling_duration'),
-                  ]
+                           ('LifetimeP','cycles_per_sequence'),
+                           ('LifetimeP','between_pulses'),
+                           ('LifetimeP','duration_397_pulse'),
+                           ('LifetimeP','frequency_397_pulse'),
+                           ('LifetimeP','amplitude_397_pulse'),
+                           ('LifetimeP','duration_866_pulse'),
+                           ('LifetimeP','frequency_866_pulse'),
+                           ('LifetimeP','amplitude_866_pulse'),
+                           ]
     required_subsequences = [doppler_cooling, turn_off_all, empty_sequence]
+    replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]                       
+                           }
     
     def sequence(self):
         l = self.parameters.LifetimeP

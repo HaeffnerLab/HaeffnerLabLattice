@@ -15,6 +15,17 @@ class sideband_cooling_continuous(pulse_sequence):
                            ]
     
     required_subsequences = [optical_pumping_continuous]
+    replaced_parameters = {
+                           optical_pumping_continuous:[
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_duration'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_854'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_854'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_729'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_729'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_866'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_866'),
+                                                       ]
+                           }
     
     def sequence(self):
         replace = self.make_replace()

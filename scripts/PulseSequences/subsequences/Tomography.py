@@ -14,6 +14,14 @@ class tomography_excitation(pulse_sequence):
                           ]
 
     required_subsequences = [rabi_excitation]
+    replaced_parameters = {
+                           rabi_excitation:[
+                                            ('Excitation_729','rabi_excitation_frequency'),
+                                            ('Excitation_729','rabi_excitation_amplitude'),
+                                            ('Excitation_729','rabi_excitation_duration'),
+                                            ('Excitation_729','rabi_excitation_phase'),
+                                            ]
+                           }
     
     def sequence(self):
         t = self.parameters.Tomography

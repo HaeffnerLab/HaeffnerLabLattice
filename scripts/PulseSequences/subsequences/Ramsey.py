@@ -14,6 +14,15 @@ class ramsey_excitation(pulse_sequence):
                           ]
 
     required_subsequences = [rabi_excitation, empty_sequence, rabi_excitation_no_offset]
+    replaced_parameters = {
+                           rabi_excitation:[('Excitation_729','rabi_excitation_duration'),
+                                            ('Excitation_729','rabi_excitation_phase'),
+                                            ],
+                           rabi_excitation_no_offset:[('Excitation_729','rabi_excitation_duration'),
+                                                      ('Excitation_729','rabi_excitation_phase'),
+                                                      ],
+                           empty_sequence:[('EmptySequence','empty_sequence_duration')]
+                           }
     
     def sequence(self):
         r = self.parameters.Ramsey

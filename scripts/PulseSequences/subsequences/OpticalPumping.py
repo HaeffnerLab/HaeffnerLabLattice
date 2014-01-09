@@ -17,6 +17,24 @@ class optical_pumping(pulse_sequence):
                   ]
     
     required_subsequences = [optical_pumping_continuous, optical_pumping_pulsed]
+    replaced_parameters = {
+                           optical_pumping_continuous:[
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_854'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_854'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_729'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_729'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_frequency_866'),
+                                                       ('OpticalPumpingContinuous','optical_pumping_continuous_amplitude_866'),
+                                                       ],
+                           optical_pumping_pulsed:[
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_854'),
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_854'),
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_729'),
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_729'),
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_866'),
+                                                     ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_866'),
+                                                   ]
+                           }
     
     def sequence(self):
         op = self.parameters.OpticalPumping

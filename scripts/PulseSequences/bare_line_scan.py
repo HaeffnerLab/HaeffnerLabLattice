@@ -8,26 +8,19 @@ from labrad.units import WithUnit
 class bare_line_scan(pulse_sequence):
 
     required_parameters = [
-                  #number of cycles, where each cycle is a complete transfer from S to P to D and then back to S
-                  ('BareLineScan','cycles_per_sequence'),
-                  ('BareLineScan','between_pulses'),
-                  
-                  ('BareLineScan','duration_397_pulse'),
-                  ('BareLineScan','frequency_397_pulse'),
-                  ('BareLineScan','amplitude_397_pulse'),
-                  
-                  ('BareLineScan','duration_866_pulse'),
-                  ('BareLineScan','frequency_866_pulse'),
-                  ('BareLineScan','amplitude_866_pulse'),
-                 
-                  ('DopplerCooling', 'doppler_cooling_frequency_397'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_397'),
-                  ('DopplerCooling', 'doppler_cooling_frequency_866'),
-                  ('DopplerCooling', 'doppler_cooling_amplitude_866'),
-                  ('DopplerCooling', 'doppler_cooling_repump_additional'),
-                  ('DopplerCooling', 'doppler_cooling_duration'),
-                  ]
+                           ('BareLineScan','cycles_per_sequence'),
+                           ('BareLineScan','between_pulses'),
+                           ('BareLineScan','duration_397_pulse'),
+                           ('BareLineScan','frequency_397_pulse'),
+                           ('BareLineScan','amplitude_397_pulse'),
+                           ('BareLineScan','duration_866_pulse'),
+                           ('BareLineScan','frequency_866_pulse'),
+                           ('BareLineScan','amplitude_866_pulse'),
+                           ]
     required_subsequences = [doppler_cooling, turn_off_all, empty_sequence]
+    
+    replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
+                          }
     
     def sequence(self):
         l = self.parameters.BareLineScan

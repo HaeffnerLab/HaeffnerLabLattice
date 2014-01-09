@@ -22,6 +22,30 @@ class sideband_cooling(pulse_sequence):
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
+    replaced_parameters = {
+                           sideband_cooling_continuous:[
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_frequency_854'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_frequency_729'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_frequency_866'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_conitnuous_amplitude_854'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_amplitude_729'),
+                                                        ('SidebandCoolingContinuous','sideband_cooling_continuous_amplitude_866'),
+                                                        ],
+                            sideband_cooling_pulsed:[
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_frequency_854'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_amplitude_854'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_frequency_729'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_amplitude_729'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_frequency_866'),
+                                                        ('SidebandCoolingPulsed','sideband_cooling_pulsed_amplitude_866'),
+                                                        ],
+                           optical_pumping:[
+                                            ('OpticalPumping','optical_pumping_continuous'),
+                                            ('OpticalPumpingContinuous','optical_pumping_continuous_duration')
+                                            ]
+                           }
     
     def sequence(self):
         '''

@@ -40,8 +40,6 @@ class local_blue_heating(pulse_sequence):
                             ('Heating','blue_heating_repump_additional')
                           ]
     
-    required_subsequences = [doppler_cooling]
-    
     def sequence(self):
         h = self.parameters.Heating
         frequency_advance_duration = WithUnit(6, 'us')
@@ -61,6 +59,8 @@ class blue_heating(pulse_sequence):
                       ]
     
     required_subsequences = [local_blue_heating, empty_sequence]
+    replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
+                          }
     
     def sequence(self):
         h = self.parameters.Heating

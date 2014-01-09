@@ -69,7 +69,7 @@ if __name__ == '__main__':
         computes the maximum trace distance for various values of B
         '''
         pts = 30
-        number_of_spins = 5
+        number_of_spins = 2
         alpha = 1.0
         B_list = np.logspace(-1, 1, pts)
         t_list = np.linspace(0, 20 , 500)
@@ -81,8 +81,8 @@ if __name__ == '__main__':
             max_distances.append(max_trace_distace)
         np.save('trace distances {} pts'.format(pts), (B_list,max_distances))
     
-#     max_distance_for_B()
-    simple_plot()
+    max_distance_for_B()
+#     simple_plot()
 
 
 #     integ = time_independent_simulator(number_of_spins, alpha, B)

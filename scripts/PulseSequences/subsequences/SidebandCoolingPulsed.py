@@ -19,6 +19,21 @@ class sideband_cooling_pulsed(pulse_sequence):
                            ]
     
     required_subsequences = [optical_pumping_pulsed]
+    replaced_parameters = {
+                           optical_pumping_pulsed:[
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_cycles'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_729'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_repumps'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_additional_866'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_duration_between_pulses'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_854'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_854'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_729'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_729'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_frequency_866'),
+                                                   ('OpticalPumpingPulsed','optical_pumping_pulsed_amplitude_866'),
+                                                   ]
+                           }
     
     def sequence(self):
         replace = self.make_replace()
