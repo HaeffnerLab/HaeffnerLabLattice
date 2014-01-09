@@ -40,7 +40,7 @@ class excitation_blue_heat_ramsey(excitation_729):
                            ('IonsOnCamera','fit_spacing'),
                            ]
     pulse_sequence = blue_heat_ramsey
-    required_parameters.extend(pulse_sequence.required_parameters)
+    required_parameters.extend(pulse_sequence.all_required_parameters())
     #removing pulse sequence items that will be calculated in the experiment and do not need to be loaded
     required_parameters.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
     required_parameters.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))

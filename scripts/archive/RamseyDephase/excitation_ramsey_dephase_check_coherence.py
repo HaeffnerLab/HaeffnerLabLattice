@@ -22,7 +22,7 @@ class excitation_ramsey_dephase_check_coherence(excitation_729):
                            ('StateReadout', 'state_readout_threshold'),
                            ]
     pulse_sequence = ramsey_dephase_check_coherence
-    required_parameters.extend(pulse_sequence.required_parameters)
+    required_parameters.extend(pulse_sequence.all_required_parameters())
     #removing pulse sequence items that will be calculated in the experiment and do not need to be loaded
     required_parameters.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
     required_parameters.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
