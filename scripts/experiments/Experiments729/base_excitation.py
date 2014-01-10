@@ -1,17 +1,15 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from lattice.scripts.PulseSequences.spectrum_rabi import spectrum_rabi
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.experiments.Camera.ion_state_detector import ion_state_detector
 import numpy
 import time
        
-class excitation_729(experiment):
-    
-    name = 'Excitation729'  
-    required_parameters = [('OpticalPumping','frequency_selection'),
+class base_excitation(experiment):
+    name = ''  
+    excitation_required_parameters = [('OpticalPumping','frequency_selection'),
                            ('OpticalPumping','manual_frequency_729'),
                            ('OpticalPumping','line_selection'),
-                           
+                
                            ('SidebandCooling','frequency_selection'),
                            ('SidebandCooling','manual_frequency_729'),
                            ('SidebandCooling','line_selection'),
@@ -42,11 +40,15 @@ class excitation_729(experiment):
                            ('IonsOnCamera','fit_sigma'),
                            ('IonsOnCamera','fit_spacing'),
                            ]
-    pulse_sequence = spectrum_rabi
-    required_parameters.extend(pulse_sequence.all_required_parameters())
-    #removing pulse sequence items that will be calculated in the experiment and do not need to be loaded
-    required_parameters.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
-    required_parameters.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
+    pulse_sequence = None
+    
+    @classmethod
+    def all_required_parameters(cls):
+        params = cls.excitation_required_parameters
+        params.extend(cls.pulse_sequence.all_required_parameters())
+        params.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
+        params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
+        return params
     
     def initialize(self, cxn, context, ident):
         self.pulser = cxn.pulser
@@ -220,11 +222,3 @@ class excitation_729(experiment):
             self.dv.add(numpy.vstack((bins[0:-1],hist)).transpose(), context = self.histogram_save_context )
             self.dv.add_parameter('HistogramCameraConfidence', True, context = self.histogram_save_context )
             self.total_camera_confidences = []
-    
-if __name__ == '__main__':
-    import labrad
-    cxn = labrad.connect()
-    scanner = cxn.scriptscanner
-    exprt = excitation_729(cxn = cxn)
-    ident = scanner.register_external_launch(exprt.name)
-    exprt.execute(ident)
