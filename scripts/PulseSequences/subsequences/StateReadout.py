@@ -18,7 +18,7 @@ class state_readout(pulse_sequence):
                            ]
 
     required_subsequences = [doppler_cooling]
-    replaced_parmeters = {
+    replaced_parameters = {
                           doppler_cooling:  [('DopplerCooling','doppler_cooling_frequency_397'),
                                              ('DopplerCooling','doppler_cooling_amplitude_397'),
                                              ('DopplerCooling','doppler_cooling_frequency_866'),
