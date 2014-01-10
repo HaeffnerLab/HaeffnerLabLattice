@@ -63,11 +63,11 @@ data_yerr = data1_yerr
 
 params = lmfit.Parameters()
 params.add('amplitude', value = 6700)
-params.add('gamma', value = 24.6)
+params.add('gamma', value = 24.0, vary = False)
 params.add('offset', value = 0.104)
 params.add('beta', value = 0.02, min=0.01)
 params.add('Omega', value = 30.704, vary = False)
-params.add('B', value = 1.68)
+params.add('B', value = 3.04, vary= False)
 params.add('center', value = 160)
 
 
@@ -76,6 +76,8 @@ result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, data1_yerr))
 fit_values  = data_y + result.residual
 
 lmfit.report_errors(params)
+
+lmfit.report_fit(params)
 
 normalization = 1.15*params['amplitude']/(params['gamma']/2.0)**2
 

@@ -34,25 +34,25 @@ def micro_fit(params , x, data, err):
 
 cxn = labrad.connect('192.168.169.197')
 dv = cxn.data_vault
-dv.cd('','Experiments','BareLineScan','2013Nov16','1457_11')
+dv.cd('','Experiments','BareLineScan','2013Dec21','1634_00')
 dv.open(3)
 data1=dv.get().asarray
 
 data1_x = data1[:,0]
-data1_yerr = np.sqrt(data1[:,1])/30.0
-data1_y = data1[:,1]/30.0
+data1_yerr = np.sqrt(data1[:,1])/29.5
+data1_y = data1[:,1]/29.5
 
 data1_y = data1_y[:-3]
 data1_yerr = data1_yerr[:-3]
 data1_x = data1_x[:-3]
 
-dv.cd('','Experiments','BareLineScan','2013Nov16','1601_56')
+dv.cd('','Experiments','BareLineScan','2013Dec21','1615_13')
 dv.open(3)
 data2=dv.get().asarray
 
-data2_y = data2[:,1]/40.0
-data2_yerr = np.sqrt(data2[:,1])/40.0
-data2_x = data2[:,0]+41.8
+data2_y = data2[:,1]/30.0
+data2_yerr = np.sqrt(data2[:,1])/30.0
+data2_x = data2[:,0]+38.6
 
 data2_y = data2_y[6:]
 data2_yerr = data2_yerr[6:]
@@ -70,12 +70,12 @@ y_err = np.sqrt(data_y)
 
 
 params = lmfit.Parameters()
-params.add('amplitude', value = 46583)
-params.add('gamma', value = 28.20)
-params.add('offset', value = 0.016961)
-params.add('beta', value = 1.22)
-params.add('Omega', value = 30.704, vary = False)
-params.add('B', value = 1.68)
+params.add('amplitude', value = 33453, min = 0)
+params.add('gamma', value = 24.0)
+params.add('offset', value = 0.05)
+params.add('beta', value = 1.60, min = 0)
+params.add('Omega', value = 30.704)
+params.add('B', value = 1.20)
 params.add('center', value = 227)
 
 
@@ -89,5 +89,6 @@ normalization = params['amplitude']/(params['gamma']/2.0)**2
 
 pyplot.plot(np.arange(120,340,0.1)-params['center'],micro_model(params,np.arange(120,340,0.1))/normalization, linewidth=1.5)
 pyplot.errorbar(data_x-params['center'],data_y/normalization,data_yerr/normalization,linestyle='None',markersize = 4.0,fmt='o',color='black')
-pyplot.axis([-110,110,0.0,0.6])
+pyplot.axis([-110,110,0.04,0.5])
+
 pyplot.show()
