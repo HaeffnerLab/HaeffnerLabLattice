@@ -25,7 +25,6 @@ class drift_tracker_ramsey_oneline(experiment):
     
     required_parameters.extend(excitation_ramsey.required_parameters)
     #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Ramsey','rabi_pi_time'))
     required_parameters.remove(('Ramsey','ramsey_time'))
     required_parameters.remove(('Ramsey','second_pulse_phase'))
     required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))

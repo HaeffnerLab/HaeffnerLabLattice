@@ -17,7 +17,7 @@ class lifetime_p(experiment):
                            ('LifetimeP','max_timetags_per_transfer'),
                            ('LifetimeP','doppler_cooling_duration'),
                            ]
-    required_parameters.extend(sequence.required_parameters)
+    required_parameters.extend(sequence.all_required_parameters())
     required_parameters.remove(('DopplerCooling','doppler_cooling_duration'))
     
     def initialize(self, cxn, context, ident):

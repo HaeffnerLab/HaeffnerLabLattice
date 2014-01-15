@@ -36,7 +36,7 @@ class bare_line_scan(experiment):
                            
                            ]
     
-    required_parameters.extend(sequence.required_parameters)
+    required_parameters.extend(sequence.all_required_parameters())
     required_parameters.remove(('DopplerCooling','doppler_cooling_duration'))
     # this parameter will get scanned #
     required_parameters.remove(('BareLineScan','frequency_397_pulse'))
