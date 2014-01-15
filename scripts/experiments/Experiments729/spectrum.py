@@ -1,5 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitation_729 import excitation_729
+from excitations import excitation_729
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
@@ -11,7 +11,7 @@ import numpy as np
 class spectrum(experiment):
     
     name = 'Spectrum729'
-    required_parameters = [
+    spectrum_required_parameters = [
                            ('Spectrum','custom'),
                            ('Spectrum','normal'),
                            ('Spectrum','fine'),
@@ -41,15 +41,20 @@ class spectrum(experiment):
                            ('Crystallization', 'use_camera'),
                            ]
     
-    optional_parmeters = [
+    spectrum_optional_parmeters = [
                           ('Spectrum', 'window_name')
                           ]
-    required_parameters.extend(excitation_729.required_parameters)
-    #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_duration'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
     
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.spectrum_required_parameters)
+        parameters = parameters.union(set(excitation_729.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
+        parameters.remove(('Excitation_729','rabi_excitation_duration'))
+        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        return parameters
     
     def initialize(self, cxn, context, ident):
         self.ident = ident

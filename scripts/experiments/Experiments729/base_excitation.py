@@ -44,8 +44,9 @@ class base_excitation(experiment):
     
     @classmethod
     def all_required_parameters(cls):
-        params = cls.excitation_required_parameters
-        params.extend(cls.pulse_sequence.all_required_parameters())
+        params = set(cls.excitation_required_parameters)
+        params = params.union(set(cls.pulse_sequence.all_required_parameters()))
+        params = list(params)
         params.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
         return params

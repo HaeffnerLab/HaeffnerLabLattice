@@ -1,5 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitation_729 import excitation_729
+from excitations import excitation_729
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
@@ -17,7 +17,7 @@ class rabi_flopping(experiment):
                         ('TrapFrequencies','radial_frequency_2'),
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
-    required_parameters = [
+    rabi_required_parameters = [
                            ('RabiFlopping','rabi_amplitude_729'),
                            ('RabiFlopping','manual_scan'),
                            ('RabiFlopping','manual_frequency_729'),
@@ -36,15 +36,22 @@ class rabi_flopping(experiment):
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
                            ]
-    required_parameters.extend(trap_frequencies)
-    optional_parmeters = [
+    rabi_optional_parmeters = [
                           ('RabiFlopping', 'window_name')
                           ]
-    required_parameters.extend(excitation_729.required_parameters)
-    #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_duration'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+    
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.rabi_required_parameters)
+        parameters = parameters.union(set(cls.rabi_optional_parmeters))
+        parameters = parameters.union(set(cls.trap_frequencies))
+        parameters = parameters.union(set(excitation_729.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
+        parameters.remove(('Excitation_729','rabi_excitation_duration'))
+        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        return parameters
     
     
     def initialize(self, cxn, context, ident):

@@ -1,6 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from spectrum import spectrum
-from labrad.units import WithUnit
 
 class drift_tracker(experiment):
     

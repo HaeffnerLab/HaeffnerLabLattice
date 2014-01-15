@@ -7,7 +7,7 @@ import numpy as np
 class drift_tracker_ramsey(experiment):
     
     name = 'DriftTrackerRamsey'
-    required_parameters = [
+    dt_required_parameters = [
                            ('DriftTracker','line_selection_1'),
                            ('DriftTracker','line_selection_2'),
                            ('DriftTrackerRamsey','line_1_pi_time'),
@@ -16,12 +16,18 @@ class drift_tracker_ramsey(experiment):
                            ('DriftTrackerRamsey','line_2_amplitude'),
                            ('DriftTrackerRamsey','error_sensitivity'),
                            ]
-    
-    required_parameters.extend(drift_tracker_ramsey_oneline.required_parameters)
-    required_parameters.remove(('DriftTrackerRamsey','line_selection'))
-    required_parameters.remove(('DriftTrackerRamsey','pi_time'))
-    required_parameters.remove(('DriftTrackerRamsey','amplitude'))
-    required_parameters.remove(('DriftTrackerRamsey','detuning'))
+
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.dt_required_parameters)
+        parameters = parameters.union(set(drift_tracker_ramsey_oneline.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('DriftTrackerRamsey','line_selection'))
+        parameters.remove(('DriftTrackerRamsey','pi_time'))
+        parameters.remove(('DriftTrackerRamsey','amplitude'))
+        parameters.remove(('DriftTrackerRamsey','detuning'))
+        return parameters
 
     def initialize(self, cxn, context, ident):
         self.ident = ident

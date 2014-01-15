@@ -13,7 +13,7 @@ class config(object):
 #                ('lattice.scripts.experiments.Experiments729.excitation_729', 'excitation_729'), 
                ('lattice.scripts.experiments.Experiments729.spectrum', 'spectrum'), 
                ('lattice.scripts.experiments.Experiments729.rabi_flopping', 'rabi_flopping'), 
-               ('lattice.scripts.experiments.Experiments729.drift_tracker', 'drift_tracker'), 
+#                ('lattice.scripts.experiments.Experiments729.drift_tracker', 'drift_tracker'), 
 #                ('lattice.scripts.experiments.Experiments729.excitation_ramsey', 'excitation_ramsey'), 
                ('lattice.scripts.experiments.Experiments729.ramsey_scangap', 'ramsey_scangap'), 
                ('lattice.scripts.experiments.Experiments729.ramsey_scanphase', 'ramsey_scanphase'), 
@@ -32,8 +32,8 @@ class config(object):
                ('lattice.scripts.experiments.Experiments729.blue_heat_scan_pulse_freq', 'blue_heat_scan_pulse_freq'), 
                ('lattice.scripts.experiments.Experiments729.blue_heat_scan_pulse_freq_ramsey', 'blue_heat_scan_pulse_freq_ramsey'), 
                ('lattice.scripts.experiments.Experiments729.blue_heat_scan_pulse_phase_ramsey', 'blue_heat_scan_pulse_phase_ramsey'),
-               ('lattice.scripts.experiments.Experiments729.Dephasing_with_729.dephasing_with_729_scan_second_pulse_phase', 'scan_phase_of_second_pulse'),
-                ('lattice.scripts.experiments.Experiments729.Dephasing_with_729.dephasing_with_729_scan_second_pulse_duration', 'scan_duration_of_second_pulse'),
+               ('lattice.scripts.experiments.Experiments729.dephasing_scan_duration', 'dephase_scan_duration'),
+               ('lattice.scripts.experiments.Experiments729.dephasing_scan_phase', 'dephase_scan_phase'),
                ]
     #dictionary in the format class_name : list of non-conflicting class names
     allowed_concurrent = {
