@@ -10,7 +10,7 @@ from numpy import linspace
 class ramsey_scangap(experiment):
     
     name = 'RamseyScanGap'
-    required_parameters = [
+    ramsey_required_parameters = [
                            ('RamseyScanGap', 'detuning'),
                            ('RamseyScanGap', 'scangap'),
                            
@@ -26,12 +26,17 @@ class ramsey_scangap(experiment):
                            ('TrapFrequencies','radial_frequency_2'),
                            ('TrapFrequencies','rf_drive_frequency'),
                            ]
-
-    required_parameters.extend(excitation_ramsey.required_parameters)
-    #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
-    required_parameters.remove(('Ramsey','ramsey_time'))
+    
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.ramsey_required_parameters)
+        parameters = parameters.union(set(excitation_ramsey.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
+        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        parameters.remove(('Ramsey','ramsey_time'))
+        return parameters
     
     def initialize(self, cxn, context, ident):
         self.ident = ident

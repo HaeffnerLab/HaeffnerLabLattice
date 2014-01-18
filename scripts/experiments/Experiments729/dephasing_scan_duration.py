@@ -14,7 +14,7 @@ class dephase_scan_duration(experiment):
                            ('Dephasing_Pulses', 'line_selection'),
                            ('Dephasing_Pulses','preparation_sideband_selection'),
                            ('Dephasing_Pulses','evolution_sideband_selection'),
-                           ('Dephasing_Pulses', 'scan_duration'),
+                           ('Dephasing_Pulses', 'scan_interaction_duration'),
 
                            ('TrapFrequencies','axial_frequency'),
                            ('TrapFrequencies','radial_frequency_1'),
@@ -52,43 +52,53 @@ class dephase_scan_duration(experiment):
         frequency_evolution = cm.add_sidebands(line_frequency, p.evolution_sideband_selection, trap)
         self.parameters['Dephasing_Pulses.preparation_pulse_frequency'] = frequency_preparation
         self.parameters['Dephasing_Pulses.evolution_pulses_frequency'] = frequency_evolution
-        minim,maxim,steps = self.parameters.Dephasing_Pulses.scan_duration
+        self.max_second_pulse = p.evolution_pulses_duration
+        minim,maxim,steps = self.parameters.Dephasing_Pulses.scan_interaction_duration
         minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'us') for pt in self.scan]
         
     def setup_data_vault(self):
         localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        dirappend = [time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
+        self.dv.cd(directory, True,context = self.data_save_context)
+        
+    def data_vault_new_trace(self):
+        localtime = time.localtime()
+        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.cd(directory, True,context = self.data_save_context)
         self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
         window_name = ['Dephasing, Scan Duration']
         self.dv.add_parameter('Window', window_name, context = self.data_save_context)
         self.dv.add_parameter('plotLive', True, context = self.data_save_context)
         
     def run(self, cxn, context):
-        self.setup_data_vault()
+        p = self.parameters.Dephasing_Pulses
+        self.data_vault_new_trace()
         self.setup_sequence_parameters()
-        for i,duration in enumerate(self.scan):
+        for i,interaction_duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
-            if should_stop: break
-            self.parameters['Dephasing_Pulses.evolution_ramsey_time'] = duration
-            print self.parameters.Dephasing_Pulses.evolution_pulses_phase, duration
+            if should_stop:
+                return False
+            second_pulse_dur = min(self.max_second_pulse, interaction_duration)
+            ramsey_time = max(WithUnit(0,'us'), interaction_duration - self.max_second_pulse)
+            p.evolution_ramsey_time = ramsey_time
+            p.evolution_pulses_duration = second_pulse_dur
             self.excite.set_parameters(self.parameters)
             excitation = self.excite.run(cxn, context)
-            submission = [duration['us']]
+            submission = [interaction_duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)
             self.update_progress(i)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        return True
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        pass
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
@@ -97,7 +107,7 @@ class dephase_scan_duration(experiment):
     def save_parameters(self, dv, cxn, cxnlab, context):
         measuredDict = dvParameters.measureParameters(cxn, cxnlab)
         dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)   
+        dvParameters.saveParameters(dv, dict(self.parameters), context)
 
 if __name__ == '__main__':
     cxn = labrad.connect()

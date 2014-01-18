@@ -36,14 +36,10 @@ class rabi_flopping(experiment):
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
                            ]
-    rabi_optional_parmeters = [
-                          ('RabiFlopping', 'window_name')
-                          ]
     
     @classmethod
     def all_required_parameters(cls):
         parameters = set(cls.rabi_required_parameters)
-        parameters = parameters.union(set(cls.rabi_optional_parmeters))
         parameters = parameters.union(set(cls.trap_frequencies))
         parameters = parameters.union(set(excitation_729.all_required_parameters()))
         parameters = list(parameters)
@@ -52,7 +48,6 @@ class rabi_flopping(experiment):
         parameters.remove(('Excitation_729','rabi_excitation_duration'))
         parameters.remove(('Excitation_729','rabi_excitation_frequency'))
         return parameters
-    
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
@@ -89,8 +84,7 @@ class rabi_flopping(experiment):
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
-        window_name = self.parameters.get('RabiFlopping.window_name', ['Rabi Flopping'])
-        self.dv.add_parameter('Window', window_name, context = self.rabi_flop_save_context)
+        self.dv.add_parameter('Window', ['Rabi Flopping'], context = self.rabi_flop_save_context)
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
     
     def load_frequency(self):
