@@ -34,7 +34,12 @@ class reference_camera_image(experiment):
                            ('DopplerCooling','doppler_cooling_repump_additional'),
                            ]
     
-
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.required_parameters)
+        parameters = list(parameters)
+        return parameters
+    
     def initialize(self, cxn, context, ident):
         p = self.parameters.IonsOnCamera
         print int(p.ion_number)

@@ -1,8 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from dephasing_scan_duration import dephase_scan_duration
-from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
-from lattice.scripts.scriptLibrary import dvParameters
-import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
@@ -40,12 +37,12 @@ class dephase_scan_phase(experiment):
     def run(self, cxn, context):
         self.setup_sequence_parameters()
         for i,phase in enumerate(self.scan):
-            should_stop = self.pause_or_stop()
-            if should_stop: break
             self.parameters['Dephasing_Pulses.evolution_pulses_phase'] = phase
             self.scan_dur.set_parameters(self.parameters)
             self.scan_dur.set_progress_limits(*self.calc_progress_limits(i))
-            self.scan_dur.run(cxn, context)
+            should_continue = self.scan_dur.run(cxn, context)
+            if not should_continue:
+                break
      
     def finalize(self, cxn, context):
         pass
@@ -53,8 +50,6 @@ class dephase_scan_phase(experiment):
     def calc_progress_limits(self, iteration):
         minim = self.min_progress + (self.max_progress - self.min_progress) * float(iteration) / len(self.scan)
         maxim = self.min_progress + (self.max_progress - self.min_progress) * float(iteration+1. ) / len(self.scan)
-        print iteration, minim, maxim
-        
         return (minim,maxim)
 
 if __name__ == '__main__':

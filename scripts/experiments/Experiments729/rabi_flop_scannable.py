@@ -29,11 +29,18 @@ class rabi_flopping_scannable(experiment):
                            ('StateReadout', 'use_camera_for_readout'),
                            ]
     required_parameters.extend(trap_frequencies)
-    required_parameters.extend(excitation_729.required_parameters)
-    #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_duration'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+    
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.required_parameters)
+        parameters = parameters.union(set(cls.trap_frequencies))
+        parameters = parameters.union(set(excitation_729.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
+        parameters.remove(('Excitation_729','rabi_excitation_duration'))
+        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        return parameters
     
     
     def initialize(self, cxn, context, ident):

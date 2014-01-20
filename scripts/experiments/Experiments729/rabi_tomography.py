@@ -26,14 +26,20 @@ class rabi_tomography(experiment):
                            ('Tomography', 'line_selection'),
                            ]
 
-    required_parameters.extend(excitation_729.required_parameters)
-    #removing parameters we'll be overwriting, and they do not need to be loaded
-    required_parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-    required_parameters.remove(('Excitation_729','rabi_excitation_frequency'))
-    required_parameters.remove(('Tomography','iteration'))
-    required_parameters.remove(('Tomography','tomography_excitation_frequency'))
-    required_parameters.remove(('StateReadout','repeat_each_measurement'))
-
+    
+    @classmethod
+    def all_required_parameters(cls):
+        parameters = set(cls.required_parameters)
+        parameters = parameters.union(set(excitation_729.all_required_parameters()))
+        parameters = list(parameters)
+        #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
+        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        parameters.remove(('Tomography','iteration'))
+        parameters.remove(('Tomography','tomography_excitation_frequency'))
+        parameters.remove(('StateReadout','repeat_each_measurement'))
+        return parameters
+    
     def initialize(self, cxn, context, ident):
         self.ident = ident
         self.excite = self.make_experiment(excitation_729)
