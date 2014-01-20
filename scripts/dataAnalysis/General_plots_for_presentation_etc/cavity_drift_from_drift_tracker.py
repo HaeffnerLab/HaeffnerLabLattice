@@ -20,7 +20,7 @@ data = dv.get().asarray
 x_axis = data[1::,0]/60
 y_axis = (data[1::,1]-data[1,1])*1000 #offset and change to kHz
 
-p0 = [-0.25, 0.2] # initial values of parameters
+p0 = [-0.25, 0.2] # initial values of par  ameters
 f = lambda x, m, b: b + m*x # define the function to be fitted
 
 p, covm = curve_fit(f, x_axis, y_axis, p0) # do the fit
