@@ -25,10 +25,15 @@ class excitation_dephase(base_excitation):
     name = 'DephasingChain'
     pulse_sequence = dephasing_chain
     
+class excitation_ramsey_2ions(base_excitation):
+    from lattice.scripts.PulseSequences.ramsey_2ions import ramsey_2ions
+    name = 'Ramsey2ions'
+    pulse_sequence = ramsey_2ions
+    
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = excitation_dephase(cxn = cxn)
+    exprt = excitation_729(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

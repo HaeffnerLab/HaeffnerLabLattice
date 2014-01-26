@@ -1,44 +1,49 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.experiments.Camera.ion_state_detector import ion_state_detector
+from labrad.units import WithUnit
 import numpy
 import time
        
 class base_excitation(experiment):
     name = ''  
-    excitation_required_parameters = [('OpticalPumping','frequency_selection'),
-                           ('OpticalPumping','manual_frequency_729'),
-                           ('OpticalPumping','line_selection'),
-                
-                           ('SidebandCooling','frequency_selection'),
-                           ('SidebandCooling','manual_frequency_729'),
-                           ('SidebandCooling','line_selection'),
-                           ('SidebandCooling','sideband_selection'),
-                           ('TrapFrequencies','axial_frequency'),
-                           ('TrapFrequencies','radial_frequency_1'),
-                           ('TrapFrequencies','radial_frequency_2'),
-                           ('TrapFrequencies','rf_drive_frequency'),
-                           
-                           ('StateReadout', 'repeat_each_measurement'),
-                           ('StateReadout', 'state_readout_threshold'),
-                           ('StateReadout', 'use_camera_for_readout'),
-                           ('StateReadout', 'state_readout_duration'),
-                           
-                           ('IonsOnCamera','ion_number'),
-                           ('IonsOnCamera','vertical_min'),
-                           ('IonsOnCamera','vertical_max'),
-                           ('IonsOnCamera','vertical_bin'),
-                           ('IonsOnCamera','horizontal_min'),
-                           ('IonsOnCamera','horizontal_max'),
-                           ('IonsOnCamera','horizontal_bin'),
-                           
-                           ('IonsOnCamera','fit_amplitude'),
-                           ('IonsOnCamera','fit_background_level'),
-                           ('IonsOnCamera','fit_center_horizontal'),
-                           ('IonsOnCamera','fit_center_vertical'),
-                           ('IonsOnCamera','fit_rotation_angle'),
-                           ('IonsOnCamera','fit_sigma'),
-                           ('IonsOnCamera','fit_spacing'),
+    excitation_required_parameters = [
+                            ('OpticalPumping','frequency_selection'),
+                            ('OpticalPumping','manual_frequency_729'),
+                            ('OpticalPumping','line_selection'),
+                            
+                            ('OpticalPumpingAux','aux_op_line_selection'),
+                            ('OpticalPumpingAux','aux_op_enable'),
+                            
+                            ('SidebandCooling','frequency_selection'),
+                            ('SidebandCooling','manual_frequency_729'),
+                            ('SidebandCooling','line_selection'),
+                            ('SidebandCooling','sideband_selection'),
+                            ('TrapFrequencies','axial_frequency'),
+                            ('TrapFrequencies','radial_frequency_1'),
+                            ('TrapFrequencies','radial_frequency_2'),
+                            ('TrapFrequencies','rf_drive_frequency'),
+                            
+                            ('StateReadout', 'repeat_each_measurement'),
+                            ('StateReadout', 'state_readout_threshold'),
+                            ('StateReadout', 'use_camera_for_readout'),
+                            ('StateReadout', 'state_readout_duration'),
+                            
+                            ('IonsOnCamera','ion_number'),
+                            ('IonsOnCamera','vertical_min'),
+                            ('IonsOnCamera','vertical_max'),
+                            ('IonsOnCamera','vertical_bin'),
+                            ('IonsOnCamera','horizontal_min'),
+                            ('IonsOnCamera','horizontal_max'),
+                            ('IonsOnCamera','horizontal_bin'),
+                            
+                            ('IonsOnCamera','fit_amplitude'),
+                            ('IonsOnCamera','fit_background_level'),
+                            ('IonsOnCamera','fit_center_horizontal'),
+                            ('IonsOnCamera','fit_center_vertical'),
+                            ('IonsOnCamera','fit_rotation_angle'),
+                            ('IonsOnCamera','fit_sigma'),
+                            ('IonsOnCamera','fit_spacing'),
                            ]
     pulse_sequence = None
     
@@ -49,6 +54,7 @@ class base_excitation(experiment):
         params = list(params)
         params.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
+        params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
         return params
     
     def initialize(self, cxn, context, ident):
@@ -118,6 +124,9 @@ class base_excitation(experiment):
         op = self.parameters.OpticalPumping
         optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, op.optical_pumping_enable)
         self.parameters['OpticalPumping.optical_pumping_frequency_729'] = optical_pumping_frequency
+        aux = self.parameters.OpticalPumpingAux
+        aux_optical_pumping_frequency = cm.frequency_from_line_selection('auto', WithUnit(0,'MHz'),  aux.aux_op_line_selection, self.drift_tracker, aux.aux_op_enable)
+        self.parameters['OpticalPumpingAux.aux_optical_frequency_729'] = aux_optical_pumping_frequency
         sc = self.parameters.SidebandCooling
         sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
         if sc.frequency_selection == 'auto': 

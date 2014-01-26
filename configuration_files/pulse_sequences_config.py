@@ -42,6 +42,8 @@ class double_pass_729(dds_channel):
 #defining available dds channels
 dds729DP = double_pass_729('729DP')
 dds729DP_1 = double_pass_729('729DP_1')
+dds729DP_aux = double_pass_729('729DP_aux')
+dds729DP_aux_1 = double_pass_729('729DP_aux_1')
 global397 = dds_channel('global397')
 dds866DP = dds_channel('866DP')
 dds854DP = dds_channel('854DP')
@@ -57,6 +59,10 @@ dds_name_dictionary = {
                         '729DP':dds729DP,
                         '729_1':dds729DP_1,
                         '729DP_1':dds729DP_1,
+                        '729_aux':dds729DP_aux,
+                        '729DP_aux':dds729DP_aux,
+                        '729_aux_1':dds729DP_aux_1,
+                        '729DP_aux_1':dds729DP_aux_1,
                         '397':global397,
                         '866':dds866DP,
                         '866DP':dds866DP,
