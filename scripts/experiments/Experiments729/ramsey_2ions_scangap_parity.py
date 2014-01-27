@@ -12,6 +12,8 @@ class ramsey_2ions_scangap_parity(experiment):
     name = 'Ramsey2ions_ScanGapParity'
     ramsey2ions_required_parameters = [
                            ('Ramsey2ions_ScanGapParity', 'scangap'),
+                           ('Ramsey2ions_ScanGapParity', 'first_ion_number'),
+                           ('Ramsey2ions_ScanGapParity', 'second_ion_number'),
                            ('Ramsey2ions_ScanGapParity', 'ion1_pi_over_2_line_selection'),
                            ('Ramsey2ions_ScanGapParity', 'ion1_pi_line_selection'),                         
                            ('Ramsey2ions_ScanGapParity', 'ion2_pi_over_2_line_selection'),
@@ -96,21 +98,23 @@ class ramsey_2ions_scangap_parity(experiment):
             if should_stop: break
             self.parameters['Ramsey_2ions.ramsey_time'] = duration
             self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
-            #excitation,readouts = self.excite.run(cxn, context)
-            #parity = self.compute_parity(readouts)
+            excitation,readouts = self.excite.run(cxn, context)
+            position1 = int(self.parameters.Ramsey2ions_ScanGapParity.first_ion_number)
+            position2 = int(self.parameters.Ramsey2ions_ScanGapParity.second_ion_number)
+            parity = self.compute_parity(readouts,position1,position2)
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)
-            #self.dv.add([duration['us'], parity], context = self.parity_save_context)
+            self.dv.add([duration['us'], parity], context = self.parity_save_context)
             self.update_progress(i)
     
-    def compute_parity(self, readouts):
+    def compute_parity(self, readouts,pos1,pos2):
         '''
         computes the parity of the provided readouts
         '''
-        total = readouts.sum(axis = 1)
-        parity = (total % 2 == 0).mean() - (total % 2 == 1).mean()
+        #print readouts
+        correlated_readout = readouts[:,pos1]+readouts[:,pos2]
+        parity = (correlated_readout % 2 == 0).mean() - (correlated_readout % 2 == 1).mean()
         return parity
      
     def finalize(self, cxn, context):

@@ -163,7 +163,7 @@ class base_excitation(experiment):
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
             readouts = self.pulser.get_readout_counts().asarray
-            self.save_data(readouts)
+            self.save_data(readouts)            
             if len(readouts):
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
             else:
@@ -176,6 +176,7 @@ class base_excitation(experiment):
             proceed = self.camera.wait_for_kinetic()
             if not proceed:
                 self.camera.abort_acquisition()
+                
                 self.finalize(cxn, context)
                 raise Exception ("Did not get all kinetic images from camera")
             images = self.camera.get_acquired_data(repetitions).asarray
@@ -183,12 +184,12 @@ class base_excitation(experiment):
             x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
             y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
             images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
-            ions_bright, confidences = self.fitter.state_detection(images)
-            ion_state = 1 - ions_bright.mean(axis = 0)
+            readouts, confidences = self.fitter.state_detection(images)
+            ion_state = 1 - readouts.mean(axis = 0)
             #useful for debugging, saving the images
 #             numpy.save('readout {}'.format(int(time.time())), images)
             self.save_confidences(confidences)
-        return ion_state
+        return ion_state, readouts
     
     @property
     def output_size(self):
