@@ -18,6 +18,7 @@ class ramsey_2ions_excitation(pulse_sequence):
                           ('Ramsey_2ions','ion2_excitation_amplitude2'),
                           ('Ramsey_2ions','ion2_excitation_duration2'),
                           ('Ramsey_2ions','ramsey_time'),
+                          ('Ramsey2ions_ScanGapParity', 'sympathetic_cooling_enable'),
                           ]
     required_subsequences = [doppler_cooling]
 
@@ -54,7 +55,15 @@ class ramsey_2ions_excitation(pulse_sequence):
         self.end = self.end + p.ion2_excitation_duration2 + gap
         
         ###add ramsey time which we do nothing###
-        self.end = self.end+p.ramsey_time
+        #self.end = self.end+p.ramsey_time
+        
+        replace = TreeDict.fromdict({
+                                     'DopplerCooling.doppler_cooling_duration':p.ramsey_time,
+                                     })
+        if self.parameters.Ramsey2ions_ScanGapParity.sympathetic_cooling_enable:
+            self.addSequence(doppler_cooling, replace)
+        else:
+            self.end = self.end+p.ramsey_time
         
         ### add doppler cooling
         #self.addSequence(doppler_cooling)

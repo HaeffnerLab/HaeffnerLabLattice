@@ -18,6 +18,7 @@ class ramsey_2ions_scangap_parity(experiment):
                            ('Ramsey2ions_ScanGapParity', 'ion1_pi_line_selection'),                         
                            ('Ramsey2ions_ScanGapParity', 'ion2_pi_over_2_line_selection'),
                            ('Ramsey2ions_ScanGapParity', 'ion2_pi_line_selection'),
+ #                          ('Ramsey2ions_ScanGapParity', 'sympathetic_cooling_enable'),
                                                       
                            ]
 
