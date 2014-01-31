@@ -1,5 +1,6 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
+from DopplerCooling import doppler_cooling
 
 class ramsey_2ions_excitation(pulse_sequence):
     
@@ -18,6 +19,7 @@ class ramsey_2ions_excitation(pulse_sequence):
                           ('Ramsey_2ions','ion2_excitation_duration2'),
                           ('Ramsey_2ions','ramsey_time'),
                           ]
+    required_subsequences = [doppler_cooling]
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
@@ -53,6 +55,9 @@ class ramsey_2ions_excitation(pulse_sequence):
         
         ###add ramsey time which we do nothing###
         self.end = self.end+p.ramsey_time
+        
+        ### add doppler cooling
+        #self.addSequence(doppler_cooling)
         
         ###undoing stuff###
         ###second rabi excitation on ion2###                

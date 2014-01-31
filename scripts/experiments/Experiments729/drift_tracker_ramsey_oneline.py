@@ -120,11 +120,14 @@ class drift_tracker_ramsey_oneline(experiment):
             self.update_progress(iter)
             if not self.parameters.StateReadout.use_camera_for_readout:
                 #using PMT
-                excitation = self.excitation.run(cxn, context)[0]
+                excitation_array, readout = self.excitation.run(cxn, context)
+                excitation = excitation_array[0]
             else:
                 primary_ion = int(self.parameters.StateReadout.camera_primary_ion)
-                excitation = self.excitation.run(cxn, context)[primary_ion]
+                excitation_array, readout = self.excitation.run(cxn, context)
+                excitation = excitation_array[primary_ion]
             excitations.append(excitation)
+        print excitations
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning
 #        print corrected_frequency, average_excitation

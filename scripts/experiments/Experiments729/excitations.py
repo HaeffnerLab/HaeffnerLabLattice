@@ -29,6 +29,11 @@ class excitation_ramsey_2ions(base_excitation):
     from lattice.scripts.PulseSequences.ramsey_2ions import ramsey_2ions
     name = 'Ramsey2ions'
     pulse_sequence = ramsey_2ions
+
+class excitation_rabi_2ions(base_excitation):
+    from lattice.scripts.PulseSequences.spectrum_rabi_2ions import spectrum_rabi_2ions
+    name = 'Ramsey2ions'
+    pulse_sequence = spectrum_rabi_2ions
     
 if __name__ == '__main__':
     import labrad

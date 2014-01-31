@@ -139,7 +139,7 @@ class spectrum(experiment):
     def do_get_excitation(self, cxn, context, freq):
         self.parameters['Excitation_729.rabi_excitation_frequency'] = freq
         self.excite.set_parameters(self.parameters)
-        excitation = self.excite.run(cxn, context)
+        excitation, readouts = self.excite.run(cxn, context)
         return excitation
     
     def fit_lorentzian(self, timeout):

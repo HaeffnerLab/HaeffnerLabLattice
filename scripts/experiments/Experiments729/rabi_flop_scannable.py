@@ -74,7 +74,7 @@ class rabi_flopping_scannable(experiment):
         self.setup_sequence_parameters()
         self.load_frequency()
         self.excite.set_parameters(self.parameters)
-        excitation = self.excite.run(cxn, context)
+        excitation, readouts = self.excite.run(cxn, context)
         if not self.parameters['StateReadout.use_camera_for_readout']:
             single_excitation = excitation[0]
         else:

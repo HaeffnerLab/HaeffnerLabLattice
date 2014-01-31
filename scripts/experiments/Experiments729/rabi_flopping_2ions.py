@@ -1,5 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitations import excitation_729
+from excitations import excitation_rabi_2ions
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
@@ -8,9 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class rabi_flopping(experiment):
+class rabi_flopping_2ions(experiment):
     
-    name = 'RabiFlopping'
+    name = 'RabiFlopping_2ions'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),
@@ -18,13 +18,19 @@ class rabi_flopping(experiment):
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
     rabi_required_parameters = [
-                           ('RabiFlopping','rabi_amplitude_729'),
-                           ('RabiFlopping','manual_scan'),
-                           ('RabiFlopping','manual_frequency_729'),
-                           ('RabiFlopping','line_selection'),
-                           ('RabiFlopping','rabi_amplitude_729'),
-                           ('RabiFlopping','frequency_selection'),
-                           ('RabiFlopping','sideband_selection'),
+                           ('RabiFlopping_2ions','ion1_rabi_amplitude_729'),
+                           ('RabiFlopping_2ions','ion1_manual_frequency_729'),
+                           ('RabiFlopping_2ions','ion1_line_selection'),
+                           ('RabiFlopping_2ions','ion1_frequency_selection'),
+                           ('RabiFlopping_2ions','ion1_sideband_selection'),
+
+                           ('RabiFlopping_2ions','ion2_rabi_amplitude_729'),
+                           ('RabiFlopping_2ions','ion2_manual_frequency_729'),
+                           ('RabiFlopping_2ions','ion2_line_selection'),
+                           ('RabiFlopping_2ions','ion2_frequency_selection'),
+                           ('RabiFlopping_2ions','ion2_sideband_selection'),
+                           
+                           ('RabiFlopping_2ions','manual_scan'),
                            
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -41,17 +47,20 @@ class rabi_flopping(experiment):
     def all_required_parameters(cls):
         parameters = set(cls.rabi_required_parameters)
         parameters = parameters.union(set(cls.trap_frequencies))
-        parameters = parameters.union(set(excitation_729.all_required_parameters()))
+        parameters = parameters.union(set(excitation_rabi_2ions.all_required_parameters()))
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
-        parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
-        parameters.remove(('Excitation_729','rabi_excitation_duration'))
-        parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion1_excitation_frequency'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion1_excitation_amplitude'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion1_excitation_duration'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion2_excitation_frequency'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion2_excitation_amplitude'))
+        parameters.remove(('Rabi_excitation_729_2ions','ion2_excitation_duration'))
         return parameters
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(excitation_729)
+        self.excite = self.make_experiment(excitation_rabi_2ions)
         self.excite.initialize(cxn, context, ident)
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
@@ -66,8 +75,9 @@ class rabi_flopping(experiment):
     
     def setup_sequence_parameters(self):
         self.load_frequency()
-        flop = self.parameters.RabiFlopping
-        self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        flop = self.parameters.RabiFlopping_2ions
+        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = flop.ion1_rabi_amplitude_729
+        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = flop.ion2_rabi_amplitude_729
         minim,maxim,steps = flop.manual_scan
         minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
@@ -90,12 +100,16 @@ class rabi_flopping(experiment):
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
-        flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
+        flop = self.parameters.RabiFlopping_2ions
+        frequency1 = cm.frequency_from_line_selection(flop.ion1_frequency_selection, flop.ion1_manual_frequency_729, flop.ion1_line_selection, self.drift_tracker)
+        frequency2 = cm.frequency_from_line_selection(flop.ion2_frequency_selection, flop.ion2_manual_frequency_729, flop.ion2_line_selection, self.drift_tracker)
         trap = self.parameters.TrapFrequencies
-        if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
-        self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
+        if flop.ion1_frequency_selection == 'auto':
+            frequency1 = cm.add_sidebands(frequency1, flop.ion1_sideband_selection, trap)
+        if flop.ion2_frequency_selection == 'auto':
+            frequency2 = cm.add_sidebands(frequency2, flop.ion2_sideband_selection, trap)
+        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_frequency'] = frequency1
+        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_frequency'] = frequency2
         
     def run(self, cxn, context):
         self.setup_data_vault()
@@ -127,7 +141,8 @@ class rabi_flopping(experiment):
     
     def do_get_excitation(self, cxn, context, duration):
         self.load_frequency()
-        self.parameters['Excitation_729.rabi_excitation_duration'] = duration
+        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_duration'] = duration
+        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_duration'] = duration
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         return excitation
@@ -148,6 +163,6 @@ class rabi_flopping(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_flopping(cxn = cxn)
+    exprt = rabi_flopping_2ions(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

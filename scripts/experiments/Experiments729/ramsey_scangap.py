@@ -88,7 +88,7 @@ class ramsey_scangap(experiment):
             if should_stop: break
             self.parameters['Ramsey.ramsey_time'] = duration
             self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
+            excitation, readouts = self.excite.run(cxn, context)
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)

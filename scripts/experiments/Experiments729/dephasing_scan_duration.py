@@ -93,7 +93,7 @@ class dephase_scan_duration(experiment):
             p.evolution_ramsey_time = ramsey_time
             p.evolution_pulses_duration = second_pulse_dur
             self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
+            excitation, readout = self.excite.run(cxn, context)
             submission = [interaction_duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)

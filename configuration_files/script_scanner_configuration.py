@@ -27,6 +27,7 @@ class config(object):
                ('lattice.scripts.experiments.Lifetime_P.lifetime_p', 'lifetime_p'), 
                ('lattice.scripts.experiments.Experiments729.rabi_flop_scannable', 'rabi_flopping_scannable'), 
                ('lattice.scripts.experiments.Experiments729.ramsey_2ions_scangap_parity', 'ramsey_2ions_scangap_parity'),
+               ('lattice.scripts.experiments.Experiments729.rabi_flopping_2ions', 'rabi_flopping_2ions'),
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_rabi_flopping', 'blue_heat_rabi_flopping'), 
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_spectrum', 'blue_heat_spectrum'), 
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_scan_delay', 'blue_heat_scan_delay'), 

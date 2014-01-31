@@ -88,7 +88,7 @@ class rabi_tomography(experiment):
             self.parameters['Tomography.iteration'] = iteration
             self.parameters['StateReadout.repeat_each_measurement'] = self.parameters.Tomography.repeat_each_measurement
             self.excite.set_parameters(self.parameters)
-            excitation = self.excite.run(cxn, context)
+            excitation, readouts = self.excite.run(cxn, context)
             self.dv.add((iteration, excitation), context = self.data_save_context)
             self.excitations.append(excitation)
             self.update_progress(i)
