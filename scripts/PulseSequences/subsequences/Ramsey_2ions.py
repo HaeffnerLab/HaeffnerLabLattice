@@ -1,6 +1,7 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 from DopplerCooling import doppler_cooling
+from treedict import TreeDict
 
 class ramsey_2ions_excitation(pulse_sequence):
     
@@ -21,6 +22,8 @@ class ramsey_2ions_excitation(pulse_sequence):
                           ('Ramsey2ions_ScanGapParity', 'sympathetic_cooling_enable'),
                           ]
     required_subsequences = [doppler_cooling]
+    replaced_parameters = {doppler_cooling:[('DopplerCooling','doppler_cooling_duration')]
+                           }
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
@@ -57,10 +60,13 @@ class ramsey_2ions_excitation(pulse_sequence):
         ###add ramsey time which we do nothing###
         #self.end = self.end+p.ramsey_time
         
+        doppler_cooling_duration = p.ramsey_time - self.parameters.DopplerCooling.doppler_cooling_repump_additional
+        
         replace = TreeDict.fromdict({
-                                     'DopplerCooling.doppler_cooling_duration':p.ramsey_time,
+                                     'DopplerCooling.doppler_cooling_duration':doppler_cooling_duration,
                                      })
         if self.parameters.Ramsey2ions_ScanGapParity.sympathetic_cooling_enable:
+            print "cooling"
             self.addSequence(doppler_cooling, replace)
         else:
             self.end = self.end+p.ramsey_time
