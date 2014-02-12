@@ -91,9 +91,7 @@ result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, y_err))
 
 fit_values  = data_y + result.residual
 
-red_chi = np.sum(result.residual**2)/(np.size(data_y)-6)
-
-print red_chi
+print result.redchi
 
 lmfit.report_errors(params)
 

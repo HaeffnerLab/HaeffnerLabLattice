@@ -85,6 +85,8 @@ fit_values  = data_y + result.residual
 
 lmfit.report_errors(params)
 
+print result.redchi
+
 normalization = params['amplitude']/(params['gamma']/2.0)**2
 
 pyplot.plot(np.arange(120,340,0.1)-params['center'],micro_model(params,np.arange(120,340,0.1))/normalization, linewidth=1.5)

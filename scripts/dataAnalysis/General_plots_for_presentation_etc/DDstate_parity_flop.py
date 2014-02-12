@@ -20,7 +20,7 @@ x = data[:,0]
 y1 = data[:,1]
 y2 = data[:,2]
 
-#pyplot.axis([10000,11200,0.0,1.0])
+pyplot.axis([10000,11500,0.0,1.0])
 
 pyplot.plot(x, y1,'o-b')
 pyplot.plot(x, y2,'o-r')
@@ -36,7 +36,7 @@ data = dv.get().asarray
 x = data[:,0]
 y = data[:,1]
 
-#pyplot.axis([10000,11200,-0.6,0.6])
+pyplot.axis([10000,11500,-0.6,0.6])
 
 pyplot.plot(x, y,'o-g')
 

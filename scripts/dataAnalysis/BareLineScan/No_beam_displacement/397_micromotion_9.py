@@ -83,6 +83,8 @@ result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, y_err))
 
 fit_values  = data_y + result.residual
 
+print result.redchi
+
 lmfit.report_errors(params)
 
 normalization = params['amplitude']/(params['gamma']/2.0)**2

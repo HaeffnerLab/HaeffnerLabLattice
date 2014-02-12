@@ -62,7 +62,7 @@ data_x = np.concatenate((data1_x,data2_x),axis=0)*2.0
 data_y = np.concatenate((data1_y,data2_y),axis=0)
 data_yerr = np.concatenate((data1_yerr,data2_yerr),axis=0)
 
-y_err = np.sqrt(data_y)
+y_err = np.sqrt(data_y)*10
 
 #pyplot.plot(data1_x,data1_y)
 #pyplot.plot(data2_x,data2_y)
@@ -84,6 +84,8 @@ result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, y_err))
 fit_values  = data_y + result.residual
 
 lmfit.report_errors(params)
+
+print result.redchi
 
 normalization = params['amplitude']/(params['gamma']/2.0)**2
 
