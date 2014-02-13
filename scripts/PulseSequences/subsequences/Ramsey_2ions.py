@@ -21,6 +21,7 @@ class ramsey_2ions_excitation(pulse_sequence):
                           ('Ramsey_2ions','ion2_excitation_phase1'),
                           ('Ramsey_2ions','ramsey_time'),
                           ('Ramsey2ions_ScanGapParity', 'sympathetic_cooling_enable'),
+                          ('DopplerCooling','doppler_cooling_repump_additional')
                           ]
     required_subsequences = [doppler_cooling]
     replaced_parameters = {doppler_cooling:[('DopplerCooling','doppler_cooling_duration')]
@@ -68,10 +69,13 @@ class ramsey_2ions_excitation(pulse_sequence):
                                      })
         if self.parameters.Ramsey2ions_ScanGapParity.sympathetic_cooling_enable:
             print "cooling"
+            print self.end
             self.addSequence(doppler_cooling, replace)
+            print self.end
         else:
             self.end = self.end+p.ramsey_time
         
+        #self.end = self.end + gap
         ### add doppler cooling
         #self.addSequence(doppler_cooling)
         
