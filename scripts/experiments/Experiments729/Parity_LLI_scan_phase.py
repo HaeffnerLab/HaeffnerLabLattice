@@ -16,23 +16,23 @@ class Parity_LLI_scan_phase(experiment):
                            ('Parity_LLI', 'ramsey_time'),
                            ('Parity_transitions', 'left_ion_number'),
                            ('Parity_transitions', 'right_ion_number'),
-                           ('Parity_transitions', 'left_ion_S+1/2D+1/2_pi_time'),
-                           ('Parity_transitions', 'left_ion_S+1/2D+1/2_power'),
-                           ('Parity_transitions', 'left_ion_S-1/2D-1/2_pi_time'),
-                           ('Parity_transitions', 'left_ion_S-1/2D-1/2_power'),
-                           ('Parity_transitions', 'left_ion_S+1/2D+5/2_pi_time'),
-                           ('Parity_transitions', 'left_ion_S+1/2D+5/2_power'),
-                           ('Parity_transitions', 'left_ion_S-1/2D-5/2_pi_time'),
-                           ('Parity_transitions', 'left_ion_S-1/2D-5/2_power'),
+                           ('Parity_transitions', 'left_ionSp12Dp12_pi_time'),
+                           ('Parity_transitions', 'left_ionSp12Dp12_power'),
+                           ('Parity_transitions', 'left_ionSm12Dm12_pi_time'),
+                           ('Parity_transitions', 'left_ionSm12Dm12_power'),
+                           ('Parity_transitions', 'left_ionSp12Dp52_pi_time'),
+                           ('Parity_transitions', 'left_ionSp12Dp52_power'),
+                           ('Parity_transitions', 'left_ionSm12Dm52_pi_time'),
+                           ('Parity_transitions', 'left_ionSm12Dm52_power'),
                            
-                           ('Parity_transitions', 'right_ion_S+1/2D+1/2_pi_time'),
-                           ('Parity_transitions', 'right_ion_S+1/2D+1/2_power'),
-                           ('Parity_transitions', 'right_ion_S-1/2D-1/2_pi_time'),
-                           ('Parity_transitions', 'right_ion_S-1/2D-1/2_power'),
-                           ('Parity_transitions', 'right_ion_S+1/2D+5/2_pi_time'),
-                           ('Parity_transitions', 'right_ion_S+1/2D+5/2_power'),
-                           ('Parity_transitions', 'right_ion_S-1/2D-5/2_pi_time'),
-                           ('Parity_transitions', 'right_ion_S-1/2D-5/2_power'),                                              
+                           ('Parity_transitions', 'right_ionSp12Dp12_pi_time'),
+                           ('Parity_transitions', 'right_ionSp12Dp12_power'),
+                           ('Parity_transitions', 'right_ionSm12Dm12_pi_time'),
+                           ('Parity_transitions', 'right_ionSm12Dm12_power'),
+                           ('Parity_transitions', 'right_ionSp12Dp52_pi_time'),
+                           ('Parity_transitions', 'right_ionSp12Dp52_power'),
+                           ('Parity_transitions', 'right_ionSm12Dm52_pi_time'),
+                           ('Parity_transitions', 'right_ionSm12Dm52_power'),                                                 
                            ]
 
     
@@ -57,7 +57,7 @@ class Parity_LLI_scan_phase(experiment):
         parameters.remove(('Ramsey_2ions','ion2_excitation_phase1'))
         parameters.remove(('Ramsey_2ions','ramsey_time'))
         
-        parameters.remove(('Parity_LLI','scangap'))
+        #parameters.remove(('Parity_LLI','scangap'))
         
         parameters.remove(('OpticalPumping','line_selection'))
         parameters.remove(('OpticalPumpingAux','aux_op_line_selection'))
@@ -66,8 +66,6 @@ class Parity_LLI_scan_phase(experiment):
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(excitation_ramsey_2ions)
-        self.excite.initialize(cxn, context, ident)
         self.scan = []
         self.amplitude = None
         self.duration = None
@@ -76,6 +74,10 @@ class Parity_LLI_scan_phase(experiment):
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
         self.parity_save_context = cxn.context()
+        self.excite = self.make_experiment(excitation_ramsey_2ions)
+        self.setup_sequence_parameters()
+        self.excite.set_parameters(self.parameters)
+        self.excite.initialize(cxn, context, ident)
         self.setup_data_vault()
     
     def setup_sequence_parameters(self):
@@ -85,14 +87,14 @@ class Parity_LLI_scan_phase(experiment):
             self.parameters['Ramsey_2ions.ion1_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S-1/2D-5/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion2_excitation_frequency1'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S+1/2D+1/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion2_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S+1/2D+5/2', self.drift_tracker)
-            self.parameters['Ramsey_2ions.ion1_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ion_S-1/2D-1/2_power']
-            self.parameters['Ramsey_2ions.ion1_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ion_S-1/2D-5/2_power']
-            self.parameters['Ramsey_2ions.ion2_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ion_S+1/2D+1/2_power']
-            self.parameters['Ramsey_2ions.ion2_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ion_S+1/2D+5/2_power']
-            self.parameters['Ramsey_2ions.ion1_excitation_duration1'] = self.parameters['Parity_transitions.left_ion_S-1/2D-1/2_pi_time']/2.0
-            self.parameters['Ramsey_2ions.ion1_excitation_duration2'] = self.parameters['Parity_transitions.left_ion_S-1/2D-5/2_pi_time']
-            self.parameters['Ramsey_2ions.ion2_excitation_duration1'] = self.parameters['Parity_transitions.left_ion_S+1/2D+1/2_pi_time']/2.0
-            self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.left_ion_S+1/2D+5/2_pi_time']
+            self.parameters['Ramsey_2ions.ion1_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ionSm12Dm12_power']
+            self.parameters['Ramsey_2ions.ion1_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ionSm12Dm52_power']
+            self.parameters['Ramsey_2ions.ion2_excitation_amplitude1'] = self.parameters['Parity_transitions.right_ionSp12Dp12_power']
+            self.parameters['Ramsey_2ions.ion2_excitation_amplitude2'] = self.parameters['Parity_transitions.right_ionSp12Dp52_power']
+            self.parameters['Ramsey_2ions.ion1_excitation_duration1'] = self.parameters['Parity_transitions.left_ionSm12Dm12_pi_time']/2.0
+            self.parameters['Ramsey_2ions.ion1_excitation_duration2'] = self.parameters['Parity_transitions.left_ionSm12Dm52_pi_time']
+            self.parameters['Ramsey_2ions.ion2_excitation_duration1'] = self.parameters['Parity_transitions.right_ionSp12Dp12_pi_time']/2.0
+            self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.right_ionSp12Dp52_pi_time']
             self.parameters['OpticalPumping.line_selection'] = 'S+1/2D-3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S-1/2D+3/2'
         else:
@@ -100,14 +102,14 @@ class Parity_LLI_scan_phase(experiment):
             self.parameters['Ramsey_2ions.ion1_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S+1/2D+5/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion2_excitation_frequency1'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S-1/2D-1/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion2_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S-1/2D-5/2', self.drift_tracker)
-            self.parameters['Ramsey_2ions.ion1_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ion_S+1/2D+1/2_power']
-            self.parameters['Ramsey_2ions.ion1_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ion_S+1/2D+5/2_power']
-            self.parameters['Ramsey_2ions.ion2_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ion_S-1/2D-1/2_power']
-            self.parameters['Ramsey_2ions.ion2_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ion_S-1/2D-5/2_power']
-            self.parameters['Ramsey_2ions.ion1_excitation_duration1'] = self.parameters['Parity_transitions.left_ion_S+1/2D+1/2_pi_time']/2.0
-            self.parameters['Ramsey_2ions.ion1_excitation_duration2'] = self.parameters['Parity_transitions.left_ion_S+1/2D+5/2_pi_time']
-            self.parameters['Ramsey_2ions.ion2_excitation_duration1'] = self.parameters['Parity_transitions.left_ion_S-1/2D-1/2_pi_time']/2.0
-            self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.left_ion_S-1/2D-5/2_pi_time']
+            self.parameters['Ramsey_2ions.ion1_excitation_amplitude1'] = self.parameters['Parity_transitions.left_ionSp12Dp12_power']
+            self.parameters['Ramsey_2ions.ion1_excitation_amplitude2'] = self.parameters['Parity_transitions.left_ionSp12Dp52_power']
+            self.parameters['Ramsey_2ions.ion2_excitation_amplitude1'] = self.parameters['Parity_transitions.right_ionSm12Dm12_power']
+            self.parameters['Ramsey_2ions.ion2_excitation_amplitude2'] = self.parameters['Parity_transitions.right_ionSm12Dm52_power']
+            self.parameters['Ramsey_2ions.ion1_excitation_duration1'] = self.parameters['Parity_transitions.left_ionSp12Dp12_pi_time']/2.0
+            self.parameters['Ramsey_2ions.ion1_excitation_duration2'] = self.parameters['Parity_transitions.left_ionSp12Dp52_pi_time']
+            self.parameters['Ramsey_2ions.ion2_excitation_duration1'] = self.parameters['Parity_transitions.right_ionSm12Dm12_pi_time']/2.0
+            self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.right_ionSm12Dm52_pi_time']
             self.parameters['OpticalPumping.line_selection'] = 'S-1/2D+3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S+1/2D-3/2'
             
