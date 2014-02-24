@@ -14,10 +14,9 @@ class Sideband_tracker(experiment):
     spectrum_required_parameters = [
                            
                            ('Sideband_tracker','line_selection'),
-                           ('Sideband_tracker','amplitude_729'),
-                           ('Sideband_tracker','excitation_time'),
-                           ('Sideband_tracker','scan'),
+                           ('Sideband_tracker','sensitivity'),
                            ('Sideband_tracker','sideband_selection'),
+                           ('Sideband_tracker','ion_selection'),
 
                            ('TrapFrequencies','axial_frequency'),
                            ('TrapFrequencies','radial_frequency_1'),
@@ -36,7 +35,7 @@ class Sideband_tracker(experiment):
                            ]
     
     spectrum_optional_parmeters = [
-                          ('Spectrum', 'window_name')
+                          ('Sideband_tracker', 'window_name')
                           ]
     
     @classmethod
@@ -63,30 +62,22 @@ class Sideband_tracker(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
+        self.fitter = cxn.fitter
+        self.pv = cxn.parametervault
         self.spectrum_save_context = cxn.context()
+        self.ion_number = int(self.parameters.Sideband_tracker.ion_selection)
     
     def setup_sequence_parameters(self):
         sp = self.parameters.Sideband_tracker
-        
-        if sp.scan_selection == 'manual':
-            minim,maxim,steps = sp.manual_scan
-            duration = sp.manual_excitation_time
-            amplitude = sp.manual_amplitude_729
-        elif sp.scan_selection == 'auto':
-            center_frequency = cm.frequency_from_line_selection(sp.scan_selection, None , sp.line_selection, self.drift_tracker)
-            center_frequency = cm.add_sidebands(center_frequency, sp.sideband_selection, self.parameters.TrapFrequencies)
-            span, resolution, duration, amplitude = sp[sp.sensitivity_selection]
-            minim = center_frequency - span / 2.0
-            maxim = center_frequency + span / 2.0
-            steps = int(span / resolution )
-        else:
-            raise Exception("Incorrect Spectrum Scan Type")
-        #making the scan
-        
-        
-        
-        self.parameters['Excitation_729.rabi_excitation_duration'] = sp.excitation_time
-        self.parameters['Excitation_729.rabi_excitation_amplitude'] = sp.amplitude_729
+        center_frequency = cm.frequency_from_line_selection('auto', None , sp.line_selection, self.drift_tracker)
+        self.carrier_frequency = center_frequency
+        center_frequency = cm.add_sidebands(center_frequency, sp.sideband_selection, self.parameters.TrapFrequencies)
+        span, resolution, duration, amplitude = sp['sensitivity']
+        minim = center_frequency - span / 2.0
+        maxim = center_frequency + span / 2.0
+        steps = int(span / resolution )
+        self.parameters['Excitation_729.rabi_excitation_duration'] = duration
+        self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
@@ -98,9 +89,9 @@ class Sideband_tracker(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
+        self.directory_for_fitter = directory
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
-        output_size = self.excite.output_size
-        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+        dependants = [('Excitation','Ion {}'.format(self.ion_number),'Probability')]
         self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
         window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
         self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
@@ -112,13 +103,34 @@ class Sideband_tracker(experiment):
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(cxn, context, freq)
-            if excitation is None: break
+            ## get only the ion that we want
+            excitation_all = self.get_excitation_crystallizing(cxn, context, freq)
+            if excitation_all is None: break
+            excitation = np.array([excitation_all[self.ion_number]])
+            print excitation
+
             submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
+        self.fit_center_freq(cxn, context)
     
+    def fit_center_freq(self, cxn, context):
+        directory = (self.directory_for_fitter,1)
+        self.fitter.load_data(directory)
+        self.fitter.fit('Lorentzian')
+        accepted = self.fitter.wait_for_acceptance()
+        if accepted:
+            fitted_freq = self.fitter.get_parameter('Center')
+            print fitted_freq
+            result = WithUnit(np.abs(fitted_freq - self.carrier_frequency),'MHz')
+            #self.pv.set_parameter('TrapFrequencies','axial_frequency',WithUnit(result,'MHz'))
+            #self.pv.set_parameter('TrapFrequencies','radial_frequency_1',WithUnit(result,'MHz'))
+            #self.pv.set_parameter('TrapFrequencies','radial_frequency_2',WithUnit(result,'MHz'))
+            #
+        else:
+            print 'fit rejected!'
+        
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)
         if self.parameters.Crystallization.auto_crystallization:
@@ -139,8 +151,8 @@ class Sideband_tracker(experiment):
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         return excitation
-    
-        
+
+
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
@@ -157,6 +169,6 @@ class Sideband_tracker(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = spectrum(cxn = cxn)
+    exprt = Sideband_tracker(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
