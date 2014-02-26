@@ -58,22 +58,22 @@ class ramsey_2ions_excitation(pulse_sequence):
         ###second rabi excitation on ion2###                
         self.addDDS('729_aux_1', self.end, p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2)
         self.end = self.end + p.ion2_excitation_duration2 + gap
-        
+        stop_pulses = self.end
         ###add ramsey time which we do nothing###
         #self.end = self.end+p.ramsey_time
         
         doppler_cooling_duration = max(p.ramsey_time - self.parameters.DopplerCooling.doppler_cooling_repump_additional,WithUnit(0, 'us'))
         
         replace = TreeDict.fromdict({
-                                     'DopplerCooling.doppler_cooling_duration':doppler_cooling_duration,
+                                     'DopplerCooling.doppler_cooling_duration':doppler_cooling_duration
+                                     #'DopplerCooling.doppler_cooling_amplitude_866':WithUnit(-5.0,'dBm')
                                      })
         if self.parameters.Ramsey2ions_ScanGapParity.sympathetic_cooling_enable:
-            print "cooling"
-            print self.end
             self.addSequence(doppler_cooling, replace)
-            print self.end
+            print 'with cooling', stop_pulses, self.end
         else:
             self.end = self.end+p.ramsey_time
+            print 'without cooling', stop_pulses, self.end
         
         #self.end = self.end + gap
         ### add doppler cooling
