@@ -17,6 +17,7 @@ class Sideband_tracker(experiment):
                            ('Sideband_tracker','sensitivity'),
                            ('Sideband_tracker','sideband_selection'),
                            ('Sideband_tracker','ion_selection'),
+                           ('Sideband_tracker','auto_fit'),
 
                            ('TrapFrequencies','axial_frequency'),
                            ('TrapFrequencies','radial_frequency_1'),
@@ -66,6 +67,9 @@ class Sideband_tracker(experiment):
         self.pv = cxn.parametervault
         self.spectrum_save_context = cxn.context()
         self.ion_number = int(self.parameters.Sideband_tracker.ion_selection)
+        self.sideband_selection = cm.selected_sideband(self.parameters.Sideband_tracker.sideband_selection)
+        self.auto_fit = self.parameters.Sideband_tracker.auto_fit
+        print self.sideband_selection
     
     def setup_sequence_parameters(self):
         sp = self.parameters.Sideband_tracker
@@ -108,28 +112,35 @@ class Sideband_tracker(experiment):
             if excitation_all is None: break
             excitation = np.array([excitation_all[self.ion_number]])
             print excitation
-
             submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
-        self.fit_center_freq(cxn, context)
+        ### don't fit if stop ###
+        if not should_stop:
+            self.fit_center_freq(cxn, context)
     
     def fit_center_freq(self, cxn, context):
         directory = (self.directory_for_fitter,1)
         self.fitter.load_data(directory)
-        self.fitter.fit('Lorentzian')
-        accepted = self.fitter.wait_for_acceptance()
-        if accepted:
+        if self.auto_fit:
+            self.fitter.fit('Lorentzian', True)
             fitted_freq = self.fitter.get_parameter('Center')
-            print fitted_freq
             result = WithUnit(np.abs(fitted_freq - self.carrier_frequency),'MHz')
-            #self.pv.set_parameter('TrapFrequencies','axial_frequency',WithUnit(result,'MHz'))
-            #self.pv.set_parameter('TrapFrequencies','radial_frequency_1',WithUnit(result,'MHz'))
-            #self.pv.set_parameter('TrapFrequencies','radial_frequency_2',WithUnit(result,'MHz'))
-            #
+            self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
+            print "auto_fit"
         else:
-            print 'fit rejected!'
+            self.fitter.fit('Lorentzian')
+            accepted = self.fitter.wait_for_acceptance()
+            print "manual_fit"
+            if accepted:
+                fitted_freq = self.fitter.get_parameter('Center')
+                print fitted_freq
+                result = WithUnit(np.abs(fitted_freq - self.carrier_frequency),'MHz')
+                self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
+                print "fit accepted"
+            else:
+                print 'fit rejected!'
         
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)
