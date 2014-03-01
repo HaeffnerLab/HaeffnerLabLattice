@@ -151,6 +151,8 @@ class Parity_LLI_scan_phase(experiment):
             parity = self.compute_parity(readouts,position1,position2)
             submission = [phase['deg']]
             submission.extend(excitation)
+            print excitation
+            print submission
             self.dv.add(submission, context = self.data_save_context)
             self.dv.add([phase['deg'], parity], context = self.parity_save_context)
             self.update_progress(i)

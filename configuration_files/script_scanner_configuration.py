@@ -31,6 +31,7 @@ class config(object):
                ('lattice.scripts.experiments.Experiments729.Parity_LLI_scan_gap', 'Parity_LLI_scan_gap'),
                ('lattice.scripts.experiments.Experiments729.Parity_LLI_scan_phase', 'Parity_LLI_scan_phase'),
                ('lattice.scripts.experiments.Experiments729.Sideband_tracker', 'Sideband_tracker'),
+               ('lattice.scripts.experiments.Experiments729.Parity_LLI_phase_tracker', 'Parity_LLI_phase_tracker'),
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_rabi_flopping', 'blue_heat_rabi_flopping'), 
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_spectrum', 'blue_heat_spectrum'), 
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_scan_delay', 'blue_heat_scan_delay'), 
