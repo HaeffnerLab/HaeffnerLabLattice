@@ -66,6 +66,7 @@ class Sideband_tracker(experiment):
         self.fitter = cxn.fitter
         self.pv = cxn.parametervault
         self.spectrum_save_context = cxn.context()
+        self.save_trap_freq = cxn.context()
         self.ion_number = int(self.parameters.Sideband_tracker.ion_selection)
         self.sideband_selection = cm.selected_sideband(self.parameters.Sideband_tracker.sideband_selection)
         self.auto_fit = self.parameters.Sideband_tracker.auto_fit
@@ -100,6 +101,22 @@ class Sideband_tracker(experiment):
         window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
         self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
+        ##### save result for long term tracking ####
+        directory_trap = ['','Drift_Tracking','Trap_frequencies']
+        directory_trap.append(time.strftime("%Y%b%d",localtime))
+        self.dv.cd(directory_trap ,True, context = self.save_trap_freq)
+        datasetnametrap = self.sideband_selection
+        datasetstrap_in_folder = self.dv.dir(context=self.save_trap_freq)[1]
+        names = sorted([name for name in datasetstrap_in_folder if datasetnametrap in name])
+        if names:
+            #dataset with that name exist
+            self.dv.open_appendable(names[0],context=self.save_trap_freq)
+        else:
+            #dataset doesn't already exist
+            self.dv.new(datasetnametrap,[('Time', 'Sec')],[('Trap_frequency','MHz','Frequency')],context=self.save_trap_freq)
+            window_name = [self.sideband_selection]
+            self.dv.add_parameter('Window', window_name,context=self.save_trap_freq)
+            self.dv.add_parameter('plotLive', True,context=self.save_trap_freq)
         
     def run(self, cxn, context):
         self.setup_data_vault()
@@ -123,24 +140,18 @@ class Sideband_tracker(experiment):
     def fit_center_freq(self, cxn, context):
         directory = (self.directory_for_fitter,1)
         self.fitter.load_data(directory)
-        if self.auto_fit:
-            self.fitter.fit('Lorentzian', True)
+        self.fitter.fit('Lorentzian', self.auto_fit)
+        accepted = self.fitter.wait_for_acceptance()
+        if accepted:
             fitted_freq = self.fitter.get_parameter('Center')
+            print fitted_freq
             result = WithUnit(np.abs(fitted_freq - self.carrier_frequency),'MHz')
             self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
-            print "auto_fit"
+            print "fit accepted"
+            print time.time(), result
+            self.dv.add([time.time(), result['MHz']],context=self.save_trap_freq)
         else:
-            self.fitter.fit('Lorentzian')
-            accepted = self.fitter.wait_for_acceptance()
-            print "manual_fit"
-            if accepted:
-                fitted_freq = self.fitter.get_parameter('Center')
-                print fitted_freq
-                result = WithUnit(np.abs(fitted_freq - self.carrier_frequency),'MHz')
-                self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
-                print "fit accepted"
-            else:
-                print 'fit rejected!'
+            print 'fit rejected!'
         
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)
