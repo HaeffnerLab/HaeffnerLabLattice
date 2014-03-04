@@ -226,7 +226,11 @@ class Parity_LLI_phase_tracker(experiment):
         computes the correction of the phase 
         '''
         contrast = 0.5
-        error_signal = WithUnit(parity_signal*180.0/(contrast*2.0*np.pi),'deg')
+        #error_signal = WithUnit(parity_signal*180.0/(contrast*2.0*np.pi),'deg')
+        if np.abs(parity_signal) > contrast:
+            error_signal = -1*np.sign(parity_signal)*90.0
+        else:
+            error_signal = np.arccos[parity_signal/contrast]*180/np.pi-90.0
         return error_signal
      
     def finalize(self, cxn, context):
