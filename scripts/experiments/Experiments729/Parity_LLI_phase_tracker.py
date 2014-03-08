@@ -15,6 +15,9 @@ class Parity_LLI_phase_tracker(experiment):
                            ('Parity_LLI', 'mirror_state'),
                            ('Parity_LLI', 'ramsey_time'),
                            ('Parity_LLI', 'phase_feedback'),
+                           ('Parity_LLI', 'phase_mirror_state'),
+                           ('Parity_LLI', 'phase_no_mirror_state'),
+        
                            ('Parity_transitions', 'left_ion_number'),
                            ('Parity_transitions', 'right_ion_number'),
                            ('Parity_transitions', 'left_ionSp12Dp12_pi_time'),
@@ -58,6 +61,7 @@ class Parity_LLI_phase_tracker(experiment):
         parameters.remove(('Ramsey_2ions','ion2_excitation_duration1'))
         parameters.remove(('Ramsey_2ions','ion2_excitation_duration2'))
         parameters.remove(('Ramsey_2ions','ramsey_time'))
+        parameters.remove(('Ramsey_2ions','ion2_excitation_phase1'))
         
         #parameters.remove(('Parity_LLI','scangap'))
         
@@ -75,21 +79,13 @@ class Parity_LLI_phase_tracker(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.pv = cxn.parametervault
-        
         self.save_phase = cxn.context()
         self.save_parity = cxn.context()
         self.save_single_ion_signal = cxn.context()
-        
         self.excite = self.make_experiment(excitation_ramsey_2ions)
-        self.setup_sequence_parameters()
-        self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
-        self.setup_data_vault()
         
-        self.starting_phase = self.parameters.Ramsey_2ions.ion2_excitation_phase1
-    
     def setup_sequence_parameters(self):
-        
         if self.parameters.Parity_LLI.mirror_state == True:
             self.parameters['Ramsey_2ions.ion1_excitation_frequency1'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S-1/2D-1/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion1_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S-1/2D-5/2', self.drift_tracker)
@@ -105,6 +101,7 @@ class Parity_LLI_phase_tracker(experiment):
             self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.right_ionSp12Dp52_pi_time']
             self.parameters['OpticalPumping.line_selection'] = 'S+1/2D-3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S-1/2D+3/2'
+            self.parameters['Ramsey_2ions.ion2_excitation_phase1'] = self.parameters['Parity_LLI.phase_mirror_state']
         else:
             self.parameters['Ramsey_2ions.ion1_excitation_frequency1'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S+1/2D+1/2', self.drift_tracker)
             self.parameters['Ramsey_2ions.ion1_excitation_frequency2'] = cm.frequency_from_line_selection('auto', WithUnit(0.00, 'MHz'), 'S+1/2D+5/2', self.drift_tracker)
@@ -120,23 +117,20 @@ class Parity_LLI_phase_tracker(experiment):
             self.parameters['Ramsey_2ions.ion2_excitation_duration2'] = self.parameters['Parity_transitions.right_ionSm12Dm52_pi_time']
             self.parameters['OpticalPumping.line_selection'] = 'S-1/2D+3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S+1/2D-3/2'
-            
+            self.parameters['Ramsey_2ions.ion2_excitation_phase1'] = self.parameters['Parity_LLI.phase_no_mirror_state']     
         self.parameters['Ramsey_2ions.ramsey_time'] = self.parameters['Parity_LLI.ramsey_time']
         
     def setup_data_vault(self):
         localtime = time.localtime()
-        
         ### save result fot long term tracking ###
-        
         directory_LLI = ['','Drift_Tracking','LLI_tracking']
         directory_LLI.append(time.strftime("%Y%b%d",localtime))
-        
-        
         ### save parity###
-        
-        
         self.dv.cd(directory_LLI ,True, context = self.save_parity)
-        datasetname_parity = 'LLI_parity'
+        if self.parameters.Parity_LLI.mirror_state == True:
+            datasetname_parity = 'LLI_parity_mirror'
+        else:
+            datasetname_parity = 'LLI_parity_no_mirror'
         dataset_parity_in_folder = self.dv.dir(context= self.save_parity)[1]
         names = sorted([name for name in dataset_parity_in_folder if datasetname_parity in name])
         if names:
@@ -148,15 +142,14 @@ class Parity_LLI_phase_tracker(experiment):
             window_name = [datasetname_parity]
             self.dv.add_parameter('Window', window_name,context=self.save_parity)
             self.dv.add_parameter('plotLive', True,context=self.save_parity)    
-            
-            
         ### save individual ion ###
-        
-        
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.cd(directory_LLI ,True, context = self.save_single_ion_signal)
-        datasetname_single_ion = 'LLI_single_ion'
+        if self.parameters.Parity_LLI.mirror_state == True:
+            datasetname_single_ion = 'LLI_single_ion_mirror'
+        else:
+            datasetname_single_ion = 'LLI_single_ion_no_mirror'
         dataset_single_ion_in_folder = self.dv.dir(context= self.save_single_ion_signal)[1]
         names = sorted([name for name in dataset_single_ion_in_folder if datasetname_single_ion in name])
         if names:
@@ -168,13 +161,12 @@ class Parity_LLI_phase_tracker(experiment):
             window_name = [datasetname_single_ion]
             self.dv.add_parameter('Window', window_name,context=self.save_single_ion_signal)
             self.dv.add_parameter('plotLive', True,context=self.save_single_ion_signal)
-            
-            
         ### save phase ###
-        
-        
         self.dv.cd(directory_LLI ,True, context = self.save_phase)
-        datasetnamephase = 'LLI_phase'
+        if self.parameters.Parity_LLI.mirror_state == True:
+            datasetnamephase = 'LLI_phase_mirror'
+        else:
+            datasetnamephase = 'LLI_phase_no_mirror'
         datasetphase_in_folder = self.dv.dir(context=self.save_phase)[1]
         names = sorted([name for name in datasetphase_in_folder if datasetnamephase in name])
         if names:
@@ -188,29 +180,35 @@ class Parity_LLI_phase_tracker(experiment):
             self.dv.add_parameter('plotLive', True,context=self.save_phase)
         
     def run(self, cxn, context):
+        print 'Running Phase Tracker with Mirroring:',self.parameters.Parity_LLI.mirror_state
+        self.setup_data_vault()
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
-        ## run and get data
+        if self.parameters.Parity_LLI.mirror_state:
+            starting_phase = self.parameters.Parity_LLI.phase_mirror_state
+        else:
+            starting_phase = self.parameters.Parity_LLI.phase_no_mirror_state
         excitation,readouts = self.excite.run(cxn, context)
-        ## calculate parity ##
         position1 = int(self.parameters.Parity_transitions.left_ion_number)
         position2 = int(self.parameters.Parity_transitions.right_ion_number)
         parity = self.compute_parity(readouts,position1,position2)
         ## calculate phase_offset ##
-        phase_offset = self.starting_phase + self.compute_phase_correction(parity)
+        phase_offset = starting_phase + self.compute_phase_correction(parity)
+        #print phase_offset, starting_phase, self.compute_phase_correction(parity)
         submission_single_ion = [time.time()]
         submission_single_ion.extend(excitation)
         self.dv.add([time.time(), parity],context=self.save_parity)
         self.dv.add(submission_single_ion,context=self.save_single_ion_signal)
         self.dv.add([time.time(), phase_offset['deg']],context=self.save_phase)
-        
         ### phase feedback ###
-        
-        phase_offset_modulo = WithUnit(np.mod(phase_offset,360),'deg')
+        #phase_offset_modulo = WithUnit(np.mod(phase_offset,360),'deg')
         if self.parameters.Parity_LLI.phase_feedback:
-            self.pv.set_parameter('Ramsey_2ions','ion2_excitation_phase1',phase_offset_modulo)
-        
+            if self.parameters.Parity_LLI.mirror_state:
+                self.pv.set_parameter('Parity_LLI','phase_mirror_state',phase_offset)
+            else:
+                self.pv.set_parameter('Parity_LLI','phase_no_mirror_state',phase_offset)
         #self.update_progress(i)
+        return phase_offset
     
     def compute_parity(self, readouts,pos1,pos2):
         '''
@@ -230,8 +228,8 @@ class Parity_LLI_phase_tracker(experiment):
         if np.abs(parity_signal) > contrast:
             error_signal = -1*np.sign(parity_signal)*90.0
         else:
-            error_signal = np.arccos[parity_signal/contrast]*180/np.pi-90.0
-        return error_signal
+            error_signal = np.arccos(parity_signal/contrast)*180/np.pi-90.0
+        return WithUnit(error_signal, 'deg')
      
     def finalize(self, cxn, context):
         #self.save_parameters(self.dv, cxn, self.cxnlab, self.save_parity)

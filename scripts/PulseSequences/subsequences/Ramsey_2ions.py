@@ -45,18 +45,24 @@ class ramsey_2ions_excitation(pulse_sequence):
         
         ###first rabi excitation on ion1###
         self.addDDS('729', self.end, p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1)
+        print 'left ion pulse 1:', p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1
+        
+        
         self.end = self.end + p.ion1_excitation_duration1 + gap
         
         ###second rabi excitation on ion1###                
         self.addDDS('729_1', self.end, p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2)
+        print 'left ion pulse 2:', p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2
         self.end = self.end + p.ion1_excitation_duration2 + gap       
         
         ###first rabi excitation on ion2###
         self.addDDS('729_aux', self.end, p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1)
+        print 'right ion pulse 1:',p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1
         self.end = self.end + p.ion2_excitation_duration1 + gap   
         
         ###second rabi excitation on ion2###                
         self.addDDS('729_aux_1', self.end, p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2)
+        print 'right ion pulse 2:',p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2
         self.end = self.end + p.ion2_excitation_duration2 + gap
         stop_pulses = self.end
         ###add ramsey time which we do nothing###
@@ -70,10 +76,10 @@ class ramsey_2ions_excitation(pulse_sequence):
                                      })
         if self.parameters.Ramsey2ions_ScanGapParity.sympathetic_cooling_enable:
             self.addSequence(doppler_cooling, replace)
-            print 'with cooling', stop_pulses, self.end
+            #print 'with cooling', stop_pulses, self.end
         else:
             self.end = self.end+p.ramsey_time
-            print 'without cooling', stop_pulses, self.end
+            #print 'without cooling', stop_pulses, self.end
         
         #self.end = self.end + gap
         ### add doppler cooling
@@ -86,6 +92,7 @@ class ramsey_2ions_excitation(pulse_sequence):
         ###first rabi excitation on ion2###
         self.addDDS('729_aux', self.end, p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1,p.ion2_excitation_phase1)
         self.end = self.end + p.ion2_excitation_duration1 + gap
+        print p.ion2_excitation_phase1
         ###second rabi excitation on ion1###                
         self.addDDS('729_1', self.end, p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2)
         self.end = self.end + p.ion1_excitation_duration2 + gap    
