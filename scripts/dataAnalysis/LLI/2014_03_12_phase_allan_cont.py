@@ -2,6 +2,7 @@ from __future__ import division
 import labrad
 import numpy as np
 from matplotlib import pyplot
+import matplotlib
 import lmfit
 import numkit.timeseries as tm
 
@@ -23,9 +24,9 @@ time = data[:,0]
 time = time-time[0]
 phase = data[:,1]
 
-time = time[100:299]
+time = time[99:299]
 time = time-time[0]
-phase = phase[100:299]
+phase = phase[99:299]
 
 ramsey_time = 0.013
 
@@ -40,15 +41,18 @@ bin_array = []
 true_variance = []
 avar = []
 allan_error_bar = []
+cf = 4 ## continuous factor
 #for bin_size in np.linspace(start_bin_size,max(time)/2.0,int(max(time)/2.0/start_bin_size)):
-for bin_size in np.linspace(0.0,max(time)/3.0,40):
+for bin_size in np.linspace(0.0,max(time)/4.0,49):
 #print range(0,int(np.floor(max(time)/bin_size)))
     if bin_size<start_bin_size:
         continue
     mean_phase_data = []
+    print bin_size
     #print int(np.floor(max(time)/bin_size))
-    for i in range(0,int(np.floor(max(time)/bin_size))):
-        where = np.where((bin_size*i<time)&(time<bin_size*(i+1)))
+    for i in range(0,cf*int(np.floor(max(time)/bin_size))):
+        start_time = bin_size*i/cf
+        where = np.where((start_time<time)&(time<start_time+bin_size))
         mean_phase = np.average(phase[where])
         mean_phase_data.append(mean_phase)
     
@@ -60,9 +64,16 @@ for bin_size in np.linspace(0.0,max(time)/3.0,40):
     allan_error_bar.append(phase_diff*0.5*np.sqrt(1/(i)))
 
 #pyplot.plot(bin_array,true_variance,'o-')
+#matplotlib.ticker.LogFormatter(base = 2.0,labelOnlyBase=False)
+
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
 
 pyplot.xscale('log')
-pyplot.yscale('log')
+#pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
+pyplot.yscale('log',basey = 10)
+
+pyplot.yticks([0.1,0.2,0.5,1.0,2.0],[0.1,0.2,0.5,1.0,2.0])
+pyplot.xticks([1,20,50,100,200,500],[1,20,50,100,200,500])
+
 pyplot.show()
