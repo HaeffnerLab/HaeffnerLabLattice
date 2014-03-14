@@ -24,7 +24,7 @@ interval = time[1:]-time[0:-1]
 
 phase = data[:,1]
 
-phase_diff = (phase[1:]-phase[0:-1])/(360*2.093)
+phase_diff = (phase[1:]-phase[0:-1])
 
 fract_f = phase_diff/interval
 
@@ -35,13 +35,13 @@ m = np.size(fract_f)
 #print fract_f
 deviation = []
 
-for i in range(2,m-1):
-    allan = np.sum((fract_f[1:i+2]-fract_f[0:i+1])**2)/(2*(i-1))
-    allan = np.sqrt(allan)
-    print allan
-    deviation.append(allan)
+#for i in range(2,m-1):
+#    allan = np.sum((fract_f[1:i+2]-fract_f[0:i+1])**2)/(2*(i-1))
+#    allan = np.sqrt(allan)
+#    print allan
+#    deviation.append(allan)
     #deviation = np.sum((fract_f[1:i]-fract_f[0:i+1])**2)
 
 #pyplot.plot(time[:-4],deviation,'o')
-pyplot.semilogx(time[:-4],deviation,'o')
+pyplot.plot(time,phase,'o-')
 pyplot.show()
