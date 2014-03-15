@@ -26,6 +26,7 @@ class base_excitation(experiment):
                             
                             ('StateReadout', 'repeat_each_measurement'),
                             ('StateReadout', 'state_readout_threshold'),
+
                             ('StateReadout', 'use_camera_for_readout'),
                             ('StateReadout', 'state_readout_duration'),
                             

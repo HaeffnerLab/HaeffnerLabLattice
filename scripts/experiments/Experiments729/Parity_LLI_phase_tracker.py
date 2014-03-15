@@ -2,6 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import excitation_ramsey_2ions
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
+from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
 import labrad
 from labrad.units import WithUnit
@@ -17,6 +18,7 @@ class Parity_LLI_phase_tracker(experiment):
                            ('Parity_LLI', 'phase_feedback'),
                            ('Parity_LLI', 'phase_mirror_state'),
                            ('Parity_LLI', 'phase_no_mirror_state'),
+                           ('Parity_LLI', 'contrast'),
         
                            ('Parity_transitions', 'left_ion_number'),
                            ('Parity_transitions', 'right_ion_number'),
@@ -38,7 +40,17 @@ class Parity_LLI_phase_tracker(experiment):
                            ('Parity_transitions', 'right_ionSm12Dm52_pi_time'),
                            ('Parity_transitions', 'right_ionSm12Dm52_power'),     
                            
-                           ('Ramsey_2ions','ion2_excitation_phase1'),                                        
+                           ('Ramsey_2ions','ion2_excitation_phase1'),        
+                           
+                           ('Crystallization', 'auto_crystallization'),
+                           ('Crystallization', 'camera_record_exposure'),
+                           ('Crystallization', 'camera_threshold'),
+                           ('Crystallization', 'max_attempts'),
+                           ('Crystallization', 'max_duration'),
+                           ('Crystallization', 'min_duration'),
+                           ('Crystallization', 'pmt_record_duration'),
+                           ('Crystallization', 'pmt_threshold'),
+                           ('Crystallization', 'use_camera'),                                
                            ]
 
     
@@ -84,6 +96,9 @@ class Parity_LLI_phase_tracker(experiment):
         self.save_single_ion_signal = cxn.context()
         self.excite = self.make_experiment(excitation_ramsey_2ions)
         self.excite.initialize(cxn, context, ident)
+        if self.parameters.Crystallization.auto_crystallization:
+            self.crystallizer = self.make_experiment(crystallization)
+            self.crystallizer.initialize(cxn, context, ident)
         
     def setup_sequence_parameters(self):
         if self.parameters.Parity_LLI.mirror_state == True:
@@ -180,36 +195,53 @@ class Parity_LLI_phase_tracker(experiment):
             self.dv.add_parameter('plotLive', True,context=self.save_phase)
         
     def run(self, cxn, context):
-        print 'Running Phase Tracker with Mirroring:',self.parameters.Parity_LLI.mirror_state
+        #print 'Running Phase Tracker with Mirroring:',self.parameters.Parity_LLI.mirror_state
         self.setup_data_vault()
-        self.setup_sequence_parameters()
-        self.excite.set_parameters(self.parameters)
-        if self.parameters.Parity_LLI.mirror_state:
-            starting_phase = self.parameters.Parity_LLI.phase_mirror_state
-        else:
-            starting_phase = self.parameters.Parity_LLI.phase_no_mirror_state
-        excitation,readouts = self.excite.run(cxn, context)
+        #run with crystallization
+        excitation, readouts = self.get_excitation_crystallizing(cxn, context)    
+        #computer parity
         position1 = int(self.parameters.Parity_transitions.left_ion_number)
         position2 = int(self.parameters.Parity_transitions.right_ion_number)
         parity = self.compute_parity(readouts,position1,position2)
         ## calculate phase_offset ##
+        if self.parameters.Parity_LLI.mirror_state:
+            starting_phase = self.parameters.Parity_LLI.phase_mirror_state
+        else:
+            starting_phase = self.parameters.Parity_LLI.phase_no_mirror_state
         phase_offset = starting_phase + self.compute_phase_correction(parity)
-        #print phase_offset, starting_phase, self.compute_phase_correction(parity)
+        #submit data for single ion excitation
         submission_single_ion = [time.time()]
         submission_single_ion.extend(excitation)
         self.dv.add([time.time(), parity],context=self.save_parity)
         self.dv.add(submission_single_ion,context=self.save_single_ion_signal)
         self.dv.add([time.time(), phase_offset['deg']],context=self.save_phase)
-        ### phase feedback ###
-        #phase_offset_modulo = WithUnit(np.mod(phase_offset,360),'deg')
+        ### phase feedback update to PV###
         if self.parameters.Parity_LLI.phase_feedback:
             if self.parameters.Parity_LLI.mirror_state:
                 self.pv.set_parameter('Parity_LLI','phase_mirror_state',phase_offset)
             else:
                 self.pv.set_parameter('Parity_LLI','phase_no_mirror_state',phase_offset)
         #self.update_progress(i)
+        
         return phase_offset
     
+    def get_excitation_crystallizing(self, cxn, context):
+        self.setup_sequence_parameters()
+        self.excite.set_parameters(self.parameters)
+        excitation,readouts = self.excite.run(cxn, context)
+        if self.parameters.Crystallization.auto_crystallization:
+            initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            #if initially melted, redo the point
+            while initally_melted:
+                if not got_crystallized:
+                    #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
+                    self.cxn.scriptscanner.pause_script(self.ident, True)
+                    should_stop = self.pause_or_stop()
+                    if should_stop: return None
+                excitation,readouts = self.excite.run(cxn, context)
+                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+        return excitation, readouts
+        
     def compute_parity(self, readouts,pos1,pos2):
         '''
         computes the parity of the provided readouts
@@ -223,8 +255,7 @@ class Parity_LLI_phase_tracker(experiment):
         '''
         computes the correction of the phase 
         '''
-        contrast = 0.5
-        #error_signal = WithUnit(parity_signal*180.0/(contrast*2.0*np.pi),'deg')
+        contrast = self.parameters.Parity_LLI.contrast
         if np.abs(parity_signal) > contrast:
             error_signal = -1*np.sign(parity_signal)*90.0
         else:
@@ -232,7 +263,9 @@ class Parity_LLI_phase_tracker(experiment):
         return WithUnit(error_signal, 'deg')
      
     def finalize(self, cxn, context):
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.save_parity)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_phase)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_parity)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_single_ion_signal)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

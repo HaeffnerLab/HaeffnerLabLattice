@@ -30,14 +30,16 @@ class rabi_excitation_2ions(pulse_sequence):
         ## add first excitation pulse
             self.addDDS('729', self.end, p.ion1_excitation_duration, p.ion1_excitation_frequency, p.ion1_excitation_amplitude,p.ion1_excitation_phase)
             self.end = self.end+p.ion1_excitation_duration+gap
-#         self.addDDS('729DP_aux', self.start, frequency_advance_duration, p.rabi_excitation_frequency, ampl_off)
+
         #turn on
             self.addDDS('729_aux', self.end, p.ion2_excitation_duration, p.ion2_excitation_frequency, p.ion2_excitation_amplitude,p.ion2_excitation_phase)
             self.end = self.end+p.ion2_excitation_duration+gap
+            print 'ion2 power is', p.ion2_excitation_amplitude
         else:
             self.addDDS('729_1', self.end, frequency_advance_duration, p.ion1_excitation_frequency, ampl_off)
             self.addDDS('729_aux_1', self.end, frequency_advance_duration, p.ion2_excitation_frequency, ampl_off)
             self.end = self.end+frequency_advance_duration
+
         ## add first excitation pulse
             self.addDDS('729_1', self.end, p.ion1_excitation_duration, p.ion1_excitation_frequency, p.ion1_excitation_amplitude,p.ion1_excitation_phase)
             self.end = self.end+p.ion1_excitation_duration+gap

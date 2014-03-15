@@ -6,6 +6,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+import numpy as np
 
 class Parity_LLI_scan_gap(experiment):
     
@@ -31,7 +32,12 @@ class Parity_LLI_scan_gap(experiment):
                            ('Parity_transitions', 'right_ionSp12Dp52_pi_time'),
                            ('Parity_transitions', 'right_ionSp12Dp52_power'),
                            ('Parity_transitions', 'right_ionSm12Dm52_pi_time'),
-                           ('Parity_transitions', 'right_ionSm12Dm52_power'),                                                     
+                           ('Parity_transitions', 'right_ionSm12Dm52_power'),
+                             
+                           ('StateReadout', 'parity_threshold_low'),
+                           ('StateReadout', 'parity_threshold_high'),       
+                           ('StateReadout', 'use_camera_for_readout'),           
+                                                            
                            ]
 
     
@@ -145,7 +151,14 @@ class Parity_LLI_scan_gap(experiment):
             excitation,readouts = self.excite.run(cxn, context)
             position1 = int(self.parameters.Parity_transitions.left_ion_number)
             position2 = int(self.parameters.Parity_transitions.right_ion_number)
-            parity = self.compute_parity(readouts,position1,position2)
+            ### pmt or camera readout ###
+            if self.parameters.StateReadout.use_camera_for_readout:
+                parity = self.compute_parity(readouts,position1,position2)
+            else:
+                threshold_low = self.parameters.StateReadout.parity_threshold_low
+                threshold_high = self.parameters.StateReadout.parity_threshold_high
+                parity = self.compute_parity_pmt(readouts,threshold_low,threshold_high)
+
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)
@@ -159,6 +172,15 @@ class Parity_LLI_scan_gap(experiment):
         #print readouts
         correlated_readout = readouts[:,pos1]+readouts[:,pos2]
         parity = (correlated_readout % 2 == 0).mean() - (correlated_readout % 2 == 1).mean()
+        return parity
+    
+    def compute_parity_pmt(self, readouts,threshold_low,threshold_high):
+        '''
+        computes the parity of the provided readouts using a pmt
+        '''
+        even_parity = np.count_nonzero((readouts <= threshold_low)&(readouts >= threshold_high))
+        odd_parity  = np.count_nonzero((readouts >= threshold_low)&(readouts <= threshold_high))
+        parity = (even_parity - odd_parity)/float(len(readouts))
         return parity
      
     def finalize(self, cxn, context):

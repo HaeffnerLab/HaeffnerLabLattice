@@ -8,9 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class rabi_power_flopping_2ions(experiment):
+class Rabi_power_flopping_2ions(experiment):
     
-    name = 'RabiPowerFlopping_2ions'
+    name = 'Rabi_power_flopping_2ions'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),
@@ -78,7 +78,7 @@ class rabi_power_flopping_2ions(experiment):
         flop = self.parameters.RabiPowerFlopping_2ions
         self.parameters['Rabi_excitation_729_2ions.ion1_excitation_duration'] = flop.ion1_excitation_duration
         self.parameters['Rabi_excitation_729_2ions.ion2_excitation_duration'] = flop.ion2_excitation_duration
-        minim,maxim,steps = flop.manual_scan
+        minim,maxim,steps = flop.manual_power_scan
         minim = minim['dBm']; maxim = maxim['dBm']
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
@@ -93,8 +93,8 @@ class rabi_power_flopping_2ions(experiment):
         self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
-        self.dv.add_parameter('Window', ['Rabi Flopping'], context = self.rabi_flop_save_context)
+        self.dv.new('Rabi Power Flopping {}'.format(datasetNameAppend),[('Excitation', 'dBm')], dependants , context = self.rabi_flop_save_context)
+        self.dv.add_parameter('Window', ['Rabi Power Flopping'], context = self.rabi_flop_save_context)
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
     
     def load_frequency(self):
@@ -163,6 +163,6 @@ class rabi_power_flopping_2ions(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_power_flopping_2ions(cxn = cxn)
+    exprt = Rabi_power_flopping_2ions(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
