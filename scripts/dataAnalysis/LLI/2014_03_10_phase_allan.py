@@ -18,22 +18,12 @@ dv.cd(['','Drift_Tracking','LLI_tracking','2014Mar10'])
 dv.open(3)
 data = dv.get().asarray
 time = data[:,0]
-time = time-time[0]
-
-interval = time[1:]-time[0:-1]
 
 phase = data[:,1]
 
-phase_diff = (phase[1:]-phase[0:-1])
-
-fract_f = phase_diff/interval
-
-m = np.size(fract_f)
-#print range(0,m)
-#print np.size(np.array([1,2]))
-
-#print fract_f
-deviation = []
+time = time[0:160]
+time = time-time[0]
+phase = phase[0:160]
 
 #for i in range(2,m-1):
 #    allan = np.sum((fract_f[1:i+2]-fract_f[0:i+1])**2)/(2*(i-1))

@@ -8,9 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class rabi_flopping_2ions(experiment):
+class rabi_power_flopping_2ions(experiment):
     
-    name = 'RabiFlopping_2ions'
+    name = 'RabiPowerFlopping_2ions'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),
@@ -18,19 +18,19 @@ class rabi_flopping_2ions(experiment):
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
     rabi_required_parameters = [
-                           ('RabiFlopping_2ions','ion1_rabi_amplitude_729'),
-                           ('RabiFlopping_2ions','ion1_manual_frequency_729'),
-                           ('RabiFlopping_2ions','ion1_line_selection'),
-                           ('RabiFlopping_2ions','ion1_frequency_selection'),
-                           ('RabiFlopping_2ions','ion1_sideband_selection'),
+                           ('RabiPowerFlopping_2ions','ion1_manual_frequency_729'),
+                           ('RabiPowerFlopping_2ions','ion1_line_selection'),
+                           ('RabiPowerFlopping_2ions','ion1_frequency_selection'),
+                           ('RabiPowerFlopping_2ions','ion1_sideband_selection'),
+                           ('RabiPowerFlopping_2ions','ion1_excitation_duration'),
 
-                           ('RabiFlopping_2ions','ion2_rabi_amplitude_729'),
-                           ('RabiFlopping_2ions','ion2_manual_frequency_729'),
-                           ('RabiFlopping_2ions','ion2_line_selection'),
-                           ('RabiFlopping_2ions','ion2_frequency_selection'),
-                           ('RabiFlopping_2ions','ion2_sideband_selection'),
+                           ('RabiPowerFlopping_2ions','ion2_manual_frequency_729'),
+                           ('RabiPowerFlopping_2ions','ion2_line_selection'),
+                           ('RabiPowerFlopping_2ions','ion2_frequency_selection'),
+                           ('RabiPowerFlopping_2ions','ion2_sideband_selection'),
+                           ('RabiPowerFlopping_2ions','ion2_excitation_duration'),
                            
-                           ('RabiFlopping_2ions','manual_scan'),
+                           ('RabiPowerFlopping_2ions','manual_power_scan'),
                            
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -75,13 +75,13 @@ class rabi_flopping_2ions(experiment):
     
     def setup_sequence_parameters(self):
         self.load_frequency()
-        flop = self.parameters.RabiFlopping_2ions
-        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = flop.ion1_rabi_amplitude_729
-        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = flop.ion2_rabi_amplitude_729
+        flop = self.parameters.RabiPowerFlopping_2ions
+        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_duration'] = flop.ion1_excitation_duration
+        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_duration'] = flop.ion2_excitation_duration
         minim,maxim,steps = flop.manual_scan
-        minim = minim['us']; maxim = maxim['us']
+        minim = minim['dBm']; maxim = maxim['dBm']
         self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
+        self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -100,7 +100,7 @@ class rabi_flopping_2ions(experiment):
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
-        flop = self.parameters.RabiFlopping_2ions
+        flop = self.parameters.RabiPowerFlopping_2ions
         frequency1 = cm.frequency_from_line_selection(flop.ion1_frequency_selection, flop.ion1_manual_frequency_729, flop.ion1_line_selection, self.drift_tracker)
         frequency2 = cm.frequency_from_line_selection(flop.ion2_frequency_selection, flop.ion2_manual_frequency_729, flop.ion2_line_selection, self.drift_tracker)
         trap = self.parameters.TrapFrequencies
@@ -114,18 +114,18 @@ class rabi_flopping_2ions(experiment):
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
-        for i,duration in enumerate(self.scan):
+        for i,power in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(cxn, context, duration)
+            excitation = self.get_excitation_crystallizing(cxn, context, power)
             if excitation is None: break 
-            submission = [duration['us']]
+            submission = [power['dBm']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
     
-    def get_excitation_crystallizing(self, cxn, context, duration):
-        excitation = self.do_get_excitation(cxn, context, duration)
+    def get_excitation_crystallizing(self, cxn, context, power):
+        excitation = self.do_get_excitation(cxn, context, power)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
             #if initially melted, redo the point
@@ -135,14 +135,14 @@ class rabi_flopping_2ions(experiment):
                     self.cxn.scriptscanner.pause_script(self.ident, True)
                     should_stop = self.pause_or_stop()
                     if should_stop: return None
-                excitation = self.do_get_excitation(cxn, context, duration)
+                excitation = self.do_get_excitation(cxn, context, power)
                 initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         return excitation
     
-    def do_get_excitation(self, cxn, context, duration):
+    def do_get_excitation(self, cxn, context, power):
         self.load_frequency()
-        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_duration'] = duration
-        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_duration'] = duration
+        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = power
+        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = power
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         return excitation
@@ -163,6 +163,6 @@ class rabi_flopping_2ions(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = rabi_flopping_2ions(cxn = cxn)
+    exprt = rabi_power_flopping_2ions(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

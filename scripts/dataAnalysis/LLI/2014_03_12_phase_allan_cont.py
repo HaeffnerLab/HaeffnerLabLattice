@@ -41,7 +41,7 @@ bin_array = []
 true_variance = []
 avar = []
 allan_error_bar = []
-cf = 3 ## continuous factor
+cf = 1 ## continuous factor
 #for bin_size in np.linspace(start_bin_size,max(time)/2.0,int(max(time)/2.0/start_bin_size)):
 for bin_size in np.linspace(0.0,max(time)/4.0,49):
 #print range(0,int(np.floor(max(time)/bin_size)))
