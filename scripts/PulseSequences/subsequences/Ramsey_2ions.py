@@ -49,19 +49,23 @@ class ramsey_2ions_excitation(pulse_sequence):
         ###pi/2 pulses###
         self.addDDS('729', self.end, p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1)
         self.addDDS('729_aux', self.end, p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1)
-        #print 'left ion pulse 1:', p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1
+        print 'left ion pulse 1:', p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1
+        print 'right ion pulse 1:', p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1
         self.end = self.end + max(p.ion1_excitation_duration1,p.ion2_excitation_duration1) + gap
         
         ###pi pulses###
         
         self.addDDS('729_1', self.end, p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2)
         self.addDDS('729_aux_1', self.end, p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2)
-        #print 'left ion pulse 2:', p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2
+        print 'left ion pulse 2:', p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2
+        print 'right ion pulse 2:', p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2
         self.end = self.end + max(p.ion1_excitation_duration2,p.ion2_excitation_duration2) + gap   
         
         ### ramsey time ###
         
         self.end = self.end+p.ramsey_time
+        
+        print 'Ramsey_time:', p.ramsey_time
         
         self.addDDS('729_1', self.end, p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2,WithUnit(180,'deg'))
         self.addDDS('729_aux_1', self.end, p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2,WithUnit(180,'deg'))
@@ -71,5 +75,5 @@ class ramsey_2ions_excitation(pulse_sequence):
         ###pi/2 pulses###
         self.addDDS('729', self.end, p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1,WithUnit(180,'deg'))
         self.addDDS('729_aux', self.end, p.ion2_excitation_duration1, p.ion2_excitation_frequency1, p.ion2_excitation_amplitude1,p.ion2_excitation_phase1)
-        #print 'left ion pulse 1:', p.ion1_excitation_duration1, p.ion1_excitation_frequency1, p.ion1_excitation_amplitude1
+        print 'phase:', p.ion2_excitation_phase1
         self.end = self.end + max(p.ion1_excitation_duration1,p.ion2_excitation_duration1) + gap

@@ -89,6 +89,7 @@ class Parity_LLI_scan_gap(experiment):
         self.data_save_context = cxn.context()
         self.parity_save_context = cxn.context()
         self.excite = self.make_experiment(excitation_ramsey_2ions)
+        ##############
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
@@ -210,8 +211,10 @@ class Parity_LLI_scan_gap(experiment):
         '''
         computes the parity of the provided readouts using a pmt
         '''
-        even_parity = np.count_nonzero((readouts <= threshold_low)&(readouts >= threshold_high))
+        even_parity = np.count_nonzero((readouts <= threshold_low)|(readouts >= threshold_high))
+        print "even = ", even_parity
         odd_parity  = np.count_nonzero((readouts >= threshold_low)&(readouts <= threshold_high))
+        print "odd = ", odd_parity
         parity = (even_parity - odd_parity)/float(len(readouts))
         return parity
      
