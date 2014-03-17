@@ -23,6 +23,10 @@ class Rabi_power_flopping_2ions(experiment):
                            ('RabiPowerFlopping_2ions','ion1_frequency_selection'),
                            ('RabiPowerFlopping_2ions','ion1_sideband_selection'),
                            ('RabiPowerFlopping_2ions','ion1_excitation_duration'),
+                           
+                           ('RabiPowerFlopping_2ions','block_ion1_729'),
+                           
+                           ('RabiPowerFlopping_2ions','block_ion2_729'),
 
                            ('RabiPowerFlopping_2ions','ion2_manual_frequency_729'),
                            ('RabiPowerFlopping_2ions','ion2_line_selection'),
@@ -141,8 +145,15 @@ class Rabi_power_flopping_2ions(experiment):
     
     def do_get_excitation(self, cxn, context, power):
         self.load_frequency()
-        self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = power
-        self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = power
+        power_off = WithUnit(-63.0,'dBm')
+        if self.parameters.RabiPowerFlopping_2ions.block_ion1_729:
+            self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = power_off
+        else:
+            self.parameters['Rabi_excitation_729_2ions.ion1_excitation_amplitude'] = power
+        if self.parameters.RabiPowerFlopping_2ions.block_ion2_729:
+            self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = power_off
+        else:
+            self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = power
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         return excitation

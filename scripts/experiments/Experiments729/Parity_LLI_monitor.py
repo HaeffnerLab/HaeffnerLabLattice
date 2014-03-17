@@ -2,6 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from Parity_LLI_phase_tracker import Parity_LLI_phase_tracker
 import time
 import labrad
+import numpy as np
 from treedict import TreeDict
 class Parity_LLI_monitor(experiment):
     
@@ -31,10 +32,20 @@ class Parity_LLI_monitor(experiment):
         replace_mirror = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
                                        })
-        self.parity_LLI.set_parameters(replace_no_mirror)
-        phase_no_mirror = self.parity_LLI.run(cxn, context)
-        self.parity_LLI.set_parameters(replace_mirror)
-        phase_mirror = self.parity_LLI.run(cxn, context)
+        #replace_1,replace_2 = np.random.permutation([replace_no_mirror,replace_mirror])
+        random_number = np.random.rand()
+        
+        if (random_number>0.5):
+            self.parity_LLI.set_parameters(replace_no_mirror)
+            phase_no_mirror = self.parity_LLI.run(cxn, context)
+            self.parity_LLI.set_parameters(replace_mirror)
+            phase_mirror = self.parity_LLI.run(cxn, context)
+        else:
+            self.parity_LLI.set_parameters(replace_mirror)
+            phase_mirror = self.parity_LLI.run(cxn, context)            
+            self.parity_LLI.set_parameters(replace_no_mirror)
+            phase_no_mirror = self.parity_LLI.run(cxn, context)  
+                  
         average_phase = (phase_no_mirror+phase_mirror)/2.0
         difference_phase = (phase_no_mirror-phase_mirror)/2.0
         submission = [time.time(),phase_mirror['deg'],phase_no_mirror['deg'],average_phase['deg'],difference_phase['deg']]

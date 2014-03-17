@@ -88,15 +88,23 @@ class Parity_LLI_scan_gap(experiment):
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
         self.parity_save_context = cxn.context()
-        self.excite = self.make_experiment(excitation_ramsey_2ions)
+        
         ##############
+        self.excite = self.make_experiment(excitation_ramsey_2ions)
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
+        ##############
+        
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
         self.setup_data_vault()
+        
+    def update_mirror_state(self):
+        self.setup_sequence_parameters()
+        self.excite.set_parameters(self.parameters)
+        self.excite.setup_sequence_parameters()
     
     def setup_sequence_parameters(self):
         
@@ -131,7 +139,7 @@ class Parity_LLI_scan_gap(experiment):
             self.parameters['OpticalPumping.line_selection'] = 'S-1/2D+3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S+1/2D-3/2'
             
-
+        
         minim,maxim,steps = self.parameters.Parity_LLI.scangap
         minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
@@ -184,6 +192,7 @@ class Parity_LLI_scan_gap(experiment):
         self.setup_sequence_parameters()
         self.parameters['Ramsey_2ions.ramsey_time'] = duration
         self.excite.set_parameters(self.parameters)
+        self.update_mirror_state()
         excitation,readouts = self.excite.run(cxn, context)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)

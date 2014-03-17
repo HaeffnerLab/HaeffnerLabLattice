@@ -98,13 +98,23 @@ class Parity_LLI_phase_tracker(experiment):
         self.save_phase = cxn.context()
         self.save_parity = cxn.context()
         self.save_single_ion_signal = cxn.context()
+        ##############
         self.excite = self.make_experiment(excitation_ramsey_2ions)
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
+        ##############
+        
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
+        self.setup_data_vault()
+        
+    def update_mirror_state(self):
+        self.setup_sequence_parameters()
+        self.excite.set_parameters(self.parameters)
+        self.excite.setup_sequence_parameters()
+        
         
     def setup_sequence_parameters(self):
         self.parameters['Ramsey_2ions.ramsey_time'] = self.parameters['Parity_LLI.ramsey_time']
@@ -140,6 +150,7 @@ class Parity_LLI_phase_tracker(experiment):
             self.parameters['OpticalPumping.line_selection'] = 'S-1/2D+3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S+1/2D-3/2'   
             self.parameters['Ramsey_2ions.ion2_excitation_phase1'] = self.parameters['Parity_LLI.phase_no_mirror_state']
+        
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -239,6 +250,7 @@ class Parity_LLI_phase_tracker(experiment):
     def get_excitation_crystallizing(self, cxn, context):
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
+        self.update_mirror_state()
         excitation,readouts = self.excite.run(cxn, context)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
