@@ -23,9 +23,9 @@ time = data[:,0]
 time = time-time[0]
 phase = data[:,1]
 
-time = time[75:]
+time = time[0:160]
 time = time-time[0]
-phase = phase[75:]
+phase = phase[0:160]
 
 ramsey_time = 0.013
 
