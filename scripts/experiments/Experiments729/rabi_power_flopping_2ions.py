@@ -3,10 +3,11 @@ from excitations import excitation_rabi_2ions
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
+import numpy as np
 import time
 import labrad
 from labrad.units import WithUnit
-from numpy import linspace
+#from numpy import linspace
 
 class Rabi_power_flopping_2ions(experiment):
     
@@ -35,6 +36,7 @@ class Rabi_power_flopping_2ions(experiment):
                            ('RabiPowerFlopping_2ions','ion2_excitation_duration'),
                            
                            ('RabiPowerFlopping_2ions','manual_power_scan'),
+                           ('RabiPowerFlopping_2ions','log_scale_scan'),
                            
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -84,8 +86,12 @@ class Rabi_power_flopping_2ions(experiment):
         self.parameters['Rabi_excitation_729_2ions.ion2_excitation_duration'] = flop.ion2_excitation_duration
         minim,maxim,steps = flop.manual_power_scan
         minim = minim['dBm']; maxim = maxim['dBm']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
+        if flop.log_scale_scan:
+            self.scan = np.logspace(np.log10(minim),np.log10(maxim),num=steps)
+            self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
+        else:
+            self.scan = np.linspace(minim,maxim, steps)
+            self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
         
     def setup_data_vault(self):
         localtime = time.localtime()
