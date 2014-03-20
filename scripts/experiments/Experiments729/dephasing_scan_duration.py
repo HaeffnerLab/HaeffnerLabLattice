@@ -47,13 +47,19 @@ class dephase_scan_duration(experiment):
     
     def setup_sequence_parameters(self):
         p = self.parameters.Dephasing_Pulses
-        ## hong modified here ##
-        prep_line_frequency = cm.frequency_from_line_selection('auto', None, p.preparation_line_selection, self.drift_tracker)
-        evo_line_frequency = cm.frequency_from_line_selection('auto', None, p.evolution_line_selection, self.drift_tracker)
         trap = self.parameters.TrapFrequencies
-        frequency_preparation = cm.add_sidebands(prep_line_frequency, p.preparation_sideband_selection, trap)   
-        frequency_evolution = cm.add_sidebands(evo_line_frequency, p.evolution_sideband_selection, trap)
-        ## end hong modificiation ##
+        prep_line_frequency = cm.frequency_from_line_selection('auto', None, p.preparation_line_selection, self.drift_tracker)
+        frequency_preparation = cm.add_sidebands(prep_line_frequency, p.preparation_sideband_selection, trap)
+        #if same line is selected, match the frequency exactly
+        same_line = p.preparation_line_selection == p.evolution_line_selection
+        same_sideband = p.preparation_sideband_selection.aslist == p.evolution_sideband_selection.aslist
+        print 'same line', same_line
+        print 'same sideband', same_sideband
+        if same_line and same_sideband:
+            frequency_evolution = frequency_preparation
+        else:
+            evo_line_frequency = cm.frequency_from_line_selection('auto', None, p.evolution_line_selection, self.drift_tracker)
+            frequency_evolution = cm.add_sidebands(evo_line_frequency, p.evolution_sideband_selection, trap)
         self.parameters['Dephasing_Pulses.preparation_pulse_frequency'] = frequency_preparation
         self.parameters['Dephasing_Pulses.evolution_pulses_frequency'] = frequency_evolution
         self.max_second_pulse = p.evolution_pulses_duration

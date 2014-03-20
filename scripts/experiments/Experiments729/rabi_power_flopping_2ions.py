@@ -87,7 +87,8 @@ class Rabi_power_flopping_2ions(experiment):
         minim,maxim,steps = flop.manual_power_scan
         minim = minim['dBm']; maxim = maxim['dBm']
         if flop.log_scale_scan:
-            self.scan = np.logspace(np.log10(minim),np.log10(maxim),num=steps)
+            self.scan = np.linspace(10**minim,10**maxim,num=steps)
+            self.scan = np.log10(self.scan)
             self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
         else:
             self.scan = np.linspace(minim,maxim, steps)
@@ -135,7 +136,7 @@ class Rabi_power_flopping_2ions(experiment):
             self.update_progress(i)
     
     def get_excitation_crystallizing(self, cxn, context, power):
-        excitation = self.do_get_excitation(cxn, context, power)
+        excitation, readouts = self.do_get_excitation(cxn, context, power)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
             #if initially melted, redo the point
@@ -145,7 +146,7 @@ class Rabi_power_flopping_2ions(experiment):
                     self.cxn.scriptscanner.pause_script(self.ident, True)
                     should_stop = self.pause_or_stop()
                     if should_stop: return None
-                excitation = self.do_get_excitation(cxn, context, power)
+                excitation, readouts = self.do_get_excitation(cxn, context, power)
                 initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         return excitation
     
