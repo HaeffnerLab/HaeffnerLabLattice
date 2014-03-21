@@ -28,6 +28,8 @@ class Rabi_power_flopping_2ions(experiment):
                            ('RabiPowerFlopping_2ions','block_ion1_729'),
                            
                            ('RabiPowerFlopping_2ions','block_ion2_729'),
+                           
+                           ('RabiPowerFlopping_2ions','auto_fit'),
 
                            ('RabiPowerFlopping_2ions','ion2_manual_frequency_729'),
                            ('RabiPowerFlopping_2ions','ion2_line_selection'),
@@ -74,6 +76,8 @@ class Rabi_power_flopping_2ions(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
+        self.fitter = cxn.fitter
+        self.auto_fit = self.parameters.RabiPowerFlopping_2ions.auto_fit
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
@@ -101,6 +105,7 @@ class Rabi_power_flopping_2ions(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
+        self.directory_for_fitter = directory
         self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
@@ -134,6 +139,21 @@ class Rabi_power_flopping_2ions(experiment):
             submission.extend(excitation)
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
+        if not should_stop:
+            result_power = self.get_target_power(cxn, context)
+        return result_power
+            
+    def get_target_power(self, cxn, context):
+        directory = (self.directory_for_fitter,1)
+        self.fitter.load_data(directory)
+        self.fitter.fit('Rabi_power_flop', self.auto_fit)
+        accepted = self.fitter.wait_for_acceptance()
+        if accepted:
+            target_power = WithUnit(self.fitter.get_parameter('target_power'),'dBm')
+        else:
+            target_power = WithUnit(-63.0,'dBm')
+        return target_power
+        
     
     def get_excitation_crystallizing(self, cxn, context, power):
         excitation, readouts = self.do_get_excitation(cxn, context, power)

@@ -32,7 +32,6 @@ class Parity_LLI_monitor(experiment):
         replace_mirror = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
                                        })
-        #replace_1,replace_2 = np.random.permutation([replace_no_mirror,replace_mirror])
         random_number = np.random.rand()
         
         if (random_number>0.5):
