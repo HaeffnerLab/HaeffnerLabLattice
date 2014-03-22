@@ -76,7 +76,6 @@ class Rabi_power_flopping_2ions(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.fitter = cxn.fitter
         self.auto_fit = self.parameters.RabiPowerFlopping_2ions.auto_fit
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
@@ -91,10 +90,12 @@ class Rabi_power_flopping_2ions(experiment):
         minim,maxim,steps = flop.manual_power_scan
         minim = minim['dBm']; maxim = maxim['dBm']
         if flop.log_scale_scan:
+            #print "log scale"
             self.scan = np.linspace(10**(minim/10),10**(maxim/10),num=steps)
             self.scan = 10*np.log10(self.scan)
             self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
         else:
+            #print "linear scale"
             self.scan = np.linspace(minim,maxim, steps)
             self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
         
@@ -140,23 +141,28 @@ class Rabi_power_flopping_2ions(experiment):
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
         if not should_stop:
-            result_power = self.get_target_power(cxn, context)
-        return result_power
+            result_power, accepted = self.get_target_power(cxn, context)
+        else:
+            result_power = WithUnit(-63.0,'dBm')
+            accepted = False
+        return result_power, accepted
             
     def get_target_power(self, cxn, context):
+        self.fitter = cxn.fitter
         directory = (self.directory_for_fitter,1)
         self.fitter.load_data(directory)
+        print self.auto_fit
         self.fitter.fit('Rabi_power_flop', self.auto_fit)
         accepted = self.fitter.wait_for_acceptance()
         if accepted:
             target_power = WithUnit(self.fitter.get_parameter('target_power'),'dBm')
         else:
             target_power = WithUnit(-63.0,'dBm')
-        return target_power
+        return target_power, accepted
         
     
     def get_excitation_crystallizing(self, cxn, context, power):
-        excitation, readouts = self.do_get_excitation(cxn, context, power)
+        excitation = self.do_get_excitation(cxn, context, power)
         if self.parameters.Crystallization.auto_crystallization:
             initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
             #if initially melted, redo the point
@@ -166,7 +172,7 @@ class Rabi_power_flopping_2ions(experiment):
                     self.cxn.scriptscanner.pause_script(self.ident, True)
                     should_stop = self.pause_or_stop()
                     if should_stop: return None
-                excitation, readouts = self.do_get_excitation(cxn, context, power)
+                excitation = self.do_get_excitation(cxn, context, power)
                 initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         return excitation
     
@@ -182,11 +188,11 @@ class Rabi_power_flopping_2ions(experiment):
         else:
             self.parameters['Rabi_excitation_729_2ions.ion2_excitation_amplitude'] = power
         self.excite.set_parameters(self.parameters)
+        self.excite.setup_sequence_parameters()
         excitation, readouts = self.excite.run(cxn, context)
         return excitation
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):
