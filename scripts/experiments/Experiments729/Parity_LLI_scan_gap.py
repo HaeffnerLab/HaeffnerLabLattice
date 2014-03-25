@@ -83,7 +83,7 @@ class Parity_LLI_scan_gap(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
@@ -228,7 +228,8 @@ class Parity_LLI_scan_gap(experiment):
         return parity
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        pass
+        #self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)

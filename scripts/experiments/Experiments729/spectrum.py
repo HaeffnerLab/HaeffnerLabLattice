@@ -66,7 +66,7 @@ class spectrum(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.spectrum_save_context = cxn.context()
@@ -158,7 +158,7 @@ class spectrum(experiment):
         
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
+        #self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)

@@ -77,7 +77,7 @@ class Rabi_power_flopping_2ions(experiment):
         self.amplitude = None
         self.duration = None
         self.auto_fit = self.parameters.RabiPowerFlopping_2ions.auto_fit
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.rabi_flop_save_context = cxn.context()

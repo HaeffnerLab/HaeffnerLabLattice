@@ -9,7 +9,8 @@ def cosine_model(params, x):
     tau= params['tau'].value
     freq = params['freq'].value
     phase=params['phase'].value
-    output = A*np.cos(2*np.pi*x*freq+phase)*np.exp(-x/tau)
+    offset=params['offset'].value
+    output = A*np.cos(2*np.pi*x*freq+phase)*np.exp(-x/tau)+offset
     return output
 '''
 define how to compare data to the function
@@ -23,7 +24,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 
 
-dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar24','1647_20'])
+dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar24','2031_57'])
 dv.open(2)
 data = dv.get().asarray
 x = data[:,0]/1000000
@@ -35,8 +36,9 @@ params = lmfit.Parameters()
 
 params.add('A', value = -0.5)
 params.add('tau', value = 1)
-params.add('freq', value = 242.6)
+params.add('freq', value = 232)
 params.add('phase', value = 0.0)
+params.add('offset', value = 0.0)
 
 result = lmfit.minimize(cosine_fit, params, args = (x, y, yerr))
 

@@ -6,31 +6,36 @@ import numpy as np
 class crystallization(experiment):
     
     name = 'crystallization'  
-    required_parameters = [('Crystallization','camera_threshold'),
-                           ('Crystallization','max_attempts'),
-                           ('Crystallization','max_duration'),
-                           ('Crystallization','min_duration'),
-                           ('Crystallization','pmt_threshold'),
-                           ('Crystallization','pmt_record_duration'),
-                           ('Crystallization','use_camera'),
-                           ('Crystallization','camera_record_exposure'),
+    crystallization_required_parameters = [
+                            ('Crystallization','camera_threshold'),
+                            ('Crystallization','max_attempts'),
+                            ('Crystallization','max_duration'),
+                            ('Crystallization','min_duration'),
+                            ('Crystallization','pmt_threshold'),
+                            ('Crystallization','pmt_record_duration'),
+                            ('Crystallization','use_camera'),
+                            ('Crystallization','camera_record_exposure'),
                            
-                           ('IonsOnCamera','ion_number'),
-                           ('IonsOnCamera','vertical_min'),
-                           ('IonsOnCamera','vertical_max'),
-                           ('IonsOnCamera','vertical_bin'),
-                           ('IonsOnCamera','horizontal_min'),
-                           ('IonsOnCamera','horizontal_max'),
-                           ('IonsOnCamera','horizontal_bin'),
+                            ('IonsOnCamera','ion_number'),
+                            ('IonsOnCamera','vertical_min'),
+                            ('IonsOnCamera','vertical_max'),
+                            ('IonsOnCamera','vertical_bin'),
+                            ('IonsOnCamera','horizontal_min'),
+                            ('IonsOnCamera','horizontal_max'),
+                            ('IonsOnCamera','horizontal_bin'),
                            
-                           ('IonsOnCamera','fit_amplitude'),
-                           ('IonsOnCamera','fit_background_level'),
-                           ('IonsOnCamera','fit_center_horizontal'),
-                           ('IonsOnCamera','fit_center_vertical'),
-                           ('IonsOnCamera','fit_rotation_angle'),
-                           ('IonsOnCamera','fit_sigma'),
-                           ('IonsOnCamera','fit_spacing'),
+                            ('IonsOnCamera','fit_amplitude'),
+                            ('IonsOnCamera','fit_background_level'),
+                            ('IonsOnCamera','fit_center_horizontal'),
+                            ('IonsOnCamera','fit_center_vertical'),
+                            ('IonsOnCamera','fit_rotation_angle'),
+                            ('IonsOnCamera','fit_sigma'),
+                            ('IonsOnCamera','fit_spacing'),
                            ]
+    
+    @classmethod
+    def all_required_parameters(cls):
+        return cls.crystallization_required_parameters
     
     def initialize(self, cxn, context, ident):
         p = self.parameters.Crystallization
