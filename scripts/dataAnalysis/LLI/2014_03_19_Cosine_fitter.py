@@ -23,7 +23,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 
 
-dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar19','1629_22'])
+dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar24','1647_20'])
 dv.open(2)
 data = dv.get().asarray
 x = data[:,0]/1000000
@@ -33,9 +33,9 @@ yerr = np.sqrt(1-y**2)/20.0
 ##fitter
 params = lmfit.Parameters()
 
-params.add('A', value = -0.37)
+params.add('A', value = -0.5)
 params.add('tau', value = 1)
-params.add('freq', value = 113)
+params.add('freq', value = 242.6)
 params.add('phase', value = 0.0)
 
 result = lmfit.minimize(cosine_fit, params, args = (x, y, yerr))
