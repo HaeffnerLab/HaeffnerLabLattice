@@ -16,16 +16,16 @@ figure.clf()
 
 
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking','2014Mar16'])
+dv.cd(['','Drift_Tracking','LLI_tracking','2014Mar30'])
 dv.open(7)
 data = dv.get().asarray
 time = data[:,0]
 time = time-time[0]
 phase = data[:,3]
 
-time = time[200:400]
+time = time[:]
 time = time-time[0]
-phase = phase[200:400]
+phase = phase[:]
 
 #pyplot.plot(time,phase,'o-')
 
@@ -47,7 +47,7 @@ bin_array = []
 true_variance = []
 avar = []
 allan_error_bar = []
-cf = 8
+cf = 4
 #print 'overlapping factor = ',cf
 
 #print np.logspace(0.0,np.log10(max(time)/3.0),num=20, base = 10.0)
@@ -75,15 +75,15 @@ for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=30):
     M = np.size(phase_diff)
     allan_error_bar.append(avar_result*np.sqrt(0.5/(M)))
     
-#pyplot.plot(bin_array,avar,'o')
+pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
 
-#pyplot.xscale('log')
-# #pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
+pyplot.xscale('log')
+pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
 #pyplot.yscale('log',basey = 10)
 # 
-pyplot.yticks([0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0],[0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0])
+#pyplot.yticks([0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0],[0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0])
 
-pyplot.xticks([20,50,100,200,500,1000,2000,5000],[20,50,100,200,500,1000,2000,5000])
+#pyplot.xticks([20,50,100,200,500,1000,2000,5000],[20,50,100,200,500,1000,2000,5000])
 
 pyplot.show()
