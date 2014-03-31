@@ -24,7 +24,7 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 
 
-dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar24','2031_57'])
+dv.cd(['','Experiments','Parity_LLI_scan_gap','2014Mar30','1722_00'])
 dv.open(2)
 data = dv.get().asarray
 x = data[:,0]/1000000
@@ -36,7 +36,7 @@ params = lmfit.Parameters()
 
 params.add('A', value = -0.5)
 params.add('tau', value = 1)
-params.add('freq', value = 232)
+params.add('freq', value = 370)
 params.add('phase', value = 0.0)
 params.add('offset', value = 0.0)
 
@@ -54,6 +54,6 @@ x_plot = np.linspace(x.min(),x.max(),1000)
 figure = pyplot.figure(1)
 figure.clf()
 pyplot.plot(x,y,'o')
-pyplot.plot(x_plot,cosine_model(params,x_plot))
+pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
 
 pyplot.show()

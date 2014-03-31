@@ -41,7 +41,7 @@ def lorentzian_fit(params , x, data):
 cxn = labrad.connect()
 dv = cxn.data_vault
 #change directory
-directory = ('2014Mar24','1804_00')
+directory = ('2014Mar30','1456_47')
 dv.cd(['','Experiments','Spectrum729',directory[0],directory[1]])
 dv.open(1)
 data = dv.get().asarray
@@ -62,12 +62,12 @@ Here can also specify if some parameters are fixed, and the range of allowed val
 '''
 params = lmfit.Parameters()
 params.add('area', value = 0.1, max=2.0)
-params.add('center', value = -28.2)
+params.add('center', value = -28.27)
 params.add('linewidth', value = 0.01, min=0.0)
 '''
 run the fitting
 '''
-print x_data
+#print x_data
 result = lmfit.minimize(lorentzian_fit, params, args = (x_data, y_data))
 '''
 plot the result
