@@ -33,6 +33,7 @@ class config(object):
                ('lattice.scripts.experiments.Experiments729.Sideband_tracker', 'Sideband_tracker'),
                ('lattice.scripts.experiments.Experiments729.Parity_LLI_phase_tracker', 'Parity_LLI_phase_tracker'),
                ('lattice.scripts.experiments.Experiments729.Parity_LLI_monitor', 'Parity_LLI_monitor'),
+               ('lattice.scripts.experiments.Experiments729.Parity_LLI_2_point_monitor', 'Parity_LLI_2_point_monitor'),
                ('lattice.scripts.experiments.Experiments729.rabi_power_flopping_2ions', 'Rabi_power_flopping_2ions'),
                ('lattice.scripts.experiments.Experiments729.Parity_LLI_rabi_power_fitter', 'Parity_LLI_rabi_power_fitter'),
 #                ('lattice.scripts.experiments.Experiments729.blue_heat_rabi_flopping', 'blue_heat_rabi_flopping'), 
