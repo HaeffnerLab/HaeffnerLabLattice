@@ -61,8 +61,8 @@ class Parity_LLI_rabi_power_fitter(experiment):
         self.run_right_ion_m12m52(cxn, context)
         self.run_right_ion_p12p12(cxn, context)
         self.run_right_ion_p12p52(cxn, context)
-#         self.run_left_ion_m12m52_drift_track(cxn, context)
-#         self.run_left_ion_p12m32_drift_track(cxn, context)
+        self.run_left_ion_m12m52_drift_track(cxn, context)
+        self.run_left_ion_p12m32_drift_track(cxn, context)
 
     def run_left_ion_m12m52_drift_track(self,cxn, context): 
         center_power = self.parameters['DriftTrackerRamsey.line_1_amplitude']

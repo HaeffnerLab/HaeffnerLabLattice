@@ -28,9 +28,11 @@ class Parity_LLI_monitor(experiment):
     def run(self, cxn, context):
         replace_no_mirror = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':False,
+                                       'Parity_LLI.use_short_ramsey_time':False,
                                        })
         replace_mirror = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
+                                       'Parity_LLI.use_short_ramsey_time':False,
                                        })
         random_number = np.random.rand()
         
