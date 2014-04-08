@@ -120,7 +120,8 @@ class Parity_LLI_2_point_monitor(experiment):
             window_name = [datasetname_parity]
             self.dv.add_parameter('Window', window_name,context=self.save_data)
             self.dv.add_parameter('plotLive', True,context=self.save_data) 
-            self.dv.add_parameter('Start_time', datetime.datetime.now(),context=self.save_data) 
+            time_string = str(datetime.datetime.now())
+            self.dv.add_parameter('Start_time', time_string,context=self.save_data) 
             
     def finalize(self, cxn, context):
         #self.save_parameters(self.dv, cxn, self.cxnlab, self.save_parity)
