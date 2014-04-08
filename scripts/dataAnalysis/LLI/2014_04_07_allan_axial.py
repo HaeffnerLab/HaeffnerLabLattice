@@ -16,25 +16,12 @@ figure.clf()
 
 
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking_2_points','2014Apr07'])
+dv.cd(['','Drift_Tracking','Trap_frequencies','2014Apr07'])
 dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
 #time = time-time[0]
-phase = data[:,9]
-where_early = np.where(time>50000)
-where_late = np.where(time<50000)
-
-time_early = time[where_early]
-phase_early = phase[where_early]
-time_late = time[where_late]
-phase_late = phase[where_late]
-time_late = time_late+86400 ###went over night
-
-#time = np.append(time_early,time_late)
-time = time_early
-#phase = np.append(phase_early,phase_late)
-phase = phase_early
+phase = data[:,1]
 #time = time[200:800]
 time = time-time[0]
 #phase = phase[200:800]
@@ -43,7 +30,7 @@ time = time-time[0]
 
 ramsey_time = 0.048
 
-phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
+#phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
 
 interval = time[1:]-time[0:-1]
 
@@ -93,12 +80,12 @@ for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=30):
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
  
-pyplot.xscale('log')
-pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
-  
-ytick = [0.003,0.01,0.02,0.03,0.05,0.1,0.2,0.3]
-pyplot.yticks(ytick,ytick)
-xtick = [20,50,100,200,500,1000,2000,5000]
-pyplot.xticks(xtick,xtick)
+# pyplot.xscale('log')
+# pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
+#   
+# ytick = [0.003,0.01,0.02,0.03,0.05,0.1,0.2,0.3]
+# pyplot.yticks(ytick,ytick)
+# xtick = [20,50,100,200,500,1000,2000,5000]
+# pyplot.xticks(xtick,xtick)
 
 pyplot.show()
