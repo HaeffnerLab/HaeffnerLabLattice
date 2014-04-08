@@ -63,5 +63,4 @@ figure = pyplot.figure(1)
 figure.clf()
 pyplot.plot(x,y,'o')
 pyplot.plot(x_plot,decay_model(params,x_plot),linewidth = 3.0)
-
 pyplot.show()
