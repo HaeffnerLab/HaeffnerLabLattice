@@ -60,8 +60,9 @@ yerr = 1/np.sqrt(4*100)
 
 params = lmfit.Parameters()
 
-params.add('A', value = -0.5)
-params.add('freq', value = 1/(12*3600), vary = False)
+params.add('A', value = 0.5)
+params.add('freq', value = 1/(12*60*60), vary = False)
+#params.add('freq', value = 1/(12*3600))
 params.add('phase', value = 0.0)
 params.add('offset', value = 0.0)
 
