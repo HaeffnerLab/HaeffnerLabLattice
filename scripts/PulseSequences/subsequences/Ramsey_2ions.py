@@ -63,9 +63,17 @@ class ramsey_2ions_excitation(pulse_sequence):
         
         ### ramsey time ###
         
-        self.end = self.end+p.ramsey_time
+        
+        
+        self.end = self.end+p.ramsey_time - WithUnit(20.0,'us')
+        
+        self.addDDS('global397', self.end, WithUnit(20.0,'us'), WithUnit(90.0,'MHz'), WithUnit(-12.0,'dBm'))
+         
+        self.end = self.end + WithUnit(20.0,'us')
         
         print 'Ramsey_time:', p.ramsey_time
+        
+        ### undo pi pulses
         
         self.addDDS('729_1', self.end, p.ion1_excitation_duration2, p.ion1_excitation_frequency2, p.ion1_excitation_amplitude2,WithUnit(180,'deg'))
         self.addDDS('729_aux_1', self.end, p.ion2_excitation_duration2, p.ion2_excitation_frequency2, p.ion2_excitation_amplitude2,WithUnit(180,'deg'))

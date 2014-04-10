@@ -27,54 +27,44 @@ class Parity_LLI_2_point_monitor(experiment):
         self.save_data = cxn.context()
         self.setup_data_vault()
         
+    def run_low_level(self, replacement, cxn, context):
+        self.parity_LLI.set_parameters(replacement)
+        phase = self.parity_LLI.run(cxn, context)
+        return phase
+        
     def run(self, cxn, context):
-        replace_no_mirror = TreeDict.fromdict({
+        replace_no_mirror_long = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':False,
                                        'Parity_LLI.use_short_ramsey_time':False,
                                        })
-        replace_mirror = TreeDict.fromdict({
+        replace_mirror_long  = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
                                        'Parity_LLI.use_short_ramsey_time':False,
                                        })
-        random_number = np.random.rand()
+        replace_no_mirror_short = TreeDict.fromdict({
+                                       'Parity_LLI.mirror_state':False,
+                                       'Parity_LLI.use_short_ramsey_time':True,
+                                       })
+        replace_mirror_short  = TreeDict.fromdict({
+                                       'Parity_LLI.mirror_state':True,
+                                       'Parity_LLI.use_short_ramsey_time':True,
+                                       })
         
-        if (random_number>0.5):
-            self.parity_LLI.set_parameters(replace_no_mirror)
-            phase_no_mirror_long_ramsey_time = self.parity_LLI.run(cxn, context)
-            self.parity_LLI.set_parameters(replace_mirror)
-            phase_mirror_long_ramsey_time = self.parity_LLI.run(cxn, context)
-        else:
-            self.parity_LLI.set_parameters(replace_mirror)
-            phase_mirror_long_ramsey_time = self.parity_LLI.run(cxn, context)            
-            self.parity_LLI.set_parameters(replace_no_mirror)
-            phase_no_mirror_long_ramsey_time = self.parity_LLI.run(cxn, context)  
-                  
+        resultant_phases = {}
+        
+        for replacement, phase_name in np.random.permutation([(replace_no_mirror_long,'phase_no_mirror_long'),
+                                                         (replace_mirror_long,'phase_mirror_long'),
+                                                         (replace_no_mirror_short,'phase_no_mirror_short'),
+                                                         (replace_mirror_short,'phase_mirror_short')]):
+            phase = self.run_low_level(replacement, cxn, context)
+            resultant_phases[phase_name] = phase
+        
+        phase_no_mirror_long_ramsey_time = resultant_phases['phase_no_mirror_long']
+        phase_mirror_long_ramsey_time = resultant_phases['phase_mirror_long']
+        phase_no_mirror_short_ramsey_time = resultant_phases['phase_no_mirror_short']
+        phase_mirror_short_ramsey_time = resultant_phases['phase_mirror_short']
         average_phase_long_ramsey_time = (phase_no_mirror_long_ramsey_time+phase_mirror_long_ramsey_time)/2.0
-        difference_phase_long_ramsey_time = (phase_no_mirror_long_ramsey_time-phase_mirror_long_ramsey_time)/2.0
-        #submission_long_ramsey_time = [time.time(),phase_mirror['deg'],phase_no_mirror['deg'],average_phase['deg'],difference_phase['deg']]
-        
-        
-        replace_no_mirror_short_time = TreeDict.fromdict({
-                                       'Parity_LLI.mirror_state':False,
-                                       'Parity_LLI.use_short_ramsey_time':True,
-                                       })
-        replace_mirror_short_time = TreeDict.fromdict({
-                                       'Parity_LLI.mirror_state':True,
-                                       'Parity_LLI.use_short_ramsey_time':True,
-                                       })
-        random_number = np.random.rand()
-        
-        if (random_number>0.5):
-            self.parity_LLI.set_parameters(replace_no_mirror_short_time)
-            phase_no_mirror_short_ramsey_time = self.parity_LLI.run(cxn, context)
-            self.parity_LLI.set_parameters(replace_mirror_short_time)
-            phase_mirror_short_ramsey_time = self.parity_LLI.run(cxn, context)
-        else:
-            self.parity_LLI.set_parameters(replace_mirror_short_time)
-            phase_mirror_short_ramsey_time = self.parity_LLI.run(cxn, context)            
-            self.parity_LLI.set_parameters(replace_no_mirror_short_time)
-            phase_no_mirror_short_ramsey_time = self.parity_LLI.run(cxn, context)  
-                  
+        difference_phase_long_ramsey_time = (phase_no_mirror_long_ramsey_time-phase_mirror_long_ramsey_time)/2.0        
         average_phase_short_ramsey_time = (phase_no_mirror_short_ramsey_time+phase_mirror_short_ramsey_time)/2.0
         difference_phase_short_ramsey_time = (phase_no_mirror_short_ramsey_time-phase_mirror_short_ramsey_time)/2.0
         long_minus_short_phase_average = average_phase_long_ramsey_time-average_phase_short_ramsey_time
