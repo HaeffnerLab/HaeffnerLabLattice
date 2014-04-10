@@ -36,7 +36,11 @@ def plot_5():
     minus_error =  excitation_to_energy(5)(excitations - sigma) - energy
     minus_error[0] = energy[0]
     yerr = np.vstack((-minus_error, plus_error))
-    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'o-', label = '5 ions')
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'bo-', label = '5 ions')
+    pyplot.ylim(0,90)
+    ax = pyplot.gca()
+    ax.xaxis.set_ticklabels([])
+    pyplot.legend()
 
 def plot_15():
     date = '2013Nov20'
@@ -51,7 +55,11 @@ def plot_15():
     plus_error = excitation_to_energy(15)(excitations + sigma) - energy
     minus_error =  excitation_to_energy(15)(excitations - sigma) - energy
     yerr = np.vstack((-minus_error, plus_error))
-    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'v-', label = '15 ions')
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'go-', label = '15 ions')
+    pyplot.ylim(0,90)
+    ax = pyplot.gca()
+    ax.xaxis.set_ticklabels([])
+    pyplot.legend()
     
 def plot_25():
     date = '2013Nov20'
@@ -67,12 +75,13 @@ def plot_25():
     plus_error = excitation_to_energy(25)(excitations + sigma) - energy
     minus_error =  excitation_to_energy(25)(excitations - sigma) - energy
     yerr = np.vstack((-minus_error, plus_error))
-    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'D-', label = '25 ions')
+    pyplot.errorbar(delays, energy, yerr  = yerr, fmt = 'ro-', label = '25 ions')
+    pyplot.ylim(0,90)
     pyplot.legend()
 
-plot_5()
-plot_15()
-plot_25()
+# plot_5(); save_name = 'right_ion_combined_5'
+# plot_15(); save_name = 'right_ion_combined_15'
+# plot_25(); save_name = 'right_ion_combined_25'
 save = True
 
 if not save:
@@ -80,5 +89,5 @@ if not save:
 else:
     fig = pyplot.gcf()
     fig.set_size_inches(12,6)
-    pyplot.savefig('right_ion.pdf')
+    pyplot.savefig('{0}.pdf'.format(save_name))
 pyplot.show()
