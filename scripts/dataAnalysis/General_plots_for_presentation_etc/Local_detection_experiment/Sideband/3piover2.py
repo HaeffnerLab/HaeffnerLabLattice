@@ -232,30 +232,34 @@ else:
 detail_flop = np.linspace(flop_x_axis.min(),flop_x_axis.max(),1000)
 detail_deph = np.linspace(deph_x_axis.min(),deph_x_axis.max(),1000)
 
-deph_fit_y_axis = evo.deph_evolution_fluc(detail_deph, t0,nb(),f_Rabi(),delta(),delta_fluc())
-pyplot.plot(detail_deph*timescale,deph_fit_y_axis,'b--')
 
-flop_fit_y_axis = evo.state_evolution_fluc(detail_flop, nb(), f_Rabi(), delta(),delta_fluc())
-pyplot.plot(detail_flop*timescale,flop_fit_y_axis,'r-')
 
 #m=pylab.unravel_index(np.array(flop_fit_y_axis).argmax(), np.array(flop_fit_y_axis).shape)
 #print 'Flop maximum at {:.2f} us'.format(detail_flop[m]*10**6)+' -> Expected optimal t0 at {:.2f} us'.format(detail_flop[m]/2.0*10**6)
 #print 'Actual t0 = {}'.format(t0)
+x_plot = np.array(flop_x_axis)*timescale
+xmin = (np.array(deph_x_axis)*timescale).min()
+pyplot.plot(x_plot - xmin,flop_y_axis, 'ro')
 
-pyplot.plot(np.array(flop_x_axis)*timescale,flop_y_axis, 'ro')
+deph_fit_y_axis = evo.deph_evolution_fluc(detail_deph, t0,nb(),f_Rabi(),delta(),delta_fluc())
+pyplot.plot(detail_deph*timescale - xmin,deph_fit_y_axis,'b--')
+
+flop_fit_y_axis = evo.state_evolution_fluc(detail_flop, nb(), f_Rabi(), delta(),delta_fluc())
+pyplot.plot(detail_flop*timescale - xmin,flop_fit_y_axis,'r-')
 
 yerrflop = np.sqrt((1-flop_y_axis)*flop_y_axis/(100.0*len(flop_files)))
-pyplot.errorbar(np.array(flop_x_axis)*timescale, flop_y_axis, yerr=yerrflop, xerr=0,fmt='ro')
+pyplot.errorbar(np.array(flop_x_axis)*timescale - xmin, flop_y_axis, yerr=yerrflop, xerr=0,fmt='ro')
 yerrdeph = np.sqrt((1-deph_y_axis)*deph_y_axis/(100.0*len(dephase_files)))
-pyplot.errorbar(np.array(deph_x_axis)*timescale, deph_y_axis, yerr=yerrdeph, xerr=0,fmt='bo')
-pyplot.plot(np.array(deph_x_axis)*timescale,deph_y_axis, 'bs')
+pyplot.errorbar(np.array(deph_x_axis)*timescale - xmin, deph_y_axis, yerr=yerrdeph, xerr=0,fmt='bo')
+pyplot.plot(np.array(deph_x_axis)*timescale - xmin,deph_y_axis, 'bs')
 pyplot.xlabel('Excitation Duration '+label, fontsize = size*22)
+pyplot.xlim(0, 350)
 pyplot.ylim((0,1))
 pyplot.ylabel('Population in the D-5/2 state', fontsize = size*22)
 #pyplot.legend()
-pyplot.text(xmax*0.60*timescale,0.80, 'nbar = {:.2f}'.format(nb()), fontsize = size*22)
-pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = size*22)
-pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
+# pyplot.text(xmax*0.60*timescale,0.80, 'nbar = {:.2f}'.format(nb()), fontsize = size*22)
+# pyplot.text(xmax*0.60*timescale,0.88, 'Rabi Frequency {:.1f} kHz'.format(f_Rabi()*10**(-3)), fontsize = size*22)
+# pyplot.title('Local detection on the first blue sideband', fontsize = size*30)
 pyplot.tick_params(axis='x', labelsize=size*20)
 pyplot.tick_params(axis='y', labelsize=size*20)
 #save data to text file
@@ -268,4 +272,7 @@ np.savetxt('data/'+folder+'/dist_x_theory.txt',f_Rabi()*(nicer_resolution-t0))
 np.savetxt('data/'+folder+'/dist_y_theory.txt',theo_diff)
 np.savetxt('data/'+folder+'/parameter.txt',parameter)
 
+fig = pyplot.gcf()
+fig.set_size_inches(10,8)
+pyplot.savefig('3piover2_better_plot.pdf', dpi = 600)
 pyplot.show()

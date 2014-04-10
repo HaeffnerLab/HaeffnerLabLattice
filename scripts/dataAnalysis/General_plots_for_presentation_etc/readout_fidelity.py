@@ -1,8 +1,15 @@
 import labrad
+import matplotlib as mpl
 from matplotlib import pyplot
 #get access to servers
 cxn = labrad.connect()
 dv = cxn.data_vault
+
+def mpl_for_saving():
+    mpl.rc('xtick', labelsize = 'x-large')
+    mpl.rc('ytick', labelsize = 'x-large')
+    mpl.rc('savefig', directory = '/Users/michaelramm/Downloads/', dpi=300)
+    mpl.rc('legend', fontsize = 'x-large')
 
 directory = ['','Experiments','Excitation729','2013Jun28','1844_23']
 filename = '00001 - Readout 2013Jun28_1844_23'

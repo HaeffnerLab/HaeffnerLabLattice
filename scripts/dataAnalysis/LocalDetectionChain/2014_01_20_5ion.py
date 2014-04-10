@@ -6,7 +6,6 @@ cxn = labrad.connect()
 dv = cxn.data_vault
 
 #change directory
-
 figure = pyplot.figure(1)
 figure.clf()
 
@@ -62,7 +61,7 @@ data9 = dv.get().asarray
 
 dephase = (data0+data1+data2+data3+data4+data5+data6+data7+data8+data9)/10.0
 
-pyplot.plot(dephase[:,0], dephase[:,1],'o-')
+pyplot.plot(dephase[:,0], dephase[:,1],'o-', label = 'dephased')
 
 
 dv.cd(['','Experiments','Dephase Scan Duration','2014Jan20','1340_17'])
@@ -104,8 +103,12 @@ data8 = dv.get().asarray
 
 phase = (data0+data1+data2+data3+data4+data5+data6+data7+data8)/9.0
 
-pyplot.plot(phase[:,0], phase[:,1],'o-')
+pyplot.plot(phase[:,0], phase[:,1],'o-', label = 'original')
 
 #figure.suptitle('Spectrum 2013Mar13 1623_50, 10ms excitation')
 #pyplot.ylabel('Excitation percentage')
+pyplot.ylim(0,1.0)
+pyplot.legend()
+pyplot.tick_params(axis='both', which='major', labelsize=16)
+pyplot.savefig('correlation_transport.pdf', )
 pyplot.show()
