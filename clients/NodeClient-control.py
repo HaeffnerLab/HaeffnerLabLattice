@@ -20,6 +20,7 @@ nodeDict = {
 								'Agilent 6030A Server',
 								'Agilent E3633A',
 								'Rigol DG4062 Server',
+								'Fitter',
 								],
 			}
 #connect to LabRAD

@@ -26,7 +26,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         script_scanner.show()
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(contrl_widget,'&Control')
-#        self.tabWidget.addTab(translationStageWidget,'&Translation Stages')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
         layout.addWidget(self.tabWidget)

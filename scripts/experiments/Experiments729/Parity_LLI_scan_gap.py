@@ -2,10 +2,12 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import excitation_ramsey_2ions
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
+from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+import numpy as np
 
 class Parity_LLI_scan_gap(experiment):
     
@@ -31,7 +33,22 @@ class Parity_LLI_scan_gap(experiment):
                            ('Parity_transitions', 'right_ionSp12Dp52_pi_time'),
                            ('Parity_transitions', 'right_ionSp12Dp52_power'),
                            ('Parity_transitions', 'right_ionSm12Dm52_pi_time'),
-                           ('Parity_transitions', 'right_ionSm12Dm52_power'),                                                     
+                           ('Parity_transitions', 'right_ionSm12Dm52_power'),
+                             
+                           ('StateReadout', 'parity_threshold_low'),
+                           ('StateReadout', 'parity_threshold_high'),       
+                           ('StateReadout', 'use_camera_for_readout'),     
+                             
+                           ('Crystallization', 'auto_crystallization'),
+                           ('Crystallization', 'camera_record_exposure'),
+                           ('Crystallization', 'camera_threshold'),
+                           ('Crystallization', 'max_attempts'),
+                           ('Crystallization', 'max_duration'),
+                           ('Crystallization', 'min_duration'),
+                           ('Crystallization', 'pmt_record_duration'),
+                           ('Crystallization', 'pmt_threshold'),
+                           ('Crystallization', 'use_camera'),      
+                                                            
                            ]
 
     
@@ -66,16 +83,28 @@ class Parity_LLI_scan_gap(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
         self.parity_save_context = cxn.context()
+        
+        ##############
         self.excite = self.make_experiment(excitation_ramsey_2ions)
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
+        ##############
+        
+        if self.parameters.Crystallization.auto_crystallization:
+            self.crystallizer = self.make_experiment(crystallization)
+            self.crystallizer.initialize(cxn, context, ident)
         self.setup_data_vault()
+        
+    def update_mirror_state(self):
+        self.setup_sequence_parameters()
+        self.excite.set_parameters(self.parameters)
+        self.excite.setup_sequence_parameters()
     
     def setup_sequence_parameters(self):
         
@@ -110,7 +139,7 @@ class Parity_LLI_scan_gap(experiment):
             self.parameters['OpticalPumping.line_selection'] = 'S-1/2D+3/2'
             self.parameters['OpticalPumpingAux.aux_op_line_selection'] = 'S+1/2D-3/2'
             
-
+        
         minim,maxim,steps = self.parameters.Parity_LLI.scangap
         minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
@@ -136,21 +165,47 @@ class Parity_LLI_scan_gap(experiment):
         self.dv.add_parameter('plotLive', True, context = self.parity_save_context)
         
     def run(self, cxn, context):
-        self.setup_sequence_parameters()
+        #self.setup_sequence_parameters()
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            self.parameters['Ramsey_2ions.ramsey_time'] = duration
-            self.excite.set_parameters(self.parameters)
-            excitation,readouts = self.excite.run(cxn, context)
-            position1 = int(self.parameters.Parity_transitions.left_ion_number)
-            position2 = int(self.parameters.Parity_transitions.right_ion_number)
-            parity = self.compute_parity(readouts,position1,position2)
+            
+            excitation, readouts = self.get_excitation_crystallizing(cxn, context, duration) 
+
+            ### pmt or camera readout ###
+            if self.parameters.StateReadout.use_camera_for_readout:
+                position1 = int(self.parameters.Parity_transitions.left_ion_number)
+                position2 = int(self.parameters.Parity_transitions.right_ion_number)
+                parity = self.compute_parity(readouts,position1,position2)
+            else:
+                threshold_low = self.parameters.StateReadout.parity_threshold_low
+                threshold_high = self.parameters.StateReadout.parity_threshold_high
+                parity = self.compute_parity_pmt(readouts,threshold_low,threshold_high)
+
             submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.data_save_context)
             self.dv.add([duration['us'], parity], context = self.parity_save_context)
             self.update_progress(i)
+            
+    def get_excitation_crystallizing(self, cxn, context, duration):
+        self.setup_sequence_parameters()
+        self.parameters['Ramsey_2ions.ramsey_time'] = duration
+        self.excite.set_parameters(self.parameters)
+        self.update_mirror_state()
+        excitation,readouts = self.excite.run(cxn, context)
+        if self.parameters.Crystallization.auto_crystallization:
+            initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+            #if initially melted, redo the point
+            while initally_melted:
+                if not got_crystallized:
+                    #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
+                    self.cxn.scriptscanner.pause_script(self.ident, True)
+                    should_stop = self.pause_or_stop()
+                    if should_stop: return None
+                excitation,readouts = self.excite.run(cxn, context)
+                initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+        return excitation, readouts
     
     def compute_parity(self, readouts,pos1,pos2):
         '''
@@ -160,9 +215,21 @@ class Parity_LLI_scan_gap(experiment):
         correlated_readout = readouts[:,pos1]+readouts[:,pos2]
         parity = (correlated_readout % 2 == 0).mean() - (correlated_readout % 2 == 1).mean()
         return parity
+    
+    def compute_parity_pmt(self, readouts,threshold_low,threshold_high):
+        '''
+        computes the parity of the provided readouts using a pmt
+        '''
+        even_parity = np.count_nonzero((readouts <= threshold_low)|(readouts >= threshold_high))
+        print "even = ", even_parity
+        odd_parity  = np.count_nonzero((readouts >= threshold_low)&(readouts <= threshold_high))
+        print "odd = ", odd_parity
+        parity = (even_parity - odd_parity)/float(len(readouts))
+        return parity
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        pass
+        #self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)

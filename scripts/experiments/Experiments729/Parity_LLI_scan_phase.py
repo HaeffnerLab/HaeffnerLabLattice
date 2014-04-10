@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import excitation_ramsey_2ions
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
@@ -74,10 +75,17 @@ class Parity_LLI_scan_phase(experiment):
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
         self.parity_save_context = cxn.context()
+        
+        ##############
         self.excite = self.make_experiment(excitation_ramsey_2ions)
         self.setup_sequence_parameters()
         self.excite.set_parameters(self.parameters)
         self.excite.initialize(cxn, context, ident)
+        ##############
+        
+        if self.parameters.Crystallization.auto_crystallization:
+            self.crystallizer = self.make_experiment(crystallization)
+            self.crystallizer.initialize(cxn, context, ident)
         self.setup_data_vault()
     
     def setup_sequence_parameters(self):
@@ -151,6 +159,8 @@ class Parity_LLI_scan_phase(experiment):
             parity = self.compute_parity(readouts,position1,position2)
             submission = [phase['deg']]
             submission.extend(excitation)
+            print excitation
+            print submission
             self.dv.add(submission, context = self.data_save_context)
             self.dv.add([phase['deg'], parity], context = self.parity_save_context)
             self.update_progress(i)
