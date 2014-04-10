@@ -24,7 +24,7 @@ readout_counts = data[:,1]
 n, bins, patches = pyplot.hist(readout_counts, 30, histtype='stepfilled')
 
 
-pyplot.vlines(20, 0, 1000, color = 'red', linewidth = 5)
+pyplot.vlines(12, 0, 1000, color = 'red', linewidth = 5)
 pyplot.xlabel( 'Collected Counts', fontsize = 32)
 pyplot.ylabel('Occurence', fontsize = 32)
 pyplot.tick_params('both', labelsize = 20)
