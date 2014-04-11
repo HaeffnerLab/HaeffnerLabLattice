@@ -16,12 +16,17 @@ figure.clf()
 
 
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking_2_points','2014Apr07'])
+dv.cd(['','Drift_Tracking','LLI_tracking_2_points','2014Apr09'])
 dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
+
 #time = time-time[0]
 phase = data[:,9]
+
+time = time[10:]
+phase = phase[10:]
+
 where_early = np.where(time>50000)
 where_late = np.where(time<50000)
 
@@ -31,15 +36,15 @@ time_late = time[where_late]
 phase_late = phase[where_late]
 time_late = time_late+86400 ###went over night
 
-#time = np.append(time_early,time_late)
-time = time_early
-#phase = np.append(phase_early,phase_late)
-phase = phase_early
+time = np.append(time_early,time_late)
+#time = time_early
+phase = np.append(phase_early,phase_late)
+#phase = phase_early
 #time = time[200:800]
 time = time-time[0]
 #phase = phase[200:800]
-phase = phase - 1.459470*np.cos(2*np.pi*time*(1/(12*3600))+1.161057)-55.076701
-phase = phase - 1.192100*np.cos(2*np.pi*time*0.000049+1.104562)-0.073856
+#phase = phase - 1.688586*np.cos(2*np.pi*time*(1/(12*3600))+0.705601)-223.267
+#phase = phase - 2.661369*np.cos(2*np.pi*time*0.000049-2.618545)-0.068592
 
 #pyplot.plot(time,phase,'o-')
 
@@ -94,13 +99,13 @@ for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=30):
     
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
- 
+  
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
-  
+   
 ytick = [0.003,0.01,0.02,0.03,0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
-xtick = [20,50,100,200,500,1000,2000,5000]
+xtick = [20,50,100,200,500,1000,2000,5000,10000, 20000]
 pyplot.xticks(xtick,xtick)
 
 pyplot.show()
