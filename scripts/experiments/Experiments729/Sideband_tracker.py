@@ -7,6 +7,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 import numpy as np
+import datetime
 
 class Sideband_tracker(experiment):
     
@@ -117,6 +118,8 @@ class Sideband_tracker(experiment):
             window_name = [self.sideband_selection]
             self.dv.add_parameter('Window', window_name,context=self.save_trap_freq)
             self.dv.add_parameter('plotLive', True,context=self.save_trap_freq)
+            time_string = str(datetime.datetime.now())
+            self.dv.add_parameter('Start_time', time_string,context=self.save_trap_freq) 
         
     def run(self, cxn, context):
         self.setup_data_vault()
@@ -149,7 +152,8 @@ class Sideband_tracker(experiment):
             self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
             print "fit accepted"
             print time.time(), result
-            self.dv.add([time.time(), result['MHz']],context=self.save_trap_freq)
+            data_time = datetime.datetime.now().hour*3600+datetime.datetime.now().minute*60+datetime.datetime.now().second
+            self.dv.add([data_time, result['MHz']],context=self.save_trap_freq)
         else:
             print 'fit rejected!'
         
