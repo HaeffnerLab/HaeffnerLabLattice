@@ -33,7 +33,7 @@ figure.clf()
 
 
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr12'])
+dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
 dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
@@ -54,17 +54,17 @@ axial = axial[skip:]
 b_field = b_field[skip:]
 phase = phase[skip:]
 
-where_early = np.where(time>50000)
-where_late = np.where(time<50000)
-
-
-time = np.append(time[where_early],time[where_late]+86400)
-phase = np.append(phase[where_early],phase[where_late])
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
+# where_early = np.where(time>50000)
+# where_late = np.where(time<50000)
+# 
+# 
+# time = np.append(time[where_early],time[where_late]+86400)
+# phase = np.append(phase[where_early],phase[where_late])
+# b_field = np.append(b_field[where_early],b_field[where_late])
+# axial = np.append(axial[where_early],axial[where_late])
 
 b_field_correction = True
-axial_correction = True
+axial_correction = False
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
@@ -79,8 +79,8 @@ x = time
 y = phase/360/ramsey_time
 yerr = 1/np.sqrt(4*100)
 
-np.save('time_2014_04_12', x)
-np.save('freq_2014_04_12', y)
+np.save('time_2014_04_13', x)
+np.save('freq_2014_04_13', y)
 
 params = lmfit.Parameters()
 

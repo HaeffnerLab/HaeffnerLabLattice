@@ -29,7 +29,7 @@ figure.clf()
 
 
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr12'])
+dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
 dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
@@ -40,7 +40,9 @@ axial = (data[:,12]-np.average(data[:,12]))*1000*0.040*ramsey_time*360 ## conver
 b_field = ((data[:,10]-np.average(data[:,10]))*2*8/np.average(data[:,10]))*ramsey_time*360
 #time = time-time[0]
 phase = data[:,9] #3,7,9
+
 print np.average(phase)
+
 skip = 0
 
 time = time[skip:]
@@ -48,14 +50,16 @@ axial = axial[skip:]
 b_field = b_field[skip:]
 phase = phase[skip:]
 
-where_early = np.where(time>50000)
-where_late = np.where(time<50000)
+#exclude t = 53540 - 54000
 
-
-time = np.append(time[where_early],time[where_late]+86400)
-phase = np.append(phase[where_early],phase[where_late])
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
+# where_early = np.where(time>50000)
+# where_late = np.where(time<50000)
+# 
+# 
+# time = np.append(time[where_early],time[where_late]+86400)
+# phase = np.append(phase[where_early],phase[where_late])
+# b_field = np.append(b_field[where_early],b_field[where_late])
+# axial = np.append(axial[where_early],axial[where_late])
 
 b_field_correction = True
 axial_correction = True
@@ -74,8 +78,8 @@ phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
 
 interval = time[1:]-time[0:-1]
 
-#start_bin_size = max(interval)+1 # choose bin size to have at least one data point
-start_bin_size = 200
+start_bin_size = max(interval)+1 # choose bin size to have at least one data point
+#start_bin_size = 800
 smallest_bin_size = min(interval)
 
 
@@ -89,7 +93,7 @@ allan_error_bar = []
 #cf = int(start_bin_size/smallest_bin_size)
 #print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=30):
+for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=40):
     if bin_size<start_bin_size:
         continue
     phase_diff = []
