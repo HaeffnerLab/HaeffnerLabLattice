@@ -42,7 +42,6 @@ ramsey_time = 0.098
 
 where_early = np.where(time>69288)
 where_late = np.where(time<21400)
-print time[0]
 #time = time-time[0]
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
@@ -54,28 +53,31 @@ axial = data[:,12]
 b_field = np.append(b_field[where_early],b_field[where_late])
 axial = np.append(axial[where_early],axial[where_late])
 
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
-
+axial_avg1 = np.average(axial)*1000
+axial = (axial-np.average(axial))*1000
 
 b_field_correction = True
-axial_correction = False
+axial_correction = True
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
 if b_field_correction:
     phase = phase - b_field
     
+axial_avg2 = np.average(axial)
+axial_avg = axial_avg1+axial_avg2
+print axial_avg
+
+axial = axial - np.average(axial)
+axial_freq = axial*0.027
+    
 time = time-time[0]
 
 
 
 x = time
-y = phase/360/ramsey_time
+y = axial_freq
 yerr = 1/np.sqrt(4*100)
-
-np.save('time_2014_04_13', x)
-np.save('freq_2014_04_13', y)
 
 params = lmfit.Parameters()
 
@@ -97,15 +99,11 @@ x_plot = np.linspace(x.min(),x.max(),1000)
 figure = pyplot.figure(1)
 figure.clf()
 #pyplot.plot(time,axial)
-pyplot.plot(x,y,'o')
-pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
-#pyplot.xlabel("Seconds since 7:30 pm 4/14/2014")
-#pyplot.ylabel("Frequency (Hz)")
-amplitude = np.abs(params['A'].value*1000)
-amplitude_error = params['A'].stderr*1000
+pyplot.plot(x,axial,'o')
 
-#pyplot.annotate("Amplitude = {0:2.0f}".format(amplitude) + r'$\pm$' + "{0:2.0f} mHz".format(amplitude_error),xy=(20000,-1.2) )
-
+ax2 = pyplot.twinx()
+ax2.plot(x,axial_freq*1000,'o', markersize = 0.0)
+ax2.plot(x_plot,cosine_model(params,x_plot)*1000,linewidth = 3.0)
 
 
 pyplot.show()

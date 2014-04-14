@@ -156,7 +156,7 @@ pyplot.yticks(ytick,ytick)
 xtick = [200,500,1000,2000,5000,10000, 20000]
 pyplot.xticks(xtick,xtick)
 
-pyplot.xlabel(r'$\tau$ (second)')
-pyplot.ylabel(r'$\sigma_f$ (Hz)')
+# pyplot.xlabel(r'$\tau$ (second)')
+# pyplot.ylabel(r'$\sigma_f$ (Hz)')
 
 pyplot.show()

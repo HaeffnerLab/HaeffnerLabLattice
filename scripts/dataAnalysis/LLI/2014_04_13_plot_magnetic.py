@@ -42,7 +42,6 @@ ramsey_time = 0.098
 
 where_early = np.where(time>69288)
 where_late = np.where(time<21400)
-print time[0]
 #time = time-time[0]
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
@@ -50,32 +49,17 @@ phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 time = np.append(time[where_early],time[where_late]+86400)
 phase = np.append(phase[where_early],phase[where_late])
 b_field = data[:,10]
-axial = data[:,12]
 b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
-
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
 
 
-b_field_correction = True
-axial_correction = False
-if axial_correction:
-    axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
-    phase = phase - axial
-if b_field_correction:
-    phase = phase - b_field
-    
+b_field_freq = ((b_field-np.average(b_field))*2*8/np.average(b_field))
+
 time = time-time[0]
 
-
-
 x = time
-y = phase/360/ramsey_time
+y = b_field_freq
 yerr = 1/np.sqrt(4*100)
 
-np.save('time_2014_04_13', x)
-np.save('freq_2014_04_13', y)
 
 params = lmfit.Parameters()
 
@@ -90,22 +74,14 @@ fit_values  = y + result.residual
 
 lmfit.report_errors(params)
 
-#pyplot.plot(time,phase,'o-')
-
 x_plot = np.linspace(x.min(),x.max(),1000)
 
 figure = pyplot.figure(1)
 figure.clf()
-#pyplot.plot(time,axial)
-pyplot.plot(x,y,'o')
-pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
-#pyplot.xlabel("Seconds since 7:30 pm 4/14/2014")
-#pyplot.ylabel("Frequency (Hz)")
-amplitude = np.abs(params['A'].value*1000)
-amplitude_error = params['A'].stderr*1000
 
-#pyplot.annotate("Amplitude = {0:2.0f}".format(amplitude) + r'$\pm$' + "{0:2.0f} mHz".format(amplitude_error),xy=(20000,-1.2) )
-
-
+pyplot.plot(x,(b_field-np.average(b_field))*1000,'o')
+ax2 = pyplot.twinx()
+ax2.plot(x,b_field_freq*1000,'o', markersize = 0.0)
+ax2.plot(x_plot,cosine_model(params,x_plot)*1000,linewidth = 3.0)
 
 pyplot.show()
