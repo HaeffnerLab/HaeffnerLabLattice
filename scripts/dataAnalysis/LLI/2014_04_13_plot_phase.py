@@ -41,7 +41,8 @@ time = data[:,0]
 ramsey_time = 0.098
 
 where_early = np.where(time>69288)
-where_late = np.where(time<35000)
+where_late = np.where(time<21400)
+print time[0]
 #time = time-time[0]
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
@@ -65,11 +66,6 @@ if axial_correction:
 if b_field_correction:
     phase = phase - b_field
     
-
-
-
-
-
 time = time-time[0]
 
 
@@ -84,7 +80,7 @@ np.save('freq_2014_04_13', y)
 params = lmfit.Parameters()
 
 params.add('A', value = 0.5)
-params.add('freq', value = 1/(12*60*60), vary = False)
+params.add('freq', value = 1/(3600*12), vary = False)
 params.add('phase', value = 0.0)
 params.add('offset', value = 0.0)
 
@@ -103,6 +99,13 @@ figure.clf()
 #pyplot.plot(time,axial)
 pyplot.plot(x,y,'o')
 pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
+pyplot.xlabel("Seconds since 7:30 pm 4/14/2014")
+pyplot.ylabel("Frequency (Hz)")
+amplitude = np.abs(params['A'].value*1000)
+amplitude_error = params['A'].stderr*1000
+
+pyplot.annotate("Amplitude = {0:2.0f}".format(amplitude) + r'$\pm$' + "{0:2.0f} mHz".format(amplitude_error),xy=(20000,-1.2) )
+
 
 
 pyplot.show()

@@ -37,7 +37,7 @@ time = data[:,0]
 ramsey_time = 0.098
 
 where_early = np.where(time>69288)
-where_late = np.where(time<35000)
+where_late = np.where(time<21400)
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 
@@ -62,6 +62,7 @@ phase = phase[skip:]
 
 b_field_correction = True
 axial_correction = True
+
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
@@ -83,14 +84,13 @@ time = time-time[0]
 
 phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
 
+#phase = phase +0.039*np.cos(2*np.pi*time/8000+0.585)
+
 interval = time[1:]-time[0:-1]
 
 start_bin_size = max(interval)+1 # choose bin size to have at least one data point
 #start_bin_size = 800
 smallest_bin_size = min(interval)
-
-
-print "Start bin size = ", start_bin_size
 
 ##### Calculate allan deviation ####
 bin_array = []
@@ -100,7 +100,7 @@ allan_error_bar = []
 #cf = int(start_bin_size/smallest_bin_size)
 #print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=100):
+for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=50):
     if bin_size<start_bin_size:
         continue
     phase_diff = []
@@ -146,14 +146,17 @@ x_plot = np.linspace(np.min(x),np.max(x),1000)
     
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 3.0)
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.0,linestyle = '--')
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
-    
+     
 ytick = [0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
 xtick = [200,500,1000,2000,5000,10000, 20000]
 pyplot.xticks(xtick,xtick)
+
+pyplot.xlabel(r'$\tau$ (second)')
+pyplot.ylabel(r'$\sigma_f$ (Hz)')
 
 pyplot.show()
