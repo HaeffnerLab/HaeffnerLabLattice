@@ -36,7 +36,7 @@ time = data[:,0]
 
 ramsey_time = 0.058
 
-axial = (data[:,12]-np.average(data[:,12]))*1000*0.040*ramsey_time*360 ## convert to phase
+axial = (data[:,12]-np.average(data[:,12]))*1000*0.027*ramsey_time*360 ## convert to phase
 b_field = ((data[:,10]-np.average(data[:,10]))*2*8/np.average(data[:,10]))*ramsey_time*360
 #time = time-time[0]
 phase = data[:,9] #3,7,9
@@ -74,8 +74,8 @@ phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
 
 interval = time[1:]-time[0:-1]
 
-#start_bin_size = max(interval)+1 # choose bin size to have at least one data point
-start_bin_size = 200
+start_bin_size = max(interval)+1 # choose bin size to have at least one data point
+#start_bin_size = 100
 smallest_bin_size = min(interval)
 
 
@@ -89,11 +89,11 @@ allan_error_bar = []
 #cf = int(start_bin_size/smallest_bin_size)
 #print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=30):
+for bin_size in np.logspace(0.0,np.log10(max(time)/2.1),num=200):
     if bin_size<start_bin_size:
         continue
     phase_diff = []
-    #print "bin_size = ", bin_size
+    print "bin_size = ", bin_size
     cf = int(bin_size/smallest_bin_size/10.0)+1
     #cf = 1
     #print "Averaging factor = ", cf
@@ -122,7 +122,7 @@ yerr = allan_error_bar
 
 params = lmfit.Parameters()
 
-params.add('A', value = 0.5)
+params.add('A', value = 5.96)
 params.add('B', value = 0.5, vary = False)
 
 result = lmfit.minimize(allan_fit, params, args = (x, y, yerr))
@@ -131,11 +131,16 @@ fit_values  = y + result.residual
 
 lmfit.report_errors(params)
 
-x_plot = np.linspace(np.min(x),np.max(x),1000)
+
     
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 3.0)
+
+
+##############################################
+
+x_plot = np.linspace(np.min(x),np.max(x),1000)
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 2.0)
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])

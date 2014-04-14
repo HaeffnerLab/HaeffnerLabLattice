@@ -38,38 +38,37 @@ dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
 
-ramsey_time = 0.058
-axial = (data[:,12]-np.average(data[:,12]))*1000*0.040*ramsey_time*360 ## convert to phase
-fractional_b_field = (data[:,10]-np.average(data[:,10]))/np.average(data[:,10])
-            
-b_field = fractional_b_field*2*8*ramsey_time*360
+ramsey_time = 0.098
 
+where_early = np.where(time>69288)
+where_late = np.where(time<35000)
 #time = time-time[0]
-phase = data[:,9]-np.average(data[:,9]) #3,7,9
+dataset = 9
+phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 
-skip = 0
+time = np.append(time[where_early],time[where_late]+86400)
+phase = np.append(phase[where_early],phase[where_late])
+b_field = data[:,10]
+axial = data[:,12]
+b_field = np.append(b_field[where_early],b_field[where_late])
+axial = np.append(axial[where_early],axial[where_late])
 
-time = time[skip:]
-axial = axial[skip:]
-b_field = b_field[skip:]
-phase = phase[skip:]
+axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
+b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
 
-# where_early = np.where(time>50000)
-# where_late = np.where(time<50000)
-# 
-# 
-# time = np.append(time[where_early],time[where_late]+86400)
-# phase = np.append(phase[where_early],phase[where_late])
-# b_field = np.append(b_field[where_early],b_field[where_late])
-# axial = np.append(axial[where_early],axial[where_late])
 
 b_field_correction = True
-axial_correction = False
+axial_correction = True
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
 if b_field_correction:
     phase = phase - b_field
+    
+
+
+
+
 
 time = time-time[0]
 

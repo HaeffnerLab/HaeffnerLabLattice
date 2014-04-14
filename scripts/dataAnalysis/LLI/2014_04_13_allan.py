@@ -34,14 +34,23 @@ dv.open(1)
 data = dv.get().asarray
 time = data[:,0]
 
-ramsey_time = 0.058
+ramsey_time = 0.098
 
-axial = (data[:,12]-np.average(data[:,12]))*1000*0.040*ramsey_time*360 ## convert to phase
-b_field = ((data[:,10]-np.average(data[:,10]))*2*8/np.average(data[:,10]))*ramsey_time*360
-#time = time-time[0]
-phase = data[:,9] #3,7,9
+where_early = np.where(time>69288)
+where_late = np.where(time<35000)
+dataset = 9
+phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 
-print np.average(phase)
+time = np.append(time[where_early],time[where_late]+86400)
+phase = np.append(phase[where_early],phase[where_late])
+b_field = data[:,10]
+axial = data[:,12]
+b_field = np.append(b_field[where_early],b_field[where_late])
+axial = np.append(axial[where_early],axial[where_late])
+
+axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
+b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
+
 
 skip = 0
 
@@ -50,16 +59,6 @@ axial = axial[skip:]
 b_field = b_field[skip:]
 phase = phase[skip:]
 
-#exclude t = 53540 - 54000
-
-# where_early = np.where(time>50000)
-# where_late = np.where(time<50000)
-# 
-# 
-# time = np.append(time[where_early],time[where_late]+86400)
-# phase = np.append(phase[where_early],phase[where_late])
-# b_field = np.append(b_field[where_early],b_field[where_late])
-# axial = np.append(axial[where_early],axial[where_late])
 
 b_field_correction = True
 axial_correction = True
@@ -69,6 +68,14 @@ if axial_correction:
 if b_field_correction:
     phase = phase - b_field
 
+where_early = np.where(time>69288)
+where_late = np.where(time<35000)
+
+
+time = np.append(time[where_early],time[where_late]+86400)
+phase = np.append(phase[where_early],phase[where_late])
+b_field = np.append(b_field[where_early],b_field[where_late])
+axial = np.append(axial[where_early],axial[where_late])
 
 time = time-time[0]
 
@@ -93,7 +100,7 @@ allan_error_bar = []
 #cf = int(start_bin_size/smallest_bin_size)
 #print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=40):
+for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=100):
     if bin_size<start_bin_size:
         continue
     phase_diff = []
