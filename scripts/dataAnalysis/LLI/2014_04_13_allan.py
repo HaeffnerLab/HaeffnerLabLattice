@@ -32,6 +32,7 @@ figure.clf()
 dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
 dv.open(1)
 data = dv.get().asarray
+np.save('2014_04_13_all_data.npy',data)
 time = data[:,0]
 
 ramsey_time = 0.098
@@ -130,6 +131,8 @@ for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=50):
 x = bin_array
 y = avar
 yerr = allan_error_bar
+
+
 
 params = lmfit.Parameters()
 

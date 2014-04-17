@@ -23,59 +23,63 @@ def cosine_fit(params , x, data, err):
 
 
 
-cxn = labrad.connect()
-dv = cxn.data_vault
+# cxn = labrad.connect()
+# dv = cxn.data_vault
+# 
+# #change directory
+# 
+# figure = pyplot.figure(1)
+# figure.clf()
+# 
+# 
+# dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
+# dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
+# dv.open(1)
+# data = dv.get().asarray
+# time = data[:,0]
+# 
+# ramsey_time = 0.098
+# 
+# where_early = np.where(time>69288)
+# where_late = np.where(time<21400)
+# print time[0]
+# #time = time-time[0]
+# dataset = 9
+# phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
+# 
+# time = np.append(time[where_early],time[where_late]+86400)
+# phase = np.append(phase[where_early],phase[where_late])
+# b_field = data[:,10]
+# axial = data[:,12]
+# b_field = np.append(b_field[where_early],b_field[where_late])
+# axial = np.append(axial[where_early],axial[where_late])
+# 
+# axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
+# b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
+# 
+# 
+# b_field_correction = True
+# axial_correction = False
+# if axial_correction:
+#     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
+#     phase = phase - axial
+# if b_field_correction:
+#     phase = phase - b_field
+#     
+# time = time-time[0]
 
-#change directory
-
-figure = pyplot.figure(1)
-figure.clf()
 
 
-#dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
-dv.open(1)
-data = dv.get().asarray
-time = data[:,0]
+# x = time
+# y = phase/360/ramsey_time
+# yerr = 1/np.sqrt(4*100)
 
-ramsey_time = 0.098
+x = np.load('time_binned_2014_04.npy')
+y = np.load('freq_binned_2014_04.npy')
+yerr = np.load('freq_err_2014_04.npy')
 
-where_early = np.where(time>69288)
-where_late = np.where(time<21400)
-print time[0]
-#time = time-time[0]
-dataset = 9
-phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
-
-time = np.append(time[where_early],time[where_late]+86400)
-phase = np.append(phase[where_early],phase[where_late])
-b_field = data[:,10]
-axial = data[:,12]
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
-
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
-
-
-b_field_correction = True
-axial_correction = False
-if axial_correction:
-    axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
-    phase = phase - axial
-if b_field_correction:
-    phase = phase - b_field
-    
-time = time-time[0]
-
-
-
-x = time
-y = phase/360/ramsey_time
-yerr = 1/np.sqrt(4*100)
-
-np.save('time_2014_04_13', x)
-np.save('freq_2014_04_13', y)
+#np.save('time_2014_04_13', x)
+#np.save('freq_2014_04_13', y)
 
 params = lmfit.Parameters()
 
@@ -89,6 +93,8 @@ result = lmfit.minimize(cosine_fit, params, args = (x, y, yerr))
 fit_values  = y + result.residual
 
 lmfit.report_errors(params)
+
+print result.redchi
 
 #pyplot.plot(time,phase,'o-')
 
