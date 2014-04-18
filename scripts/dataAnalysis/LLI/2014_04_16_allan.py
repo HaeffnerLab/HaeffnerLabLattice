@@ -19,40 +19,32 @@ def allan_fit(params , x, data, err):
     return (model - data)/err
 
 
-#cxn = labrad.connect()
-#dv = cxn.data_vault
+cxn = labrad.connect()
+dv = cxn.data_vault
 
 #change directory
 
 figure = pyplot.figure(1)
 figure.clf()
 
-
 #dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
-#dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr13'])
-#dv.open(1)
-#data = dv.get().asarray
-#np.save('2014_04_13_all_data.npy',data)
-data = np.load('2014_04_13_all_data.npy')
+dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr16'])
+dv.open(1)
+data = dv.get().asarray
 time = data[:,0]
 
-ramsey_time = 0.098
+ramsey_time = 0.08333
+axial = (data[:,12]-np.average(data[:,12]))*1000*0.027*ramsey_time*360 ## convert to phase
+fractional_b_field = (data[:,10]-np.average(data[:,10]))/np.average(data[:,10])
+            
+b_field = fractional_b_field*2*8*ramsey_time*360
 
-where_early = np.where(time>69288)
-where_late = np.where(time<21400)
+#time = time-time[0]
+#3 = average phase long time
+#7 = average phase short time
+#9 = average phase difference
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
-
-time = np.append(time[where_early],time[where_late]+86400)
-phase = np.append(phase[where_early],phase[where_late])
-b_field = data[:,10]
-axial = data[:,12]
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
-
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360
-
 
 skip = 0
 
@@ -61,18 +53,8 @@ axial = axial[skip:]
 b_field = b_field[skip:]
 phase = phase[skip:]
 
-
-b_field_correction = True
-axial_correction = True
-
-if axial_correction:
-    axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
-    phase = phase - axial
-if b_field_correction:
-    phase = phase - b_field
-
-where_early = np.where(time>69288)
-where_late = np.where(time<35000)
+where_early = np.where(time>66000)
+where_late = np.where(time<9500)
 
 
 time = np.append(time[where_early],time[where_late]+86400)
@@ -80,22 +62,28 @@ phase = np.append(phase[where_early],phase[where_late])
 b_field = np.append(b_field[where_early],b_field[where_late])
 axial = np.append(axial[where_early],axial[where_late])
 
+b_field_correction = False
+axial_correction = False
+if axial_correction:
+    axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
+    phase = phase - axial
+if b_field_correction:
+    phase = phase - b_field
+
 time = time-time[0]
 
 
 
 phase = phase/360.0/ramsey_time ## convert phase to frequency sensitivity
 
-#phase = phase + 0.084523*np.cos(2*np.pi*time*0.000049-2.985)
-#phase = phase + 0.030584*np.cos(2*np.pi*time*0.000068-0.639967)
-
-#phase = phase +0.039*np.cos(2*np.pi*time/8000+0.585)
-
 interval = time[1:]-time[0:-1]
 
 start_bin_size = max(interval)+1 # choose bin size to have at least one data point
-#start_bin_size = 800
+#start_bin_size = 100
 smallest_bin_size = min(interval)
+
+
+print "Start bin size = ", start_bin_size
 
 ##### Calculate allan deviation ####
 bin_array = []
@@ -105,13 +93,11 @@ allan_error_bar = []
 #cf = int(start_bin_size/smallest_bin_size)
 #print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=50):
+for bin_size in np.logspace(0.0,np.log10(max(time)/2.1),num=200):
     if bin_size<start_bin_size:
         continue
     phase_diff = []
-    #if bin_size>2000:
-    #    continue
-    #print "bin_size = ", bin_size
+    print "bin_size = ", bin_size
     cf = int(bin_size/smallest_bin_size/10.0)+1
     #cf = 1
     #print "Averaging factor = ", cf
@@ -136,14 +122,11 @@ for bin_size in np.logspace(0.0,np.log10(max(time)/3.0),num=50):
     
 x = bin_array
 y = avar
-
 yerr = allan_error_bar
-
-
 
 params = lmfit.Parameters()
 
-params.add('A', value = 0.5)
+params.add('A', value = 5.96)
 params.add('B', value = 0.5, vary = False)
 
 result = lmfit.minimize(allan_fit, params, args = (x, y, yerr))
@@ -152,26 +135,23 @@ fit_values  = y + result.residual
 
 lmfit.report_errors(params)
 
-x_plot = np.linspace(np.min(x),np.max(x),1000)
-
 print result.redchi
     
 pyplot.plot(bin_array,avar,'o')
 pyplot.errorbar(bin_array,avar,allan_error_bar)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.0,linestyle = '--')
 
-quantum_projection = 2.1/np.sqrt(x_plot)
-pyplot.plot(x_plot,quantum_projection,linewidth = 1.0,linestyle = '--')
+
+##############################################
+
+x_plot = np.linspace(np.min(x),np.max(x),1000)
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 2.0)
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
-     
+    
 ytick = [0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
 xtick = [200,500,1000,2000,5000,10000, 20000]
 pyplot.xticks(xtick,xtick)
-
-# pyplot.xlabel(r'$\tau$ (second)')
-# pyplot.ylabel(r'$\sigma_f$ (Hz)')
 
 pyplot.show()

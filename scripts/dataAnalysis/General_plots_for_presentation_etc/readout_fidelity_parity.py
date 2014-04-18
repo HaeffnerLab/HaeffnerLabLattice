@@ -11,8 +11,8 @@ def mpl_for_saving():
     mpl.rc('savefig', directory = '/Users/michaelramm/Downloads/', dpi=300)
     mpl.rc('legend', fontsize = 'x-large')
 
-directory = ['','Experiments','Excitation729','2013Jun28','1844_23']
-filename = '00001 - Readout 2013Jun28_1844_23'
+directory = ['','Experiments','Ramsey2ions','2014Apr13','1910_27']
+filename = '00001 - Readout 2014Apr13_1910_27'
 #change directory
 
 figure = pyplot.figure()
@@ -21,10 +21,11 @@ dv.cd(directory)
 dv.open(filename)
 data = dv.get().asarray
 readout_counts = data[:,1]
-n, bins, patches = pyplot.hist(readout_counts, 30, histtype='stepfilled')
+n, bins, patches = pyplot.hist(readout_counts, 50, histtype='stepfilled')
 
 
-pyplot.vlines(12, 0, 1000, color = 'red', linewidth = 5)
+pyplot.vlines(20, 0, 27000, color = 'red', linewidth = 5)
+pyplot.vlines(96, 0, 27000, color = 'red', linewidth = 5)
 pyplot.xlabel( 'Collected Counts', fontsize = 32)
 pyplot.ylabel('Occurence', fontsize = 32)
 pyplot.tick_params('both', labelsize = 20)
