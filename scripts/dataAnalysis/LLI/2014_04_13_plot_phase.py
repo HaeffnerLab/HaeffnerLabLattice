@@ -91,7 +91,8 @@ np.save('freq_2014_04_13', y)
 params = lmfit.Parameters()
 
 params.add('A', value = 0.05)
-params.add('freq', value = 1/(12*3600), vary = False)
+HR = 23.9344696
+params.add('freq', value = 1/(HR*3600/2), vary = False)
 params.add('phase', value = 0.0)
 params.add('offset', value = 0.0)
 
