@@ -9,10 +9,16 @@ import datetime
 class Parity_LLI_2_point_monitor(experiment):
     
     name = 'Parity_LLI_2_point_monitor'
+    LLI_2_points_required_parameters = [
+                           ('TrapFrequencies','axial_frequency'),
+                           ('TrapFrequencies','radial_frequency_1'),
+                           ('TrapFrequencies','radial_frequency_2'),
+                           ('TrapFrequencies','rf_drive_frequency'),
+                           ]
 
     @classmethod
     def all_required_parameters(cls):
-        parameters = set([])
+        parameters = set(cls.LLI_2_points_required_parameters)
         parameters = parameters.union(set(Parity_LLI_phase_tracker.all_required_parameters()))
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loade
@@ -34,21 +40,29 @@ class Parity_LLI_2_point_monitor(experiment):
         return phase
         
     def run(self, cxn, context):
+        self.reload_some_parameters([('TrapFrequencies','axial_frequency'),
+                                     ('TrapFrequencies','radial_frequency_1'),
+                                     ('TrapFrequencies','radial_frequency_2'),
+                                     ('TrapFrequencies','rf_drive_frequency'),])
         replace_no_mirror_long = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':False,
                                        'Parity_LLI.use_short_ramsey_time':False,
+                                       'Parity_LLI.contrast':0.35,
                                        })
         replace_mirror_long  = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
                                        'Parity_LLI.use_short_ramsey_time':False,
+                                       'Parity_LLI.contrast':0.35,
                                        })
         replace_no_mirror_short = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':False,
                                        'Parity_LLI.use_short_ramsey_time':True,
+                                       'Parity_LLI.contrast':0.5,
                                        })
         replace_mirror_short  = TreeDict.fromdict({
                                        'Parity_LLI.mirror_state':True,
                                        'Parity_LLI.use_short_ramsey_time':True,
+                                       'Parity_LLI.contrast':0.5,
                                        })
         
         resultant_phases = {}
@@ -71,8 +85,8 @@ class Parity_LLI_2_point_monitor(experiment):
         long_minus_short_phase_average = average_phase_long_ramsey_time-average_phase_short_ramsey_time
         data_time = datetime.datetime.now().hour*3600+datetime.datetime.now().minute*60+datetime.datetime.now().second
         #print self.drift_tracker.get_current_b_and_center()
-        B_field = self.drift_tracker.get_current_b()
-        cavity_freq = self.drift_tracker.get_current_center()
+        B_field, cavity_freq = self.drift_tracker.get_current_b_and_center()
+        axial_freq = self.parameters.TrapFrequencies.axial_frequency
         submission = [data_time,
                       phase_mirror_long_ramsey_time['deg'],
                       phase_no_mirror_long_ramsey_time['deg'],
@@ -84,7 +98,8 @@ class Parity_LLI_2_point_monitor(experiment):
                       difference_phase_short_ramsey_time['deg'],
                       long_minus_short_phase_average['deg'],
                       B_field['gauss'],
-                      cavity_freq['MHz']
+                      cavity_freq['MHz'],
+                      axial_freq['MHz']
                       ]
         self.dv.add(submission,context=self.save_data)
         #self.dv.add(submission,context=self.save_data_short_time)
@@ -114,7 +129,8 @@ class Parity_LLI_2_point_monitor(experiment):
                                                               ('Parity','Difference_short','Probability'),
                                                               ('Parity','Average_long_minus_short','Probability'),
                                                               ('B-field','B-field','gauss'),
-                                                              ('Cavity_freq','Cavity_freq','MHz')],context=self.save_data)
+                                                              ('Cavity_freq','Cavity_freq','MHz'),
+                                                              ('Axial Trap','Axial Trap','MHz')],context=self.save_data)
             window_name = [datasetname_parity]
             self.dv.add_parameter('Window', window_name,context=self.save_data)
             self.dv.add_parameter('plotLive', True,context=self.save_data) 
