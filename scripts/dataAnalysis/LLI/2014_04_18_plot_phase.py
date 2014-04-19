@@ -4,10 +4,11 @@ import numpy as np
 from matplotlib import pyplot
 import matplotlib
 import lmfit
-import datetime
+
+import lmfit
 
 def cosine_model(params, x):
-    freq = 1/(sidereal_day*3600) ## this is omega t
+    freq = 1/(23.9344699*3600) ## this is omega t
     A = params['A'].value
     B = params['B'].value
     C = params['C'].value
@@ -24,59 +25,74 @@ def cosine_fit(params , x, data, err):
 
 
 
-data = np.load('2014_04_13_all_data.npy')
+cxn = labrad.connect()
+dv = cxn.data_vault
+
+#change directory
+
+figure = pyplot.figure(1)
+figure.clf()
+
+
+#dv.cd(['','Experiments','Ramsey2ions_ScanGapParity','2014Jan29','1756_34'])
+dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr18'])
+dv.open(1)
+data = dv.get().asarray
 time = data[:,0]
 
-ramsey_time = 0.098
+ramsey_time = 0.095
+axial = (data[:,12]-np.average(data[:,12]))*1000*0.027*ramsey_time*360 ## convert to phase
+fractional_b_field = (data[:,10]-np.average(data[:,10]))/np.average(data[:,10])
+            
+b_field = fractional_b_field*2*8*ramsey_time*360
 
-where_early = np.where(time>69288)
-where_late = np.where(time<21400)
-time = np.append(time[where_early],time[where_late]+86400)
-
-### time conversion ####
-# data starts on April 13, 2014, 69297.0 Berkeley time
-Berkeley_longitude = 122.2728/360
-sidereal_day = 23.9344699 ### in hours
-### UTC is faster than Berkeley time
-offset_from_UTC = Berkeley_longitude*sidereal_day*60*60
-### add offset to data
-time = time + offset_from_UTC - 86400 ## Now becomes seconds since April 14 UTC time
-# April 13, 2014 at midnight Berkeley is 
-# 2014 equinox is March 20 16:57:06 UTC, which is 
-equinox = datetime.datetime(2014, 3, 20, 16, 57, 6)
-experiment_day = datetime.datetime(2014, 4, 15, 00, 00, 00)
-time_difference = experiment_day - equinox
-### convert time to seconds since equinox
-time = time + time_difference.total_seconds()
-#### end of time conversion ####
-
-### get phase data and correction from axial trap and B-field ###
+#time = time-time[0]
+#3 = average phase long time
+#7 = average phase short time
+#9 = average phase difference
 dataset = 9
 phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 
+skip = 0
+
+time = time[skip:]
+axial = axial[skip:]
+b_field = b_field[skip:]
+phase = phase[skip:]
+
+where_early = np.where(time>73500)#73000,67200
+where_late = np.where(time<32476)
+
+
+time = np.append(time[where_early],time[where_late]+86400)
 phase = np.append(phase[where_early],phase[where_late])
-b_field = data[:,10]
-axial = data[:,12]
 b_field = np.append(b_field[where_early],b_field[where_late])
 axial = np.append(axial[where_early],axial[where_late])
- 
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase correction 27 mHz per kHz
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
- 
-#### apply correction due to B-field and axial trap frequency ####
- 
+
 b_field_correction = True
 axial_correction = True
 if axial_correction:
-    axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
+    #axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
 if b_field_correction:
     phase = phase - b_field
 
+time = time-time[0]
+
+
+
 x = time
+phase = phase - np.average(phase)
 y = phase/360/ramsey_time
-## assume quantum projection noise
+#y = b_field
 yerr = np.arcsin(1/np.sqrt(4*100)/0.35)/(2*np.pi*ramsey_time)
+
+# x = np.load('time_binned_2014_04_16.npy')
+# y = np.load('freq_binned_2014_04_16.npy')
+# yerr = np.load('freq_err_2014_04_16.npy')
+
+#np.save('time_2014_04_16', x)
+#np.save('freq_2014_04_16', y)
 
 params = lmfit.Parameters()
 
@@ -92,16 +108,17 @@ fit_values  = y + result.residual
 
 lmfit.report_errors(params)
 
-print "Reduced chi-squared = ", result.redchi
+print result.redchi
 
-ci = lmfit.conf_interval(result)
+#pyplot.plot(time,phase,'o-')
 
-lmfit.report_ci(ci)
-
-x_plot = np.linspace(x.min(),x.max()+100000,1000)
+x_plot = np.linspace(x.min(),x.max()*2,1000)
 
 figure = pyplot.figure(1)
 figure.clf()
+#pyplot.plot(time,axial)
 pyplot.plot(x,y,'o')
 pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
+
+
 pyplot.show()
