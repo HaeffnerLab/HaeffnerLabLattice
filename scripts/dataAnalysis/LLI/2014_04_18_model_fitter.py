@@ -53,6 +53,10 @@ equinox = datetime.datetime(2014, 3, 20, 16, 57, 6)
 ## which phase?
 dataset = 9
 
+b_field_correction = True
+axial_correction = True
+binner = False
+
 
 ######################## DAY 1 start ##############    
 
@@ -60,11 +64,12 @@ dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr18'])
 dv.open(1)
 data = dv.get().asarray
 
+np.save('dataApr18.npy',data)
+
 time = data[:,0]
 
 
-
-where_early = np.where(time>73500)
+where_early = np.where(time>74000)
 where_late = np.where(time<32476)
 time = np.append(time[where_early],time[where_late]+86400)
 
@@ -95,9 +100,7 @@ axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase
 b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
  
 #### apply correction due to B-field and axial trap frequency ####
- 
-b_field_correction = True
-axial_correction = True
+
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
@@ -105,6 +108,8 @@ if b_field_correction:
     phase = phase - b_field
     
 x1 = time
+axial1 = axial/360/ramsey_time
+b1 = b_field/360/ramsey_time
 y1 = phase/360/ramsey_time
     
 ######################## DAY 1 end ##############    
@@ -114,11 +119,11 @@ y1 = phase/360/ramsey_time
 dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr19'])
 dv.open(1)
 data = dv.get().asarray
-
+np.save('dataApr19.npy',data)
 time = data[:,0]
 
-
-where_early = np.where(time>34000)
+#where_early = np.where(time>34000)
+where_early = np.where((time>41000)|((time<39000)&(time>34000)))  ### exclude where laser fell out
 where_late = np.where(time<20000)
 time = np.append(time[where_early],time[where_late]+86400)
 
@@ -149,8 +154,6 @@ b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*36
  
 #### apply correction due to B-field and axial trap frequency ####
  
-b_field_correction = True
-axial_correction = True
 if axial_correction:
     axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
     phase = phase - axial
@@ -158,6 +161,8 @@ if b_field_correction:
     phase = phase - b_field
     
 x2 = time
+axial2 = axial/360/ramsey_time
+b2 = b_field/360/ramsey_time
 y2 = phase/360/ramsey_time
     
 ######################## DAY 2 end ##############  
@@ -167,12 +172,63 @@ y2 = phase/360/ramsey_time
 
 x = np.append(x1,x2)
 y = np.append(y1,y2)
+#y = np.append(axial1,axial2)
+#y = np.append(b1,b2)
+
+data_length = (x[-1]-x[0])/3600
+
+print "Data length = ",data_length
 
 np.save('2014_04_18_weekend_freq.npy',y)
+np.savetxt('LLI_final_data.csv',np.transpose(np.array([x-x[0],y])),delimiter=',')
 np.save('2014_04_18_weekend_time.npy',x)
 
 ## assume quantum projection noise
 yerr = np.arcsin(1/np.sqrt(4*100)/0.35)/(2*np.pi*ramsey_time)
+
+
+#### binner ####
+
+
+
+if binner:
+    freq = y
+    time = x
+    time_offset = x[0]
+    x = x-time_offset
+    time = time-time_offset
+    time_chunk = 3000
+    #bin_size = 5000
+    offset = 3000
+    #number_of_bin = int(np.max(time)/bin_size)-1
+    number_of_chunk = int(np.max(time)/time_chunk)
+    
+    freq_binned = []
+    freq_sd_array = []
+    time_binned = []
+    
+    for i in range(0,int(number_of_chunk*time_chunk/offset)):
+        #print i
+        where = np.where((time>(i*offset))*(time<(i*offset+time_chunk)))
+        if not np.size(freq[where]):
+            continue
+        freq_mean = np.average(freq[where])
+        #print "points per bin = ", np.size(freq[where])
+        freq_sd = np.std(freq[where])/np.sqrt(np.size(freq[where])-1)
+        #print freq_sd
+        freq_binned.append(freq_mean)
+        freq_sd_array.append(freq_sd)
+        
+        
+        time_stamp = (i+0.5)*offset
+        time_binned.append(time_stamp)
+        #time_binned.append((i+1)*bin_size)
+    
+    x = time_binned + time_offset
+    y = freq_binned
+    yerr = freq_sd_array
+
+################
 
 params = lmfit.Parameters()
 
@@ -188,25 +244,43 @@ residual_array = result.residual*yerr
 
 #fit_values  = y + result.residual
 
-lmfit.report_errors(params)
+lmfit.report_errors(params, min_correl=0)
 
 print "Reduced chi-squared = ", result.redchi
 
-ci = lmfit.conf_interval(result)
+#ci = lmfit.conf_interval(result)
+# print "A correlations = ", params['A'].correl
+# print "B correlations = ", params['B'].correl
+# print "C correlations = ", params['C'].correl
+# print "D correlations = ", params['D'].correl
+
+#### construct correlation matrix
+
+correl_matrix = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])*1.0
+variable_array = ['A','B','C','D']
+for i in range(0,4):
+    for j in range(0,4):
+        if i != j:
+            value = params[variable_array[i]].correl[variable_array[j]]
+            correl_matrix[i,j] = value
+
+print "Eigenvectors of correl matrix is =", np.linalg.eig(correl_matrix)
 # report confidence interval
 #lmfit.report_ci(ci)
-
-x_plot = np.linspace(x.min(),x.max()+100000,1000)
+x = x-x[0]
+x_plot = np.linspace(x.min()-1000,x.max()+1000,1000)
 
 ### plot phase data and fit model ###
 figure = pyplot.figure(1)
 figure.clf()
 pyplot.plot(x,y,'o')
 pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
+if binner:
+    pyplot.errorbar(x,y,yerr,fmt='o')
 
 ### plot residual histogram and fit to gaussian
 
-residual_histogram = np.histogram(residual_array,15)
+residual_histogram = np.histogram(residual_array,20)
 x = residual_histogram[1][:-1]
 y = residual_histogram[0]
 ##
