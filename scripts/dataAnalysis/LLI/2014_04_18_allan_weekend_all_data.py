@@ -104,9 +104,9 @@ pyplot.plot(x_plot,quantum_projection,linewidth = 1.0,linestyle = '--')
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
     
-ytick = [0.05,0.1,0.2,0.3]
+ytick = [0.01,0.02,0.03,0.05,0.1,0.2]
 pyplot.yticks(ytick,ytick)
-xtick = [200,500,1000,2000,5000,10000, 20000]
+xtick = [200,500,1000,2000,5000,10000, 20000, 50000]
 pyplot.xticks(xtick,xtick)
 
 pyplot.show()
