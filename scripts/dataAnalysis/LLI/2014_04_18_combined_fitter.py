@@ -12,7 +12,8 @@ def cosine_model(params, x):
     B = params['B'].value
     C = params['C'].value
     D = params['D'].value
-    offset = -0.008176
+    #offset = -0.008176
+    offset = params['offset'].value
     
     '''
     change parameter basis
@@ -77,121 +78,124 @@ axial_correction = True
 binner = False
 
 
-######################## DAY 1 start ##############    
-
-# dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr18'])
-# dv.open(1)
-# data = dv.get().asarray
+# ######################## DAY 1 start ##############    
 # 
-# np.save('dataApr18.npy',data)
-
-data = np.load('dataApr18.npy')
-
-time = data[:,0]
-
-#where_early = np.where(((time>74000)&(time<84878))|(time>85709))
-where_early = np.where(time>74000)
-where_late = np.where(time<32476)
-time = np.append(time[where_early],time[where_late]+86400)
-
-### time conversion ####
-# data starts on April 13, 2014, 69297.0 Berkeley time
-### UTC is faster than Berkeley time
-### add offset to data
-time = time + offset_from_UTC - 86400 ## Now becomes seconds since April 19 UTC time
-# April 13, 2014 at midnight Berkeley is 
-# 2014 equinox is March 20 16:57:06 UTC, which is 
-experiment_day = datetime.datetime(2014, 4, 19, 00, 00, 00)
-time_difference = experiment_day - equinox
-### convert time to seconds since equinox
-time = time + time_difference.total_seconds()
-#### end of time conversion ####
-
-### get phase data and correction from axial trap and B-field ###
-
-phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
-
-phase = np.append(phase[where_early],phase[where_late])
-b_field = data[:,10]
-axial = data[:,12]
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
- 
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase correction 27 mHz per kHz
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
- 
-#### apply correction due to B-field and axial trap frequency ####
-
-if axial_correction:
-    #axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
-    phase = phase - axial
-if b_field_correction:
-    phase = phase - b_field
-    
-x1 = time
-axial1 = axial/360/ramsey_time
-b1 = b_field/360/ramsey_time
-y1 = phase/360/ramsey_time
-    
-######################## DAY 1 end ##############    
-
-######################## DAY 2 start ##############    
-
-# dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr19'])
-# dv.open(1)
-# data = dv.get().asarray
-# np.save('dataApr19.npy',data)
-data = np.load('dataApr19.npy')
-time = data[:,0]
-
-#where_early = np.where(time>34000)
-where_early = np.where((time>41000)|((time<39000)&(time>34000)))  ### exclude where laser fell out
-where_late = np.where(time<20000)
-time = np.append(time[where_early],time[where_late]+86400)
-
-### time conversion ####
-# data starts on April 13, 2014, 69297.0 Berkeley time
-
-### add offset to data
-time = time + offset_from_UTC - 86400 ## Now becomes seconds since April 19 UTC time
-# April 13, 2014 at midnight Berkeley is 
-# 2014 equinox is March 20 16:57:06 UTC, which is 
-experiment_day = datetime.datetime(2014, 4, 20, 00, 00, 00)
-time_difference = experiment_day - equinox
-### convert time to seconds since equinox
-time = time + time_difference.total_seconds()
-#### end of time conversion ####
-
-### get phase data and correction from axial trap and B-field ###
-phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
-
-phase = np.append(phase[where_early],phase[where_late])
-b_field = data[:,10]
-axial = data[:,12]
-b_field = np.append(b_field[where_early],b_field[where_late])
-axial = np.append(axial[where_early],axial[where_late])
- 
-axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase correction 27 mHz per kHz
-b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
- 
-#### apply correction due to B-field and axial trap frequency ####
- 
-if axial_correction:
-    #axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
-    phase = phase - axial
-if b_field_correction:
-    phase = phase - b_field
-    
-x2 = time
-axial2 = axial/360/ramsey_time
-b2 = b_field/360/ramsey_time
-y2 = phase/360/ramsey_time
-    
-######################## DAY 2 end ##############  
+# # dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr18'])
+# # dv.open(1)
+# # data = dv.get().asarray
+# # 
+# # np.save('dataApr18.npy',data)
+# 
+# data = np.load('dataApr18.npy')
+# 
+# time = data[:,0]
+# 
+# #where_early = np.where(((time>74000)&(time<84878))|(time>85709))
+# where_early = np.where(time>74000)
+# where_late = np.where(time<32476)
+# time = np.append(time[where_early],time[where_late]+86400)
+# 
+# ### time conversion ####
+# # data starts on April 13, 2014, 69297.0 Berkeley time
+# ### UTC is faster than Berkeley time
+# ### add offset to data
+# time = time + offset_from_UTC - 86400 ## Now becomes seconds since April 19 UTC time
+# # April 13, 2014 at midnight Berkeley is 
+# # 2014 equinox is March 20 16:57:06 UTC, which is 
+# experiment_day = datetime.datetime(2014, 4, 19, 00, 00, 00)
+# time_difference = experiment_day - equinox
+# ### convert time to seconds since equinox
+# time = time + time_difference.total_seconds()
+# #### end of time conversion ####
+# 
+# ### get phase data and correction from axial trap and B-field ###
+# 
+# phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
+# 
+# phase = np.append(phase[where_early],phase[where_late])
+# b_field = data[:,10]
+# axial = data[:,12]
+# b_field = np.append(b_field[where_early],b_field[where_late])
+# axial = np.append(axial[where_early],axial[where_late])
+#  
+# axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase correction 27 mHz per kHz
+# b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
+#  
+# #### apply correction due to B-field and axial trap frequency ####
+# 
+# if axial_correction:
+#     #axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
+#     phase = phase - axial
+# if b_field_correction:
+#     phase = phase - b_field
+#     
+# x1 = time
+# axial1 = axial/360/ramsey_time
+# b1 = b_field/360/ramsey_time
+# y1 = phase/360/ramsey_time
+#     
+# ######################## DAY 1 end ##############    
+# 
+# ######################## DAY 2 start ##############    
+# 
+# # dv.cd(['','Drift_Tracking','LLI_tracking_all_data','2014Apr19'])
+# # dv.open(1)
+# # data = dv.get().asarray
+# # np.save('dataApr19.npy',data)
+# data = np.load('dataApr19.npy')
+# time = data[:,0]
+# 
+# #where_early = np.where(time>34000)
+# where_early = np.where((time>41000)|((time<39000)&(time>34000)))  ### exclude where laser fell out
+# where_late = np.where(time<20000)
+# time = np.append(time[where_early],time[where_late]+86400)
+# 
+# ### time conversion ####
+# # data starts on April 13, 2014, 69297.0 Berkeley time
+# 
+# ### add offset to data
+# time = time + offset_from_UTC - 86400 ## Now becomes seconds since April 19 UTC time
+# # April 13, 2014 at midnight Berkeley is 
+# # 2014 equinox is March 20 16:57:06 UTC, which is 
+# experiment_day = datetime.datetime(2014, 4, 20, 00, 00, 00)
+# time_difference = experiment_day - equinox
+# ### convert time to seconds since equinox
+# time = time + time_difference.total_seconds()
+# #### end of time conversion ####
+# 
+# ### get phase data and correction from axial trap and B-field ###
+# phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
+# 
+# phase = np.append(phase[where_early],phase[where_late])
+# b_field = data[:,10]
+# axial = data[:,12]
+# b_field = np.append(b_field[where_early],b_field[where_late])
+# axial = np.append(axial[where_early],axial[where_late])
+#  
+# axial = (axial-np.average(axial))*1000*0.027*ramsey_time*360 ## convert to phase correction 27 mHz per kHz
+# b_field = ((b_field-np.average(b_field))*2*8/np.average(b_field))*ramsey_time*360 ## convert to phase correction 8 Hz at 3.9 gauss
+#  
+# #### apply correction due to B-field and axial trap frequency ####
+#  
+# if axial_correction:
+#     #axial[np.where(axial<-0.7)] = np.ones_like(axial[np.where(axial<-0.7)])*np.average(axial)
+#     phase = phase - axial
+# if b_field_correction:
+#     phase = phase - b_field
+#     
+# x2 = time
+# axial2 = axial/360/ramsey_time
+# b2 = b_field/360/ramsey_time
+# y2 = phase/360/ramsey_time
+#     
+# ######################## DAY 2 end ##############  
 
 
 ### add 2 days of data together ###
-
+x1=np.load('2014_04_13_time.npy')
+x2=np.load('2014_04_18_weekend_time.npy')
+y1=np.load('2014_04_13_freq.npy')
+y2=np.load('2014_04_18_weekend_freq.npy')
 x = np.append(x1,x2)
 y = np.append(y1,y2)
 #y = np.append(axial1,axial2)
@@ -200,10 +204,6 @@ y = np.append(y1,y2)
 data_length = (x[-1]-x[0])/3600
 
 print "Data length = ",data_length
-
-np.save('2014_04_18_weekend_freq.npy',y)
-np.savetxt('LLI_final_data.csv',np.transpose(np.array([x-x[0],y])),delimiter=',')
-np.save('2014_04_18_weekend_time.npy',x)
 
 ## assume quantum projection noise
 yerr = np.sqrt(np.arcsin(1/np.sqrt(4*100)/0.50)**2+np.arcsin(1/np.sqrt(4*100)/0.35)**2)/(2*np.pi*ramsey_time)
@@ -259,7 +259,7 @@ params.add('A', value = 0, vary = True) ##cos ### -3 cXZ sin 2 chi: 7 +- 23 mHz
 params.add('B', value = 0, vary = True) ##sin ### -3 cYZ sin 2 chi: 32 +- 56 mHz
 params.add('C', value = 0, vary = True) ##cos2 ### -1.5 (cXX-cYY) sin^2 chi: 15 +- 22 mHz
 params.add('D', value = 0, vary = True) ##sin2 ### -3 cXY sin^2 chi: 8 +- 20 mHz
-#params.add('offset', value = 0.0)
+params.add('offset', value = 0.0)
 
 result = lmfit.minimize(cosine_fit, params, args = (x, y, yerr))
 

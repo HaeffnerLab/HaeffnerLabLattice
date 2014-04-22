@@ -31,7 +31,7 @@ interval = time[1:]-time[0:-1]
 start_bin_size = 200
 smallest_bin_size = min(interval)
 
-
+print "smallest bin size =", smallest_bin_size
 print "Start bin size = ", start_bin_size
 
 ##### Calculate allan deviation ####
@@ -39,18 +39,14 @@ bin_array = []
 true_variance = []
 avar = []
 allan_error_bar = []
-cf = int(start_bin_size/smallest_bin_size)
-#print "Averaging factor = ", cf
  
-for bin_size in np.logspace(0.0,np.log10(max(time)/3.5),num=36):
-    if bin_size<start_bin_size:
-        continue
+for bin_size in np.logspace(np.log10(200.0),np.log10(30000.0),num=20):
     phase_diff = []
-    print "bin_size = ", bin_size
-    #cf = int(bin_size/smallest_bin_size/10.0)+1
+    #print "bin_size = ", bin_size
+    cf = bin_size/smallest_bin_size/19.0+1
     #cf = 1
-    #print "Averaging factor = ", cf
-    for j in range(0,cf):
+    print "Averaging factor = ", cf
+    for j in range(0,int(cf)):
         time_offset = bin_size*j/(cf)
         for i in range(0,int(np.floor(max(time-time_offset)/bin_size))-1):
             time1 = time_offset+bin_size*i
@@ -89,16 +85,16 @@ lmfit.report_errors(params)
 
 print result.redchi
     
-pyplot.plot(bin_array,avar,'o')
-pyplot.errorbar(bin_array,avar,allan_error_bar)
+#pyplot.plot(bin_array,avar,'o')
+pyplot.errorbar(bin_array,avar,allan_error_bar*np.sqrt(result.redchi),fmt='o')
 
 
 ##############################################
 
 x_plot = np.linspace(np.min(x),np.max(x),1000)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 2.0)
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.0, linestyle = '--')
 
-quantum_projection = 2.1/np.sqrt(x_plot)
+quantum_projection = 2.28/np.sqrt(x_plot)
 pyplot.plot(x_plot,quantum_projection,linewidth = 1.0,linestyle = '--')
   
 pyplot.xscale('log')

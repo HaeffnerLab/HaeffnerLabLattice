@@ -75,6 +75,9 @@ if b_field_correction:
 
 x = time
 y = phase/360/ramsey_time
+
+np.save('2014_04_13_time.npy',x)
+np.save('2014_04_13_freq.npy',y)
 ## assume quantum projection noise
 yerr = np.arcsin(1/np.sqrt(4*100)/0.35)/(2*np.pi*ramsey_time)
 
