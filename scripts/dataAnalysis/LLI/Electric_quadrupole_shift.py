@@ -29,8 +29,8 @@ def linear_fit(params , x1, data, err):
 
 #x2 = np.array([0.574,0.726,0.918,1.161,1.353,1.560,1.754,1.998])
 
-#x1 = np.array([176,214.7,248.7,281.6,331])*1000.0*2*np.pi
 x1 = np.array([176,214.7,248.7,281.6,331])
+#x1 = np.array([176,214.7,248.7,281.6,331])
 
 y1 = np.array([305.6,241.3,202.7,181,155.3])
 y1_err = np.array([0.5,0.4,0.5,1.0,0.9])
@@ -45,12 +45,12 @@ calcium_mass = 40 * 1.66e-27
 
 y = y[:]
 x1 = x1[:]
-x1 = x1**2
-#x1 = x1**2*calcium_mass/electron_charge/1000000
+#x1 = x1**2
+x1 = x1**2#*calcium_mass/electron_charge ##converted to V/mm^2
 y_err = y_err[:]
 
 params = lmfit.Parameters()
-params.add('A', value = 0.0)
+params.add('A', value = 1.0)
 params.add('B', value = 0.0)
 
 
@@ -74,8 +74,8 @@ print params['A'].value
 
 pyplot.errorbar(x1,y,y_err,linestyle='None',markersize = 7.0,fmt='o')
 pyplot.plot(np.arange(0,np.max(x1),0.01),linear_model(params,np.arange(0,np.max(x1),0.01)),linewidth=2.0)
-pyplot.xlim((0.0,2))
-pyplot.ylim((0,18))
+#pyplot.xlim((0.0,2))
+#pyplot.ylim((0,18))
 #pyplot.xlabel('Axial trap freq (kHz)')
 #pyplot.xlabel('E-gradient (V/mm^2)')
 #pyplot.ylabel('Oscillation freq (Hz)')

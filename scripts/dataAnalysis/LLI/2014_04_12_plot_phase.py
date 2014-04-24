@@ -39,13 +39,17 @@ data = dv.get().asarray
 time = data[:,0]
 
 ramsey_time = 0.058
-axial = (data[:,12]-np.average(data[:,12]))*1000*0.040*ramsey_time*360 ## convert to phase
+axial = (data[:,12]-np.average(data[:,12]))*1000*0.027*ramsey_time*360 ## convert to phase
 fractional_b_field = (data[:,10]-np.average(data[:,10]))/np.average(data[:,10])
             
 b_field = fractional_b_field*2*8*ramsey_time*360
 
 #time = time-time[0]
-phase = data[:,9]-np.average(data[:,9]) #3,7,9
+#3 = average phase long time
+#7 = average phase short time
+#9 = average phase difference
+dataset = 9
+phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 
 skip = 0
 
@@ -79,10 +83,13 @@ x = time
 y = phase/360/ramsey_time
 yerr = 1/np.sqrt(4*100)
 
+np.save('time_2014_04_12', x)
+np.save('freq_2014_04_12', y)
+
 params = lmfit.Parameters()
 
 params.add('A', value = 0.5)
-params.add('freq', value = 1/(12*60*60), vary = False)
+params.add('freq', value = 1/(11.967*60*60), vary = False)
 params.add('phase', value = 0.0)
 params.add('offset', value = 0.0)
 
