@@ -73,10 +73,10 @@ y_err = np.sqrt(data_y)
 
 params = lmfit.Parameters()
 params.add('amplitude', value = 2800)
-params.add('gamma', value = 24.0, vary = False)
+params.add('gamma', value = 24.0, vary = True)
 params.add('offset', value = 0.016961)
 params.add('beta', value = 1.0)
-params.add('Omega', value = 30.704, vary = False)
+params.add('Omega', value = 30.704, vary = True)
 params.add('B', value = 1.68,min=0)
 params.add('center', value = 180)
 

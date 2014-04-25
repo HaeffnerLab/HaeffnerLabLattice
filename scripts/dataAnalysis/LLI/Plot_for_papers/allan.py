@@ -23,7 +23,7 @@ time = np.load('2014_04_18_weekend_time.npy')
 time = time-time[0]
 
 freq = np.load('2014_04_18_weekend_freq.npy')
-freq_uncorrected = np.load('2014_04_18_weekend_freq_no_phase_correction.npy')
+#freq_uncorrected = np.load('2014_04_18_weekend_freq_no_phase_correction.npy')
 #phase = freq
 phase = freq
 
@@ -74,7 +74,7 @@ x = np.array(bin_array)
 y = np.array(avar)
 yerr = np.array(allan_error_bar)*np.sqrt(2.087)
 
-print x, y, yerr
+#print x, y, yerr
 
 params = lmfit.Parameters()
 
@@ -92,7 +92,7 @@ print result.redchi
 plt = pyplot.figure(0)
 plt.add_subplot(111)
 #plt.add_subplot(111, axisbg='#FFFAFA')
-pyplot.errorbar(x,y,yerr,fmt='o',ecolor = '#003399',elinewidth=2.0, color = "#000066", markersize = 8.0)
+pyplot.errorbar(x,y,yerr,fmt='o',ecolor = '#1F3ABA',elinewidth=2.0, color='#1F3ABA', markersize = 8.0)
 
 
 ##############################################
@@ -103,7 +103,7 @@ pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.3, linestyle = '--',
 #############################################
 
 quantum_projection = 2.28/np.sqrt(x_plot)
-pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#801A00")
+pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#E62F3B")
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])

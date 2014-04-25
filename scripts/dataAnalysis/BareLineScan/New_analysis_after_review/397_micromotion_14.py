@@ -47,7 +47,14 @@ data1_y = data1_y[:-3]
 data1_yerr = data1_yerr[:-3]
 data1_x = data1_x[:-3]
 
-dv.cd('','Experiments','BareLineScan','2013Dec21','1514_36')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1514_36')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1525_04')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1545_50')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1553_20')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1600_21')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1608_05')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1615_13')
+# dv.cd('','Experiments','BareLineScan','2013Dec21','1918_37')
 dv.open(3)
 data2=dv.get().asarray
 
@@ -83,7 +90,7 @@ params = lmfit.Parameters()
 params.add('amplitude', value = 1134530, min = 0)
 #params.add('gamma', value = 30.7)
 params.add('offset', value = 300)
-params.add('beta', value = 0.24, vary=True)
+params.add('beta', value = 1.21, vary=True)
 #params.add('Omega', value = 24.4)
 params.add('B', value = 1.4*0.8,vary=True)
 params.add('center', value = 227)
