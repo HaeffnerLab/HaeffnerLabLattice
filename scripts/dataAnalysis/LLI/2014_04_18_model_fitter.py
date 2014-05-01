@@ -49,7 +49,7 @@ def gaussian_model(params, x):
     A = params['A'].value
     width = params['width'].value
     center=params['center'].value
-    output = A*np.exp(-(x-center)**2/(2*width**2))
+    output = A*np.exp(-0.5*(x-center)**2/(width**2))
     return output
 '''
 define how to compare data to the function
@@ -74,7 +74,7 @@ dataset = 9
 
 b_field_correction = True
 axial_correction = True
-binner = False
+binner = True
 
 
 ######################## DAY 1 start ##############    
@@ -220,9 +220,9 @@ if binner:
     time_offset = x[0]
     x = x-time_offset
     time = time-time_offset
-    time_chunk = 2000
+    time_chunk = 3600
     #bin_size = 5000
-    offset = 2000
+    offset = 3600
     #number_of_bin = int(np.max(time)/bin_size)-1
     number_of_chunk = int(np.max(time)/time_chunk)
     
@@ -251,6 +251,7 @@ if binner:
     y = freq_binned
     yerr = freq_sd_array
 
+print "average sd is ", np.average(yerr)
 ################
 
 params = lmfit.Parameters()
@@ -312,11 +313,11 @@ figure.clf()
 pyplot.plot(x,y,'o')
 pyplot.plot(x_plot,cosine_model(params,x_plot),linewidth = 3.0)
 if binner:
-    pyplot.errorbar(x,y,yerr,fmt='o')
+    pyplot.errorbar(x,y,yerr*np.sqrt(result.redchi),fmt='o')
 
 ### plot residual histogram and fit to gaussian
 
-residual_histogram = np.histogram(residual_array,60)
+residual_histogram = np.histogram(residual_array,bins=100,range=(-0.5,0.5))
 x = residual_histogram[1][:-1]
 y = residual_histogram[0]
 ##

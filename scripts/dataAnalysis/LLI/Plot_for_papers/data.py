@@ -221,7 +221,8 @@ if binner:
     time_offset = x_no_binned[0]
     x_binned = time-time_offset
     time = time-time_offset
-    time_chunk = (x_no_binned[-1]-x_no_binned[0])/22.65
+    #time_chunk = (x_no_binned[-1]-x_no_binned[0])/22.65/2
+    time_chunk = 3600
     #bin_size = 5000
     offset = time_chunk
     #number_of_bin = int(np.max(time)/bin_size)-1
@@ -242,8 +243,7 @@ if binner:
         #print freq_sd
         freq_binned.append(freq_mean)
         freq_sd_array.append(freq_sd)
-        
-        
+
         time_stamp = (i+0.5)*offset
         time_binned.append(time_stamp)
         #time_binned.append((i+1)*bin_size)
@@ -319,7 +319,7 @@ figure = pyplot.figure(0)
 #pyplot.subplot2grid((1,4),(0,0),colspan = 3)
 
 if binner:
-    pyplot.errorbar((x_binned)/xscaling,y_binned,yerr_binned*np.sqrt(1.78),fmt='o',elinewidth = 3.0,zorder=3,ecolor = '#1F3ABA',color='#1F3ABA',markersize = 8.0)
+    pyplot.errorbar((x_binned)/xscaling,y_binned,yerr_binned*np.sqrt(result.redchi),fmt='o',elinewidth = 3.0,zorder=3,ecolor = '#1F3ABA',color='#1F3ABA',markersize = 8.0)
     
 pyplot.plot((x_no_binned-x_no_binned[0])/xscaling,y_no_binned,'o',color='#A0A8B8',markeredgewidth = 0.0, markersize = 5.0,zorder=1)
 pyplot.plot(x_plot/xscaling,cosine_model(params,x_plot),linewidth = 2.0, color='#E62F3B',zorder=2)

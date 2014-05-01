@@ -28,9 +28,10 @@ freq = np.load('2014_04_18_weekend_freq.npy')
 phase = freq
 
 interval = time[1:]-time[0:-1]
+print np.min(interval)
 
 #start_bin_size = max(interval)+1 # choose bin size to have at least one data point
-start_bin_size = 200
+start_bin_size = 100
 smallest_bin_size = min(interval)
 
 print "smallest bin size =", smallest_bin_size
@@ -42,11 +43,11 @@ true_variance = []
 avar = []
 allan_error_bar = []
  
-for bin_size in np.logspace(np.log10(200.0),np.log10(30000.0),num=20):
+for bin_size in np.logspace(np.log10(start_bin_size),np.log10(30000.0),num=20):
     phase_diff = []
     #print "bin_size = ", bin_size
-    cf = bin_size/smallest_bin_size/19.0+1
-    #cf = 1
+    cf = bin_size/smallest_bin_size/5.0+1
+    #cf = bin_size/smallest_bin_size
     print "Averaging factor = ", cf
     for j in range(0,int(cf)):
         time_offset = bin_size*j/(cf)
@@ -92,31 +93,33 @@ print result.redchi
 plt = pyplot.figure(0)
 plt.add_subplot(111)
 #plt.add_subplot(111, axisbg='#FFFAFA')
-pyplot.errorbar(x,y,yerr,fmt='o',ecolor = '#1F3ABA',elinewidth=2.0, color='#1F3ABA', markersize = 8.0)
+pyplot.errorbar(x,y,yerr*np.sqrt(result.redchi),fmt='o',ecolor = '#1F3ABA',elinewidth=2.0, color='#1F3ABA', markersize = 8.0,zorder=3)
 
 
 ##############################################
 
 
 x_plot = np.linspace(np.min(x),np.max(x),1000)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.3, linestyle = '--', color = "#003300")
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.3, linestyle = '--', color = "#003300",zorder=2)
 #############################################
 
-quantum_projection = 2.28/np.sqrt(x_plot)
-pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#E62F3B")
+quantum_projection = 2.3/np.sqrt(x_plot)
+pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#E62F3B",zorder=1)
+quantum_projection = 3.0/np.sqrt(x_plot)
+pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#4DB8B8",zorder=1)
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
     
 ytick = [0.01,0.02,0.03,0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
-xtick = [200,500,1000,2000,5000,10000, 20000, 50000]
+xtick = [100,200,500,1000,2000,5000,10000, 20000, 50000]
 pyplot.xticks(xtick,xtick)
 
 ###
-pyplot.grid(True, which='both')
+pyplot.grid(True, which='both', color='#A8C1A8', linestyle='-', linewidth=0.5)
 ###
-pyplot.ylim([0.01,0.3])
-pyplot.xlim([150,35000])
+pyplot.ylim([0.01,0.4])
+pyplot.xlim([80,35000])
 
 pyplot.show()

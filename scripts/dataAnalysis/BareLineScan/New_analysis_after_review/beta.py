@@ -16,7 +16,8 @@ def beta_model(params, x1):
     
     #beta = np.sqrt(np.abs(A)/(x1)**4+np.abs(B)/(x1-0.596)**4+np.abs(C))
     #beta = np.sqrt(np.abs(A)/(x1)**4+np.abs(B)/(1.244*(x1-0.596))**4+np.abs(C))
-    beta = np.sqrt(np.abs(A)/(x1)**4+np.abs(B)/(1.18*(x1-0.530))**4)#+np.abs(C))#+np.abs(C))
+    #beta = np.sqrt(np.abs(A)/(x1)**4+np.abs(B)/(1.18*(x1-0.530))**4)#+np.abs(C))#+np.abs(C))
+    beta = np.sqrt((A/(x1)**2+B/(1.18*(x1-0.530))**2)**2)
     return beta
 '''
 define how to compare data to the function
@@ -35,19 +36,19 @@ beta = np.array([2.31,1.65,1.22,0.91,0.69,0.46,0.33,0.22])
 
 
 #betaerr_for_fit = np.array([0.02,0.02,0.02,0.04,0.04,0.03,0.07,0.08])+2*beta*np.ones_like(x1)*0.05/x1
-betaerr_for_fit = np.array([0.02,0.02,0.02,0.04,0.04,0.03,0.07,0.08])+2*beta*0.015
+betaerr_for_fit = np.array([0.02,0.02,0.02,0.04,0.04,0.03,0.07,0.08])+2*beta*0.01
 betaerr = np.array([0.02,0.02,0.02,0.04,0.04,0.03,0.07,0.08])
 
 params = lmfit.Parameters()
-params.add('A', value = 1.745)
-params.add('B', value = 0.584)
+params.add('A', value = 0.74,vary=True)
+params.add('B', value = 0.68,vary=True)
 #params.add('C', value = 0.01)
 
 #x = (x1+x2)/2.0
 #xerr = x*0.015
 
 x = x1
-xerr = 0.015*x1
+xerr = 0.01*x1
 
 result = lmfit.minimize(beta_fit, params, args = (x, beta, betaerr_for_fit))
 

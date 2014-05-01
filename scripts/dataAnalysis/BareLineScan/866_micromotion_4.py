@@ -67,7 +67,7 @@ params.add('gamma', value = 22.4, vary = True)
 params.add('offset', value = 0.104)
 params.add('beta', value = 0.02, min=0.01)
 params.add('Omega', value = 30.704, vary = False)
-params.add('B', value = 0.8*1.4, vary= True)
+params.add('B', value = 0.8*1.4, vary= False)
 params.add('center', value = 160)
 
 
