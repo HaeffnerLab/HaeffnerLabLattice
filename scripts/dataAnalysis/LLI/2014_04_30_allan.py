@@ -43,10 +43,10 @@ true_variance = []
 avar = []
 allan_error_bar = []
  
-for bin_size in np.logspace(np.log10(start_bin_size),np.log10(30000.0),num=15):
+for bin_size in np.logspace(np.log10(start_bin_size),np.log10(30000.0),num=20):
     phase_diff = []
     #print "bin_size = ", bin_size
-    cf = bin_size/smallest_bin_size+1
+    cf = bin_size/smallest_bin_size/5.0+1
     #cf = bin_size/smallest_bin_size
     print "Averaging factor = ", cf
     for j in range(0,int(cf)):
@@ -59,7 +59,6 @@ for bin_size in np.logspace(np.log10(start_bin_size),np.log10(30000.0),num=15):
             where2 = np.where((time2<=time)&(time<time3))
             ## skip if there is no data point in the time slice
             if not np.size(phase[where1])*np.size(phase[where2]):
-                print "no data at t = ", time1
                 continue
             mean_phase1 = np.average(phase[where1])
             mean_phase2 = np.average(phase[where2])
@@ -92,11 +91,7 @@ lmfit.report_errors(params)
 print result.redchi
 
 plt = pyplot.figure(0)
-ax = plt.add_subplot(111)
-ax.set_axisbelow(True)
-###
-pyplot.grid(True, which='both', color='#DDE4DD', linestyle='-', linewidth=0.5,zorder=-1)
-###
+plt.add_subplot(111)
 #plt.add_subplot(111, axisbg='#FFFAFA')
 pyplot.errorbar(x,y,yerr*np.sqrt(result.redchi),fmt='o',ecolor = '#1F3ABA',elinewidth=2.0, color='#1F3ABA', markersize = 8.0,zorder=3)
 
@@ -110,19 +105,21 @@ pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.3, linestyle = '--',
 
 quantum_projection = 2.3/np.sqrt(x_plot)
 pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#E62F3B",zorder=1)
-#quantum_projection = 2.7/np.sqrt(x_plot)
-#pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "black",zorder=1)
+quantum_projection = 2.7/np.sqrt(x_plot)
+pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#4DB8B8",zorder=1)
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
     
-ytick = [0.01,0.02,0.03,0.05,0.1,0.2,0.3,0.5]
+ytick = [0.01,0.02,0.03,0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
-xtick = [50,100,200,500,1000,2000,5000,10000, 20000, 50000]
+xtick = [100,200,500,1000,2000,5000,10000, 20000, 50000]
 pyplot.xticks(xtick,xtick)
 
-
-pyplot.ylim([0.01,0.5])
-pyplot.xlim([50,35000])
+###
+pyplot.grid(True, which='both', color='#A8C1A8', linestyle='-', linewidth=0.5)
+###
+pyplot.ylim([0.01,0.4])
+pyplot.xlim([80,35000])
 
 pyplot.show()

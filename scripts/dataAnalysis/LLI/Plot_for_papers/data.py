@@ -310,7 +310,7 @@ print "Correl matrix is = ", correl_matrix
 #lmfit.report_ci(ci)
 xscaling = 3600.0
 x_fit = x_fit-x_fit[0]
-x_plot = np.linspace((x_fit.min()-1000),(x_fit.max()+10000),10000)
+x_plot = np.linspace((x_fit.min()-1000),(x_fit.max()+1000),1000)
 
 ### plot phase data and fit model ###
 figure = pyplot.figure(0)
@@ -319,7 +319,7 @@ figure = pyplot.figure(0)
 #pyplot.subplot2grid((1,4),(0,0),colspan = 3)
 
 if binner:
-    pyplot.errorbar((x_binned)/xscaling,y_binned,yerr_binned*np.sqrt(result.redchi),fmt='o',elinewidth = 3.0,zorder=3,ecolor = '#1F3ABA',color='#1F3ABA',markersize = 8.0)
+    pyplot.errorbar((x_binned)/xscaling,y_binned,yerr_binned*np.sqrt(result.redchi),fmt='o',elinewidth = 3.0,zorder=3,ecolor = '#1F3ABA',color='#1F3ABA',markersize = 5.0)
     
 pyplot.plot((x_no_binned-x_no_binned[0])/xscaling,y_no_binned,'o',color='#A0A8B8',markeredgewidth = 0.0, markersize = 5.0,zorder=1)
 pyplot.plot(x_plot/xscaling,cosine_model(params,x_plot),linewidth = 2.0, color='#E62F3B',zorder=2)
@@ -337,39 +337,39 @@ pyplot.yticks([-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5])
 
 ###############################################
 ### plot residual histogram and fit to gaussian
-figure = pyplot.figure(1)
-residual_histogram = np.histogram(residual_array,bins=40,range=(-1.1,1.1))
-x = residual_histogram[1][:-1]
-y = residual_histogram[0]
-##
-yerr = np.sqrt(residual_histogram[0])
-
-yerr[np.where(yerr<=0.0)] = np.ones_like(yerr[np.where(yerr<=0.0)])
-
-params = lmfit.Parameters()
- 
-params.add('A', value = 140)
-params.add('width', value = 0.2)
-params.add('center', value = 0.0)
-
-
-#figure.add_subplot(122)
-#plot_res = pyplot.subplot2grid((2,6),(0,5),colspan = 1)
-#plot_res = pyplot.subplot2grid((1,4),(0,3),colspan = 1)
-result = lmfit.minimize(gaussian_fit, params, args = (x, y, yerr))
- 
-fit_values  = y + result.residual
-print "--------- Gaussian fit -----------------"
-lmfit.report_errors(params)
- 
-print "Reduced chi-squared Gaussian = ", result.redchi
-
-x_plot = np.linspace(x.min(),x.max(),1000)
-pyplot.hist(residual_array,bins=40,range=(-1.1,1.1),align='mid',color='#A0A8B8')
-#pyplot.errorbar(y,x+0.03,yerr=None,xerr=yerr, linestyle='None',markersize = 0.0,fmt='o',color='black')
-pyplot.plot(x_plot,gaussian_model(params,x_plot),linewidth = 2.0,color='#00246B',linestyle='--')
-pyplot.ylim([0,80])
-pyplot.xlim([-1.5,1.5])
-pyplot.yticks([0,20,40,60,80])
-pyplot.xticks([-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5])
+# figure = pyplot.figure(1)
+# residual_histogram = np.histogram(residual_array,bins=40,range=(-1.1,1.1))
+# x = residual_histogram[1][:-1]
+# y = residual_histogram[0]
+# ##
+# yerr = np.sqrt(residual_histogram[0])
+# 
+# yerr[np.where(yerr<=0.0)] = np.ones_like(yerr[np.where(yerr<=0.0)])
+# 
+# params = lmfit.Parameters()
+#  
+# params.add('A', value = 140)
+# params.add('width', value = 0.2)
+# params.add('center', value = 0.0)
+# 
+# 
+# #figure.add_subplot(122)
+# #plot_res = pyplot.subplot2grid((2,6),(0,5),colspan = 1)
+# #plot_res = pyplot.subplot2grid((1,4),(0,3),colspan = 1)
+# result = lmfit.minimize(gaussian_fit, params, args = (x, y, yerr))
+#  
+# fit_values  = y + result.residual
+# print "--------- Gaussian fit -----------------"
+# lmfit.report_errors(params)
+#  
+# print "Reduced chi-squared Gaussian = ", result.redchi
+# 
+# x_plot = np.linspace(x.min(),x.max(),1000)
+# pyplot.hist(residual_array,bins=40,range=(-1.1,1.1),align='mid',color='#A0A8B8')
+# #pyplot.errorbar(y,x+0.03,yerr=None,xerr=yerr, linestyle='None',markersize = 0.0,fmt='o',color='black')
+# pyplot.plot(x_plot,gaussian_model(params,x_plot),linewidth = 2.0,color='#00246B',linestyle='--')
+# pyplot.ylim([0,80])
+# pyplot.xlim([-1.5,1.5])
+# pyplot.yticks([0,20,40,60,80])
+# pyplot.xticks([-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5])
 pyplot.show()

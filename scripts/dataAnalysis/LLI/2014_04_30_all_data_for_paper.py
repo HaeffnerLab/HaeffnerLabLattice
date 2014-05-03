@@ -336,14 +336,12 @@ pyplot.yticks([-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5])
 #pyplot.subplot2grid((2,6),(1,0),colspan = 5)
 
     
-    
 
 ###############################################
 ### plot residual histogram and fit to gaussian
 figure = pyplot.figure(1)
-#toBin = residual_array_binned
-toBin = residual_array
-bin_number = 40
+toBin = y_no_binned
+bin_number = 50
 #residual_histogram = np.histogram(residual_array,bins=40,range=(np.min(residual_array),np.max(residual_array)))
 residual_histogram = np.histogram(toBin,bins=bin_number,range=(np.min(toBin),np.max(toBin)))
 x = residual_histogram[1][:-1]
@@ -360,9 +358,6 @@ params.add('width', value = 0.2)
 params.add('center', value = 0.0)
 
 
-#figure.add_subplot(122)
-#plot_res = pyplot.subplot2grid((2,6),(0,5),colspan = 1)
-#plot_res = pyplot.subplot2grid((1,4),(0,3),colspan = 1)
 result = lmfit.minimize(gaussian_fit, params, args = (x, y, yerr))
  
 fit_values  = y + result.residual
@@ -372,7 +367,8 @@ lmfit.report_errors(params)
 print "Reduced chi-squared Gaussian = ", result.redchi
 
 x_plot = np.linspace(x.min(),x.max(),1000)
-pyplot.hist(toBin,bins=bin_number,range=(np.min(toBin),np.max(toBin)),align='mid',color='#A0A8B8')
+#pyplot.hist(toBin,bins=bin_number,range=(np.min(toBin),np.max(toBin)),align='mid',color='#A0A8B8')
+pyplot.hist(toBin,bins=bin_number,range=(np.min(toBin),np.max(toBin)),color='#A0A8B8')
 #pyplot.errorbar(y,x+0.03,yerr=None,xerr=yerr, linestyle='None',markersize = 0.0,fmt='o',color='black')
 pyplot.plot(x_plot,gaussian_model(params,x_plot),linewidth = 2.0,color='#00246B',linestyle='--')
 #pyplot.ylim([0,80])
