@@ -23,6 +23,8 @@ time = np.load('2014_04_18_weekend_time.npy')
 time = time-time[0]
 
 freq = np.load('2014_04_18_weekend_freq.npy')
+freq_uncorrected = np.load('2014_04_18_weekend_freq_no_phase_correction.npy')
+#phase = freq
 phase = freq
 
 interval = time[1:]-time[0:-1]
@@ -68,9 +70,11 @@ for bin_size in np.logspace(np.log10(200.0),np.log10(30000.0),num=20):
     M = np.size(phase_diff)
     allan_error_bar.append(avar_result*np.sqrt(0.5/(M)))
     
-x = bin_array
-y = avar
-yerr = allan_error_bar
+x = np.array(bin_array)
+y = np.array(avar)
+yerr = np.array(allan_error_bar)*np.sqrt(2.087)
+
+print x, y, yerr
 
 params = lmfit.Parameters()
 
@@ -84,25 +88,35 @@ fit_values  = y + result.residual
 lmfit.report_errors(params)
 
 print result.redchi
-    
-#pyplot.plot(bin_array,avar,'o')
-pyplot.errorbar(bin_array,avar,allan_error_bar*np.sqrt(result.redchi),fmt='o')
+
+plt = pyplot.figure(0)
+plt.add_subplot(111)
+#plt.add_subplot(111, axisbg='#FFFAFA')
+pyplot.errorbar(x,y,yerr,fmt='o',ecolor = '#003399',elinewidth=2.0, color = "#000066", markersize = 8.0)
 
 
 ##############################################
 
+
 x_plot = np.linspace(np.min(x),np.max(x),1000)
-pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.0, linestyle = '--')
+pyplot.plot(x_plot,allan_model(params,x_plot),linewidth = 1.3, linestyle = '--', color = "#003300")
+#############################################
 
 quantum_projection = 2.28/np.sqrt(x_plot)
-pyplot.plot(x_plot,quantum_projection,linewidth = 1.0,linestyle = '--')
+pyplot.plot(x_plot,quantum_projection,linewidth = 1.3,linestyle = '-',color = "#801A00")
   
 pyplot.xscale('log')
 pyplot.yscale('log',basey = 10,subsy=[2, 3, 4, 5, 6, 7, 8, 9])
     
-ytick = [0.01,0.02,0.03,0.05,0.1,0.2]
+ytick = [0.01,0.02,0.03,0.05,0.1,0.2,0.3]
 pyplot.yticks(ytick,ytick)
 xtick = [200,500,1000,2000,5000,10000, 20000, 50000]
 pyplot.xticks(xtick,xtick)
+
+###
+pyplot.grid(True, which='both')
+###
+pyplot.ylim([0.01,0.3])
+pyplot.xlim([150,35000])
 
 pyplot.show()

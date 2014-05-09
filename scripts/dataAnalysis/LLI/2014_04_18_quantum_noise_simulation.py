@@ -19,10 +19,10 @@ def allan_fit(params , x, data, err):
     return (model - data)/err
 
 result_slope = []
-for i in range(0,100):
+for i in range(0,30):
     ####simulation###
     time = np.linspace(0,80000.0,80000.0/61)
-    phase = np.random.normal(0,0.292,np.size(time))
+    phase = np.random.normal(0,0.350,np.size(time))
     ####
     interval = time[1:]-time[0:-1]
     

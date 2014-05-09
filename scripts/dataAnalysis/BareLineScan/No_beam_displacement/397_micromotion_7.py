@@ -10,7 +10,7 @@ import lmfit
 def micro_model(params, x):
     beta = params['beta'].value
     Omega= params['Omega'].value
-    B = params['B'].value
+    B = params['B'].value*1.40
     gamma=params['gamma'].value
     amplitude=params['amplitude'].value
     offset=params['offset'].value
@@ -19,10 +19,10 @@ def micro_model(params, x):
     flour = np.zeros_like(x)
     
     for n in np.arange(-5,5,1):
-        flour_temp1 = bessel.jv(n,beta)**2/((x+n*Omega-4.0*B/3.0)**2+(gamma/2.0)**2)
-        flour_temp2 = bessel.jv(n,beta)**2/((x+n*Omega-2.0*B/3.0)**2+(gamma/2.0)**2)
-        flour_temp3 = bessel.jv(n,beta)**2/((x+n*Omega+4.0*B/3.0)**2+(gamma/2.0)**2)
-        flour_temp4 = bessel.jv(n,beta)**2/((x+n*Omega+2.0*B/3.0)**2+(gamma/2.0)**2)
+        flour_temp1 = bessel.jv(n,beta)**2/((x+n*Omega-4.0*B/3.0)**2+(gamma/2.0)**2)  ### sigma CG = sqrt(2/3)
+        flour_temp2 = 0.0*bessel.jv(n,beta)**2/((x+n*Omega-2.0*B/3.0)**2+(gamma/2.0)**2)  ### pi CG = sqrt(1/3)
+        flour_temp3 = bessel.jv(n,beta)**2/((x+n*Omega+4.0*B/3.0)**2+(gamma/2.0)**2)  ### sigma
+        flour_temp4 = 0.0*bessel.jv(n,beta)**2/((x+n*Omega+2.0*B/3.0)**2+(gamma/2.0)**2)  ### pi
         flour = flour+amplitude*(flour_temp1+flour_temp2+flour_temp3+flour_temp4)/4.0
     flour=flour+offset
     return flour
@@ -55,20 +55,24 @@ data2_y = data2[:,1]
 data2_yerr = np.sqrt(data2[:,1])
 data2_x = data2[:,0]+38.6
 
-data2_y = data2_y[6:]
-data2_yerr = data2_yerr[6:]
-data2_x = data2_x[6:]
+data2_y = data2_y[:]
+data2_yerr = data2_yerr[:]
+data2_x = data2_x[:]
 
-data_x = np.concatenate((data1_x,data2_x),axis=0)*2.0
-data_y = np.concatenate((data1_y,data2_y),axis=0)
-data_yerr = np.concatenate((data1_yerr,data2_yerr),axis=0)
+# data_x = np.concatenate((data1_x,data2_x),axis=0)*2.0
+# data_y = np.concatenate((data1_y,data2_y),axis=0)
+# data_yerr = np.concatenate((data1_yerr,data2_yerr),axis=0)
+
+data_x = data2_x*2.0
+data_y = data2_y
+data_yerr = data2_yerr
 
 #data_x = data2_x
 #data_y = data2_y
 #data_yerr = data2_yerr
-data_y = data_y/(1+0.015*data_y/7300)
-#y_err = np.sqrt(data_y)
-y_err = data_y*data_y*0.015/7300+np.sqrt(data_y)
+#data_y = data_y/(1+0.015*data_y/7300)
+#y_err = np.sqrt(data_y)*1.02
+y_err = data_y*0.04*0.06+np.sqrt(data_y)
 
 #pyplot.plot(data1_x,data1_y)
 #pyplot.plot(data2_x,data2_y)
@@ -79,13 +83,13 @@ params = lmfit.Parameters()
 params.add('amplitude', value = 1134530, min = 0)
 #params.add('gamma', value = 30.7)
 params.add('offset', value = 300)
-params.add('beta', value = 0.23)
+params.add('beta', value = 0.24, vary=True)
 #params.add('Omega', value = 24.4)
-params.add('B', value = 1.77)
+params.add('B', value = 1.4*0.8,vary=True)
 params.add('center', value = 227)
 
-params.add('gamma', value = 24.0,vary = False)
-params.add('Omega', value = 30.704, vary = False)
+params.add('gamma', value = 24.8,vary = True)
+params.add('Omega', value = 30.704, vary = True)
 
 result = lmfit.minimize(micro_fit, params, args = (data_x, data_y, y_err))
 
@@ -94,7 +98,7 @@ fit_values  = data_y + result.residual
 print result.redchi
 
 lmfit.report_errors(params)
-
+    
 pyplot.plot(np.arange(120,340,0.1)-params['center'],(micro_model(params,np.arange(120,340,0.1))-300)/7, linewidth=1.5)
 pyplot.errorbar(data_x-params['center'],(data_y-300)/7,data_yerr/7,linestyle='None',markersize = 4.0,fmt='o',color='black')
 #pyplot.plot(data_x-params['center'],result.residual)

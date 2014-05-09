@@ -49,6 +49,7 @@ phase = data[:,dataset]-np.average(data[:,dataset]) #3,7,9
 time = np.append(time[where_early],time[where_late]+86400)
 phase = np.append(phase[where_early],phase[where_late])
 b_field = data[:,10]
+print np.average(b_field)
 b_field = np.append(b_field[where_early],b_field[where_late])
 
 
