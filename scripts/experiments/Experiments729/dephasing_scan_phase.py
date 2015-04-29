@@ -4,6 +4,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
+#The following command brinfgs the sequence plotter.
+#from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+
 class dephase_scan_phase(experiment):
     
     name = 'Dephase Scan Phase'
@@ -43,6 +46,14 @@ class dephase_scan_phase(experiment):
             should_continue = self.scan_dur.run(cxn, context)
             if not should_continue:
                 break
+     
+        ####### FROM DYLAN -- PULSE SEQUENCE PLOTTING #########
+        #ttl = self.cxn.pulser.human_readable_ttl()
+        #dds = self.cxn.pulser.human_readable_dds()
+        #channels = self.cxn.pulser.get_channels().asarray
+        #sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        #sp.makePlot()
+        ############################################3
      
     def finalize(self, cxn, context):
         pass

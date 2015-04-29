@@ -14,7 +14,7 @@ class dephasing_subsequence(PulseSequence):
     def configuration(self):
         config = [
                   'dephasing_enable',
-                  'total_excitation_duration', 'preparation_pulse_duration','rabi_excitation_frequency', 'rabi_excitation_amplitude',
+                  'total_excitation_duration', 'c','rabi_excitation_frequency', 'rabi_excitation_amplitude',
                   'dephasing_frequency','dephasing_amplitude', 'dephasing_duration','pulse_gap',
                   'doppler_cooling_frequency_866','doppler_cooling_amplitude_866'
                   
