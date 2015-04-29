@@ -21,6 +21,9 @@ class ms_gate(experiment):
                            ('MolmerSorensen','duration_scan'),
                            ('MolmerSorensen','line_selection'),
                            ('MolmerSorensen','frequency_selection'),
+                           ('MolmerSorensen', 'sideband_selection'),
+                           ('MolmerSorensen', 'detuning'),
+                           ('MolmerSorensen', 'ac_stark_shift'),
 
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -57,6 +60,7 @@ class ms_gate(experiment):
         #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
+        self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
     
     def setup_sequence_parameters(self):
@@ -88,6 +92,23 @@ class ms_gate(experiment):
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
+        
+        ## now program the CW dds boards
+        # Ok so, because we are stupid the single pass AOMs all use the -1 order
+        # so if we make the single pass frequency 81 MHz, we're actually driving -red-
+        # of the carrier by 1 MHz. Keep that in mind until we change it.
+        mode = gate.sideband_selection
+        trap_frequency = self.parameters['TrapFrequencies.' + mode]
+        
+        freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
+        freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
+        amp = WithUnit(-5., 'dBm')
+        self.dds_cw.frequency('0', freq_blue)
+        self.dds_cw.frequency('1', freq_red)
+        self.dds_cw.amplitude('0', amp)
+        self.dds_cw.amplitude('1', amp)
+        self.dds_cw.output('0', True)
+        self.dds_cw.output('1', True)
         
     def run(self, cxn, context):
         self.setup_data_vault()
