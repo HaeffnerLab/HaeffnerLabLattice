@@ -17,16 +17,11 @@ class ms_gate(experiment):
                         ('TrapFrequencies','radial_frequency_2'),
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
-    rabi_required_parameters = [
-                          #('MolmerSorensen','frequency'),
-                          ('MolmerSorensen','amplitude'),
-                          ('MolmerSorensen','phase'),
+    gate_required_parameters = [
                            ('MolmerSorensen','duration_scan'),
-                           ('MolmerSorensen','manual_frequency_729'),
                            ('MolmerSorensen','line_selection'),
                            ('MolmerSorensen','frequency_selection'),
-                           #('RabiFlopping','sideband_selection'),
-                           
+
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
                            ('Crystallization', 'camera_threshold'),
@@ -40,7 +35,7 @@ class ms_gate(experiment):
     
     @classmethod
     def all_required_parameters(cls):
-        parameters = set(cls.rabi_required_parameters)
+        parameters = set(cls.gate_required_parameters)
         parameters = parameters.union(set(cls.trap_frequencies))
         parameters = parameters.union(set(molmer_sorensen_gate.all_required_parameters()))
         parameters = list(parameters)

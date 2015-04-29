@@ -196,20 +196,20 @@ class base_excitation(experiment):
         return ion_state, readouts
     
     def get_states(self, readouts):
-        SS = [1, 1]
-        SD = [1, 0]
-        DS = [0, 1]
-        DD = [0, 0]
+        SS = numpy.array([1, 1])
+        SD = numpy.array([1, 0])
+        DS = numpy.array([0, 1])
+        DD = numpy.array([0, 0])
         
         numSS = 0
         numSD = 0
         numDS = 0
         numDD = 0
         for readout in readouts:
-            if readout == SS: numSS += 1
-            elif readout == SD: numSD += 1
-            elif readout == DS: numDS += 1
-            elif readout == DD: numDD += 1
+            if numpy.array_equal(readout, SS): numSS += 1
+            elif numpy.array_equal(readout, SD): numSD += 1
+            elif numpy.array_equal(readout, DS): numDS += 1
+            elif numpy.array_equal(readout, DD): numDD += 1
         N = float(len(readouts))
         return [numSS/N, numSD/N, numDS/N, numDD/N ]
     
