@@ -46,6 +46,8 @@ class config(object):
                ('lattice.scripts.experiments.Experiments729.dephasing_scan_phase', 'dephase_scan_phase'),
                ('lattice.scripts.experiments.Experiments729.dephasing_scan_phase', 'dephase_scan_phase'),
                ('lattice.scripts.experiments.Experiments729.dephasing_scan_duration_Phase', 'dephase_scan_duration'),
+               ('lattice.scripts.experiments.Gates.ms_gate', 'ms_gate'),
+               ('lattice.scripts.experiments.Gates.ms_scan_ac_stark', 'ms_scan_ac_stark')
                ]
     #dictionary in the format class_name : list of non-conflicting class names
     allowed_concurrent = {

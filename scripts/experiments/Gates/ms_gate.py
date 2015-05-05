@@ -89,6 +89,7 @@ class ms_gate(experiment):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         gate = self.parameters.MolmerSorensen
+        # set the double pass to the carrier frequency
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
@@ -102,13 +103,17 @@ class ms_gate(experiment):
         
         freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
-        amp = WithUnit(-5., 'dBm')
+        amp = WithUnit(-14., 'dBm')
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
+        self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
         self.dds_cw.amplitude('0', amp)
         self.dds_cw.amplitude('1', amp)
+        self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
+        self.dds_cw.output('2', True)
+        time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
     def run(self, cxn, context):
         self.setup_data_vault()
