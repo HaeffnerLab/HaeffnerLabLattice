@@ -2,7 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.EmptySequence import empty_sequence
 from subsequences.OpticalPumping import optical_pumping
-from subsequences.RabiExcitation import rabi_excitation
+from subsequences.RabiExcitation import rabi_excitation_select_channel
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
@@ -18,7 +18,7 @@ class spectrum_rabi(pulse_sequence):
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
-                             rabi_excitation, tomography_readout, turn_off_all, sideband_cooling]
+                             rabi_excitation_select_channel, tomography_readout, turn_off_all, sideband_cooling]
     
     replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
                            }
@@ -33,5 +33,5 @@ class spectrum_rabi(pulse_sequence):
         if p.SidebandCooling.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':p.Heating.background_heating_time}))
-        self.addSequence(rabi_excitation)
+        self.addSequence(rabi_excitation_select_channel)
         self.addSequence(tomography_readout)

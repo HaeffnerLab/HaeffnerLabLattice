@@ -103,7 +103,7 @@ class ms_gate(experiment):
         
         freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
-        amp = WithUnit(-14., 'dBm')
+        amp = WithUnit(-15., 'dBm')
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
         self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
