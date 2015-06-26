@@ -23,6 +23,8 @@ class ms_scan_ac_stark(experiment):
                            ('MolmerSorensen', 'sideband_selection'),
                            ('MolmerSorensen', 'detuning'),
                            ('MolmerSorensen', 'ac_stark_shift_scan'),
+                           ('MolmerSorensen', 'amp_blue'),
+                           ('MolmerSorensen', 'amp_red'),
 
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -55,7 +57,7 @@ class ms_scan_ac_stark(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
@@ -78,7 +80,7 @@ class ms_scan_ac_stark(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('StateProbability',st,'Probability') for st in ['SS', 'SD', 'DS', 'DD'] ]
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['AC Stark Scan'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
@@ -102,11 +104,13 @@ class ms_scan_ac_stark(experiment):
         freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + ac_stark_shift
         amp = WithUnit(-15., 'dBm')
+        amp_blue = self.parameters.MolmerSorensen.amp_blue
+        amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
         self.dds_cw.frequency('2', WithUnit(80., 'MHz'))
-        self.dds_cw.amplitude('0', amp)
-        self.dds_cw.amplitude('1', amp)
+        self.dds_cw.amplitude('0', amp_blue)
+        self.dds_cw.amplitude('1', amp_red)
         self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
@@ -145,7 +149,7 @@ class ms_scan_ac_stark(experiment):
     def do_get_excitation(self, cxn, context, freq):
         self.load_frequency(freq)
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
+        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
         return states
      
     def finalize(self, cxn, context):

@@ -8,9 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class ms_scan_phase(experiment):
+class ms_scan_amp(experiment):
     
-    name = 'MSScanAnalysisPhase'
+    name = 'MS_ScanAmp'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),
@@ -18,14 +18,15 @@ class ms_scan_phase(experiment):
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
     gate_required_parameters = [
-                           ('MolmerSorensen','phase_scan'),
                            ('MolmerSorensen','line_selection'),
                            ('MolmerSorensen','frequency_selection'),
                            ('MolmerSorensen', 'sideband_selection'),
                            ('MolmerSorensen', 'detuning'),
-                           ('MolmerSorensen', 'ac_stark_shift'),
-                           ('MolmerSorensen', 'amp_red'),
+                           ('MolmerSorensen', 'amplitude_scan'),
+                           ('MolmerSorensen', 'amp_to_scan'),
                            ('MolmerSorensen', 'amp_blue'),
+                           ('MolmerSorensen', 'amp_red'),
+                           ('MolmerSorensen', 'ac_stark_shift'),
 
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -44,9 +45,6 @@ class ms_scan_phase(experiment):
         parameters = parameters.union(set(cls.trap_frequencies))
         parameters = parameters.union(set(molmer_sorensen_gate.all_required_parameters()))
         parameters = list(parameters)
-        #removing parameters we'll be overwriting, and they do not need to be loaded
-        parameters.remove(('MolmerSorensen','frequency'))
-        parameters.remove(('MolmerSorensen','analysis_phase'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -59,21 +57,20 @@ class ms_scan_phase(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
     
     def setup_sequence_parameters(self):
-        self.load_frequency()
+        #self.load_frequency()
         gate = self.parameters.MolmerSorensen
         #self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = gate.phase_scan
-        minim = minim['deg']; maxim = maxim['deg']
+        minim,maxim,steps = gate.amp_scan
+        minim = minim['dBm']; maxim = maxim['dBm']
         self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'deg') for pt in self.scan]
-        
+        self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
     def setup_data_vault(self):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -82,12 +79,12 @@ class ms_scan_phase(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('Parity','Parity','Probability')]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
-        self.dv.add_parameter('Window', ['Molmer-Sorensen Phase Scan'], context = self.save_context)
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'dBm')], dependents , context = self.save_context)
+        self.dv.add_parameter('Window', ['Amplitude Scan'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
-    
-    def load_frequency(self):
+
+    def load_frequency(self, new_amplitude):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         gate = self.parameters.MolmerSorensen
@@ -106,8 +103,14 @@ class ms_scan_phase(experiment):
         freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
         amp = WithUnit(-15., 'dBm')
-        amp_blue = self.parameters.MolmerSorensen.amp_blue
-        amp_red = self.parameters.MolmerSorensen.amp_red
+
+        to_scan = self.parameters.MolmerSorensen.amp_to_scan
+        if to_scan == 'amp_red':
+            amp_red = new_amplitude
+            amp_blue = self.parameters.MolmerSorensen.amp_blue
+        if to_scan == 'amp_blue':
+            amp_red = self.parameters.MolmerSorensen.amp_red
+            amp_blue = new_amplitude
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
         self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
@@ -118,25 +121,25 @@ class ms_scan_phase(experiment):
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
-        
+
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
-        for i,phi in enumerate(self.scan):
+        for i,amp in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            parity = self.get_parity_crystallizing(cxn, context, phi)
-            if parity is None: break 
-            submission = [phi['deg']]
-            submission.append(parity)
+            excitation = self.get_excitation_crystallizing(cxn, context, amp)
+            if excitation is None: break 
+            submission = [freq['kHz']]
+            submission.extend(excitation)
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
-    
-    def get_parity_crystallizing(self, cxn, context, phi):
+
+    def get_excitation_crystallizing(self, cxn, context, amp):
         # right now don't crystallize because I'm not sure if it works
-        parity = self.do_get_parity(cxn, context, phi)
+        excitation = self.do_get_excitation(cxn, context, amp)
         #if self.parameters.Crystallization.auto_crystallization:
-        #    initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
+    #    initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         #    #if initially melted, redo the point
         #    while initally_melted:
         #        if not got_crystallized:
@@ -146,25 +149,14 @@ class ms_scan_phase(experiment):
         #            if should_stop: return None
         #        excitation = self.do_get_excitation(cxn, context, duration)
         #        initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
-        return parity
+        return excitation
     
-    def do_get_parity(self, cxn, context, phi):
-        self.load_frequency()
-        self.parameters['MolmerSorensen.analysis_phase'] = phi
+    def do_get_excitation(self, cxn, context, amp):
+        self.load_frequency(amp)
         self.excite.set_parameters(self.parameters)
-        excitations, readouts = self.excite.run(cxn, context)
-        parity = self.compute_parity(readouts)
-        return parity
+        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        return states
 
-    def compute_parity(self, readouts):
-        '''
-        computes the parity of the provided readouts
-        '''
-        #print readouts
-        correlated_readout = readouts[:,0]+readouts[:,1]
-        parity = (correlated_readout % 2 == 0).mean() - (correlated_readout % 2 == 1).mean()
-        return parity
-     
     def finalize(self, cxn, context):
         #self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
         self.excite.finalize(cxn, context)
@@ -181,6 +173,6 @@ class ms_scan_phase(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = ms_scan_phase(cxn = cxn)
+    exprt = ms_scan_amp(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

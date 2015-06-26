@@ -24,6 +24,8 @@ class ms_gate(experiment):
                            ('MolmerSorensen', 'sideband_selection'),
                            ('MolmerSorensen', 'detuning'),
                            ('MolmerSorensen', 'ac_stark_shift'),
+                           ('MolmerSorensen', 'amp_red'),
+                           ('MolmerSorensen', 'amp_blue'),
 
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -80,7 +82,7 @@ class ms_gate(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('StateProbability',st,'Probability') for st in ['SS', 'SD', 'DS', 'DD'] ]
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Gate'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
@@ -104,11 +106,13 @@ class ms_gate(experiment):
         freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
         amp = WithUnit(-15., 'dBm')
+        amp_blue = self.parameters.MolmerSorensen.amp_blue
+        amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
         self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
-        self.dds_cw.amplitude('0', amp)
-        self.dds_cw.amplitude('1', amp)
+        self.dds_cw.amplitude('0', amp_blue)
+        self.dds_cw.amplitude('1', amp_red)
         self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
@@ -148,11 +152,11 @@ class ms_gate(experiment):
         self.load_frequency()
         self.parameters['MolmerSorensen.duration'] = duration
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
+        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
         return states
      
     def finalize(self, cxn, context):
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

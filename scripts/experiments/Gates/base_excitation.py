@@ -26,9 +26,11 @@ class base_excitation(experiment):
                             
                             ('StateReadout', 'repeat_each_measurement'),
                             ('StateReadout', 'state_readout_threshold'),
+                            ('StateReadout', 'threshold_list'),
 
                             ('StateReadout', 'use_camera_for_readout'),
                             ('StateReadout', 'state_readout_duration'),
+                            ('StateReadout', 'pmt_mode'),
                             
                             ('IonsOnCamera','ion_number'),
                             ('IonsOnCamera','vertical_min'),
@@ -73,6 +75,8 @@ class base_excitation(experiment):
         if self.use_camera:
             self.initialize_camera(cxn)
             
+        self.pmt_mode = self.parameters.StateReadout.pmt_mode
+
     def initialize_camera(self, cxn):
         self.total_camera_confidences = []
         p = self.parameters.IonsOnCamera
@@ -166,11 +170,15 @@ class base_excitation(experiment):
             readouts = self.pulser.get_readout_counts().asarray
             self.save_data(readouts)            
             if len(readouts):
-                perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+                if self.pmt_mode == 'simple': exci = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
+                if self.pmt_mode == 'number_dark': exci, states = self.count_dark(readouts)
             else:
                 #got no readouts
-                perc_excited = -1.0
-            ion_state = [perc_excited]
+                exci = -1.0
+            if readout_mode == 'excitations': 
+                ion_state = [exci]
+            elif readout_mode == 'num_excited':
+                ion_state = states
 #             print readouts
         else:
             #get the percentage of excitation using the camera state readout
@@ -188,6 +196,9 @@ class base_excitation(experiment):
             readouts, confidences = self.fitter.state_detection(images)
             if readout_mode == 'excitations':
                 ion_state = 1 - readouts.mean(axis = 0)
+            elif readout_mode == 'num_excited':
+                states = self.get_states(readouts)
+                ion_state = [states[0], states[1] + states[2], states[3]] # [SS, SD + DS, DD]
             elif readout_mode == 'states': # 
                 ion_state = self.get_states(readouts) # measure in the SS, SD, DS, DD basis
             #useful for debugging, saving the images
@@ -213,6 +224,19 @@ class base_excitation(experiment):
         N = float(len(readouts))
         return [numSS/N, numSD/N, numDS/N, numDD/N ]
     
+
+    def count_dark(self, readouts):
+        thresholds = self.parameters.StateReadout.threshold_list
+        thresholds.append(0)
+        thresholds = sorted(thresholds)
+        num_ions = len(thresholds) - 1
+        binned = np.histogram(readouts, bins=thresholds)[0]
+        N = float(len(readouts))
+        binned = binned/N
+        mean = np.dot(binned, range(N)) # avg number of ions dark
+        return mean, binned
+        
+
     @property
     def output_size(self):
         if self.use_camera:
