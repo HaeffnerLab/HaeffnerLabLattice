@@ -59,7 +59,7 @@ class ms_gate(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
@@ -156,7 +156,7 @@ class ms_gate(experiment):
         return states
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

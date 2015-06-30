@@ -72,6 +72,8 @@ class base_excitation(experiment):
         self.setup_initial_switches()
         self.setup_data_vault()
         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        import IPython
+        IPython.embed()
         if self.use_camera:
             self.initialize_camera(cxn)
             
@@ -226,14 +228,20 @@ class base_excitation(experiment):
     
 
     def count_dark(self, readouts):
+        import IPython
         thresholds = self.parameters.StateReadout.threshold_list
-        thresholds.append(0)
+        thresholds = thresholds[1]
+        #thresholds.append(0)
         thresholds = sorted(thresholds)
-        num_ions = len(thresholds) - 1
-        binned = np.histogram(readouts, bins=thresholds)[0]
+        print numpy.array(readouts)
+        num_ions = len(thresholds)
+        print thresholds
+        binned = numpy.histogram(readouts, bins=[0]+thresholds + [5000])[0]
+        #IPython.embed()
+        print binned
         N = float(len(readouts))
         binned = binned/N
-        mean = np.dot(binned, range(N)) # avg number of ions dark
+        mean = numpy.dot(binned, range(num_ions+1)) # avg number of ions dark
         return mean, binned
         
 

@@ -58,7 +58,7 @@ class base_excitation(experiment):
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
         return params
     
-    def initialize(self, cxn, context, ident):
+    def initialize(self, cxn, context, ident, use_camera_override=None):
         self.pulser = cxn.pulser
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
@@ -70,6 +70,8 @@ class base_excitation(experiment):
         self.setup_initial_switches()
         self.setup_data_vault()
         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        if use_camera_override != None:
+            self.use_camera=use_camera_override
         if self.use_camera:
             self.initialize_camera(cxn)
             

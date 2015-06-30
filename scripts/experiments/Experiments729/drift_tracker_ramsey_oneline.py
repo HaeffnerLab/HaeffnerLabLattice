@@ -17,6 +17,7 @@ class drift_tracker_ramsey_oneline(experiment):
                            ('DriftTrackerRamsey','detuning'),
                            ('DriftTrackerRamsey','readouts'),
                            ('DriftTrackerRamsey','optical_pumping_enable_DT'),
+                           ('DriftTrackerRamsey','use_camera_for_readout'),       
                            
                            ('StateReadout','camera_primary_ion'),
                            ('StateReadout','use_camera_for_readout'),                 
@@ -67,10 +68,11 @@ class drift_tracker_ramsey_oneline(experiment):
         return parameters
     
     def initialize(self, cxn, context, ident):
+        use_camera = self.parameters.DriftTrackerRamsey.use_camera_for_readout 
         self.ident = ident
         self.drift_tracker = cxn.sd_tracker
         self.excitation = self.make_experiment(excitation_ramsey)
-        self.excitation.initialize(cxn, context, ident)
+        self.excitation.initialize(cxn, context, ident, use_camera_override=use_camera)
         self.phases = [WithUnit(90.0, 'deg'), WithUnit(-90.0, 'deg')]
         self.dv = cxn.data_vault
         
@@ -112,6 +114,7 @@ class drift_tracker_ramsey_oneline(experiment):
                                            'Excitation_729.rabi_excitation_amplitude':dt.amplitude,
                                            'Excitation_729.rabi_excitation_frequency':frequency,
                                            'Tomography.iteration':0.0,
+                                           'StateReadout.use_camera_for_readout':dt.use_camera_for_readout,
                                            'StateReadout.repeat_each_measurement':dt.readouts,
                                            'SidebandCooling.sideband_cooling_enable':False,
                                            'OpticalPumping.optical_pumping_enable':dt.optical_pumping_enable_DT,
@@ -125,6 +128,8 @@ class drift_tracker_ramsey_oneline(experiment):
             else:
                 primary_ion = int(self.parameters.StateReadout.camera_primary_ion)
                 excitation_array, readout = self.excitation.run(cxn, context)
+                import IPython
+                #IPython.embed()
                 excitation = excitation_array[primary_ion]
             excitations.append(excitation)
         print excitations

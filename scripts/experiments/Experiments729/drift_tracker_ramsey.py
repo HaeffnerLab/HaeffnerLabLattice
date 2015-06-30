@@ -15,6 +15,7 @@ class drift_tracker_ramsey(experiment):
                            ('DriftTrackerRamsey','line_2_pi_time'),
                            ('DriftTrackerRamsey','line_2_amplitude'),
                            ('DriftTrackerRamsey','error_sensitivity'),
+                           ('DriftTrackerRamsey','use_camera_for_readout'),
                            ]
 
     @classmethod
@@ -45,12 +46,14 @@ class drift_tracker_ramsey(experiment):
                                        'DriftTrackerRamsey.pi_time':ramsey_dt.line_1_pi_time,
                                        'DriftTrackerRamsey.amplitude':ramsey_dt.line_1_amplitude,
                                        'DriftTrackerRamsey.detuning':WithUnit(0,'Hz'),
+                                       'StateReadout.use_camera_for_readout':ramsey_dt.use_camera_for_readout,
                                        })
         replace_2 = TreeDict.fromdict({
                                        'DriftTrackerRamsey.line_selection':dt.line_selection_2,
                                        'DriftTrackerRamsey.pi_time':ramsey_dt.line_2_pi_time,
                                        'DriftTrackerRamsey.amplitude':ramsey_dt.line_2_amplitude,
-                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')
+                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz'),
+                                       'StateReadout.use_camera_for_readout':ramsey_dt.use_camera_for_readout,
                                        })
         
         replace_1,replace_2 = np.random.permutation([replace_1,replace_2])
