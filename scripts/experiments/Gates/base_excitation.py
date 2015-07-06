@@ -72,8 +72,6 @@ class base_excitation(experiment):
         self.setup_initial_switches()
         self.setup_data_vault()
         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
-        import IPython
-        IPython.embed()
         if self.use_camera:
             self.initialize_camera(cxn)
             

@@ -68,7 +68,7 @@ class drift_tracker_ramsey_oneline(experiment):
         return parameters
     
     def initialize(self, cxn, context, ident):
-        use_camera = self.parameters.DriftTrackerRamsey.use_camera_for_readout 
+        use_camera = self.parameters.DriftTrackerRamsey.use_camera_for_readout
         self.ident = ident
         self.drift_tracker = cxn.sd_tracker
         self.excitation = self.make_experiment(excitation_ramsey)
