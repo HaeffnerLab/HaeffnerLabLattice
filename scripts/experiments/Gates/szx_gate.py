@@ -8,7 +8,7 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class szx_gate(experiment):
+class szx(experiment):
     
     name = 'SZXGate'
 
@@ -47,7 +47,7 @@ class szx_gate(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('SZX','frequency'))
-        parameters.remove(('SZX','duration'))
+        #parameters.remove(('SZX','szx_duration'))
         return parameters
 
     def initialize(self, cxn, context, ident):
@@ -64,7 +64,7 @@ class szx_gate(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
-        self.save_context = cxn.context()
+        self.data_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
         self.load_frequency()
@@ -98,6 +98,7 @@ class szx_gate(experiment):
         gate = self.parameters.SZX
         # set the double pass to the carrier frequency
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
+        frequency = frequency - gate.ac_stark_shift/2. # AC Stark Shift should be in the opposite direction on the double pass right??
         #trap = self.parameters.TrapFrequencies
         self.parameters['SZX.frequency'] = frequency
         
@@ -108,8 +109,8 @@ class szx_gate(experiment):
         mode = gate.sideband_selection
         trap_frequency = self.parameters['TrapFrequencies.' + mode]
         
-        freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
+        freq_blue = WithUnit(80., 'MHz') - trap_frequency/2. - gate.detuning + gate.ac_stark_shift
+        freq_red = WithUnit(80., 'MHz') + trap_frequency/2. + gate.ac_stark_shift
         amp = WithUnit(-15., 'dBm')
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
@@ -134,7 +135,7 @@ class szx_gate(experiment):
             if excitation is None: break 
             submission = [duration['us']]
             submission.extend(excitation)
-            self.dv.add(submission, context = self.save_context)
+            self.dv.add(submission, context = self.data_save_context)
             self.update_progress(i)
     
     def get_excitation_crystallizing(self, cxn, context, duration):
@@ -155,13 +156,13 @@ class szx_gate(experiment):
     
     def do_get_excitation(self, cxn, context, duration):
         self.load_frequency()
-        self.parameters['SZX.duration'] = duration
+        self.parameters['SZX.szx_duration'] = duration
         self.excite.set_parameters(self.parameters)
         exc, readouts = self.excite.run(cxn, context)
         return exc
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):
@@ -176,7 +177,7 @@ class szx_gate(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = szx_gate(cxn = cxn)
+    exprt = szx(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
 

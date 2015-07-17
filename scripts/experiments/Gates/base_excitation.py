@@ -157,7 +157,7 @@ class base_excitation(experiment):
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
-#         self.plot_current_sequence(cxn)
+        #self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)
@@ -236,7 +236,7 @@ class base_excitation(experiment):
         print thresholds
         binned = numpy.histogram(readouts, bins=[0]+thresholds + [5000])[0]
         #IPython.embed()
-        print binned
+        #print binned
         N = float(len(readouts))
         binned = binned/N
         mean = numpy.dot(binned, range(num_ions+1)) # avg number of ions dark

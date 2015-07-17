@@ -73,7 +73,7 @@ class ms_scan_phase(experiment):
         minim = minim['deg']; maxim = maxim['deg']
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'deg') for pt in self.scan]
-        
+    '''       
     def setup_data_vault(self):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -83,6 +83,20 @@ class ms_scan_phase(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
         dependents = [('Parity','Parity','Probability')]
+        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        self.dv.add_parameter('Window', ['Molmer-Sorensen Phase Scan'], context = self.save_context)
+        self.dv.add_parameter('plotLive', True, context = self.save_context)
+    '''
+        
+    def setup_data_vault(self):
+        localtime = time.localtime()
+        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        directory = ['','Experiments']
+        directory.extend([self.name])
+        directory.extend(dirappend)
+        self.dv.cd(directory ,True, context = self.save_context)
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Phase Scan'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
@@ -128,7 +142,8 @@ class ms_scan_phase(experiment):
             parity = self.get_parity_crystallizing(cxn, context, phi)
             if parity is None: break 
             submission = [phi['deg']]
-            submission.append(parity)
+            #submission.append(parity)
+            submission.extend(parity)
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
     
@@ -152,9 +167,12 @@ class ms_scan_phase(experiment):
         self.load_frequency()
         self.parameters['MolmerSorensen.analysis_phase'] = phi
         self.excite.set_parameters(self.parameters)
-        excitations, readouts = self.excite.run(cxn, context)
-        parity = self.compute_parity(readouts)
-        return parity
+        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        #print states
+        return states
+        #excitations, readouts = self.excite.run(cxn, context)
+        #parity = self.compute_parity(readouts)
+        #return parity
 
     def compute_parity(self, readouts):
         '''

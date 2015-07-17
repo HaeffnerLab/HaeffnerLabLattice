@@ -63,6 +63,7 @@ class blue_heating(pulse_sequence):
                           }
     
     def sequence(self):
+        print "blue heating"
         h = self.parameters.Heating
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':h.blue_heating_delay_before}))
         self.addSequence(local_blue_heating)

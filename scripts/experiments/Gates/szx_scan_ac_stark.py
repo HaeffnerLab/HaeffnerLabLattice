@@ -105,8 +105,8 @@ class szx_scan_ac_stark(experiment):
         mode = gate.sideband_selection
         trap_frequency = self.parameters['TrapFrequencies.' + mode]
         
-        freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + ac_stark_shift
+        freq_blue = WithUnit(80., 'MHz') - trap_frequency/2. - gate.detuning + ac_stark_shift
+        freq_red = WithUnit(80., 'MHz') + trap_frequency/2. + ac_stark_shift
         amp = WithUnit(-15., 'dBm') # carrier amplitude
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red

@@ -50,6 +50,8 @@ class config(object):
                ('lattice.scripts.experiments.Gates.ms_scan_ac_stark', 'ms_scan_ac_stark'),
                ('lattice.scripts.experiments.Gates.ms_scan_phase', 'ms_scan_phase'),
                ('lattice.scripts.experiments.Gates.ms_scan_amp', 'ms_scan_amp'),
+               ('lattice.scripts.experiments.Gates.szx_gate', 'szx'),
+               ('lattice.scripts.experiments.Gates.szx_rabi_flop', 'szx_rabi_flop'),
                ]
     #dictionary in the format class_name : list of non-conflicting class names
     allowed_concurrent = {

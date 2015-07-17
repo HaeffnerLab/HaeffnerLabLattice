@@ -21,6 +21,7 @@ nodeDict = {
 								'Agilent E3633A',
 								'Rigol DG4062 Server',
 								'Fitter',
+								'DDS_CW',
 								],
 			}
 #connect to LabRAD

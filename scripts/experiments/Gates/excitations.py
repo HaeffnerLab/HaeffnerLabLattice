@@ -9,3 +9,8 @@ class szx_gate(base_excitation):
     from lattice.scripts.PulseSequences.szx_1ion import szx_1ion
     name = 'SZXGate'
     pulse_sequence = szx_1ion
+
+class szx_rabi(base_excitation):
+    from lattice.scripts.PulseSequences.szx_rabi import szx_rabi as szxr
+    name = 'SZXRabiFlop'
+    pulse_sequence = szxr

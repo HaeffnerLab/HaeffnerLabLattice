@@ -1,6 +1,6 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from RabiExcitation import rabi_excitation, rabi_excitation_no_offset
-from BlueHeating import local_blue_heating
+from BlueHeating import blue_heating
 from EmptySequence import empty_sequence
 from treedict import TreeDict
 from labrad.units import WithUnit
@@ -34,6 +34,6 @@ class ramsey_dephase_excitation(pulse_sequence):
         if spacing < WithUnit(10.0, 'us'): raise Exception("Ramsey Dephase, gap is too short to accomodate dephasing")
         self.addSequence(rabi_excitation, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':rd.first_pulse_duration}))
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':spacing}))
-        self.addSequence(local_blue_heating, heating_replace)
+        self.addSequence(blue_heating, heating_replace)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':spacing}))
         self.addSequence(rabi_excitation_no_offset, TreeDict.fromdict({'Excitation_729.rabi_excitation_duration':rd.second_pulse_duration}))

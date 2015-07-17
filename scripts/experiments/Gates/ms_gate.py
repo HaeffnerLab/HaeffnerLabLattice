@@ -153,6 +153,7 @@ class ms_gate(experiment):
         self.parameters['MolmerSorensen.duration'] = duration
         self.excite.set_parameters(self.parameters)
         states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        print states
         return states
      
     def finalize(self, cxn, context):

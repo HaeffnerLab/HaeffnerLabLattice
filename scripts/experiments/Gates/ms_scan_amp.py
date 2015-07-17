@@ -67,7 +67,7 @@ class ms_scan_amp(experiment):
         #self.load_frequency()
         gate = self.parameters.MolmerSorensen
         #self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = gate.amp_scan
+        minim,maxim,steps = gate.amplitude_scan
         minim = minim['dBm']; maxim = maxim['dBm']
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
@@ -130,7 +130,7 @@ class ms_scan_amp(experiment):
             if should_stop: break
             excitation = self.get_excitation_crystallizing(cxn, context, amp)
             if excitation is None: break 
-            submission = [freq['kHz']]
+            submission = [amp['dBm']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)

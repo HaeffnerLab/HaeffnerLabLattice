@@ -17,7 +17,7 @@ class szx_ramsey(pulse_sequence):
 
         p = self.parameters.SZX
         frequency_advance_duration = WithUnit(6, 'us')
-        buf = WithUnit(2, 'us') # a little extra time to account for TTL delays
+        buf = WithUnit(5., 'us') # a little extra time to account for TTL delays
         ampl_off = WithUnit(-63., 'dBm')
 
         car_amp = p.carrier_amplitude
@@ -32,16 +32,16 @@ class szx_ramsey(pulse_sequence):
         
         # carrier pi/2 pulse
         self.addDDS('729', self.start + frequency_advance_duration, t_pi2, p.frequency, car_amp, p0)
-        te = self.start + frequency_advance_duration + t_pi2)
+        te = self.start + frequency_advance_duration + t_pi2 + buf
         
         # now bichromatic pulse
         self.addTTL('bichromatic_1', te, gate_duration + 2*buf)
-        self.addDDS('729', te + buf, gate_duration, p.frequency, szx_amp)
+        self.addDDS('729', te + buf, gate_duration, p.frequency, szx_amp, p0)
         te = te + gate_duration + 2*buf
 
         # second carrier pulse
-        self.addDDS('729', te, t_pi2, p.frequency, car_amp, p2)
-        self.end = te + t_pi2
+        self.addDDS('729', te+buf, t_pi2, p.frequency, car_amp, p2)
+        self.end = te + buf + t_pi2
 
 class szx(pulse_sequence):
 
@@ -55,12 +55,14 @@ class szx(pulse_sequence):
 
         p = self.parameters.SZX
         frequency_advance_duration = WithUnit(6, 'us')
-        buf = WithUnit(2, 'us') # a little extra time to account for TTL delays
+        buf = WithUnit(5, 'us') # a little extra time to account for TTL delays
         ampl_off = WithUnit(-63., 'dBm')
 
         szx_amp = p.szx_amplitude
         gate_duration = p.szx_duration
-
+        
         self.addDDS('729', self.start, frequency_advance_duration, p.frequency, ampl_off)
-        self.addDDS('729', self.start + frequency_advance_duration, gate_duration, p.frequency, szx_amp)
-        self.end = self.start + frequency_advance_duration + gate_duration
+        te = self.start + frequency_advance_duration
+        self.addTTL('bichromatic_1', te, gate_duration + 2*buf)
+        self.addDDS('729', te , gate_duration, p.frequency, szx_amp)
+        self.end = te + gate_duration + buf
