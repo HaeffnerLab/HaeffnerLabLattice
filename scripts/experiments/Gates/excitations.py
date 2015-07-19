@@ -14,3 +14,8 @@ class szx_rabi(base_excitation):
     from lattice.scripts.PulseSequences.szx_rabi import szx_rabi as szxr
     name = 'SZXRabiFlop'
     pulse_sequence = szxr
+
+class vaet(base_excitation):
+    from lattice.scripts.PulseSequences.vaet_interaction import vaet_interaction as v
+    name = 'VAET'
+    pulse_sequence = v
