@@ -114,15 +114,15 @@ class szx(experiment):
         amp = WithUnit(-15., 'dBm')
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
-        self.dds_cw.frequency('0', freq_blue)
-        self.dds_cw.frequency('1', freq_red)
-        self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
-        self.dds_cw.amplitude('0', amp_blue)
-        self.dds_cw.amplitude('1', amp_red)
-        self.dds_cw.amplitude('2', amp)
-        self.dds_cw.output('0', True)
-        self.dds_cw.output('1', True)
-        self.dds_cw.output('2', True)
+        self.dds_cw.frequency('3', freq_blue)
+        self.dds_cw.frequency('4', freq_red)
+        self.dds_cw.frequency('5', WithUnit(80., 'MHz')) # for driving the carrier
+        self.dds_cw.amplitude('3', amp_blue)
+        self.dds_cw.amplitude('4', amp_red)
+        self.dds_cw.amplitude('5', amp)
+        self.dds_cw.output('3', True)
+        self.dds_cw.output('4', True)
+        self.dds_cw.output('5', True)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
 
     def run(self, cxn, context):

@@ -52,7 +52,7 @@ class vaet_scan_delta(experiment):
     def all_required_parameters(cls):
         parameters = set(cls.gate_required_parameters)
         parameters = parameters.union(set(cls.trap_frequencies))
-        parameters = parameters.union(set(molmer_sorensen_gate.all_required_parameters()))
+        parameters = parameters.union(set(vaet.all_required_parameters()))
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('VAET','frequency'))
@@ -60,7 +60,7 @@ class vaet_scan_delta(experiment):
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(molmer_sorensen_gate)
+        self.excite = self.make_experiment(vaet)
         self.excite.initialize(cxn, context, ident)
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
@@ -99,7 +99,7 @@ class vaet_scan_delta(experiment):
         #reloads trap frequencies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         ms = self.parameters.MolmerSorensen
-        szz = self.parameters.SZX
+        szx = self.parameters.SZX
         vaet = self.parameters.VAET
         # set the double pass to the carrier frequency
         frequency = cm.frequency_from_line_selection('auto', WithUnit(0, 'kHz'), vaet.line_selection, self.drift_tracker)

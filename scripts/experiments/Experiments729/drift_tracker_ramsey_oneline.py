@@ -132,6 +132,7 @@ class drift_tracker_ramsey_oneline(experiment):
                 #IPython.embed()
                 excitation = excitation_array[primary_ion]
             excitations.append(excitation)
+        print "exc"
         print excitations
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning
