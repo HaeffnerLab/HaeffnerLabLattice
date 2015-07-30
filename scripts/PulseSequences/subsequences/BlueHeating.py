@@ -44,6 +44,10 @@ class local_blue_heating(pulse_sequence):
         h = self.parameters.Heating
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
+        
+        import boerge_tools
+        boerge_tools.dump_keys(h)
+        
         #make sure light turns on immediately with no delay
         repump_duration = frequency_advance_duration + h.blue_heating_duration + h.blue_heating_repump_additional
         self.addDDS('radial',self.start, frequency_advance_duration, h.local_blue_heating_frequency_397, ampl_off)
@@ -63,7 +67,7 @@ class blue_heating(pulse_sequence):
                           }
     
     def sequence(self):
-        print "blue heating"
+        #print "blue heating"
         h = self.parameters.Heating
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':h.blue_heating_delay_before}))
         self.addSequence(local_blue_heating)

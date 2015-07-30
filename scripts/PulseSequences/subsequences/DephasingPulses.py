@@ -77,6 +77,16 @@ class dephasing_pulses(pulse_sequence):
                                              'Heating.blue_heating_duration':rd.dephasing_duration,
                                              'Heating.blue_heating_repump_additional':WithUnit(5, 'us')
                                              })
+        #import IPython
+        #IPython.embed()
+        import boerge_tools
+        print "First pulse:"
+        boerge_tools.dump_keys(replace_preparation)
+        print "Empty seq:"
+        print p.evolution_ramsey_time
+        print "Second Pulse:"
+        boerge_tools.dump_keys(evolution_pulse)        
+        
         self.addSequence(rabi_excitation, replacement_dict = replace_preparation)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':p.evolution_ramsey_time}))
         self.addSequence(blue_heating, replace_preparation)

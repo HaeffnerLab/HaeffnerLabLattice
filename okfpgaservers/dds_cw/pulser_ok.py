@@ -3,10 +3,10 @@
 '''
 ### BEGIN NODE INFO
 [info]
-name = Pulser
+name = DDS_CW
 version = 1.2
 description =
-instancename = Pulser
+instancename = DDS_CW
 
 [startup]
 cmdline = %PYTHON% %FILE%

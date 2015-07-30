@@ -123,40 +123,40 @@ class dephase_scan_duration(experiment):
         self.data_vault_new_trace()
         self.setup_sequence_parameters()
         for i,interaction_duration in enumerate(self.scan_t):
-			second_pulse_dur = min(self.max_second_pulse, interaction_duration)
-			ramsey_time = max(WithUnit(0,'us'), interaction_duration - self.max_second_pulse)
-			p.evolution_ramsey_time = ramsey_time
-			p.evolution_pulses_duration = second_pulse_dur
-			N = int(p.analysis_ion_number) # index from 0
-			print N
-			#-------------------- Phase loop
-			submission = [interaction_duration['us']] #This is the time
-			phase_list = []
-			for j,interaction_phase in enumerate(self.scan_phi):
-				should_stop = self.pause_or_stop()
-				if should_stop:
-					return False
-				p.evolution_pulses_phase = interaction_phase #added for the phase steps
-				self.excite.set_parameters(self.parameters)
-				excitation, readout = self.excite.run(cxn, context)
-				# excitation looks like [ion1 excit, ion2 ex, ... ]
-				# pull out just the ion readout we care about with excitation[N]
-				phase_list.append(excitation[N]) # only look at the excitation for the ion we readout
-				
-			submission.extend(phase_list) # The excitation is attached to the time now in a second column (?)
-			self.dv.add(submission, context = self.data_save_context) #Saving to data file where submission now includes the time and excitation
-			
-			# now have submitted raw data, save contrast for online analysis
-			try:
-				contrast = (max(phase_list) - min(phase_list))/(max(phase_list) + min(phase_list)) # will fail with 0 excitation
-			except:
-				contrast = 0 # in case there's no excitation
-			contrast_submission = [interaction_duration['us'], contrast]
-			self.dv.add(contrast_submission, context = self.contrast_save_context)
-			
-			self.update_progress(i)
+            second_pulse_dur = min(self.max_second_pulse, interaction_duration)
+            ramsey_time = max(WithUnit(0,'us'), interaction_duration - self.max_second_pulse)
+            p.evolution_ramsey_time = ramsey_time
+            p.evolution_pulses_duration = second_pulse_dur
+            N = int(p.analysis_ion_number) # index from 0
+            print N
+            #-------------------- Phase loop
+            submission = [interaction_duration['us']] #This is the time
+            phase_list = []
+            for j,interaction_phase in enumerate(self.scan_phi):                
+                should_stop = self.pause_or_stop()
+                if should_stop:
+                    return False
+                p.evolution_pulses_phase = interaction_phase #added for the phase steps
+                self.excite.set_parameters(self.parameters)
+                excitation, readout = self.excite.run(cxn, context)
+                # excitation looks like [ion1 excit, ion2 ex, ... ]
+                # pull out just the ion readout we care about with excitation[N]
+                phase_list.append(excitation[N]) # only look at the excitation for the ion we readout
+
+            submission.extend(phase_list) # The excitation is attached to the time now in a second column (?)
+            self.dv.add(submission, context = self.data_save_context) #Saving to data file where submission now includes the time and excitation
+            
+            # now have submitted raw data, save contrast for online analysis
+            try:
+                contrast = (max(phase_list) - min(phase_list))/(max(phase_list) + min(phase_list)) # will fail with 0 excitation
+            except:
+                contrast = 0 # in case there's no excitation
+            contrast_submission = [interaction_duration['us'], contrast]
+            self.dv.add(contrast_submission, context = self.contrast_save_context)
+
+            self.update_progress(i)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
-        ####### FROM DYLAN -- PULSE SEQUENCE PLOTTING #########
+        ####### PULSE SEQUENCE PLOTTING #########
         #ttl = self.cxn.pulser.human_readable_ttl()
         #dds = self.cxn.pulser.human_readable_dds()
         #channels = self.cxn.pulser.get_channels().asarray

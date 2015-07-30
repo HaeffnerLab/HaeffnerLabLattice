@@ -113,7 +113,7 @@ class ms_gate(experiment):
         self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
-        self.dds_cw.amplitude('2', amp)
+        #self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
