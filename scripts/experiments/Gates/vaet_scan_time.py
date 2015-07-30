@@ -8,10 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class vaet_scan_delta(experiment):
+class vaet_scan_time(experiment):
 
-    name = 'VAETScanDelta'
-
+    name = 'VAETScanTime'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),
@@ -19,20 +18,18 @@ class vaet_scan_delta(experiment):
                         ('TrapFrequencies','rf_drive_frequency'),                       
                         ]
     gate_required_parameters = [
-                           ('MolmerSorensen','duration_scan'),
                            ('MolmerSorensen', 'sideband_selection'),
                            ('MolmerSorensen', 'detuning'),
                            ('MolmerSorensen', 'ac_stark_shift'),
                            ('MolmerSorensen', 'amp_red'),
                            ('MolmerSorensen', 'amp_blue'),
 
-                           ('SZX','duration_scan'),
                            ('SZX', 'sideband_selection'),
                            ('SZX', 'ac_stark_shift'),
                            ('SZX', 'amp_red'),
                            ('SZX', 'amp_blue'),
 
-                           ('VAET', 'detuning_scan'),
+                           ('VAET', 'detuning'),
                            ('VAET', 'line_selection'),
                      
                            ('Crystallization', 'auto_crystallization'),
@@ -45,8 +42,6 @@ class vaet_scan_delta(experiment):
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
                            ]
-
-    szx_required_parameters = [ ]
 
     @classmethod
     def all_required_parameters(cls):
@@ -73,15 +68,15 @@ class vaet_scan_delta(experiment):
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
-        
+
     def setup_sequence_parameters(self):
-        #self.load_frequency()
+        self.load_frequency()
         vaet = self.parameters.VAET
-        minim,maxim,steps = vaet.detuning_scan
-        minim = minim['kHz']; maxim = maxim['kHz']
+        minim,maxim,steps = vaet.duration_scan
+        minim = minim['us']; maxim = maxim['us']
         self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'kHz') for pt in self.scan]
-        
+        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
+
     def setup_data_vault(self):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -90,12 +85,13 @@ class vaet_scan_delta(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('State',st,'Probability') for st in ['SS', 'SD', 'DS', 'DD'] ]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
-        self.dv.add_parameter('Window', ['Effective Mode Frequency'], context = self.save_context)
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        self.dv.add_parameter('Window', ['VAET dynamics'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
 
-    def load_frequency(self, delta): # scan the szx detuning
+
+    def load_frequency(self):
         #reloads trap frequencies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         ms = self.parameters.MolmerSorensen
@@ -108,6 +104,7 @@ class vaet_scan_delta(experiment):
 
         ####### SET DOUBLE PASSES TO THE CARRIER FREQUENCY ########
         self.parameters['VAET.frequency'] = frequency
+        delta = self.parameters.VAET.detuning
 
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -146,24 +143,25 @@ class vaet_scan_delta(experiment):
         self.dds_cw.amplitude('5', amp_car)
 
         [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4', '5']]
-        time.sleep(0.5) # make sure everything is set before starting the sequence
+        time.sleep(0.1) # make sure everything is set before starting the sequence
 
+        
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
-        for i,freq in enumerate(self.scan):
+        for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(cxn, context, freq)
+            excitation = self.get_excitation_crystallizing(cxn, context, duration)
             if excitation is None: break 
-            submission = [freq['kHz']]
+            submission = [duration['us']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
     
-    def get_excitation_crystallizing(self, cxn, context, freq):
+    def get_excitation_crystallizing(self, cxn, context, duration):
         # right now don't crystallize because I'm not sure if it works
-        excitation = self.do_get_excitation(cxn, context, freq)
+        excitation = self.do_get_excitation(cxn, context, duration)
         #if self.parameters.Crystallization.auto_crystallization:
         #    initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         #    #if initially melted, redo the point
@@ -177,14 +175,16 @@ class vaet_scan_delta(experiment):
         #        initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
         return excitation
     
-    def do_get_excitation(self, cxn, context, freq):
-        self.load_frequency(freq)
+    def do_get_excitation(self, cxn, context, duration):
+        self.load_frequency()
+        self.parameters['VAET.duration'] = duration
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
+        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        print states
         return states
      
     def finalize(self, cxn, context):
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):
@@ -194,11 +194,12 @@ class vaet_scan_delta(experiment):
     def save_parameters(self, dv, cxn, cxnlab, context):
         measuredDict = dvParameters.measureParameters(cxn, cxnlab)
         dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)   
+        dvParameters.saveParameters(dv, dict(self.parameters), context)
 
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = vaet_scan_delta(cxn = cxn)
+    exprt = vaet_scan_time(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
+

@@ -46,5 +46,9 @@ class vaet(pulse_sequence):
         ###### SZX INTERACTION #######
         self.addDDS('729DP_1', st + frequency_advance_duration, duration, frequency, szx.amplitude, phase,profile=int(v.shape_profile))
         self.addTTL('bichromatic_2', st, duration + 2*frequency_advance_duration + slope_duration)
-        
-        self.end = st + duration+ 2*frequency_advance_duration + slope_duration
+        st = st + duration+ 2*frequency_advance_duration + slope_duration
+
+        ### ANALYSIS PI PULSE ON CARRIER FOR PMT READOUT ####
+        self.addDDS('729DP_1', st + frequency_advance_duration, v.pi_time, frequency, v.car_amplitude, phase)
+
+        self.end = st + frequency_advance_duration
