@@ -54,6 +54,7 @@ class vaet_scan_delta(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('VAET','frequency'))
+        parameters.remove(('LocalRotation','frequency'))
         return parameters
 
     def initialize(self, cxn, context, ident):
@@ -107,6 +108,7 @@ class vaet_scan_delta(experiment):
 
         ####### SET DOUBLE PASSES TO THE CARRIER FREQUENCY ########
         self.parameters['VAET.frequency'] = frequency
+        self.parameters['LocalRotation.frequency'] = frequency
 
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -129,7 +131,6 @@ class vaet_scan_delta(experiment):
         self.dds_cw.frequency('2', WithUnit(80., 'MHz'))
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
-        self.dds_cw.amplitude('2', amp_car)
 
         ####### SZX PARAMETERS ##########
 
@@ -142,7 +143,6 @@ class vaet_scan_delta(experiment):
         self.dds_cw.frequency('5', WithUnit(80., 'MHz'))
         self.dds_cw.amplitude('3', amp_blue)
         self.dds_cw.amplitude('4', amp_red)
-        self.dds_cw.amplitude('5', amp_car)
 
         [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4', '5']]
         time.sleep(0.1) # make sure everything is set before starting the sequence

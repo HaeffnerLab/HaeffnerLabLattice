@@ -2,6 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
 from subsequences.OpticalPumping import optical_pumping
 from subsequences.VAET import vaet
+from subsequences.LocalRotation import local_rotation
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
@@ -15,7 +16,7 @@ class vaet_interaction(pulse_sequence):
                            ('SidebandCooling','sideband_cooling_enable'),
                            ]
     
-    required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
+    required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, local_rotation,
                              vaet, tomography_readout, turn_off_all, sideband_cooling]
 
     replaced_parameters = {}
@@ -29,5 +30,7 @@ class vaet_interaction(pulse_sequence):
             self.addSequence(optical_pumping)
         if p.SidebandCooling.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
+        self.addSequence(local_rotation)
         self.addSequence(vaet)
+        self.addSequence(local_rotation)
         self.addSequence(tomography_readout)

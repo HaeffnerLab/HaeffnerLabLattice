@@ -46,6 +46,7 @@ class ms_scan_phase(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('MolmerSorensen','frequency'))
+        parameters.remove(('LocalRotation','frequency'))
         parameters.remove(('MolmerSorensen','analysis_phase'))
         return parameters
     
@@ -109,6 +110,7 @@ class ms_scan_phase(experiment):
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
+        self.parameters['LocalRotation.frequency'] = frequency
         
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order

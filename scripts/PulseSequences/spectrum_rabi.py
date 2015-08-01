@@ -20,8 +20,7 @@ class spectrum_rabi(pulse_sequence):
     required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
                              rabi_excitation_select_channel, tomography_readout, turn_off_all, sideband_cooling]
     
-    replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
-                           }
+    replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration'),]}
 
     def sequence(self):
         p = self.parameters

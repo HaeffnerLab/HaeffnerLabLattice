@@ -19,6 +19,9 @@ class sideband_cooling(pulse_sequence):
                            ('SidebandCooling', 'sideband_cooling_frequency_729'),
                            ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
                            ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'),
+                           
+                           ('SequentialSBCooling','enable'),
+                           ('SequentialSBCooling','frequency'),
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
@@ -55,6 +58,7 @@ class sideband_cooling(pulse_sequence):
         sideband cooling can be either pulsed or continuous 
         '''
         sc = self.parameters.SidebandCooling
+        sc2 = self.parameters.SequentialSBCooling
         if sc.sideband_cooling_type == 'continuous':
             continuous = True
         elif sc.sideband_cooling_type == 'pulsed':
@@ -74,6 +78,9 @@ class sideband_cooling(pulse_sequence):
                                'SidebandCoolingContinuous.sideband_cooling_continuous_amplitude_729':sc.sideband_cooling_amplitude_729,
                                'SidebandCoolingContinuous.sideband_cooling_continuous_amplitude_866':sc.sideband_cooling_amplitude_866,
                                }
+            
+            cooling_replace_2 = cooling_replace.copy()
+            cooling_replace_2['SidebandCoolingContinuous.sideband_cooling_continuous_frequency_729'] = sc2.frequency
         else:
             #pulsed
             cooling = sideband_cooling_pulsed
@@ -87,6 +94,8 @@ class sideband_cooling(pulse_sequence):
                                 'SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_866':sc.sideband_cooling_frequency_866,
                                 'SidebandCoolingPulsed.sideband_cooling_pulsed_amplitude_866':sc.sideband_cooling_amplitude_866,
                                }
+            cooling_replace_2 = cooling_replace.copy()
+            cooling_replace_2['SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_729'] = sc2.frequency
         optical_pump_replace = {
                                 'OpticalPumping.optical_pumping_continuous':True,
                                 'OpticalPumpingContinuous.optical_pumping_continuous_duration':sc.sideband_cooling_optical_pumping_duration,
@@ -96,3 +105,7 @@ class sideband_cooling(pulse_sequence):
             cooling_replace[duration_key] +=  sc.sideband_cooling_duration_729_increment_per_cycle
             self.addSequence(cooling, TreeDict.fromdict(cooling_replace))
             self.addSequence(optical_pumping, TreeDict.fromdict(optical_pump_replace))
+            if sc2.enable:
+                cooling_replace_2[duration_key] +=  sc.sideband_cooling_duration_729_increment_per_cycle
+                self.addSequence(cooling, TreeDict.fromdict(cooling_replace_2))
+                self.addSequence(optical_pumping, TreeDict.fromdict(optical_pump_replace))

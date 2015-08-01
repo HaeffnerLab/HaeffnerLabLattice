@@ -25,6 +25,7 @@ class ms_scan_local_stark(experiment):
                            ('MolmerSorensen', 'ac_stark_shift_scan'),
                            ('MolmerSorensen', 'amp_blue'),
                            ('MolmerSorensen', 'amp_red'),
+                           ('MolmerSorensen', 'ac_stark_shift'),
 
                            ('LocalStarkShift', 'scan'),
 
@@ -47,7 +48,8 @@ class ms_scan_local_stark(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('MolmerSorensen','frequency'))
-        parameters.remove(('LocalStarkShift', 'detuning'))
+        parameters.remove(('LocalRotation','frequency'))
+        #parameters.remove(('LocalStarkShift', 'detuning'))
         parameters.remove(('MolmerSorensen', 'ac_stark_shift_scan'))
         return parameters
 
@@ -76,6 +78,20 @@ class ms_scan_local_stark(experiment):
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'dBm') for pt in self.scan]
 
+    def setup_data_vault(self):
+        localtime = time.localtime()
+        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        directory = ['','Experiments']
+        directory.extend([self.name])
+        directory.extend(dirappend)
+        self.dv.cd(directory ,True, context = self.save_context)
+        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
+        self.dv.add_parameter('Window', ['Local AC Stark Amplitude'], context = self.save_context)
+        self.dv.add_parameter('plotLive', True, context = self.save_context)
+    
+
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
@@ -84,6 +100,7 @@ class ms_scan_local_stark(experiment):
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
+        self.parameters['LocalRotation.frequency'] = frequency
         
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -99,15 +116,15 @@ class ms_scan_local_stark(experiment):
         amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
-        self.dds_cw.frequency('2', WithUnit(80., 'MHz'))
+        self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
         #self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
-        time.sleep(0.5) # make sure everything is set before starting the sequence
-
+        time.sleep(0.5) # just make sure everything is programmed before starting the sequence
+        
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()

@@ -45,6 +45,7 @@ class ms_scan_ac_stark(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('MolmerSorensen','frequency'))
+        parameters.remove(('LocalRotation','frequency'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -93,6 +94,7 @@ class ms_scan_ac_stark(experiment):
         frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
+        self.parameters['LocalRotation.frequency'] = frequency
         
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -168,6 +170,6 @@ class ms_scan_ac_stark(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = ms_gate(cxn = cxn)
+    exprt = ms_scan_ac_stark(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

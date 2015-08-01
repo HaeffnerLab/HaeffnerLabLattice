@@ -19,6 +19,9 @@ class base_excitation(experiment):
                             ('SidebandCooling','manual_frequency_729'),
                             ('SidebandCooling','line_selection'),
                             ('SidebandCooling','sideband_selection'),
+                            
+                            ('SequentialSBCooling', 'sideband_selection'),
+                            
                             ('TrapFrequencies','axial_frequency'),
                             ('TrapFrequencies','radial_frequency_1'),
                             ('TrapFrequencies','radial_frequency_2'),
@@ -138,6 +141,11 @@ class base_excitation(experiment):
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
+        
+        sc2 = self.parameters.SequentialSBCooling
+        sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
+        sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
+        self.parameters['SequentialSBCooling.frequency'] = sc2freq
     
     def setup_initial_switches(self):
         self.pulser.switch_manual('crystallization',  False)
