@@ -45,8 +45,8 @@ class local_blue_heating(pulse_sequence):
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
         
-        import boerge_tools
-        boerge_tools.dump_keys(h)
+        #import boerge_tools
+        #boerge_tools.dump_keys(h)
         
         #make sure light turns on immediately with no delay
         repump_duration = frequency_advance_duration + h.blue_heating_duration + h.blue_heating_repump_additional

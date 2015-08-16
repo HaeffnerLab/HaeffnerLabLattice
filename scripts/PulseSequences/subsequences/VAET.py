@@ -9,7 +9,11 @@ class vaet(pulse_sequence):
         ('VAET', 'shape_profile'),
 
         ('MolmerSorensen', 'amplitude'),
-        ('SZX', 'amplitude')
+        ('SZX', 'amplitude'),
+
+        ('LocalStarkShift', 'enable'),
+        ('LocalStarkShift','amplitude'),
+        ('LocalStarkShift', 'detuning'), # detuning from the carrier transition
         ]
     
     def sequence(self):
@@ -18,6 +22,7 @@ class vaet(pulse_sequence):
         ms = self.parameters.MolmerSorensen
         v = self.parameters.VAET
         szx = self.parameters.SZX
+        pl = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')
         try:
             slope_duration = WithUnit(int(slope_dict[v.shape_profile]),'us')
@@ -33,4 +38,10 @@ class vaet(pulse_sequence):
         self.addDDS('729', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
         self.addDDS('729DP_1', self.start + frequency_advance_duration, v.duration, v.frequency, szx.amplitude, profile=int(v.shape_profile))
         self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
-        self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
+        self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
+        
+        if pl.enable: # add a stark shift on the localized beam
+            f = WithUnit(80., 'MHz') + pl.detuning
+            self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
+            self.addDDS('stark_shift', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
+        

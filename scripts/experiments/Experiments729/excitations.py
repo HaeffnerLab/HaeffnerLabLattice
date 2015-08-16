@@ -34,6 +34,12 @@ class excitation_rabi_2ions(base_excitation):
     from lattice.scripts.PulseSequences.spectrum_rabi_2ions import spectrum_rabi_2ions
     name = 'Excitation2ions'
     pulse_sequence = spectrum_rabi_2ions
+
+class excitation_ramsey_with_heating(base_excitation):
+    #from lattice.scripts.PulseSequences.dephasing_chain import dephasing_chain
+    from lattice.scripts.PulseSequences.ramsey_with_heating import ramsey_with_heating
+    name = 'RamseyHeating'
+    pulse_sequence = ramsey_with_heating
     
 if __name__ == '__main__':
     import labrad

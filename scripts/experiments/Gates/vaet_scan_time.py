@@ -31,6 +31,7 @@ class vaet_scan_time(experiment):
 
                            ('VAET', 'detuning'),
                            ('VAET', 'line_selection'),
+                           ('VAET', 'duration_scan'),
                      
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -50,6 +51,7 @@ class vaet_scan_time(experiment):
         parameters = parameters.union(set(vaet.all_required_parameters()))
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
+        parameters.remove(('VAET','duration'))
         parameters.remove(('VAET','frequency'))
         parameters.remove(('LocalRotation','frequency'))
         return parameters
@@ -141,7 +143,7 @@ class vaet_scan_time(experiment):
         self.dds_cw.amplitude('3', amp_blue)
         self.dds_cw.amplitude('4', amp_red)
 
-        [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4', '5']]
+        [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4']]
         time.sleep(0.1) # make sure everything is set before starting the sequence
 
         

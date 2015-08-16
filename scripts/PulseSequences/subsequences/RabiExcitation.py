@@ -66,21 +66,36 @@ class rabi_excitation_select_channel(pulse_sequence):
                             ('Excitation_729','rabi_excitation_amplitude'),
                             ('Excitation_729','rabi_excitation_duration'),
                             ('Excitation_729','rabi_excitation_phase'),
+                            
+                          ('LocalStarkShift', 'enable'),
+                          ('LocalStarkShift','amplitude'),
+                          ('LocalStarkShift', 'detuning'), # detuning from the carrier transition
                           ]
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
         p = self.parameters.Excitation_729
+        q = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
+        f0 = WithUnit(80., 'MHz') # base frequency for Stark shift laser
         self.end = self.start + frequency_advance_duration + p.rabi_excitation_duration
         #first advance the frequency but keep amplitude low        
         self.addDDS(p.channel_729, self.start, frequency_advance_duration, p.rabi_excitation_frequency, ampl_off)
+        if q.enable: # also turn on local stark shift
+            self.addDDS('stark_shift', self.start, frequency_advance_duration, f0 + q.detuning, ampl_off)
+            self.addDDS('729DP_1', self.start, frequency_advance_duration, p.rabi_excitation_frequency, ampl_off)
         #turn on
         self.addDDS(p.channel_729, self.start + frequency_advance_duration, p.rabi_excitation_duration, p.rabi_excitation_frequency, p.rabi_excitation_amplitude, p.rabi_excitation_phase)
-        
+        if q.enable:
+            self.addDDS('stark_shift', self.start + frequency_advance_duration, p.rabi_excitation_duration, f0 + q.detuning, q.amplitude)
+            self.addDDS('729DP_1', self.start + frequency_advance_duration, p.rabi_excitation_duration, p.rabi_excitation_frequency, WithUnit(-12, 'dBm'))
         if p.bichro:
             # only one of these double passes should be on so it shouldn't hurt to do both TTLs
             self.addTTL('bichromatic_1', self.start, + p.rabi_excitation_duration + frequency_advance_duration)
             self.addTTL('bichromatic_2', self.start, + p.rabi_excitation_duration + frequency_advance_duration)
             self.end = self.end + WithUnit(2.0, 'us') # small buffer to turn off the TTL
+
+            
+            
+            

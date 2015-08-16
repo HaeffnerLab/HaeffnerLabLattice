@@ -22,3 +22,8 @@ class local_rotation(pulse_sequence):
         
         # make sure the local pulse is off before starting the next thing
         self.addDDS('729DP_1', self.start, frequency_advance_duration, pl.frequency, ampl_off)
+
+        f = WithUnit(80., 'MHz')
+        amp = WithUnit(-12., 'dBm')
+        self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
+        self.addDDS('stark_shift', self.start + frequency_advance_duration, pl.pi_time, f, amp)

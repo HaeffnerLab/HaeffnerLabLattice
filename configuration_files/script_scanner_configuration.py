@@ -3,6 +3,10 @@ class config(object):
     #list in the format (import_path, class_name)
     scripts = [
                ('lattice.scripts.experiments.FFT.fft_spectrum', 'fft_spectrum'), 
+               #('lattice.scripts.experiments.Experiments729.Ramsey_with_Heating', 'ramsey_with_heating'), 
+               ('lattice.scripts.experiments.Experiments729.Ramsey_with_Heating_and_Cryst', 'ramsey_with_heating_and_cryst'), 
+               ('lattice.scripts.experiments.Experiments729.Ramsey_with_Heating_and_Cryst_Scan_Blue', 'ramsey_with_heating_and_cryst_scan_blue'),
+               ('lattice.scripts.experiments.Experiments729.Ramsey_with_Heating_and_Cryst_Scan_Both', 'ramsey_with_heating_and_cryst_scan_both'),
 #                ('lattice.scripts.experiments.FFT.fft_peak_area', 'fft_peak_area'), 
 #                ('lattice.scripts.experiments.FFT.fft_hv_scan', 'fft_hv_scan'), 
 #                ('lattice.scripts.experiments.Misc.set_high_volt', 'set_high_volt'), 

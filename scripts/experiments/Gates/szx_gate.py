@@ -111,7 +111,7 @@ class szx(experiment):
         
         freq_blue = WithUnit(80., 'MHz') - trap_frequency/2. - gate.detuning + gate.ac_stark_shift
         freq_red = WithUnit(80., 'MHz') + trap_frequency/2. + gate.ac_stark_shift
-        amp = WithUnit(-15., 'dBm')
+        amp = WithUnit(-12., 'dBm')
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
         self.dds_cw.frequency('3', freq_blue)

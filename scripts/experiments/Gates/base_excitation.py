@@ -61,6 +61,7 @@ class base_excitation(experiment):
         params.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
+        params.remove(('SequentialSBCooling', 'frequency'))
         return params
     
     def initialize(self, cxn, context, ident):

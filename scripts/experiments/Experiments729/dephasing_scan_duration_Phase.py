@@ -7,7 +7,7 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 #The following command brinfgs the sequence plotter.
-#from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
 
 class dephase_scan_duration(experiment):
     
@@ -157,11 +157,11 @@ class dephase_scan_duration(experiment):
             self.update_progress(i)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
         ####### PULSE SEQUENCE PLOTTING #########
-        #ttl = self.cxn.pulser.human_readable_ttl()
-        #dds = self.cxn.pulser.human_readable_dds()
-        #channels = self.cxn.pulser.get_channels().asarray
-        #sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
-        #sp.makePlot()
+        ttl = self.cxn.pulser.human_readable_ttl()
+        dds = self.cxn.pulser.human_readable_dds()
+        channels = self.cxn.pulser.get_channels().asarray
+        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        sp.makePlot()
         ############################################
         return True
      

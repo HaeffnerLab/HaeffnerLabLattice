@@ -37,9 +37,14 @@ class molmer_sorensen(pulse_sequence):
         self.addTTL('bichromatic_1', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
         
         if pl.enable: # add a stark shift on the localized beam
-            f = p.frequency + pl.detuning
-            self.addDDS('729DP_1', self.start, frequency_advance_duration, f, ampl_off)
-            self.addDDS('729DP_1', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
+            f = WithUnit(80., 'MHz') + pl.detuning
+            amp = WithUnit(-15., 'dBm')
+            self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
+            self.addDDS('stark_shift', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
+            
+            # turn on the double pass at -15 dBm for the stark shift
+            self.addDDS('729DP_1', self.start, frequency_advance_duration, p.frequency, ampl_off)
+            self.addDDS('729DP_1', self.start + frequency_advance_duration, p.duration, p.frequency, amp, p.phase, profile=int(p.shape_profile))
         
         if p.analysis_pulse_enable:
             analysis_start = self.end
