@@ -109,6 +109,7 @@ class vaet_scan_delta(experiment):
         ####### SET DOUBLE PASSES TO THE CARRIER FREQUENCY ########
         self.parameters['VAET.frequency'] = frequency
         self.parameters['LocalRotation.frequency'] = frequency
+        
 
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -183,7 +184,7 @@ class vaet_scan_delta(experiment):
         return states
      
     def finalize(self, cxn, context):
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

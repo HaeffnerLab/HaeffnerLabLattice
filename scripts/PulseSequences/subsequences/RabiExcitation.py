@@ -90,6 +90,7 @@ class rabi_excitation_select_channel(pulse_sequence):
         if q.enable:
             self.addDDS('stark_shift', self.start + frequency_advance_duration, p.rabi_excitation_duration, f0 + q.detuning, q.amplitude)
             self.addDDS('729DP_1', self.start + frequency_advance_duration, p.rabi_excitation_duration, p.rabi_excitation_frequency, WithUnit(-12, 'dBm'))
+            self.addTTL('bichromatic_2', self.start, + p.rabi_excitation_duration + frequency_advance_duration) # REMOVE THIS LATER
         if p.bichro:
             # only one of these double passes should be on so it shouldn't hurt to do both TTLs
             self.addTTL('bichromatic_1', self.start, + p.rabi_excitation_duration + frequency_advance_duration)

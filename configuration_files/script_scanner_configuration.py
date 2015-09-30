@@ -59,6 +59,8 @@ class config(object):
                ('lattice.scripts.experiments.Gates.szx_rabi_flop', 'szx_rabi_flop'),
                ('lattice.scripts.experiments.Gates.vaet_scan_delta', 'vaet_scan_delta'),
                ('lattice.scripts.experiments.Gates.vaet_scan_time', 'vaet_scan_time'),
+               ('lattice.scripts.experiments.Gates.vaet_scan_local_stark', 'vaet_scan_local_stark'),
+               ('lattice.scripts.experiments.Experiments729.setup_experiment', 'setup_experiment'),
                ]
     #dictionary in the format class_name : list of non-conflicting class names
     allowed_concurrent = {
