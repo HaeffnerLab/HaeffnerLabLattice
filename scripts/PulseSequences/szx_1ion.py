@@ -12,8 +12,8 @@ class szx_1ion(pulse_sequence):
 
     required_parameters = [ 
                            ('Heating', 'background_heating_time'),
-                           ('OpticalPumping','optical_pumping_enable'), 
-                           ('SidebandCooling','sideband_cooling_enable'),
+                           ('StatePreparation','optical_pumping_enable'), 
+                           ('StatePreparation','sideband_cooling_enable'),
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
@@ -27,9 +27,9 @@ class szx_1ion(pulse_sequence):
 
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
-        if p.OpticalPumping.optical_pumping_enable:
+        if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        if p.SidebandCooling.sideband_cooling_enable:
+        if p.StatePreparation.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(szx_ramsey)
         self.addSequence(tomography_readout)

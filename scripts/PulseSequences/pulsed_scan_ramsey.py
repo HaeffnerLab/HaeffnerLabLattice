@@ -13,8 +13,8 @@ from labrad.units import WithUnit
 class pulsed_scan_ramsey(pulse_sequence):
     
     required_parameters = [
-                           ('OpticalPumping','optical_pumping_enable'), 
-                           ('SidebandCooling','sideband_cooling_enable'),
+                           ('StatePreparation','optical_pumping_enable'), 
+                           ('StatePreparation','sideband_cooling_enable'),
                            ('PulsedScanRamsey', 'pulse_duration'),
                            ('PulsedScanRamsey', 'ramsey_time'),
                            ]
@@ -32,9 +32,9 @@ class pulsed_scan_ramsey(pulse_sequence):
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
         self.addSequence(doppler_cooling_after_repump_d)
-        if p.OpticalPumping.optical_pumping_enable:
+        if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        if p.SidebandCooling.sideband_cooling_enable:
+        if p.StatePreparation.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(local_blue_heating, TreeDict.fromdict({'Heating.blue_heating_duration':p.PulsedScanRamsey.pulse_duration}))
         start_psk_ttl = self.end

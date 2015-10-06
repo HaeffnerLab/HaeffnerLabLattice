@@ -39,7 +39,8 @@ class spectrum(experiment):
                            ('Crystallization', 'pmt_record_duration'),
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
-                           ]
+
+                           ('Display', 'relative_frequencies'),                           ]
     
     spectrum_optional_parmeters = [
                           ('Spectrum', 'window_name')
@@ -77,8 +78,10 @@ class spectrum(experiment):
             minim,maxim,steps = sp.manual_scan
             duration = sp.manual_excitation_time
             amplitude = sp.manual_amplitude_729
+            self.carrier_frequency = WithUnit(0.0, 'MHz')
         elif sp.scan_selection == 'auto':
             center_frequency = cm.frequency_from_line_selection(sp.scan_selection, None , sp.line_selection, self.drift_tracker)
+            self.carrier_frequency = center_frequency
             center_frequency = cm.add_sidebands(center_frequency, sp.sideband_selection, self.parameters.TrapFrequencies)
             span, resolution, duration, amplitude = sp[sp.sensitivity_selection]
             minim = center_frequency - span / 2.0
@@ -92,6 +95,17 @@ class spectrum(experiment):
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
+
+    def get_window_name(self):
+        if self.parameters.Spectrum.scan_selection == 'manual':
+            return ['Spectrum']
+        else:
+            car = self.parameters.Spectrum.line_selection
+            sb = self.parameters.Spectrum.sideband_selection
+            window_name = car
+            if sb != [0, 0, 0, 0]: # the scan is some kind of sideband scan
+                window_name = window_name + str(sb)
+            return [window_name]
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -104,7 +118,8 @@ class spectrum(experiment):
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
-        window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
+        #window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
+        window_name = self.get_window_name()
         self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
         
@@ -117,7 +132,10 @@ class spectrum(experiment):
             if should_stop: break
             excitation = self.get_excitation_crystallizing(cxn, context, freq)
             if excitation is None: break
-            submission = [freq['MHz']]
+            if self.parameters.Display.relative_frequencies:
+                submission = [freq['MHz'] - self.carrier_frequency['MHz']]
+            else:
+                submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
