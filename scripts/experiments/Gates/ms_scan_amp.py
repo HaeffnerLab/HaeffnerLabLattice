@@ -158,7 +158,7 @@ class ms_scan_amp(experiment):
         return states
 
     def finalize(self, cxn, context):
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.rabi_flop_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

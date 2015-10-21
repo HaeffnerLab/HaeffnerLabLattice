@@ -107,46 +107,119 @@ class setup_experiment(experiment):
         
     def run(self, cxn, context):
         self.setup_data_vault()            
-        
+
+	    # initial rough scan 
         # Spectrum parameters
-        s12d12 = -16.5
-        delta_s12d12 = 0.25
-        no_of_steps = 10
+        s12d12 = -16.600
+        delta_s12d12 = 1.0/2
+        no_of_steps = 30
         
-        s12d52 = -28.4125
-        delta_s12d52 = 0.25
+        excitation_time_1212 = 2.0
+        
+        amplitude = -15.0
+       
         
         replace_1 = TreeDict.fromdict({
                                        'Spectrum.manual_scan':(WithUnit(s12d12 - delta_s12d12, 'MHz'), WithUnit(s12d12 + delta_s12d12, 'MHz'), no_of_steps),
-                                       'Spectrum.manual_amplitude_729':WithUnit(-5.0, 'dBm'),
-                                       'Spectrum.manual_excitation_time':WithUnit(7.0, 'us'),
+                                       'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
+                                       'Spectrum.manual_excitation_time':WithUnit(excitation_time_1212, 'us'),
                                        'Spectrum.scan_selection':'manual',
                                        })
         
-        replace_2 = TreeDict.fromdict({
-                                       'Spectrum.manual_scan':(WithUnit(s12d52 - delta_s12d52, 'MHz'), WithUnit(s12d52 + delta_s12d52, 'MHz'), no_of_steps),
-                                       'Spectrum.manual_amplitude_729':WithUnit(-5.0, 'dBm'),
-                                       'Spectrum.manual_excitation_time':WithUnit(7.0, 'us'),
-                                       'Spectrum.scan_selection':'manual',
-                                       })
         
         drift_line1 = TreeDict.fromdict({
                                        'DriftTrackerRamsey.line_selection':'S-1/2D-1/2',                                       
                                        'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')                                       
                                        })
         
+
+        self.excite.set_parameters(replace_1)
+        fitted_freq1 = self.excite.run(cxn, context)
+
+
+
+	    # fine scan
+    	no_of_steps = 30
+    	amplitude = -20.0
+
+        s12d12 = fitted_freq1
+        delta_s12d12 = 0.08/2
+        excitation_time_1212 = 100.0
+
+        replace_1 = TreeDict.fromdict({
+                                       'Spectrum.manual_scan':(WithUnit(s12d12 - delta_s12d12, 'MHz'), WithUnit(s12d12 + delta_s12d12, 'MHz'), no_of_steps),
+                                       'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
+                                       'Spectrum.manual_excitation_time':WithUnit(excitation_time_1212, 'us'),
+                                       'Spectrum.scan_selection':'manual',
+                                       })
+ 
+  
+        drift_line1 = TreeDict.fromdict({
+                                       'DriftTrackerRamsey.line_selection':'S-1/2D-1/2',                                       
+                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')                                       
+                                       })
+
+ 
+        self.excite.set_parameters(replace_1)
+        fitted_freq1 = self.excite.run(cxn, context)
+
+
+	#### D5/2 
+
+        s12d52 = -27.228
+        delta_s12d52 = 1.0/2
+    	excitation_time_1252 = 2.0
+    	amplitude = -15.0
+        no_of_steps = 30
+
+       
+
+        replace_2 = TreeDict.fromdict({
+                                       'Spectrum.manual_scan':(WithUnit(s12d52 - delta_s12d52, 'MHz'), WithUnit(s12d52 + delta_s12d52, 'MHz'), no_of_steps),
+                                       'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
+                                       'Spectrum.manual_excitation_time':WithUnit(excitation_time_1252, 'us'),
+                                       'Spectrum.scan_selection':'manual',
+                                       })
+
         drift_line2 = TreeDict.fromdict({
                                        'DriftTrackerRamsey.line_selection':'S-1/2D-5/2',                                       
                                        'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')                                       
                                        })
         
-        
-        self.excite.set_parameters(replace_1)
-        fitted_freq1 = self.excite.run(cxn, context)
-        
+               
         self.excite.set_parameters(replace_2)
         fitted_freq2 = self.excite.run(cxn, context)
+ 
+
+        # fine scan
+        s12d52 = fitted_freq2
+        amplitude = -20.0
+        no_of_steps = 30
+
+        delta_s12d52 = 0.08/2
         
+        excitation_time_1252 = 100.0
+
+       
+        replace_2 = TreeDict.fromdict({
+                                       'Spectrum.manual_scan':(WithUnit(s12d52 - delta_s12d52, 'MHz'), WithUnit(s12d52 + delta_s12d52, 'MHz'), no_of_steps),
+                                       'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
+                                       'Spectrum.manual_excitation_time':WithUnit(excitation_time_1252, 'us'),
+                                       'Spectrum.scan_selection':'manual',
+                                       })
+              
+        drift_line2 = TreeDict.fromdict({
+                                       'DriftTrackerRamsey.line_selection':'S-1/2D-5/2',                                       
+                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')                                       
+                                       })
+        
+               
+        self.excite.set_parameters(replace_2)
+        fitted_freq2 = self.excite.run(cxn, context)
+       
+
+
+ 
         # taking scan over the -1/2 -1/2 line
         #self.excite.set_progress_limits(0, 50.0)
         
@@ -155,15 +228,16 @@ class setup_experiment(experiment):
         submission = [fitted_freq1]
         submission.extend([fitted_freq1])
         self.dv.add(submission, context = self.spectrum_save_context)
-        
+
         print "in main exp " + str(fitted_freq1)
         print "in main exp " + str(fitted_freq2)
         
-        self.submit_centers(drift_line1, WithUnit(fitted_freq1, 'MHz'), drift_line2, WithUnit(fitted_freq2, 'MHz'))
+        if (fitted_freq1 != 0.0) and (fitted_freq2 != 0.0):
+            self.submit_centers(drift_line1, WithUnit(fitted_freq1, 'MHz'), drift_line2, WithUnit(fitted_freq2, 'MHz'))
   
-        # setting some parameters for the drift tracker
-        self.pv.set_parameter('DriftTrackerRamsey', 'line_1_pi_time', WithUnit(5.0, 'us'))
-        self.pv.set_parameter('DriftTrackerRamsey', 'line_2_pi_time', WithUnit(5.0, 'us'))
+            # setting some parameters for the drift tracker
+            self.pv.set_parameter('DriftTrackerRamsey', 'line_1_pi_time', WithUnit(5.0, 'us'))
+            self.pv.set_parameter('DriftTrackerRamsey', 'line_2_pi_time', WithUnit(5.0, 'us'))
   
         # fit the result
         # make two new sequences that fit a line and give the result and one that fits a rabi and gives the result

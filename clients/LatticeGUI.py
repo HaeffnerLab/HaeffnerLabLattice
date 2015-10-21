@@ -29,7 +29,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(contrl_widget,'&Control')
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
-        self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
+        self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)

@@ -128,20 +128,21 @@ class base_excitation(experiment):
     
     def setup_sequence_parameters(self):
         op = self.parameters.OpticalPumping
-        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, op.optical_pumping_enable)
+        sp = self.parameters.StatePreparation
+        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, sp.optical_pumping_enable)
         self.parameters['OpticalPumping.optical_pumping_frequency_729'] = optical_pumping_frequency
         aux = self.parameters.OpticalPumpingAux
         aux_optical_pumping_frequency = cm.frequency_from_line_selection('auto', WithUnit(0,'MHz'),  aux.aux_op_line_selection, self.drift_tracker, aux.aux_op_enable)
         self.parameters['OpticalPumpingAux.aux_optical_frequency_729'] = aux_optical_pumping_frequency
         sc = self.parameters.SidebandCooling
-        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
+        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         if sc.frequency_selection == 'auto': 
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
         
         sc2 = self.parameters.SequentialSBCooling
-        sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
+        sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
         self.parameters['SequentialSBCooling.frequency'] = sc2freq
     
