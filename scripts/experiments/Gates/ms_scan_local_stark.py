@@ -123,6 +123,7 @@ class ms_scan_local_stark(experiment):
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
+        self.dds_cw.output('5', False)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
     def run(self, cxn, context):
@@ -162,6 +163,7 @@ class ms_scan_local_stark(experiment):
         return states
 
     def finalize(self, cxn, context):
+        self.dds_cw.output('5', True)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 

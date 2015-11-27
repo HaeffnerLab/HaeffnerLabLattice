@@ -86,7 +86,7 @@ class drift_tracker_ramsey_oneline(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True)
         #try opening the existing dataset
-        datasetname = 'RameyDriftTrack {}'.format(line_name)
+        datasetname = 'RamseyDriftTrack {}'.format(line_name)
         datasets_in_folder = self.dv.dir()[1]
         names = sorted([name for name in datasets_in_folder if datasetname in name])
         if names:

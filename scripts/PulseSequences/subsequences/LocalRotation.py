@@ -16,14 +16,14 @@ class local_rotation(pulse_sequence):
         ampl_off = WithUnit(-63.0, 'dBm')
         self.end = self.start + 2*frequency_advance_duration + pl.pi_time
         #first advance the frequency but keep amplitude low        
-        self.addDDS('729DP_1', self.start, frequency_advance_duration, pl.frequency, ampl_off)
+        self.addDDS('729local', self.start, frequency_advance_duration, pl.frequency, ampl_off)
         #turn on
-        self.addDDS('729DP_1', self.start + frequency_advance_duration, pl.pi_time, pl.frequency, pl.amplitude)
+        self.addDDS('729local', self.start + frequency_advance_duration, pl.pi_time, pl.frequency, pl.amplitude)
         
         # make sure the local pulse is off before starting the next thing
-        self.addDDS('729DP_1', self.start, frequency_advance_duration, pl.frequency, ampl_off)
+        self.addDDS('729local', self.start, frequency_advance_duration, pl.frequency, ampl_off)
 
         f = WithUnit(80., 'MHz')
         amp = WithUnit(-12., 'dBm')
-        self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
-        self.addDDS('stark_shift', self.start + frequency_advance_duration, pl.pi_time, f, amp)
+        self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
+        self.addDDS('SP_local', self.start + frequency_advance_duration, pl.pi_time, f, amp)

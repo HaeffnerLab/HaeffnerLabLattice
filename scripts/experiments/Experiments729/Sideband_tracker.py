@@ -85,7 +85,7 @@ class Sideband_tracker(experiment):
         steps = int(span / resolution )
         self.parameters['Excitation_729.rabi_excitation_duration'] = duration
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
-        self.parameters['Excitation_729.channel_729'] = '729DP_1'
+        self.parameters['Excitation_729.channel_729'] = '729DP_1' ########## CHANGE BACK TO 729DP_1
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
@@ -155,8 +155,8 @@ class Sideband_tracker(experiment):
             self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
             print "fit accepted"
             print time.time(), result
-            data_time = datetime.datetime.now().hour*3600+datetime.datetime.now().minute*60+datetime.datetime.now().second
-            self.dv.add([data_time, result['MHz']],context=self.save_trap_freq)
+            #data_time = datetime.datetime.now().hour*3600+datetime.datetime.now().minute*60+datetime.datetime.now().second
+            self.dv.add([time.time(), result['MHz']],context=self.save_trap_freq)
         else:
             print 'fit rejected!'
         

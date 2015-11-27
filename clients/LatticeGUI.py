@@ -20,6 +20,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         histogram = self.make_histogram_widget(reactor, cxn)
         drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         single_pass = self.make_sp_control(reactor, cxn)
+        #automation_widget = self.make_automation_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
         from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
@@ -30,9 +31,15 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
+        #self.tabWidget.addTab(drift_tracker, '&Autogadget')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
+        
+    #def make_automation_widget(self, reactor, cxn):
+    #    from lattice.clients.automation_functions import auto_gadget
+    #    widget = auto_gadget(reactor, cxn = cxn)
+    #    return widget
     
     def make_drift_tracker_widget(self, reactor, cxn):
         from common.clients.drift_tracker.drift_tracker import drift_tracker

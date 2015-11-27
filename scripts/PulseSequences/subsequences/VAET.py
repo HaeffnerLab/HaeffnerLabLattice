@@ -31,17 +31,17 @@ class vaet(pulse_sequence):
         ampl_off = WithUnit(-63.0, 'dBm')
         self.end = self.start + 2*frequency_advance_duration + v.duration + slope_duration
         #first advance the frequency but keep amplitude low
-        self.addDDS('729', self.start, frequency_advance_duration, v.frequency, ampl_off)
-        self.addDDS('729DP_1', self.start, frequency_advance_duration, v.frequency, ampl_off)
+        self.addDDS('729global', self.start, frequency_advance_duration, v.frequency, ampl_off)
+        self.addDDS('729local', self.start, frequency_advance_duration, v.frequency, ampl_off)
         
         # turn on bichro on the global and local beams at the same time
-        self.addDDS('729', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
-        self.addDDS('729DP_1', self.start + frequency_advance_duration, v.duration, v.frequency, szx.amplitude, profile=int(v.shape_profile))
+        self.addDDS('729global', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
+        self.addDDS('729local', self.start + frequency_advance_duration, v.duration, v.frequency, szx.amplitude, profile=int(v.shape_profile))
         self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         
         if pl.enable: # add a stark shift on the localized beam
             f = WithUnit(80., 'MHz') + pl.detuning
-            self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
-            self.addDDS('stark_shift', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
+            self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
+            self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
         

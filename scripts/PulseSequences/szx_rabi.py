@@ -7,6 +7,7 @@ from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
 from subsequences.SZX import szx
+from subsequences.SamplePID import sample_pid
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -23,12 +24,14 @@ class szx_rabi(pulse_sequence):
                            ('StatePreparation','sideband_cooling_enable'),
                            ]
     
-    required_subsequences = [doppler_cooling_after_repump_d,optical_pumping, 
+    required_subsequences = [doppler_cooling_after_repump_d,optical_pumping, sample_pid,
                              rabi_excitation_select_channel, szx, tomography_readout, turn_off_all, sideband_cooling]
     def sequence(self):
         p = self.parameters
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
+        #self.addSequence(sample_pid)
+        
         self.addSequence(doppler_cooling_after_repump_d)
         if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)

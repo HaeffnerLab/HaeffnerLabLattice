@@ -144,6 +144,7 @@ class vaet_scan_time(experiment):
         self.dds_cw.amplitude('4', amp_red)
 
         [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4']]
+        self.dds_cw.output('5', False)
         time.sleep(0.1) # make sure everything is set before starting the sequence
 
         
@@ -193,6 +194,7 @@ class vaet_scan_time(experiment):
         self.sc.script_set_progress(self.ident,  progress)
 
     def save_parameters(self, dv, cxn, cxnlab, context):
+        self.dds_cw.output('5', True)
         measuredDict = dvParameters.measureParameters(cxn, cxnlab)
         dvParameters.saveParameters(dv, measuredDict, context)
         dvParameters.saveParameters(dv, dict(self.parameters), context)

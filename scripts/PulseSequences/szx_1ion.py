@@ -1,5 +1,6 @@
 from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from subsequences.RepumpDwithDoppler import doppler_cooling_after_repump_d
+from subsequences.SamplePID import sample_pid
 from subsequences.OpticalPumping import optical_pumping
 from subsequences.SZX import szx_ramsey
 from subsequences.Tomography import tomography_readout
@@ -16,7 +17,7 @@ class szx_1ion(pulse_sequence):
                            ('StatePreparation','sideband_cooling_enable'),
                            ]
     
-    required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
+    required_subsequences = [sample_pid, doppler_cooling_after_repump_d, optical_pumping, 
                              szx_ramsey, tomography_readout, turn_off_all, sideband_cooling]
     
 
@@ -26,6 +27,8 @@ class szx_1ion(pulse_sequence):
         self.end = WithUnit(10, 'us')
 
         self.addSequence(turn_off_all)
+        #self.addSequence(sample_pid)
+        
         self.addSequence(doppler_cooling_after_repump_d)
         if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)

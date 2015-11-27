@@ -32,21 +32,25 @@ class molmer_sorensen(pulse_sequence):
         ampl_off = WithUnit(-63.0, 'dBm')
         self.end = self.start + 2*frequency_advance_duration + p.duration + slope_duration
         #first advance the frequency but keep amplitude low
-        self.addDDS('729', self.start, frequency_advance_duration, p.frequency, ampl_off)
-        self.addDDS('729', self.start + frequency_advance_duration, p.duration, p.frequency, p.amplitude, p.phase, profile=int(p.shape_profile))
+        self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)
+        self.addDDS('729global', self.start + frequency_advance_duration, p.duration, p.frequency, p.amplitude, p.phase, profile=int(p.shape_profile))
         self.addTTL('bichromatic_1', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
         
         if pl.enable: # add a stark shift on the localized beam
             f = WithUnit(80., 'MHz') + pl.detuning
             amp = WithUnit(-15., 'dBm')
-            self.addDDS('stark_shift', self.start, frequency_advance_duration, f, ampl_off)
-            self.addDDS('stark_shift', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
+            self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
+            self.addDDS('SP_local', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
             
             # turn on the double pass at -15 dBm for the stark shift
-            self.addDDS('729DP_1', self.start, frequency_advance_duration, p.frequency, ampl_off)
-            self.addDDS('729DP_1', self.start + frequency_advance_duration, p.duration, p.frequency, amp, p.phase, profile=int(p.shape_profile))
+            self.addDDS('729local', self.start, frequency_advance_duration, p.frequency, ampl_off)
+            self.addDDS('729local', self.start + frequency_advance_duration, p.duration, p.frequency, amp, p.phase, profile=int(p.shape_profile))
+            
+        self.addDDS('729global', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
+        
+        self.end = self.end + frequency_advance_duration
         
         if p.analysis_pulse_enable:
             analysis_start = self.end
-            self.addDDS('729', analysis_start , p.analysis_duration, p.frequency, p.analysis_amplitude, p.analysis_phase)
+            self.addDDS('729global', analysis_start , p.analysis_duration, p.frequency, p.analysis_amplitude, p.analysis_phase)
             self.end = analysis_start + p.analysis_duration

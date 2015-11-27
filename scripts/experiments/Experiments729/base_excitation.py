@@ -140,7 +140,8 @@ class base_excitation(experiment):
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
-        
+        print "sbc"
+        print sideband_cooling_frequency
         sc2 = self.parameters.SequentialSBCooling
         sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
@@ -149,7 +150,8 @@ class base_excitation(experiment):
     def setup_initial_switches(self):
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
-        self.pulser.output('729DP', False)
+        self.pulser.output('729global', False)
+        self.pulser.output('729local', False)
     
     def plot_current_sequence(self, cxn):
         from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
@@ -218,7 +220,7 @@ class base_excitation(experiment):
             self.camera.set_image_region(self.initial_region)
             if self.camera_initially_live_display:
                 self.camera.start_live_display()
-               
+
     def save_data(self, readouts):
         #save the current readouts
         iters = numpy.ones_like(readouts) * self.readout_save_iteration

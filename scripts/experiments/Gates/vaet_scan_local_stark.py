@@ -137,6 +137,7 @@ class vaet_scan_local_stark(experiment):
         self.dds_cw.amplitude('4', amp_red)
 
         [self.dds_cw.output(ch, True) for ch in ['0', '1', '2', '3', '4']]
+        self.dds_cw.output('5', False)
         time.sleep(0.1) # make sure everything is set before starting the sequence
         
     def run(self, cxn, context):
@@ -176,6 +177,7 @@ class vaet_scan_local_stark(experiment):
         return states
 
     def finalize(self, cxn, context):
+        self.dds_cw.output('5', True)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 

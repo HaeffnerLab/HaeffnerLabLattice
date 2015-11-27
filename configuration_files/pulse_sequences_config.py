@@ -40,8 +40,12 @@ class double_pass_729(dds_channel):
         return phase
         
 #defining available dds channels
-dds729DP = double_pass_729('729DP')
-dds729DP_1 = double_pass_729('729DP_1')
+#dds729DP = double_pass_729('729DP')
+#dds729DP_1 = double_pass_729('729DP_1')
+
+dds729global = double_pass_729('729global')
+dds729local = double_pass_729('729local')
+
 dds729DP_aux = double_pass_729('729DP_aux')
 dds729DP_aux_1 = double_pass_729('729DP_aux_1')
 global397 = dds_channel('global397')
@@ -55,10 +59,12 @@ There can be multiple keys for the same value.
 '''
     
 dds_name_dictionary = {
-                        '729':dds729DP,
-                        '729DP':dds729DP,
-                        '729_1':dds729DP_1,
-                        '729DP_1':dds729DP_1,
+                        '729':dds729global,
+                        '729DP':dds729global,
+                        '729_1':dds729local,
+                        '729DP_1':dds729local,
+                        '729global':dds729global,
+                        '729local':dds729local,
                         '729_aux':dds729DP_aux,
                         '729DP_aux':dds729DP_aux,
                         '729_aux_1':dds729DP_aux_1,

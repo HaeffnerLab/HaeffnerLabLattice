@@ -26,8 +26,6 @@ class sb_track_dual(experiment):
         self.sb_tracker.initialize(cxn, context, ident)
         
     def run(self, cxn, context):
-        dt = self.parameters.DriftTracker
-        p = self.parameters.Sideband_tracker
         replace = TreeDict.fromdict({
                                      'Sideband_tracker.sideband_selection':[1,0,0,0]
                                     })

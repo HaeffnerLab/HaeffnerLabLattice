@@ -33,7 +33,7 @@ class ramsey_excitation(pulse_sequence):
                                      'Excitation_729.rabi_excitation_duration':r.first_pulse_duration,
                                      'Excitation_729.rabi_excitation_phase':WithUnit(0, 'deg'),
                                      'Excitation_729.channel_729':r.channel_729,
-                                     })
+                                     }) 
         self.addSequence(rabi_excitation, replace)
         self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':r.ramsey_time}))
         #self.addDDS('radial', self.end, r.ramsey_time, WithUnit(220.0,'MHz'), WithUnit(-13.0,'dBm'))

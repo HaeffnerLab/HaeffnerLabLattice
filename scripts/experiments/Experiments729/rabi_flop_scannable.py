@@ -61,7 +61,7 @@ class rabi_flopping_scannable(experiment):
         self.parameters['Excitation_729.rabi_excitation_duration'] = self.parameters.RabiFlopping_Sit.sit_on_excitation
     
     def load_frequency(self):
-        #reloads trap frequencyies and gets the latest information from the drift tracker
+        #reloads trap frequencies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         flop = self.parameters.RabiFlopping
         frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)

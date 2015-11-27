@@ -6,6 +6,7 @@ from subsequences.LocalRotation import local_rotation
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
+from subsequences.SamplePID import sample_pid
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -17,7 +18,7 @@ class vaet_interaction(pulse_sequence):
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, local_rotation,
-                             vaet, tomography_readout, turn_off_all, sideband_cooling]
+                             vaet, tomography_readout, turn_off_all, sideband_cooling, sample_pid]
 
     replaced_parameters = {}
 
@@ -25,6 +26,8 @@ class vaet_interaction(pulse_sequence):
         p = self.parameters
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
+        #self.addSequence(sample_pid)
+        
         self.addSequence(doppler_cooling_after_repump_d)
         if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)

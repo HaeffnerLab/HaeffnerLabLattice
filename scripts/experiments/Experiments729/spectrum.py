@@ -186,7 +186,8 @@ class spectrum(experiment):
     def save_parameters(self, dv, cxn, cxnlab, context):
         measuredDict = dvParameters.measureParameters(cxn, cxnlab)
         dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)   
+        dvParameters.saveParameters(dv, dict(self.parameters), context)
+        cxnlab.disconnect()
 
 if __name__ == '__main__':
     cxn = labrad.connect()
