@@ -20,7 +20,7 @@ class setup_dt(experiment):
 
     @classmethod
     def all_required_parameters(cls):
-        paremters = set(cls.required_parameters)
+        parameters = set(cls.required_parameters)
         parameters = parameters.union(set(rf.all_required_parameters()))
         parameters = list(parameters)
 
