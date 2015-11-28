@@ -88,7 +88,7 @@ class rabi_flopping(experiment):
         self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
     
     def load_frequency(self):
-        #reloads trap frequencyies and gets the latest information from the drift tracker
+        #reloads trap frequencies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         flop = self.parameters.RabiFlopping
         frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
@@ -100,6 +100,8 @@ class rabi_flopping(experiment):
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
+        t = []
+        ex = []
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
@@ -107,8 +109,11 @@ class rabi_flopping(experiment):
             if excitation is None: break 
             submission = [duration['us']]
             submission.extend(excitation)
+            t.append(duration['us'])
+            ex.append(excitation)
             self.dv.add(submission, context = self.rabi_flop_save_context)
             self.update_progress(i)
+        return np.array(t), np.array(ex)
     
     def get_excitation_crystallizing(self, cxn, context, duration):
         excitation = self.do_get_excitation(cxn, context, duration)
