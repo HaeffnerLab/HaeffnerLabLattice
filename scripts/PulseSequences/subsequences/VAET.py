@@ -44,4 +44,9 @@ class vaet(pulse_sequence):
             f = WithUnit(80., 'MHz') + pl.detuning
             self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
             self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
+            self.addDDS('SP_local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, f, ampl_off)
+
+        self.addDDS('729global', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)
+        self.addDDS('729local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)
+        
         
