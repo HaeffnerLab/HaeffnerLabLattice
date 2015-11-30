@@ -32,6 +32,7 @@ class setup_local_rotation(experiment):
         self.ident = ident
         self.drift_tracker = cxn.sd_tracker
         self.rabi_flop = self.make_experiment(rf)
+        self.rabi_flop.initialize(cxn, context, ident)
         self.fitter = pi_time_fitter()
         self.pv = cxn.parametervault
     

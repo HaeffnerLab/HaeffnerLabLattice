@@ -5,7 +5,6 @@ from subsequences.OpticalPumping import optical_pumping
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.Ramsey import ramsey_excitation
-from subsequences.SamplePID import sample_pid
 
 from labrad.units import WithUnit
            
@@ -17,7 +16,7 @@ class ramsey(pulse_sequence):
                            ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
-                             tomography_readout, turn_off_all, sideband_cooling, ramsey_excitation, sample_pid]
+                             tomography_readout, turn_off_all, sideband_cooling, ramsey_excitation]
                              
     def sequence(self):
         p = self.parameters

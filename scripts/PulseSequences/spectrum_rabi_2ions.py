@@ -7,7 +7,6 @@ from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
 from subsequences.DopplerCooling import doppler_cooling
-from subsequences.SamplePID import sample_pid
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -20,7 +19,7 @@ class spectrum_rabi_2ions(pulse_sequence):
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
-                             rabi_excitation_2ions, tomography_readout, turn_off_all, sideband_cooling, sample_pid]
+                             rabi_excitation_2ions, tomography_readout, turn_off_all, sideband_cooling]
     
     replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
                            }

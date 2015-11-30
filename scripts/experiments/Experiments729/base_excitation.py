@@ -72,10 +72,12 @@ class base_excitation(experiment):
         self.readout_save_context = cxn.context()
         self.histogram_save_context = cxn.context()
         self.readout_save_iteration = 0
+        
+        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        
         self.setup_sequence_parameters()
         self.setup_initial_switches()
         self.setup_data_vault()
-        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
         if use_camera_override != None:
             self.use_camera=use_camera_override
         if self.use_camera:

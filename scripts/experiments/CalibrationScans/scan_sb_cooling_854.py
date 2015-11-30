@@ -72,6 +72,6 @@ class scan_sb_cooling_854(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = scan_sb_cooling_detuning(cxn = cxn)
+    exprt = scan_sb_cooling_854(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

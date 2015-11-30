@@ -7,6 +7,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+import numpy as np
 
 class rabi_flopping(experiment):
     

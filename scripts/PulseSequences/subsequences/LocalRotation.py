@@ -7,6 +7,7 @@ class local_rotation(pulse_sequence):
                           ('LocalRotation','amplitude'),
                           ('LocalRotation','frequency'),
                           ('LocalRotation','pi_time'),
+                          ('LocalRotation', 'sp_amplitude')
                           ]
 
     def sequence(self):
@@ -24,6 +25,7 @@ class local_rotation(pulse_sequence):
         self.addDDS('729local', self.start, frequency_advance_duration, pl.frequency, ampl_off)
 
         f = WithUnit(80., 'MHz')
-        amp = WithUnit(-12., 'dBm')
+        #amp = WithUnit(-12., 'dBm')
+        amp = pl.sp_amplitude
         self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
         self.addDDS('SP_local', self.start + frequency_advance_duration, pl.pi_time, f, amp)
