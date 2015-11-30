@@ -16,6 +16,7 @@ class ms_gate(pulse_sequence):
                            ('StatePreparation','optical_pumping_enable'), 
                            ('StatePreparation','sideband_cooling_enable'),
                            ('MolmerSorensen', 'SDDS_enable'),
+                           ('MolmerSorensen', 'SDDS_rotate_out'),
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, local_rotation,
@@ -38,6 +39,6 @@ class ms_gate(pulse_sequence):
         if p.MolmerSorensen.SDDS_enable:
             self.addSequence(local_rotation)
         self.addSequence(molmer_sorensen)
-        if p.MolmerSorensen.SDDS_enable:
+        if p.MolmerSorensen.SDDS_rotate_out:
             self.addSequence(local_rotation)
         self.addSequence(tomography_readout)

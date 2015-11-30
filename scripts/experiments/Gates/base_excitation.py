@@ -125,6 +125,7 @@ class base_excitation(experiment):
     def setup_data_vault(self):
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
+        self.datasetNameAppend += '_rdout'
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         self.save_directory = ['','Experiments']
         self.save_directory.extend([self.name])

@@ -26,7 +26,6 @@ class ms_gate(experiment):
                            ('MolmerSorensen', 'ac_stark_shift'),
                            ('MolmerSorensen', 'amp_red'),
                            ('MolmerSorensen', 'amp_blue'),
-                           ('MolmerSorensen', 'camera_readout'),
 
                            ('Crystallization', 'auto_crystallization'),
                            ('Crystallization', 'camera_record_exposure'),
@@ -37,8 +36,6 @@ class ms_gate(experiment):
                            ('Crystallization', 'pmt_record_duration'),
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
-                           
-                           ('StateReadout', 'camera_readout_duration')
                            ]
     
     @classmethod
@@ -51,8 +48,6 @@ class ms_gate(experiment):
         parameters.remove(('MolmerSorensen','frequency'))
         parameters.remove(('LocalRotation','frequency'))
         parameters.remove(('MolmerSorensen','duration'))
-
-        parameters.remove(('StateReadout', 'use_camera_for_readout'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -88,24 +83,13 @@ class ms_gate(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        if not self.parameters.StateReadout.use_camera_for_readout:
+            dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        else:
+            dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
         self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Gate'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
-
-    def setup_data_vault_camera(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('State',st,'Probability') for st in ['SS', 'SD', 'DS', 'DD'] ]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
-        self.dv.add_parameter('Window', ['Molmer-Sorensen Gate'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
-        
     
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
@@ -175,7 +159,10 @@ class ms_gate(experiment):
         self.load_frequency()
         self.parameters['MolmerSorensen.duration'] = duration
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        if not self.parameters.StateReadout.use_camera_for_readout:
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        else:
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
         print states
         return states
      

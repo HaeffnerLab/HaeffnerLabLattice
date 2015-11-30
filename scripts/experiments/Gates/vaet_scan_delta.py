@@ -89,7 +89,10 @@ class vaet_scan_delta(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        if not self.parameters.StateReadout.use_camera_for_readout:
+            dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        else:
+            dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
         self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Effective mode frequency'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
@@ -181,7 +184,10 @@ class vaet_scan_delta(experiment):
     def do_get_excitation(self, cxn, context, freq):
         self.load_frequency(freq)
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        if not self.parameters.StateReadout.use_camera_for_readout:
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        else:
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
         return states
      
     def finalize(self, cxn, context):
