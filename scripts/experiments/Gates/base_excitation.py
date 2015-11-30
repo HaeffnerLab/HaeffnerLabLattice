@@ -32,7 +32,9 @@ class base_excitation(experiment):
                             ('StateReadout', 'threshold_list'),
 
                             ('StateReadout', 'use_camera_for_readout'),
-                            ('StateReadout', 'state_readout_duration'),
+                            #('StateReadout', 'state_readout_duration'),
+                            ('StateReadout', 'camera_readout_duration'),
+                            ('StateReadout', 'pmt_readout_duration'),
                             ('StateReadout', 'pmt_mode'),
                             
                             ('IonsOnCamera','ion_number'),
@@ -62,6 +64,7 @@ class base_excitation(experiment):
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
         params.remove(('SequentialSBCooling', 'frequency'))
+        params.remove(('StateReadout', 'state_readout_duration'))
         return params
     
     def initialize(self, cxn, context, ident):
@@ -148,6 +151,13 @@ class base_excitation(experiment):
         sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
         self.parameters['SequentialSBCooling.frequency'] = sc2freq
+
+        # set state readout time
+        if self.use_camera:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.camera_readout_duration
+        else:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.pmt_readout_duration
+
     
     def setup_initial_switches(self):
         self.pulser.switch_manual('crystallization',  False)
