@@ -14,6 +14,7 @@ class vaet_interaction(pulse_sequence):
     required_parameters = [ 
                            ('StatePreparation','optical_pumping_enable'), 
                            ('StatePreparation','sideband_cooling_enable'),
+                           ('MolmerSorensen', 'SDDS_rotate_out'),
                            ]
     
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, local_rotation,
@@ -34,5 +35,6 @@ class vaet_interaction(pulse_sequence):
             self.addSequence(sideband_cooling)
         self.addSequence(local_rotation)
         self.addSequence(vaet)
-        self.addSequence(local_rotation)
+        if p.MolmerSorensen.SDDS_rotate_out:
+            self.addSequence(local_rotation)
         self.addSequence(tomography_readout)

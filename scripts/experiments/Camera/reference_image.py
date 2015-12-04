@@ -30,6 +30,7 @@ class reference_camera_image(experiment):
                            ('StateReadout','state_readout_frequency_866'),
                            ('StateReadout','camera_trigger_width'),
                            ('StateReadout','camera_transfer_additional'),
+                           ('StateReadout', 'camera_readout_duration'),
                            
                            ('DopplerCooling','doppler_cooling_repump_additional'),
                            ]
@@ -38,6 +39,7 @@ class reference_camera_image(experiment):
     def all_required_parameters(cls):
         parameters = set(cls.required_parameters)
         parameters = list(parameters)
+        parameters.remove(('StateReadout', 'state_readout_duration'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -59,6 +61,7 @@ class reference_camera_image(experiment):
                              ]
         self.camera.abort_acquisition()
         self.initial_exposure = self.camera.get_exposure_time()
+        self.parameters.StateReadout.state_readout_duration = self.parameters.StateReadout.camera_readout_duration
         self.camera.set_exposure_time(self.parameters.StateReadout.state_readout_duration)
         self.initial_region = self.camera.get_image_region()
         self.initial_mode = self.camera.get_acquisition_mode()

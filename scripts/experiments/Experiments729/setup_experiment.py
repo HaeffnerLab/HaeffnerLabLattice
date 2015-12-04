@@ -110,13 +110,13 @@ class setup_experiment(experiment):
 
 	    # initial rough scan 
         # Spectrum parameters
-        s12d12 = -16.600
-        delta_s12d12 = 1.0/2
+        s12d12 = -14.5867
+        delta_s12d12 = 0.4/2
         no_of_steps = 30
         
-        excitation_time_1212 = 2.0
+        excitation_time_1212 = 200.0
         
-        amplitude = -15.0
+        amplitude = -25.0
        
         
         replace_1 = TreeDict.fromdict({
@@ -139,12 +139,12 @@ class setup_experiment(experiment):
 
 
 	    # fine scan
-    	no_of_steps = 30
-    	amplitude = -20.0
+    	no_of_steps = 40
+    	amplitude = -30.0
 
         s12d12 = fitted_freq1
-        delta_s12d12 = 0.08/2
-        excitation_time_1212 = 100.0
+        delta_s12d12 = 0.04/2
+        excitation_time_1212 = 400.0
 
         replace_1 = TreeDict.fromdict({
                                        'Spectrum.manual_scan':(WithUnit(s12d12 - delta_s12d12, 'MHz'), WithUnit(s12d12 + delta_s12d12, 'MHz'), no_of_steps),
@@ -166,10 +166,10 @@ class setup_experiment(experiment):
 
 	#### D5/2 
 
-        s12d52 = -27.228
-        delta_s12d52 = 1.0/2
-    	excitation_time_1252 = 2.0
-    	amplitude = -15.0
+        s12d52 = -25.4911
+        delta_s12d52 = 0.4/2
+    	excitation_time_1252 = 200.0
+    	amplitude = -25.0
         no_of_steps = 30
 
        
@@ -193,12 +193,12 @@ class setup_experiment(experiment):
 
         # fine scan
         s12d52 = fitted_freq2
-        amplitude = -20.0
-        no_of_steps = 30
+        amplitude = -30.0
+        no_of_steps = 40
 
-        delta_s12d52 = 0.08/2
+        delta_s12d52 = 0.04/2
         
-        excitation_time_1252 = 100.0
+        excitation_time_1252 = 400.0
 
        
         replace_2 = TreeDict.fromdict({
@@ -236,8 +236,8 @@ class setup_experiment(experiment):
             self.submit_centers(drift_line1, WithUnit(fitted_freq1, 'MHz'), drift_line2, WithUnit(fitted_freq2, 'MHz'))
   
             # setting some parameters for the drift tracker
-            self.pv.set_parameter('DriftTrackerRamsey', 'line_1_pi_time', WithUnit(5.0, 'us'))
-            self.pv.set_parameter('DriftTrackerRamsey', 'line_2_pi_time', WithUnit(5.0, 'us'))
+            #self.pv.set_parameter('DriftTrackerRamsey', 'line_1_pi_time', WithUnit(5.0, 'us'))
+            #self.pv.set_parameter('DriftTrackerRamsey', 'line_2_pi_time', WithUnit(5.0, 'us'))
   
         # fit the result
         # make two new sequences that fit a line and give the result and one that fits a rabi and gives the result

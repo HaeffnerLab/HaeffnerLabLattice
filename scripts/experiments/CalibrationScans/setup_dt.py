@@ -73,7 +73,9 @@ class setup_dt(experiment):
     
     def run(self, cxn, context):
 
-        time_scan = [WithUnit(0, 'us'), WithUnit(50, 'us'), 50]
+        time_scan = [WithUnit(0, 'us'), WithUnit(40, 'us'), 40]
+        #time_scan = [WithUnit(0, 'us'), WithUnit(25, 'us'), 10]
+        
         dtr = self.parameters.DriftTrackerRamsey
         dt = self.parameters.DriftTracker
 
@@ -89,6 +91,9 @@ class setup_dt(experiment):
         self.rabi_flop.set_parameters(replace)
         self.rabi_flop.set_progress_limits(0, 50.0)
         t, ex = self.rabi_flop.run(cxn, context)
+
+        ex = ex.flatten()
+        
         pi_time_1 = self.fitter.fit(t, ex)
         pi_time_1 = WithUnit(pi_time_1, 'us')
 
@@ -106,10 +111,23 @@ class setup_dt(experiment):
         self.rabi_flop.set_parameters(replace)
         self.rabi_flop.set_progress_limits(50.0, 100.0)
         t, ex = self.rabi_flop.run(cxn, context)
+
+        ex = ex.flatten()
+
         pi_time_2 = self.fitter.fit(t, ex)
         pi_time_2 = WithUnit(pi_time_2, 'us')
 
-        self.pv.set_parmeter('DriftTrackerRamsey', 'line_2_pi_time', pi_time_2)
+        self.pv.set_parameter('DriftTrackerRamsey', 'line_2_pi_time', pi_time_2)
 
+       
     def finalize(self, cxn, context):
-        self.rabi_flop.finalize(cxn, context)
+        # this line raises an error
+        #self.rabi_flop.finalize(cxn, context)
+        pass
+        
+if __name__ == '__main__':
+    cxn = labrad.connect()
+    scanner = cxn.scriptscanner
+    exprt = setup_dt(cxn = cxn)
+    ident = scanner.register_external_launch(exprt.name)
+    exprt.execute(ident)

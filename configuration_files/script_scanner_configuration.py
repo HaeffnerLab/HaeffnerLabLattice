@@ -58,8 +58,7 @@ class config(object):
                ('lattice.scripts.experiments.CalibrationScans.scan_motional_ramsey_time', 'scan_motional_ramsey_time'),
                ('lattice.scripts.experiments.CalibrationScans.rabi_excitation_continuous', 'rabi_excitation_continuous'),
                ('lattice.scripts.experiments.CalibrationScans.setup_dt', 'setup_dt'),
-               ('lattice.scripts.experiments.CalibrationScans.setup_local_rotation', 'setup_local_rotation'),
-               
+               ('lattice.scripts.experiments.CalibrationScans.setup_local_rotation', 'setup_local_rotation'),       
                ('lattice.scripts.experiments.Gates.ms_gate', 'ms_gate'),
                ('lattice.scripts.experiments.Gates.ms_scan_ac_stark', 'ms_scan_ac_stark'),
                ('lattice.scripts.experiments.Gates.ms_scan_phase', 'ms_scan_phase'),

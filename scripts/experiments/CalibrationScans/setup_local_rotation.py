@@ -15,7 +15,6 @@ class setup_local_rotation(experiment):
     required_parameters = [('LocalRotation', 'amplitude'),
                            ('MolmerSorensen', 'line_selection'),
                            ]
-
     @classmethod
     def all_required_parameters(cls):
         parameters = set(cls.required_parameters)
@@ -37,7 +36,7 @@ class setup_local_rotation(experiment):
         self.pv = cxn.parametervault
     
     def run(self, cxn, context):
-        time_scan = [WithUnit(0, 'us'), WithUnit(50, 'us'), 50]
+        time_scan = [WithUnit(0, 'us'), WithUnit(50, 'us'), 60]
         
         ms = self.parameters.MolmerSorensen
         lr = self.parameters.LocalRotation
@@ -51,10 +50,26 @@ class setup_local_rotation(experiment):
 
         self.rabi_flop.set_parameters(replace)
         t, ex = self.rabi_flop.run(cxn, context)
+
+        ex = ex.flatten()
+
+        #print ex
+
         t_pi = self.fitter.fit(t, ex)
         t_pi = WithUnit(t_pi, 'us')
         
         self.pv.set_parameter('LocalRotation', 'pi_time', t_pi)
+        print t_pi
 
     def finalize(self, cxn, context):
-        self.rabi_flop.finalize(cxn, context)
+        #self.rabi_flop.finalize(cxn, context)
+        pass
+
+
+if __name__ == '__main__':
+    cxn = labrad.connect()
+    scanner = cxn.scriptscanner
+    exprt = setup_local_rotation(cxn = cxn)
+    ident = scanner.register_external_launch(exprt.name)
+    exprt.execute(ident)
+
