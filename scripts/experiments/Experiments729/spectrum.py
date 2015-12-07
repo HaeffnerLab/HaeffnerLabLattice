@@ -125,7 +125,10 @@ class spectrum(experiment):
         
     def run(self, cxn, context):
         self.setup_data_vault()
-        self.setup_sequence_parameters()        
+        self.setup_sequence_parameters()
+
+        fr = []
+        exci = []
         
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
@@ -139,6 +142,9 @@ class spectrum(experiment):
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
+            fr.append(submission[0])
+            exci.append(excitation)
+        return fr, exci
     
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)

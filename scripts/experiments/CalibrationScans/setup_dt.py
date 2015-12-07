@@ -2,7 +2,7 @@ from common.abstractdevices.script_scanner.scan_methods import experiment
 from lattice.scripts.experiments.Experiments729.rabi_flopping import rabi_flopping as rf
 from lattice.scripts.scriptLibrary import scan_methods
 from lattice.scripts.scriptLibrary import dvParameters
-from pi_time_fitter import pi_time_fitter
+from fitters import pi_time_fitter
 from labrad.units import WithUnit
 from treedict import TreeDict
 import numpy as np
