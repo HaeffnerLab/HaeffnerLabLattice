@@ -176,18 +176,29 @@ class base_excitation(experiment):
         threshold = int(self.parameters.StateReadout.state_readout_threshold)
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
+                
         pulse_sequence.programSequence(self.pulser)
+                
         #self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)
             self.camera.start_acquisition()
+            
+        
         self.pulser.start_number(repetitions)
+        
         self.pulser.wait_sequence_done()
+        
         self.pulser.stop_sequence()
+        
+        
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
             readouts = self.pulser.get_readout_counts().asarray
+            
+           
+        
             self.save_data(readouts)            
             if len(readouts):
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
@@ -214,7 +225,9 @@ class base_excitation(experiment):
             #useful for debugging, saving the images
 #             numpy.save('readout {}'.format(int(time.time())), images)
             self.save_confidences(confidences)
-        return ion_state, readouts
+                    
+            
+        return ion_state, readouts    
     
     @property
     def output_size(self):

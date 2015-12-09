@@ -243,9 +243,9 @@ class Electrode_Diagonalization( LabradServer ):
             voltage = yield self.comp.voltage(2)
             voltage = -voltage
         elif electrode == 'D1':
-            voltage = yield self.dac.get_voltage('comp1')
+            voltage = yield self.dac.get_voltage('comp1') # ??? this is actually the endcap1
         elif electrode == 'D2':
-            voltage = yield self.dac.get_voltage('comp2')
+            voltage = yield self.dac.get_voltage('comp2') # ??? this is actually the endcap2
         else:
             raise Exception("Wrong electrode")
         returnValue(voltage)
@@ -260,9 +260,9 @@ class Electrode_Diagonalization( LabradServer ):
             voltage = -voltage
             yield self.comp.voltage(2, voltage)
         elif electrode == 'D1':
-            yield self.dac.set_voltage('comp1', voltage)
+            yield self.dac.set_voltage('comp1', voltage) # ??? this is actually the endcap1
         elif electrode == 'D2':
-            yield self.dac.set_voltage('comp2', voltage)
+            yield self.dac.set_voltage('comp2', voltage) # ??? this is actually the endcap2
         else:
             raise Exception("Wrong electrode")
         returnValue(voltage)

@@ -124,6 +124,9 @@ class spectrum(experiment):
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
         
     def run(self, cxn, context):
+        import time
+        t0 = time.time()
+        
         self.setup_data_vault()
         self.setup_sequence_parameters()
 
@@ -144,6 +147,10 @@ class spectrum(experiment):
             self.update_progress(i)
             fr.append(submission[0])
             exci.append(excitation)
+            
+        t1 = time.time()
+        
+        print t1 - t0    
         return fr, exci
     
     def get_excitation_crystallizing(self, cxn, context, freq):

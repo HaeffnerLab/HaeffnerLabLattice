@@ -5,6 +5,7 @@ from lattice.scripts.scriptLibrary import dvParameters
 from fitters import peak_fitter
 from labrad.units import WithUnit
 from treedict import TreeDict
+import time
 import numpy as np
 import labrad
 
@@ -61,6 +62,7 @@ class calibrate_all_lines(experiment):
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_repumps'))
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866'))
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'))
+        return parameters
     
     def initialize(self, cxn, context, ident):
 
@@ -70,12 +72,15 @@ class calibrate_all_lines(experiment):
         self.spectrum.initialize(cxn, context, ident)
         self.fitter = peak_fitter()
         self.pv = cxn.parametervault
+        self.dds_cw = cxn.dds_cw
 
         
     def run(self, cxn, context):
         
         dt = self.parameters.DriftTracker
-
+        
+        self.dds_cw.output('5', True)
+        time.sleep(1)
         ### RUN THE FIRST CARRIER
         
         replace = TreeDict.fromdict({
@@ -92,6 +97,10 @@ class calibrate_all_lines(experiment):
         self.spectrum.set_progress_limits(0, 25.0)
         
         fr, ex = self.spectrum.run(cxn, context)
+
+        fr = np.array(fr)
+        ex = np.array(ex)
+        ex = ex.flatten()
 
         carr_1 = self.fitter.fit(fr, ex)
         carr_1 = WithUnit(carr_1, 'MHz')
@@ -112,6 +121,10 @@ class calibrate_all_lines(experiment):
         self.spectrum.set_progress_limits(25.0, 50.0)
         
         fr, ex = self.spectrum.run(cxn, context)
+
+        fr = np.array(fr)
+        ex = np.array(ex)
+        ex = ex.flatten()
 
         carr_2 = self.fitter.fit(fr, ex)
         carr_2 = WithUnit(carr_2, 'MHz')
@@ -136,8 +149,12 @@ class calibrate_all_lines(experiment):
         
         fr, ex = self.spectrum.run(cxn, context)
 
+        fr = np.array(fr)
+        ex = np.array(ex)
+        ex = ex.flatten()
+
         sb_1 = self.fitter.fit(fr, ex)
-        sb_1 = WithUnit(sb_1, 'MHz')
+        sb_1 = WithUnit(abs(sb_1), 'MHz')
 
         #### SECOND SIDEBAND
 
@@ -156,11 +173,18 @@ class calibrate_all_lines(experiment):
         
         fr, ex = self.spectrum.run(cxn, context)
 
+        fr = np.array(fr)
+        ex = np.array(ex)
+        ex = ex.flatten()
+
         sb_2 = self.fitter.fit(fr, ex)
-        sb_2 = WithUnit(sb_2, 'MHz')
+        sb_2 = WithUnit(abs(sb_2), 'MHz')
 
         self.submit_trap_frequencies(sb_1, sb_2)
-
+        
+        time.sleep(1)
+        self.dds_cw.output('5', False)
+        time.sleep(1)
 
     def submit_dt(self, f1, line1, f2, line2):
         submission = [
@@ -172,5 +196,12 @@ class calibrate_all_lines(experiment):
         self.pv.set_parameter('TrapFrequencies', 'radial_frequency_1', f1)
         self.pv.set_parameter('TrapFrequencies', 'radial_frequency_2', f2)
 
-    def finalize(self, cxn, contest):
+    def finalize(self, cxn, context):
         self.spectrum.finalize(cxn, context)
+
+if __name__ == '__main__':
+    cxn = labrad.connect()
+    scanner = cxn.scriptscanner
+    exprt = calibrate_all_lines(cxn = cxn)
+    ident = scanner.register_external_launch(exprt.name)
+    exprt.execute(ident)
