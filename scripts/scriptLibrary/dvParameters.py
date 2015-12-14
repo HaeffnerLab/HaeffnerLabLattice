@@ -11,6 +11,7 @@ def measureParameters(cxn, cxnlab, specified = None):
             'compensation':measure_compensation,
             'dds_cw':measure_dds_cw_frequencies,
             'line_trigger':measure_linetrigger,
+            'dds_gui':measure_dds_gui_values,
             'drift_tracker':measure_drifttracker
             }
     lab = {
@@ -44,8 +45,14 @@ def measure_drifttracker(cxn, d):
 def measure_linetrigger(cxn, d):
     server = cxn.pulser
     d['line_trigger_state'] = server.line_trigger_state()
-    d['line_trigger_duration'] = server.line_trigger_duration()    
+    d['line_trigger_duration'] = server.line_trigger_duration()        
 
+def measure_dds_gui_values(cxn, d):
+    server = cxn.pulser
+    for k in server.get_dds_channels():        
+        d['gui_dds_freq_' + k] = server.frequency(k)
+        d['gui_dds_ampl_' + k] = server.amplitude(k)
+    
 def measure_dds_cw_frequencies(cxn, d):
     server = cxn.dds_cw
     for k in server.get_dds_channels():        

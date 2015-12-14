@@ -23,12 +23,14 @@ class dds_channel(object):
         return phase
         
 class double_pass_729(dds_channel):
-    def __init__(self, name):
-        super(double_pass_729, self).__init__(name)
+    # f_shift is the shift applied to the single pass AOMs (relative to 80 MHz)
     
+    def __init__(self, name, f_shift = WithUnit(0.0, 'MHz')):
+        super(double_pass_729, self).__init__(name)
+        self.f_shift = f_shift
     def freq_conversion(self, freq):
         #converting real frequency to double pass frequency
-        freq =  - 0.5 * freq + WithUnit(220.0, 'MHz')
+        freq =  - 0.5 * freq + WithUnit(220.0, 'MHz') - 0.5*self.f_shift
         return freq
     
     def phase_conversion(self, phase):
@@ -43,8 +45,11 @@ class double_pass_729(dds_channel):
 #dds729DP = double_pass_729('729DP')
 #dds729DP_1 = double_pass_729('729DP_1')
 
-dds729global = double_pass_729('729global')
-dds729local = double_pass_729('729local')
+dds729global = double_pass_729('729global', f_shift = WithUnit(0.15, 'MHz'))
+dds729local = double_pass_729('729local', f_shift = WithUnit(-0.2, 'MHz'))
+
+#dds729global = double_pass_729('729global', f_shift = WithUnit(0.0, 'MHz'))
+#dds729local = double_pass_729('729local', f_shift = WithUnit(0.0, 'MHz'))
 
 dds729DP_aux = double_pass_729('729DP_aux')
 dds729DP_aux_1 = double_pass_729('729DP_aux_1')

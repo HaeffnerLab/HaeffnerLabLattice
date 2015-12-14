@@ -114,25 +114,28 @@ class vaet_scan_local_stark(experiment):
         
         ### MOLMER SORENSEN FREQUENCIES AND AMPLITUDES ###
 
-        freq_blue = WithUnit(80., 'MHz') - ms_trap_frequency - ms.detuning + ms.ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + ms_trap_frequency + ms.detuning + ms.ac_stark_shift
+        f_global = WithUnit(80.0, 'MHz') + WithUnit(0.15, 'MHz')
+        f_local = WithUnit(80.0, 'MHz') - WithUnit(0.2, 'MHz')
+
+        freq_blue = f_global - ms_trap_frequency - ms.detuning + ms.ac_stark_shift
+        freq_red = f_global + ms_trap_frequency + ms.detuning + ms.ac_stark_shift
         amp_blue = self.parameters.MolmerSorensen.amp_blue
         amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
-        self.dds_cw.frequency('2', WithUnit(80., 'MHz'))
+        self.dds_cw.frequency('2', f_global)
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
 
         ####### SZX PARAMETERS ##########
 
-        freq_blue = WithUnit(80., 'MHz') - szx_trap_frequency/2. - delta + szx.ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + szx_trap_frequency/2. + szx.ac_stark_shift
+        freq_blue = f_local - szx_trap_frequency/2. - delta + szx.ac_stark_shift
+        freq_red = f_local + szx_trap_frequency/2. + szx.ac_stark_shift
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
         self.dds_cw.frequency('3', freq_blue)
         self.dds_cw.frequency('4', freq_red)
-        self.dds_cw.frequency('5', WithUnit(80., 'MHz'))
+        self.dds_cw.frequency('5', f_local)
         self.dds_cw.amplitude('3', amp_blue)
         self.dds_cw.amplitude('4', amp_red)
 

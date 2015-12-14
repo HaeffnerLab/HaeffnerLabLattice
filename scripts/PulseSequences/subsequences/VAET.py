@@ -41,7 +41,8 @@ class vaet(pulse_sequence):
         self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         
         if pl.enable: # add a stark shift on the localized beam
-            f = WithUnit(80., 'MHz') + pl.detuning
+            f = WithUnit(80.0, 'MHz') + pl.detuning
+            #f = WithUnit(80.0 - 0.2, 'MHz') + pl.detuning
             self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
             self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
             self.addDDS('SP_local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, f, ampl_off)

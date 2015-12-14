@@ -103,14 +103,15 @@ class ms_scan_ac_stark(experiment):
         mode = gate.sideband_selection
         trap_frequency = self.parameters['TrapFrequencies.' + mode]
         
-        freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + ac_stark_shift
-        amp = WithUnit(-15., 'dBm')
+        f_global = WithUnit(80.0, 'MHz') + WithUnit(0.15, 'MHz')
+        freq_blue = f_global - trap_frequency - gate.detuning + ac_stark_shift
+        freq_red = f_global + trap_frequency + gate.detuning + ac_stark_shift
+        
         amp_blue = self.parameters.MolmerSorensen.amp_blue
         amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
-        self.dds_cw.frequency('2', WithUnit(80., 'MHz'))
+        self.dds_cw.frequency('2', f_global)
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
         #self.dds_cw.amplitude('2', amp)

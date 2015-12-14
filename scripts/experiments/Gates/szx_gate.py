@@ -109,14 +109,15 @@ class szx(experiment):
         mode = gate.sideband_selection
         trap_frequency = self.parameters['TrapFrequencies.' + mode]
         
-        freq_blue = WithUnit(80., 'MHz') - trap_frequency/2. - gate.detuning + gate.ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + trap_frequency/2. + gate.ac_stark_shift
+        f_local = WithUnit(80.0, 'MHz') - WithUnit(0.2, 'MHz')
+        freq_blue = f_local - trap_frequency/2. - gate.detuning + gate.ac_stark_shift
+        freq_red = f_local + trap_frequency/2. + gate.ac_stark_shift
         amp = WithUnit(-12., 'dBm')
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
         self.dds_cw.frequency('3', freq_blue)
         self.dds_cw.frequency('4', freq_red)
-        self.dds_cw.frequency('5', WithUnit(80., 'MHz')) # for driving the carrier
+        self.dds_cw.frequency('5', f_local) # for driving the carrier
         self.dds_cw.amplitude('3', amp_blue)
         self.dds_cw.amplitude('4', amp_red)
         self.dds_cw.amplitude('5', amp)

@@ -30,7 +30,8 @@ class calibrate_all_lines(experiment):
 
         ('Display', 'relative_frequencies'),
 
-        ('StateReadout', 'repeat_each_measurement'),]
+        ('StateReadout', 'repeat_each_measurement'),
+        ('Excitation_729', 'bichro')]
 
         
         
@@ -91,7 +92,8 @@ class calibrate_all_lines(experiment):
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
-            'StateReadout.repeat_each_measurement':100})
+            'StateReadout.repeat_each_measurement':100,
+            'Excitation_729.bichro':False,})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(0, 25.0)
@@ -115,7 +117,8 @@ class calibrate_all_lines(experiment):
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
-            'StateReadout.repeat_each_measurement':100})
+            'StateReadout.repeat_each_measurement':100,
+            'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(25.0, 50.0)
@@ -142,7 +145,8 @@ class calibrate_all_lines(experiment):
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':True,
-            'StateReadout.repeat_each_measurement':100})
+            'StateReadout.repeat_each_measurement':100,
+            'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(50.0, 75.0)
@@ -166,7 +170,8 @@ class calibrate_all_lines(experiment):
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':True,
-            'StateReadout.repeat_each_measurement':100})
+            'StateReadout.repeat_each_measurement':100,
+            'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(75.0, 100.0)
