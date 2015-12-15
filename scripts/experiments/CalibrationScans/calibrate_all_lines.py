@@ -80,6 +80,9 @@ class calibrate_all_lines(experiment):
         
         dt = self.parameters.DriftTracker
         
+        # save original state of DDS5
+        dds5_state = self.dds_cw.output('5')
+
         self.dds_cw.output('5', True)
         time.sleep(1)
         ### RUN THE FIRST CARRIER
@@ -187,8 +190,10 @@ class calibrate_all_lines(experiment):
 
         self.submit_trap_frequencies(sb_1, sb_2)
         
+        # resetting DDS5 state
         time.sleep(1)
-        self.dds_cw.output('5', False)
+        #self.dds_cw.output('5', False)
+        self.dds_cw.output('5', dds5_state)
         time.sleep(1)
 
     def submit_dt(self, f1, line1, f2, line2):

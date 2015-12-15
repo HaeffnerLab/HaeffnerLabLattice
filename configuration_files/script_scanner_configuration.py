@@ -70,6 +70,7 @@ class config(object):
                ('lattice.scripts.experiments.Gates.vaet_scan_delta', 'vaet_scan_delta'),
                ('lattice.scripts.experiments.Gates.vaet_scan_time', 'vaet_scan_time'),
                ('lattice.scripts.experiments.Gates.vaet_scan_local_stark', 'vaet_scan_local_stark'),
+               ('lattice.scripts.experiments.Gates.vaet_scan_ms_detuning', 'vaet_scan_ms_detuning'),
                ('lattice.scripts.experiments.Experiments729.setup_experiment', 'setup_experiment'),
                ('lattice.scripts.experiments.Experiments729.sb_track_dual', 'sb_track_dual'),
                ]

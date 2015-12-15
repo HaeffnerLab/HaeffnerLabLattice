@@ -39,19 +39,19 @@ class scan_sb_cooling_854(experiment):
                    }
         scan_methods.setup_data_vault(cxn, self.save_context, dv_args)
         
-        scan_param = self.parameters.CalibrationScans.sbc_ac_stark
+        scan_param = self.parameters.CalibrationScans.sbc_854_scan
         self.scan = scan_methods.simple_scan(scan_param, 'dBm')
         
-        for i,freq in enumerate(self.scan):
+        for i,ampl in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
             replace = TreeDict.fromdict({
-                                     'SidebandCooling.stark_shift':freq
+                                     'SidebandCooling.sideband_cooling_amplitude_854':ampl
                                     })
             self.rabi_flop.set_parameters(replace)
             excitation = self.rabi_flop.run(cxn, context)
             if excitation is None: break 
-            submission = [freq['kHz']]
+            submission = [ampl['dBm']]
             submission.extend([excitation])
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)

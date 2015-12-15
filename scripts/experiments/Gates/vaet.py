@@ -8,9 +8,9 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 
-class vaet(experiment):
+class vaet_base(experiment):
 
-    name = 'VAET'
+    name = 'VAET_BASE'
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
                         ('TrapFrequencies','radial_frequency_1'),

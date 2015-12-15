@@ -1,5 +1,5 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from vaet import vaet
+from vaet import vaet_base
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.scriptLibrary import scan_methods
@@ -8,6 +8,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+from treedict import TreeDict
 
 class vaet_scan_ms_detuning(experiment):
 
@@ -20,14 +21,14 @@ class vaet_scan_ms_detuning(experiment):
     @classmethod
     def all_required_parameters(cls):
         parameters = set(cls.required_parameters)
-        parameters = parameters.union(set(vaet.all_required_parameters()))
+        parameters = parameters.union(set(vaet_base.all_required_parameters()))
         parameters = list(parameters)
         parameters.remove(('MolmerSorensen', 'detuning'))
         return parameters
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(vaet)
+        self.excite = self.make_experiment(vaet_base)
         self.excite.initialize(cxn, context, ident)
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
