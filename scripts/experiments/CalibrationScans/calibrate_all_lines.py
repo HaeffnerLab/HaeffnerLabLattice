@@ -80,7 +80,7 @@ class calibrate_all_lines(experiment):
         
         dt = self.parameters.DriftTracker
         
-        # save original state of DDS5
+        # save original state of DDS 5
         dds5_state = self.dds_cw.output('5')
 
         self.dds_cw.output('5', True)
