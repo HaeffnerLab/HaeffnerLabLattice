@@ -15,7 +15,7 @@ class szx_scan_time_phase(experiment):
     name = 'SZXScanTimePhase'
     
     required_parameters = [
-        ('SZX_analysis', 'duration_scan')
+        ('SZXAnalysis', 'duration_scan')
         ]
     
     @classmethod
@@ -46,20 +46,55 @@ class szx_scan_time_phase(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
-        
         dependents = [('Excitation','Phase {}'.format(phase),'Probability') for phase in self.scan_phi]
+        dependents.append( ('Contrast', 'Contrast', 'Arb') )
         self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
-        window_name = ['Dephasing, Scan Duration Phase']
+        window_name = ['SZX-DURATION-PHASE']
         self.dv.add_parameter('Window', window_name, context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
+
+
+    def run(self, cxn, context):
+        self.scan_phi = [WithUnit(x, 'deg') for x in [0.0, 90.0, 180.0, 270.0]]
+        self.setup_data_vault()
+        scan_time = scan_methods.simple_scan(self.parameters.SZXAnalysis.duration_scan, 'us')
+        p = []
+        for i, t in enumerate(scan_time):
+            should_stop = self.pause_or_stop()
+            for j, phi in enumerate(self.scan_phi):
+                replace = TreeDict.from_dict({'SZX.duration':t})
+                replace['SZX.second_pulse_phase'] = scan_phi[j]
+                self.excite.set_parameters(replace)
+                p.append( self.excite.run() )
+
+            submission = [t['us']]
+            submission.extend(p)
+            submission.extend([0])
+            self.dv.add(submission, context = self.save_context)
+            self.update_progress(i)
+
+    def finalize(self, cxn, context):
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
+        self.excite.finalize(cxn, context)        
+
+    def update_progress(self, iteration):
+        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
+        self.sc.script_set_progress(self.ident,  progress)
+
+    def save_parameters(self, dv, cxn, cxnlab, context):
+        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+        dvParameters.saveParameters(dv, measuredDict, context)
+        dvParameters.saveParameters(dv, dict(self.parameters), context)
+
+if __name__ == '__main__':
+    cxn = labrad.connect()
+    scanner = cxn.scriptscanner
+    exprt = szx_scan_time_phase(cxn = cxn)
+    ident = scanner.register_external_launch(exprt.name)
+    exprt.execute(ident)
+
+
         
-        # context for saving the contrast
-        dependents = [('Contrast','Contrast','Arb')]
-        self.dv.new('{0} {1}'.format(self.name, contrastDatasetNameAppend),[('Excitation', 'us')], dependents , context = self.contrast_save_context)
-        window_name = ['Dephasing, Contrast']
-        self.dv.add_parameter('Window', window_name, context = self.contrast_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.contrast_save_context)
-               
-    
-    
-    
+
+
+            
