@@ -21,7 +21,7 @@ class molmer_sorensen(pulse_sequence):
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
-        slope_dict = {0:0.0, 2:2.0, 4:5.0, 6:30.0}
+        slope_dict = {0:0.0, 2:2.0, 4:5.0, 6:600.0}
         p = self.parameters.MolmerSorensen
         pl = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')

@@ -10,7 +10,7 @@ from numpy import linspace
 
 class szx(experiment):
     
-    name = 'SZXGate'
+    name = 'SZX'
 
     trap_frequencies = [
                         ('TrapFrequencies','axial_frequency'),
@@ -47,8 +47,8 @@ class szx(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('SZX','frequency'))
-        #parameters.remove(('SZX','szx_duration'))
-        return parameters
+        return parameters           
+
 
     def initialize(self, cxn, context, ident):
         self.ident = ident
@@ -66,40 +66,12 @@ class szx(experiment):
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.data_save_context = cxn.context()
     
-    def setup_sequence_parameters(self):
-        self.load_frequency()
-        gate = self.parameters.SZX
-        #self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = gate.duration_scan
-        minim = minim['us']; maxim = maxim['us']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
-
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        output_size = self.excite.output_size
-        #output_size = 1
-        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.cd(directory, True,context = self.data_save_context)
-        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
-        window_name = self.parameters.get('SZX.window_name', ['SZX'])
-        self.dv.add_parameter('Window', window_name, context = self.data_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.data_save_context)
-        
-    
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         gate = self.parameters.SZX
         # set the double pass to the carrier frequency
-        frequency = cm.frequency_from_line_selection(gate.frequency_selection, gate.manual_frequency_729, gate.line_selection, self.drift_tracker)
-        frequency = frequency - gate.ac_stark_shift/2. # AC Stark Shift should be in the opposite direction on the double pass right??
-        #trap = self.parameters.TrapFrequencies
+        frequency = cm.frequency_from_line_selection('auto', WithUnit(0.0, 'MHz'), gate.line_selection, self.drift_tracker)
         self.parameters['SZX.frequency'] = frequency
         
         ## now program the CW dds boards
@@ -127,53 +99,13 @@ class szx(experiment):
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
 
     def run(self, cxn, context):
-        self.setup_data_vault()
-        self.setup_sequence_parameters()
-        for i,duration in enumerate(self.scan):
-            should_stop = self.pause_or_stop()
-            if should_stop: break
-            excitation = self.get_excitation_crystallizing(cxn, context, duration)
-            if excitation is None: break 
-            submission = [duration['us']]
-            submission.extend(excitation)
-            self.dv.add(submission, context = self.data_save_context)
-            self.update_progress(i)
-    
-    def get_excitation_crystallizing(self, cxn, context, duration):
-        # right now don't crystallize because I'm not sure if it works
-        excitation = self.do_get_excitation(cxn, context, duration)
-        #if self.parameters.Crystallization.auto_crystallization:
-        #    initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
-        #    #if initially melted, redo the point
-        #    while initally_melted:
-        #        if not got_crystallized:
-        #            #if crystallizer wasn't able to crystallize, then pause and wait for user interaction
-        #            self.cxn.scriptscanner.pause_script(self.ident, True)
-        #            should_stop = self.pause_or_stop()
-        #            if should_stop: return None
-        #        excitation = self.do_get_excitation(cxn, context, duration)
-        #        initally_melted, got_crystallized = self.crystallizer.run(cxn, context)
-        return excitation
-    
-    def do_get_excitation(self, cxn, context, duration):
         self.load_frequency()
-        self.parameters['SZX.szx_duration'] = duration
         self.excite.set_parameters(self.parameters)
         exc, readouts = self.excite.run(cxn, context)
         return exc
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
         self.excite.finalize(cxn, context)
-
-    def update_progress(self, iteration):
-        progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
-        self.sc.script_set_progress(self.ident,  progress)
-
-    def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
-        dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)   
 
 if __name__ == '__main__':
     cxn = labrad.connect()
@@ -181,5 +113,3 @@ if __name__ == '__main__':
     exprt = szx(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
-
-    
