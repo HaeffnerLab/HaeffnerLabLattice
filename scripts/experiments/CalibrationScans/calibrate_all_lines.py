@@ -31,6 +31,10 @@ class calibrate_all_lines(experiment):
         ('Display', 'relative_frequencies'),
 
         ('StateReadout', 'repeat_each_measurement'),
+        ('StateReadout', 'use_camera_for_readout'),
+        
+        ('StatePreparation', 'sideband_cooling_enable'),
+        ('StatePreparation', 'optical_pumping_enable'),
         ('Excitation_729', 'bichro')]
 
         
@@ -96,6 +100,7 @@ class calibrate_all_lines(experiment):
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
             'StateReadout.repeat_each_measurement':100,
+            'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False,})
 
         self.spectrum.set_parameters(replace)
@@ -121,6 +126,7 @@ class calibrate_all_lines(experiment):
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
             'StateReadout.repeat_each_measurement':100,
+            'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)
@@ -149,6 +155,7 @@ class calibrate_all_lines(experiment):
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':True,
             'StateReadout.repeat_each_measurement':100,
+            'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)
@@ -174,6 +181,7 @@ class calibrate_all_lines(experiment):
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':True,
             'StateReadout.repeat_each_measurement':100,
+            'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False})
 
         self.spectrum.set_parameters(replace)

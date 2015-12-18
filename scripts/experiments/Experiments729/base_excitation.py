@@ -62,6 +62,7 @@ class base_excitation(experiment):
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
         params.remove(('StateReadout', 'state_readout_duration'))
+        params.remove(('SequentialSBCooling', 'frequency'))
         return params
     
     def initialize(self, cxn, context, ident, use_camera_override=None):
@@ -151,6 +152,7 @@ class base_excitation(experiment):
         sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
         self.parameters['SequentialSBCooling.frequency'] = sc2freq
+        print sc2freq
 
         # set state readout time
         if self.use_camera:
