@@ -9,6 +9,7 @@ import labrad
 from labrad.units import WithUnit
 from numpy import linspace
 from treedict import TreeDict
+import numpy as np
 
 class szx_scan_time_phase(experiment):
     
@@ -69,7 +70,10 @@ class szx_scan_time_phase(experiment):
 
             submission = [t['us']]
             submission.extend(p)
-            submission.extend([0])
+            p0, p90, p180 = p[0], p[1], p[2]
+            k = p0 + p180
+            c = np.sqrt((2*p0 - k)**2 + (2*p90 - k)**2)
+            submission.extend([c])
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
 

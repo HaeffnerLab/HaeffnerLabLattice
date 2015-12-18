@@ -126,6 +126,10 @@ class ms_scan_local_stark(experiment):
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
+
+        self.dds_cw.output('5', True) # thermalize the single pass
+        time.sleep(1.0)
+
         self.dds_cw.output('5', False)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
