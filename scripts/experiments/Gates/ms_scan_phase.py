@@ -7,6 +7,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+import numpy as np
 
 class ms_scan_phase(experiment):
     
@@ -47,7 +48,9 @@ class ms_scan_phase(experiment):
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('MolmerSorensen','frequency'))
         parameters.remove(('LocalRotation','frequency'))
-        parameters.remove(('MolmerSorensen','analysis_phase'))
+        parameters.remove(('GlobalRotation','frequency'))
+        parameters.remove(('GlobalRotation','angle'))
+        parameters.remove(('GlobalRotation', 'phase'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -60,7 +63,7 @@ class ms_scan_phase(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
@@ -97,7 +100,7 @@ class ms_scan_phase(experiment):
         directory.extend([self.name])
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
+        dependents = [('Parity', 'Parity', 'Parity') ]
         self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Phase Scan'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
@@ -111,6 +114,7 @@ class ms_scan_phase(experiment):
         #trap = self.parameters.TrapFrequencies
         self.parameters['MolmerSorensen.frequency'] = frequency
         self.parameters['LocalRotation.frequency'] = frequency
+        self.parameters['GlobalRotation.frequency'] = frequency
         
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -119,20 +123,25 @@ class ms_scan_phase(experiment):
         mode = gate.sideband_selection
         trap_frequency = self.parameters['TrapFrequencies.' + mode]
         
-        freq_blue = WithUnit(80., 'MHz') - trap_frequency - gate.detuning + gate.ac_stark_shift
-        freq_red = WithUnit(80., 'MHz') + trap_frequency + gate.detuning + gate.ac_stark_shift
+        f_global = WithUnit(80.0, 'MHz') + WithUnit(0.15, 'MHz')
+        freq_blue = f_global - trap_frequency - gate.detuning + gate.ac_stark_shift
+        freq_red = f_global + trap_frequency + gate.detuning + gate.ac_stark_shift
         amp = WithUnit(-15., 'dBm')
         amp_blue = self.parameters.MolmerSorensen.amp_blue
         amp_red = self.parameters.MolmerSorensen.amp_red
         self.dds_cw.frequency('0', freq_blue)
         self.dds_cw.frequency('1', freq_red)
-        self.dds_cw.frequency('2', WithUnit(80., 'MHz')) # for driving the carrier
+        self.dds_cw.frequency('2', f_global) # for driving the carrier
         self.dds_cw.amplitude('0', amp_blue)
         self.dds_cw.amplitude('1', amp_red)
         self.dds_cw.amplitude('2', amp)
         self.dds_cw.output('0', True)
         self.dds_cw.output('1', True)
         self.dds_cw.output('2', True)
+        
+        self.dds_cw.output('5', True) # time to thermalize the single pass
+        time.sleep(0.5) # just make sure everything is programmed before starting the sequence
+        self.dds_cw.output('5', False)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
     def run(self, cxn, context):
@@ -145,7 +154,7 @@ class ms_scan_phase(experiment):
             if parity is None: break 
             submission = [phi['deg']]
             #submission.append(parity)
-            submission.extend(parity)
+            submission.extend([parity])
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
     
@@ -167,26 +176,33 @@ class ms_scan_phase(experiment):
     
     def do_get_parity(self, cxn, context, phi):
         self.load_frequency()
-        self.parameters['MolmerSorensen.analysis_phase'] = phi
+        self.parameters['GlobalRotation.phase'] = phi
         self.excite.set_parameters(self.parameters)
         states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
         #print states
-        return states
+        parity = self.compute_parity_pmt(readouts)
+        return parity
         #excitations, readouts = self.excite.run(cxn, context)
         #parity = self.compute_parity(readouts)
         #return parity
-
-    def compute_parity(self, readouts):
+        
+    def compute_parity_pmt(self, readouts):
         '''
-        computes the parity of the provided readouts
+        computes the parity of the provided readouts using a pmt
         '''
-        #print readouts
-        correlated_readout = readouts[:,0]+readouts[:,1]
-        parity = (correlated_readout % 2 == 0).mean() - (correlated_readout % 2 == 1).mean()
+        threshold_low = self.parameters.StateReadout.threshold_list[1][0]
+        threshold_high = self.parameters.StateReadout.threshold_list[1][1]
+        print "thresholds"
+        print threshold_low, threshold_high
+        even_parity = np.count_nonzero((readouts <= threshold_low)|(readouts >= threshold_high))
+        print "even = ", even_parity
+        odd_parity  = np.count_nonzero((readouts >= threshold_low)&(readouts <= threshold_high))
+        print "odd = ", odd_parity
+        parity = (even_parity - odd_parity)/float(len(readouts))
         return parity
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.ave_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

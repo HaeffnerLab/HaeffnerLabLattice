@@ -22,7 +22,7 @@ class szx_1ion(pulse_sequence):
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, local_pi_over_2_no_splocal,
                              szx, tomography_readout, turn_off_all, sideband_cooling]
     
-
+    replaced_parameters = {local_pi_over_2_no_splocal:[('LocalRotation','phase'),]}
     def sequence(self):
 
         p = self.parameters

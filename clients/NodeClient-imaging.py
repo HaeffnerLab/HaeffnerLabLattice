@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 nodeDict = {'node_lattice_imaging':
-					['GPIB Bus', 'Serial Server', 'APT Motor Server'],
+					['GPIB Bus', 'Serial Server', 'Agilent Server'],
 		}
 #'HP Server'
 #'Double Pass'

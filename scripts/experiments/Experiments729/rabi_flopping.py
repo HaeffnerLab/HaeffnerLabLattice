@@ -64,6 +64,7 @@ class rabi_flopping(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.rabi_flop_save_context = cxn.context()
+        self.grapher = cxn.grapher
     
     def setup_sequence_parameters(self):
         self.load_frequency()
@@ -84,9 +85,11 @@ class rabi_flopping(experiment):
         self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
+        ds = self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
         self.dv.add_parameter('Window', ['Rabi Flopping'], context = self.rabi_flop_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, 'rabi', self.scan)
     
     def load_frequency(self):
         #reloads trap frequencies and gets the latest information from the drift tracker
@@ -99,8 +102,8 @@ class rabi_flopping(experiment):
         self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         
     def run(self, cxn, context):
-        self.setup_data_vault()
         self.setup_sequence_parameters()
+        self.setup_data_vault()
         t = []
         ex = []
         for i,duration in enumerate(self.scan):

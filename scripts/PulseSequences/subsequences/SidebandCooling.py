@@ -23,6 +23,7 @@ class sideband_cooling(pulse_sequence):
                            
                            ('SequentialSBCooling','enable'),
                            ('SequentialSBCooling','frequency'),
+                           ('SequentialSBCooling', 'cycles'),
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
@@ -101,11 +102,13 @@ class sideband_cooling(pulse_sequence):
                                 'OpticalPumping.optical_pumping_continuous':True,
                                 'OpticalPumpingContinuous.optical_pumping_continuous_duration':sc.sideband_cooling_optical_pumping_duration,
                                 }
+        Nc = int(sc.sideband_cooling_cycles)
+        Ns = int(sc2.cycles)
         for i in range(int(sc.sideband_cooling_cycles)):
             #each cycle, increment the 729 duration
             cooling_replace[duration_key] +=  sc.sideband_cooling_duration_729_increment_per_cycle
             self.addSequence(cooling, TreeDict.fromdict(cooling_replace))
-            if sc2.enable:
+            if sc2.enable and ( (Nc - i) <= Ns):
                 self.addSequence(cooling, TreeDict.fromdict(cooling_replace_2))
                 cooling_replace_2[duration_key] +=  sc.sideband_cooling_duration_729_increment_per_cycle
             self.addSequence(optical_pumping, TreeDict.fromdict(optical_pump_replace))

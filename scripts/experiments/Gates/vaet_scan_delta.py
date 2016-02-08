@@ -31,6 +31,8 @@ class vaet_scan_delta(experiment):
                            ('SZX', 'amp_blue'),
 
                            ('VAET', 'detuning_scan'),
+                           ('VAET', 'detuning_secondary_scan'),
+                           ('VAET', 'secondary_scan_enable'),
                            ('VAET', 'line_selection'),
                      
                            ('Crystallization', 'auto_crystallization'),
@@ -72,7 +74,10 @@ class vaet_scan_delta(experiment):
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
-        
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
+
     def setup_sequence_parameters(self):
         #self.load_frequency()
         vaet = self.parameters.VAET
@@ -80,6 +85,16 @@ class vaet_scan_delta(experiment):
         minim = minim['kHz']; maxim = maxim['kHz']
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'kHz') for pt in self.scan]
+
+        if vaet.secondary_scan_enable:
+            minim,maxim,steps = vaet.detuning_secondary_scan
+            minim = minim['kHz']; maxim = maxim['kHz']
+            hlp = linspace(minim,maxim, steps)
+            hlp = [WithUnit(pt, 'kHz') for pt in hlp]
+
+            # concatenate both lists
+            self.scan = self.scan + hlp
+
 
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -93,9 +108,11 @@ class vaet_scan_delta(experiment):
             dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         else:
             dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
-        self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        ds=self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Effective mode frequency'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.save_context)
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, 'vaet_delta', self.scan)
 
 
     def load_frequency(self, delta): # scan the szx detuning
@@ -139,8 +156,13 @@ class vaet_scan_delta(experiment):
 
         ####### SZX PARAMETERS ##########
 
-        freq_blue = f_local - szx_trap_frequency/2. - delta + szx.ac_stark_shift
-        freq_red = f_local + szx_trap_frequency/2. + szx.ac_stark_shift
+        #freq_blue = f_local - szx_trap_frequency/2. - delta + szx.ac_stark_shift
+        #freq_red = f_local + szx_trap_frequency/2. + szx.ac_stark_shift
+        #freq_blue = f_local - szx_trap_frequency/2. - delta/2 + szx.ac_stark_shift
+        #freq_red = f_local + szx_trap_frequency/2. + delta/2 + szx.ac_stark_shift
+        freq_blue = f_local - szx_trap_frequency/2. + szx.ac_stark_shift
+        freq_red = f_local + szx_trap_frequency/2. + delta + szx.ac_stark_shift
+        print freq_blue - freq_red + szx_trap_frequency
         amp_blue = self.parameters.SZX.amp_blue
         amp_red = self.parameters.SZX.amp_red
         self.dds_cw.frequency('3', freq_blue)
@@ -158,8 +180,9 @@ class vaet_scan_delta(experiment):
         time.sleep(0.1) # make sure everything is set before starting the sequence
 
     def run(self, cxn, context):
-        self.setup_data_vault()
         self.setup_sequence_parameters()
+        self.setup_data_vault()
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
@@ -197,7 +220,7 @@ class vaet_scan_delta(experiment):
      
     def finalize(self, cxn, context):
         self.dds_cw.output('5', True)
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
+        #self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):

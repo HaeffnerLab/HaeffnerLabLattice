@@ -15,10 +15,15 @@ class calibrate_all_lines(experiment):
 
     required_parameters = [('DriftTracker', 'line_selection_1'),
                            ('DriftTracker', 'line_selection_2'),
+                           ('CalibrationScans', 'calibrate_sidebands'),
+                           ('CalibrationScans', 'feedback_sidebands'),
+                           ('Spectrum','car1_sensitivity'),
+                           ('Spectrum','car2_sensitivity')
                            ]
 
     # parameters to overwrite
     remove_parameters = [
+        ('Spectrum','fine'),
         ('Spectrum','ultimate'),
         ('Spectrum','custom'),
         ('Spectrum','manual_amplitude_729'),
@@ -35,7 +40,8 @@ class calibrate_all_lines(experiment):
         
         ('StatePreparation', 'sideband_cooling_enable'),
         ('StatePreparation', 'optical_pumping_enable'),
-        ('Excitation_729', 'bichro')]
+        ('Excitation_729', 'bichro'),
+        ('Excitation_729', 'channel_729')]
 
         
         
@@ -69,12 +75,17 @@ class calibrate_all_lines(experiment):
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses'))
         return parameters
     
+    
     def initialize(self, cxn, context, ident):
 
         self.ident = ident
         self.drift_tracker = cxn.sd_tracker
         self.spectrum = self.make_experiment(spectrum)
-        self.spectrum.initialize(cxn, context, ident)
+        
+        
+        #self.spectrum.set_parameters(TreeDict.fromdict({'IonsOnCamera.ion_number':1}))
+        self.spectrum.initialize(cxn, context, ident,use_camera_override = False)
+        #self.spectrum.excite.output_size = 1
         self.fitter = peak_fitter()
         self.pv = cxn.parametervault
         self.dds_cw = cxn.dds_cw
@@ -94,14 +105,16 @@ class calibrate_all_lines(experiment):
         replace = TreeDict.fromdict({
             'Spectrum.line_selection':dt.line_selection_1,
             'Spectrum.scan_selection':'auto',
-            'Spectrum.sensitivity_selection': 'fine',
+            'Spectrum.sensitivity_selection': 'car1_sensitivity',
             'Spectrum.sideband_selection':[0,0,0,0],
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
             'StateReadout.repeat_each_measurement':100,
             'StateReadout.use_camera_for_readout':False,
-            'Excitation_729.bichro':False,})
+            'Excitation_729.bichro':False,
+            'Excitation_729.channel_729':'729local',
+            'Spectrum.window_name':['car1']})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(0, 25.0)
@@ -120,14 +133,16 @@ class calibrate_all_lines(experiment):
         replace = TreeDict.fromdict({
             'Spectrum.line_selection':dt.line_selection_2,
             'Spectrum.scan_selection':'auto',
-            'Spectrum.sensitivity_selection': 'fine',
+            'Spectrum.sensitivity_selection': 'car2_sensitivity',
             'Spectrum.sideband_selection':[0,0,0,0],
             'StatePreparation.sideband_cooling_enable':False,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':False,
             'StateReadout.repeat_each_measurement':100,
             'StateReadout.use_camera_for_readout':False,
-            'Excitation_729.bichro':False})
+            'Excitation_729.bichro':False,
+            'Excitation_729.channel_729':'729local',
+            'Spectrum.window_name':['car2']})
 
         self.spectrum.set_parameters(replace)
         self.spectrum.set_progress_limits(25.0, 50.0)
@@ -144,59 +159,66 @@ class calibrate_all_lines(experiment):
         self.submit_dt(carr_1, dt.line_selection_1, carr_2, dt.line_selection_2)
         
 
-        #### RUN THE FIRST SIDEBAND
-
-        replace = TreeDict.fromdict({
-            'Spectrum.line_selection':dt.line_selection_1,
-            'Spectrum.scan_selection':'auto',
-            'Spectrum.sensitivity_selection': 'normal',
-            'Spectrum.sideband_selection':[-1,0,0,0],
-            'StatePreparation.sideband_cooling_enable':False,
-            'StatePreparation.optical_pumping_enable':True,
-            'Display.relative_frequencies':True,
-            'StateReadout.repeat_each_measurement':100,
-            'StateReadout.use_camera_for_readout':False,
-            'Excitation_729.bichro':False})
-
-        self.spectrum.set_parameters(replace)
-        self.spectrum.set_progress_limits(50.0, 75.0)
-        
-        fr, ex = self.spectrum.run(cxn, context)
-
-        fr = np.array(fr)
-        ex = np.array(ex)
-        ex = ex.flatten()
-
-        sb_1 = self.fitter.fit(fr, ex)
-        sb_1 = WithUnit(abs(sb_1), 'MHz')
-
-        #### SECOND SIDEBAND
-
-        replace = TreeDict.fromdict({
-            'Spectrum.line_selection':dt.line_selection_1,
-            'Spectrum.scan_selection':'auto',
-            'Spectrum.sensitivity_selection': 'normal',
-            'Spectrum.sideband_selection':[0,-1,0,0],
-            'StatePreparation.sideband_cooling_enable':False,
-            'StatePreparation.optical_pumping_enable':True,
-            'Display.relative_frequencies':True,
-            'StateReadout.repeat_each_measurement':100,
-            'StateReadout.use_camera_for_readout':False,
-            'Excitation_729.bichro':False})
-
-        self.spectrum.set_parameters(replace)
-        self.spectrum.set_progress_limits(75.0, 100.0)
-        
-        fr, ex = self.spectrum.run(cxn, context)
-
-        fr = np.array(fr)
-        ex = np.array(ex)
-        ex = ex.flatten()
-
-        sb_2 = self.fitter.fit(fr, ex)
-        sb_2 = WithUnit(abs(sb_2), 'MHz')
-
-        self.submit_trap_frequencies(sb_1, sb_2)
+        if self.parameters.CalibrationScans.calibrate_sidebands:
+   
+           #### RUN THE FIRST SIDEBAND
+   
+           replace = TreeDict.fromdict({
+               'Spectrum.line_selection':dt.line_selection_1,
+               'Spectrum.scan_selection':'auto',
+               'Spectrum.sensitivity_selection': 'normal',
+               'Spectrum.sideband_selection':[-1,0,0,0],
+               'StatePreparation.sideband_cooling_enable':False,
+               'StatePreparation.optical_pumping_enable':True,
+               'Display.relative_frequencies':True,
+               'StateReadout.repeat_each_measurement':100,
+               'StateReadout.use_camera_for_readout':False,
+               'Excitation_729.bichro':False,
+               'Excitation_729.channel_729':'729local',
+               'Spectrum.window_name':['radial1']})
+   
+           self.spectrum.set_parameters(replace)
+           self.spectrum.set_progress_limits(50.0, 75.0)
+           
+           fr, ex = self.spectrum.run(cxn, context)
+   
+           fr = np.array(fr)
+           ex = np.array(ex)
+           ex = ex.flatten()
+   
+           sb_1 = self.fitter.fit(fr, ex)
+           sb_1 = WithUnit(abs(sb_1), 'MHz')
+   
+           #### SECOND SIDEBAND
+   
+           replace = TreeDict.fromdict({
+               'Spectrum.line_selection':dt.line_selection_1,
+               'Spectrum.scan_selection':'auto',
+               'Spectrum.sensitivity_selection': 'normal',
+               'Spectrum.sideband_selection':[0,-1,0,0],
+               'StatePreparation.sideband_cooling_enable':False,
+               'StatePreparation.optical_pumping_enable':True,
+               'Display.relative_frequencies':True,
+               'StateReadout.repeat_each_measurement':100,
+               'StateReadout.use_camera_for_readout':False,
+               'Excitation_729.bichro':False,
+               'Excitation_729.channel_729':'729local',
+               'Spectrum.window_name':['radial2']})
+   
+           self.spectrum.set_parameters(replace)
+           self.spectrum.set_progress_limits(75.0, 100.0)
+           
+           fr, ex = self.spectrum.run(cxn, context)
+   
+           fr = np.array(fr)
+           ex = np.array(ex)
+           ex = ex.flatten()
+   
+           sb_2 = self.fitter.fit(fr, ex)
+           sb_2 = WithUnit(abs(sb_2), 'MHz')
+   
+           if self.parameters.CalibrationScans.feedback_sidebands:
+              self.submit_trap_frequencies(sb_1, sb_2)
         
         # resetting DDS5 state
         time.sleep(1)

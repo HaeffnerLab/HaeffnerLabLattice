@@ -33,10 +33,10 @@ class vaet(pulse_sequence):
         #first advance the frequency but keep amplitude low
         self.addDDS('729global', self.start, frequency_advance_duration, v.frequency, ampl_off)
         self.addDDS('729local', self.start, frequency_advance_duration, v.frequency, ampl_off)
-        
         # turn on bichro on the global and local beams at the same time
         self.addDDS('729global', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
         self.addDDS('729local', self.start + frequency_advance_duration, v.duration, v.frequency, szx.amplitude, profile=int(v.shape_profile))
+        #self.addDDS('729local', self.start + frequency_advance_duration, v.duration + slope_duration, v.frequency, szx.amplitude, profile=4)
         self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         
@@ -45,6 +45,7 @@ class vaet(pulse_sequence):
             #f = WithUnit(80.0 - 0.2, 'MHz') + pl.detuning
             self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
             self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
+            #self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration + slope_duration, f, pl.amplitude, profile=4)
             self.addDDS('SP_local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, f, ampl_off)
 
         self.addDDS('729global', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)

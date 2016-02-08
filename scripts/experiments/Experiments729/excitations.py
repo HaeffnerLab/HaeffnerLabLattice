@@ -41,6 +41,11 @@ class excitation_ramsey_with_heating(base_excitation):
     name = 'RamseyHeating'
     pulse_sequence = ramsey_with_heating
     
+class ramsey_with_stark(base_excitation):
+    from lattice.scripts.PulseSequences.stark_shift_global import stark_shift_global
+    name = 'StarkShiftGlobal'
+    pulse_sequence = stark_shift_global 
+    
 if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()

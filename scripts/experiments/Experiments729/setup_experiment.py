@@ -51,12 +51,27 @@ class setup_experiment(experiment):
                           ('Spectrum', 'window_name')
                           ]
     
+    remove_parameters = [
+        ('Display', 'relative_frequencies'),
+
+        ('StateReadout', 'repeat_each_measurement'),
+        ('StateReadout', 'use_camera_for_readout'),
+        
+        ('StatePreparation', 'sideband_cooling_enable'),
+        ('StatePreparation', 'optical_pumping_enable'),
+        ('Excitation_729', 'bichro'),
+        ('Excitation_729', 'channel_729')]
+      
+                                       
     @classmethod
     def all_required_parameters(cls):
         parameters = set(cls.setup_experiment_required_parameters)
         parameters = parameters.union(set(take_spectrum_to_fit.all_required_parameters()))
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
+        
+        for p in cls.remove_parameters:            
+            parameters.remove(p)
         #parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
         #parameters.remove(('Excitation_729','rabi_excitation_duration'))
         #parameters.remove(('Excitation_729','rabi_excitation_frequency'))
@@ -99,18 +114,18 @@ class setup_experiment(experiment):
          
         self.dv.new('Automation {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
          
-        window_name = ['Automation test']
+        #window_name = ['Automation test']
          
-        self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
+        #self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
         
         
     def run(self, cxn, context):
-        self.setup_data_vault()            
+        #self.setup_data_vault()            
 
 	    # initial rough scan 
         # Spectrum parameters
-        s12d12 = -14.5867
+        s12d12 = -14.71
         delta_s12d12 = 0.4/2
         no_of_steps = 30
         
@@ -124,6 +139,14 @@ class setup_experiment(experiment):
                                        'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
                                        'Spectrum.manual_excitation_time':WithUnit(excitation_time_1212, 'us'),
                                        'Spectrum.scan_selection':'manual',
+                                       'StatePreparation.sideband_cooling_enable':False,
+                                       'StatePreparation.optical_pumping_enable':True,
+                                       'Display.relative_frequencies':False,
+                                       'StateReadout.repeat_each_measurement':100,
+                                       'StateReadout.use_camera_for_readout':False,
+                                       'Excitation_729.bichro':False,
+                                       'Excitation_729.channel_729':'729local',
+                                       'Spectrum.window_name':['car1']                                      
                                        })
         
         
@@ -151,6 +174,12 @@ class setup_experiment(experiment):
                                        'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
                                        'Spectrum.manual_excitation_time':WithUnit(excitation_time_1212, 'us'),
                                        'Spectrum.scan_selection':'manual',
+                                       'Display.relative_frequencies':False,
+                                       'StateReadout.repeat_each_measurement':100,
+                                       'StateReadout.use_camera_for_readout':False,
+                                       'Excitation_729.bichro':False,
+                                       'Excitation_729.channel_729':'729local',
+                                       'Spectrum.window_name':['car1']
                                        })
  
   
@@ -166,7 +195,7 @@ class setup_experiment(experiment):
 
 	#### D5/2 
 
-        s12d52 = -25.4911
+        s12d52 = -25.70
         delta_s12d52 = 0.4/2
     	excitation_time_1252 = 200.0
     	amplitude = -25.0
@@ -179,6 +208,12 @@ class setup_experiment(experiment):
                                        'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
                                        'Spectrum.manual_excitation_time':WithUnit(excitation_time_1252, 'us'),
                                        'Spectrum.scan_selection':'manual',
+                                       'Display.relative_frequencies':False,
+                                       'StateReadout.repeat_each_measurement':100,
+                                       'StateReadout.use_camera_for_readout':False,
+                                       'Excitation_729.bichro':False,
+                                       'Excitation_729.channel_729':'729local',
+                                       'Spectrum.window_name':['car2']
                                        })
 
         drift_line2 = TreeDict.fromdict({
@@ -206,6 +241,12 @@ class setup_experiment(experiment):
                                        'Spectrum.manual_amplitude_729':WithUnit(amplitude, 'dBm'),
                                        'Spectrum.manual_excitation_time':WithUnit(excitation_time_1252, 'us'),
                                        'Spectrum.scan_selection':'manual',
+                                       'Display.relative_frequencies':False,
+                                       'StateReadout.repeat_each_measurement':100,
+                                       'StateReadout.use_camera_for_readout':False,
+                                       'Excitation_729.bichro':False,
+                                       'Excitation_729.channel_729':'729local',
+                                       'Spectrum.window_name':['car2']
                                        })
               
         drift_line2 = TreeDict.fromdict({

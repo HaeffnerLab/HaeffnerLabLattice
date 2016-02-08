@@ -65,6 +65,9 @@ class ms_gate(experiment):
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
     
     def setup_sequence_parameters(self):
         self.load_frequency()
@@ -87,9 +90,11 @@ class ms_gate(experiment):
             dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         else:
             dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        ds = self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Gate'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.save_context)
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, 'ms_time', self.scan)
     
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
@@ -131,8 +136,8 @@ class ms_gate(experiment):
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
     def run(self, cxn, context):
-        self.setup_data_vault()
         self.setup_sequence_parameters()
+        self.setup_data_vault()
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break

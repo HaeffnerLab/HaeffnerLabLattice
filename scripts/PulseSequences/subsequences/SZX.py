@@ -23,6 +23,6 @@ class szx(pulse_sequence):
         
         te = self.start + frequency_advance_duration
         self.addTTL('bichromatic_2', te, gate_duration + 2*buf)
-        self.addDDS('729local', te + buf , gate_duration, p.frequency, szx_amp)
+        self.addDDS('729local', te + buf , gate_duration, p.frequency, szx_amp, profile = 4)
         self.addDDS('SP_local', te + buf , gate_duration, WithUnit(79.3, 'MHz'), ampl_off) # move it off resonance
         self.end = te + gate_duration + 2*buf

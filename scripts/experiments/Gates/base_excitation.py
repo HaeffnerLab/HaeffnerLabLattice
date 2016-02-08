@@ -81,8 +81,6 @@ class base_excitation(experiment):
         self.setup_data_vault()
         if self.use_camera:
             self.initialize_camera(cxn)
-            
-        self.pmt_mode = self.parameters.StateReadout.pmt_mode
 
     def initialize_camera(self, cxn):
         self.total_camera_confidences = []
@@ -187,6 +185,7 @@ class base_excitation(experiment):
         self.pulser.start_number(repetitions)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
+        self.pmt_mode = self.parameters.StateReadout.pmt_mode
         if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
             readouts = self.pulser.get_readout_counts().asarray
@@ -194,6 +193,7 @@ class base_excitation(experiment):
             if len(readouts):
                 if self.pmt_mode == 'simple': exci = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
                 if self.pmt_mode == 'number_dark': exci, states = self.count_dark(readouts)
+                print self.pmt_mode
             else:
                 #got no readouts
                 exci = -1.0

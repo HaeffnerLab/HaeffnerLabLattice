@@ -35,7 +35,11 @@ class vaet_scan_ms_detuning(experiment):
             self.crystallizer.initialize(cxn, context, ident)
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.dv = cxn.data_vault
+        self.dds_cw = cxn.dds_cw
         self.save_context = cxn.context()
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
 
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -49,15 +53,19 @@ class vaet_scan_ms_detuning(experiment):
             dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         else:
             dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
-        self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        ds = self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['VAET-MS-DET'], context = self.save_context)
         self.dv.add_parameter('plotLive', True, context = self.save_context)
 
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(directory, datasetNameAppend, 'vaet_ms_det', self.scan, ds[1])
     
     def run(self, cxn, context):
-        self.setup_data_vault()
+
         scan = scan_methods.simple_scan(self.parameters.MolmerSorensen.detuning_scan, 'kHz')
         self.scan = scan
+
+        self.setup_data_vault()
         for i, freq in enumerate(scan):
             should_stop = self.pause_or_stop()
             if should_stop: break

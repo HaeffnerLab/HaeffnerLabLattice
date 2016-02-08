@@ -16,7 +16,7 @@ class szx_scan_time_phase(experiment):
     name = 'SZXScanTimePhase'
     
     required_parameters = [
-        ('SZXAnalysis', 'duration_scan')
+        ('SZX', 'duration_scan')
         ]
     
     @classmethod
@@ -26,6 +26,7 @@ class szx_scan_time_phase(experiment):
         parameters = list(parameters)
         parameters.remove(('SZX', 'duration'))
         parameters.remove(('SZX', 'second_pulse_phase'))
+        #parameters.remove(('LocalRotation', 'phase'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -47,6 +48,7 @@ class szx_scan_time_phase(experiment):
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
+        self.dv.cd(directory ,True, context = self.save_context)
         dependents = [('Excitation','Phase {}'.format(phase),'Probability') for phase in self.scan_phi]
         dependents.append( ('Contrast', 'Contrast', 'Arb') )
         self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
@@ -58,19 +60,23 @@ class szx_scan_time_phase(experiment):
     def run(self, cxn, context):
         self.scan_phi = [WithUnit(x, 'deg') for x in [0.0, 90.0, 180.0, 270.0]]
         self.setup_data_vault()
-        scan_time = scan_methods.simple_scan(self.parameters.SZXAnalysis.duration_scan, 'us')
-        p = []
+        scan_time = scan_methods.simple_scan(self.parameters.SZX.duration_scan, 'us')
+        self.scan = scan_time
         for i, t in enumerate(scan_time):
             should_stop = self.pause_or_stop()
+            if should_stop: break
+            p = []
             for j, phi in enumerate(self.scan_phi):
-                replace = TreeDict.from_dict({'SZX.duration':t})
-                replace['SZX.second_pulse_phase'] = scan_phi[j]
+                replace = TreeDict.fromdict({'SZX.duration':t})
+                replace['SZX.second_pulse_phase'] = phi
                 self.excite.set_parameters(replace)
-                p.append( self.excite.run() )
+                p.extend( self.excite.run(cxn, context) )
 
             submission = [t['us']]
+            print p
             submission.extend(p)
             p0, p90, p180 = p[0], p[1], p[2]
+            #print p0
             k = p0 + p180
             c = np.sqrt((2*p0 - k)**2 + (2*p90 - k)**2)
             submission.extend([c])

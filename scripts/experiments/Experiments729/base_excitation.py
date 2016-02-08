@@ -26,7 +26,6 @@ class base_excitation(experiment):
                             ('TrapFrequencies','radial_frequency_1'),
                             ('TrapFrequencies','radial_frequency_2'),
                             ('TrapFrequencies','rf_drive_frequency'),
-                            
                             ('StateReadout', 'repeat_each_measurement'),
                             ('StateReadout', 'state_readout_threshold'),
 
@@ -175,13 +174,19 @@ class base_excitation(experiment):
         sp.makePlot()
         
     def run(self, cxn, context):
+        # set state readout time
+        if self.use_camera:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.camera_readout_duration
+        else:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.pmt_readout_duration
         threshold = int(self.parameters.StateReadout.state_readout_threshold)
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
                 
         pulse_sequence.programSequence(self.pulser)
-                
-        #self.plot_current_sequence(cxn)
+        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        print self.use_camera
+        #elf.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)
@@ -196,6 +201,7 @@ class base_excitation(experiment):
         
         
         if not self.use_camera:
+            print "not using camera!"
             #get percentage of the excitation using the PMT threshold
             readouts = self.pulser.get_readout_counts().asarray
             
@@ -237,6 +243,7 @@ class base_excitation(experiment):
             return int(self.parameters.IonsOnCamera.ion_number)
         else:
             return 1
+
     
     def finalize(self, cxn, context):
         if self.use_camera:

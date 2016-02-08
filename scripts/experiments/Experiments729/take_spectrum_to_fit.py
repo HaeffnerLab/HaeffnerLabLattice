@@ -39,6 +39,8 @@ class take_spectrum_to_fit(experiment):
                            ('Crystallization', 'pmt_record_duration'),
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
+                           
+                           ('Display', 'relative_frequencies'),    
                            ]
     
     spectrum_optional_parmeters = [
@@ -69,6 +71,10 @@ class take_spectrum_to_fit(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
 
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
+        
         self.fitter = cxn.fitter
 
         self.dv = cxn.data_vault
@@ -96,44 +102,46 @@ class take_spectrum_to_fit(experiment):
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
-           
+        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]                       
         
-    def get_window_name(self):
-        if self.parameters.Spectrum.scan_selection == 'manual':
-            return ['Spectrum']
-        else:
-            car = self.parameters.Spectrum.line_selection
-            sb = self.parameters.Spectrum.sideband_selection
-            window_name = car
-            if sb != [0, 0, 0, 0]: # the scan is some kind of sideband scan
-                window_name = window_name + str(sb)
-            return [window_name]
+    def setup_data_vault(self):       	                           
         
-    def setup_data_vault(self):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         directory = ['','Experiments']
         directory.extend([self.name])
         directory.extend(dirappend)
-	
+        
         self.directory_for_fitter = directory
-
+        
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
-        #window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
-        window_name = self.get_window_name()
-        self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
+        ds = self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
+        window_name = self.parameters.get('Spectrum.window_name', ['spectrum'])[0]
+        #window_name = self.get_window_name()
+        self.dv.add_parameter('Window', [window_name], context = self.spectrum_save_context)
+        #self.dv.add_parameter('plotLive', False, context = self.spectrum_save_context)
+        #self.save_parameters(self.dv, self.cxn, self.cxnlab, self.spectrum_save_context)
+        sc = []
+        if self.parameters.Display.relative_frequencies:
+            sc =[x - self.carrier_frequency for x in self.scan]
+        else: sc = self.scan
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, window_name, sc, False)
         
     
     def run(self, cxn, context):
-        self.setup_data_vault()
-        self.setup_sequence_parameters()        
         
+        self.setup_sequence_parameters()
+        self.setup_data_vault()
+              
+        
+        #    fr.append(submission[0])
+        #    exci.append(excitation)
+            
+        ################
         excitation_arr = []
         
         for i,freq in enumerate(self.scan):
@@ -141,7 +149,10 @@ class take_spectrum_to_fit(experiment):
             if should_stop: break
             excitation = self.get_excitation_crystallizing(cxn, context, freq)
             if excitation is None: break
-            submission = [freq['MHz']]
+            if self.parameters.Display.relative_frequencies:
+                submission = [freq['MHz'] - self.carrier_frequency['MHz']]
+            else:
+                submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)

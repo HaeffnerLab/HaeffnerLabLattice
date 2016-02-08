@@ -47,6 +47,8 @@ class szx(experiment):
         parameters = list(parameters)
         #removing parameters we'll be overwriting, and they do not need to be loaded
         parameters.remove(('SZX','frequency'))
+        parameters.remove(('LocalRotation','frequency'))
+        parameters.remove(('StateReadout','pmt_mode'))
         return parameters           
 
 
@@ -73,6 +75,7 @@ class szx(experiment):
         # set the double pass to the carrier frequency
         frequency = cm.frequency_from_line_selection('auto', WithUnit(0.0, 'MHz'), gate.line_selection, self.drift_tracker)
         self.parameters['SZX.frequency'] = frequency
+        self.parameters['LocalRotation.frequency'] = frequency
         
         ## now program the CW dds boards
         # Ok so, because we are stupid the single pass AOMs all use the -1 order
@@ -100,6 +103,7 @@ class szx(experiment):
 
     def run(self, cxn, context):
         self.load_frequency()
+        self.parameters['StateReadout.pmt_mode'] = 'simple'
         self.excite.set_parameters(self.parameters)
         exc, readouts = self.excite.run(cxn, context)
         return exc

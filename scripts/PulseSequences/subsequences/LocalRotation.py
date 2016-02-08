@@ -83,6 +83,6 @@ class local_pi_over_2_no_splocal(pulse_sequence):
         self.addDDS('729local', self.start, frequency_advance_duration, pl.frequency, ampl_off)
         #turn on
         self.addDDS('729local', self.start + frequency_advance_duration, time, pl.frequency, pl.amplitude, pl.phase)
-        
+        print pl.phase
         # make sure the local pulse is off before starting the next thing
         self.addDDS('729local', self.start, frequency_advance_duration, pl.frequency, ampl_off)

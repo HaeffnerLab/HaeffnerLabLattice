@@ -21,7 +21,8 @@ def measureParameters(cxn, cxnlab, specified = None):
             'cavity854':measure_cavity('854'),
             'cavity397D':measure_cavity('397D'),
             'cavity729inject':measure_cavity('729inject'),
-            'multiplexer397':measure_multiplexer('397'),
+            'multiplexer397':measure_multiplexer('397 diode'),
+            'multiplexer397':measure_multiplexer('794'),
             'multiplexer866':measure_multiplexer('866'),
            }
 

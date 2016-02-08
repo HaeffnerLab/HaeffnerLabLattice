@@ -19,3 +19,8 @@ class vaet(base_excitation):
     from lattice.scripts.PulseSequences.vaet_interaction import vaet_interaction as v
     name = 'VAET'
     pulse_sequence = v
+    
+class parity_flop(base_excitation):
+    from lattice.scripts.PulseSequences.vaet_parity_flop import vaet_parity_flop as v
+    name = 'ParityFlop'
+    pulse_sequence = v

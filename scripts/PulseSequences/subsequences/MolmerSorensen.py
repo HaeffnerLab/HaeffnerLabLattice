@@ -50,8 +50,3 @@ class molmer_sorensen(pulse_sequence):
         self.addDDS('729local', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
         
         self.end = self.end + frequency_advance_duration
-        
-        if p.analysis_pulse_enable:
-            analysis_start = self.end
-            self.addDDS('729global', analysis_start , p.analysis_duration, p.frequency, p.analysis_amplitude, p.analysis_phase)
-            self.end = analysis_start + p.analysis_duration 
