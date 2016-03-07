@@ -44,7 +44,7 @@ def setup_sp_local(dds_cw, args):
     except:
         ac_stark_shift = WithUnit(0, 'MHz')
     freq_blue = f_local - bichro_shift - detuning + ac_stark_shift
-    freq_red = f_local + bichro_shift + detuning + ac_stark_shift
+    freq_red = f_local + bichro_shift + ac_stark_shift
     
     amp_red = args['amp_red']
     amp_blue = args['amp_blue']

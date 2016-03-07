@@ -43,7 +43,7 @@ class rabi_flopping_scannable(experiment):
         return parameters
     
     
-    def initialize(self, cxn, context, ident):
+    def initialize(self, cxn, context, ident, report_all_ions = False):
         self.ident = ident
         self.excite = self.make_experiment(excitation_729)
         self.excite.initialize(cxn, context, ident)
@@ -53,6 +53,7 @@ class rabi_flopping_scannable(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
+        self.report_all_ions = report_all_ions # whether to return the readout state of all ions
         self.rabi_flop_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
@@ -76,7 +77,10 @@ class rabi_flopping_scannable(experiment):
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         if not self.parameters['StateReadout.use_camera_for_readout']:
-            single_excitation = excitation[0]
+            if self.report_all_ions: # whether to return readout state of all ions
+                single_excitation = excitation
+            else:
+                single_excitation = excitation[0]
         else:
             ion = int(self.parameters.RabiFlopping_Sit.selected_ion)
             single_excitation = excitation[ion]
