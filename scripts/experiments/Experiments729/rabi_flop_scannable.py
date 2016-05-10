@@ -88,6 +88,11 @@ class rabi_flopping_scannable(experiment):
      
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
+                                
+    def save_parameters(self, dv, cxn, cxnlab, context):
+        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+        dvParameters.saveParameters(dv, measuredDict, context)
+        dvParameters.saveParameters(dv, dict(self.parameters), context)     
         
 if __name__ == '__main__':
     cxn = labrad.connect()

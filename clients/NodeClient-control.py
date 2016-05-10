@@ -8,6 +8,7 @@ nodeDict = {
 								'Data Vault',
 								'DAC',
 								'Pulser',
+								'Real Simple Grapher',
 								'NormalPMTFlow',
 								'ADCserver',
 								'SD Tracker',

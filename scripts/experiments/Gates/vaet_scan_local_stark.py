@@ -92,9 +92,9 @@ class vaet_scan_local_stark(experiment):
         dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
         ds=self.dv.new('VAET Scan {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Local AC Stark Amplitude'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.save_context)
         if self.grapher is not None:
-            self.grapher.plot_with_axis(ds, 'local_stark', self.scan)
+            self.grapher.plot_with_axis(ds, 'vaet_local_stark', self.scan)
     
 
     def load_frequency(self):

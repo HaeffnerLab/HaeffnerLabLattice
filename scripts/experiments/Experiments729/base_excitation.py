@@ -186,7 +186,7 @@ class base_excitation(experiment):
         pulse_sequence.programSequence(self.pulser)
         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
         print self.use_camera
-        #elf.plot_current_sequence(cxn)
+        #self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)

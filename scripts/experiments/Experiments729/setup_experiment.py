@@ -94,6 +94,9 @@ class setup_experiment(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.pv = cxn.parametervault
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
         self.spectrum_save_context = cxn.context()    
         
     def setup_data_vault(self):
@@ -112,8 +115,11 @@ class setup_experiment(experiment):
         output_size = 1 # just a single ion for the time being
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
          
-        self.dv.new('Automation {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
+        #self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
          
+        #if self.grapher is not None:
+        #    self.grapher.plot_with_axis(ds, window_name, sc, False)
+ 
         #window_name = ['Automation test']
          
         #self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
@@ -125,13 +131,13 @@ class setup_experiment(experiment):
 
 	    # initial rough scan 
         # Spectrum parameters
-        s12d12 = -14.71
+        s12d12 = -14.61
         delta_s12d12 = 0.4/2
         no_of_steps = 30
         
-        excitation_time_1212 = 200.0
+        excitation_time_1212 = 50.0
         
-        amplitude = -25.0
+        amplitude = -18.0
        
         
         replace_1 = TreeDict.fromdict({
@@ -163,7 +169,7 @@ class setup_experiment(experiment):
 
 	    # fine scan
     	no_of_steps = 40
-    	amplitude = -30.0
+    	amplitude = -25.0
 
         s12d12 = fitted_freq1
         delta_s12d12 = 0.04/2
@@ -197,8 +203,8 @@ class setup_experiment(experiment):
 
         s12d52 = -25.70
         delta_s12d52 = 0.4/2
-    	excitation_time_1252 = 200.0
-    	amplitude = -25.0
+    	excitation_time_1252 = 50.0
+    	amplitude = -18.0
         no_of_steps = 30
 
        
@@ -228,7 +234,7 @@ class setup_experiment(experiment):
 
         # fine scan
         s12d52 = fitted_freq2
-        amplitude = -30.0
+        amplitude = -25.0
         no_of_steps = 40
 
         delta_s12d52 = 0.04/2

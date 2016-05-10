@@ -118,6 +118,7 @@ class take_spectrum_to_fit(experiment):
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
+
         ds = self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
         window_name = self.parameters.get('Spectrum.window_name', ['spectrum'])[0]
         #window_name = self.get_window_name()

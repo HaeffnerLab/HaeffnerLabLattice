@@ -48,7 +48,13 @@ class ramsey_scangap(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
-        self.data_save_context = cxn.context()
+        self.data_save_context = cxn.context()     
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
+        self.cxn = cxn
+        
+        self.setup_sequence_parameters()     
         self.setup_data_vault()
     
     def setup_sequence_parameters(self):
@@ -66,6 +72,8 @@ class ramsey_scangap(experiment):
         self.scan = linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'us') for pt in self.scan]
         
+        #print self.scan
+        
     def setup_data_vault(self):
         localtime = time.localtime()
         datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
@@ -76,10 +84,35 @@ class ramsey_scangap(experiment):
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.cd(directory, True,context = self.data_save_context)
-        self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
-        window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])
-        self.dv.add_parameter('Window', window_name, context = self.data_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.data_save_context)
+        
+        
+        #self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
+        #window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])
+        #self.dv.add_parameter('Window', window_name, context = self.data_save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.data_save_context)
+        
+        
+        ds = self.dv.new('Ramsey {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
+        #window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])[0]
+        window_name = 'ramsey'
+               
+       # print window_name    
+               
+        self.dv.add_parameter('Window', [window_name], context = self.data_save_context)
+        #self.dv.add_parameter('plotLive', False, context = self.spectrum_save_context)
+        self.save_parameters(self.dv, self.cxn, self.cxnlab, self.data_save_context)
+        sc = []
+        if self.parameters.Display.relative_frequencies:
+            sc =[x - self.carrier_frequency for x in self.scan]
+        else: sc = self.scan
+        
+        print sc
+        
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, window_name, sc, False)
+
+
+  
         
     def run(self, cxn, context):
         self.setup_sequence_parameters()
@@ -95,8 +128,9 @@ class ramsey_scangap(experiment):
             self.update_progress(i)
      
     def finalize(self, cxn, context):
-        self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
-
+        #self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        pass
+    
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)

@@ -95,9 +95,9 @@ class ms_scan_local_stark(experiment):
             dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
         ds=self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Local AC Stark Amplitude'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.save_context)
         if self.grapher is not None:
-            self.grapher.plot_with_axis(ds, 'local_stark', self.scan)
+            self.grapher.plot_with_axis(ds, 'ms_local_stark', self.scan)
     
 
     def load_frequency(self):

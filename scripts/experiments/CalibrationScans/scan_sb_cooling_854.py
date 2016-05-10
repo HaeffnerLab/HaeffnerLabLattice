@@ -34,7 +34,7 @@ class scan_sb_cooling_854(experiment):
         
         dv_args = {'output_size':self.rabi_flop.excite.output_size,
                    'experiment_name': self.name,
-                   'window_name': 'SBC_854_amplitude',
+                   'window_name': 'current',
                    'dataset_name': '854_scan'
                    }
         scan_methods.setup_data_vault(cxn, self.save_context, dv_args)

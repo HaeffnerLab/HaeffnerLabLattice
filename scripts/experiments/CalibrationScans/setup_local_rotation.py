@@ -26,6 +26,7 @@ class setup_local_rotation(experiment):
         parameters.remove(('RabiFlopping', 'rabi_amplitude_729'))
         parameters.remove(('RabiFlopping', 'frequency_selection'))
         parameters.remove(('RabiFlopping', 'sideband_selection'))
+        parameters.remove(('Excitation_729', 'channel_729'))
         return parameters
 
     def initialize(self, cxn, context, ident):
@@ -47,6 +48,7 @@ class setup_local_rotation(experiment):
             'RabiFlopping.rabi_amplitude_729':lr.amplitude,
             'RabiFlopping.frequency_selection':'auto',
             'RabiFlopping.sideband_selection':[0,0,0,0],
+            'Excitation_729.channel_729':'729local',
             })
 
         self.rabi_flop.set_parameters(replace)
