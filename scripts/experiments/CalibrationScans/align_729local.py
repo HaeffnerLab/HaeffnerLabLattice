@@ -6,6 +6,7 @@ from labrad.units import WithUnit
 from treedict import TreeDict
 import numpy as np
 import labrad
+import time
 
 class align_729local(experiment):
     
@@ -31,6 +32,51 @@ class align_729local(experiment):
         self.dv = cxn.data_vault
         self.cxnlab = labrad.connect('192.168.169.49') # connection to labwide network
         self.server = cxn.picomotorserver
+
+    def walk_axis(self, axis, step_size):
+        '''
+        First compute the excitation at the current point.
+        Then walk in some direction (say positive) and see if the excitation
+        gets higher or lower.
+        If higher, keep walking until the change smaller than some threshold
+        '''
+
+        ts = 1 # delay time to allow stage to move
+        threshold = 0.1 # relative change in excitation to trigger a 
+                        # termination of the walk
+        p0 = self.rabi_flop.run(cxn, context)
+        
+        p = p0
+        below_threshold = lambda p, p1: (p - p1)/p1 < -threshold
+        above_threshold = lambda p, p1: (p - p1)/p1 >= threshold
+
+        terminate = False
+        while not ( below_threshold(p, p0) )
+            '''
+            Keep going as long as the excitation doesn't fall below
+            the initial one by more than some threshold
+            '''
+            should_stop = self.pause_or_stop
+            if should_stop: break
+            self.server.move_relative(axis, step_size)
+            time.sleep(ts)
+            p = self.rabi_flop.run(cxn, context)
+
+            if ( above_threshold(p, p0) ):
+                # keep running, but don't reverse course once we fall out of the loop
+                terminate = True
+
+        p0 = p # reset to the last point
+        while (not terminate) and (not below_threshold(p, p0)):
+            '''
+            We've fallen out of the above while loop without ever making the signal better,
+            so now we try the other direction
+            '''
+            should_stop = self.pause_or_stop:
+            if should_stop: break
+            self.server.move_relative(axis, step_size)
+            time.sleep(ts)
+            p = self.rabi_flop.run(cxn, context)
     
     def run(self, cxn, context):
         
@@ -39,7 +85,7 @@ class align_729local(experiment):
         # mark the current location as the setpoint in case something goes horribly wrong
         self.server.mark_setpoint()
 
-        scan_box = [-300, 300, 30]
+        step_size = 50
 
         # initial starting points
         center_x = self.server.get_position(2)
