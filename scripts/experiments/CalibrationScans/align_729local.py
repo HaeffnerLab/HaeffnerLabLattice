@@ -33,7 +33,7 @@ class align_729local(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') # connection to labwide network
         self.server = cxn.picomotorserver
 
-    def walk_axis(self, axis, step_size):
+    def walk_axis(self, axis, step_size, max_steps):
         '''
         First compute the excitation at the current point.
         Then walk in some direction (say positive) and see if the excitation
@@ -49,8 +49,10 @@ class align_729local(experiment):
         p = p0
         below_threshold = lambda p, p1: (p - p1)/p1 < -threshold
         above_threshold = lambda p, p1: (p - p1)/p1 >= threshold
-
         terminate = False
+
+        n = 0.0 # number of steps
+        walk_history = np.array([])
         while not ( below_threshold(p, p0) )
             '''
             Keep going as long as the excitation doesn't fall below
@@ -61,12 +63,16 @@ class align_729local(experiment):
             self.server.move_relative(axis, step_size)
             time.sleep(ts)
             p = self.rabi_flop.run(cxn, context)
+            walk_history = np.append(walk_history, p)
 
             if ( above_threshold(p, p0) ):
                 # keep running, but don't reverse course once we fall out of the loop
                 terminate = True
+                slope = (p - p0)/n
 
-        p0 = p # reset to the last point
+            n += 1
+
+        p0 = p # set the reference excitation to the last point
         while (not terminate) and (not below_threshold(p, p0)):
             '''
             We've fallen out of the above while loop without ever making the signal better,
