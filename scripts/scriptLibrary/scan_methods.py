@@ -1,5 +1,6 @@
 import time
 import numpy as np
+from common_methods_729 import common_methods_729 as cm
 from labrad.units import WithUnit
 
 def setup_data_vault(cxn, context, args, plotLive = True):
@@ -18,7 +19,7 @@ def setup_data_vault(cxn, context, args, plotLive = True):
     plotLive: set True if data should be live plotted
 
     args: dictionary of parameters with the values:
-    scan_type: string labeling the type of scan, e.g. spectrum729
+    parameter: string labeling which parameter is scanned, e.g. Excitation_729.rabi_excitation_frequency
     headings: list of strings labeling each column in the datasets, e.g, ['ion 0', 'ion 1', 'ion 2']
     axis (optional): x-axis range
     send_to_current (optional): send data to 'current' plot in grapher
@@ -26,7 +27,8 @@ def setup_data_vault(cxn, context, args, plotLive = True):
     
     dv = cxn.data_vault
     
-    scan_type = args['scan_type']
+    scan_parameter = args['parameter']
+    pulse_sequence = args['pulse_sequence']
     headings = args['headings']
     try:
         send_to_current = args['send_to_current']
@@ -34,7 +36,7 @@ def setup_data_vault(cxn, context, args, plotLive = True):
         send_to_current = True
     localtime = time.localtime()
     timetag = time.strftime("%H%M_%S", localtime)
-    directory = ['','Experiments', time.strftime('%Y_%m_%d', localtime), timetag] # data is in $datadir/Experiments/Y_M_D/timetag
+    directory = ['','Experiments', time.strftime('%Y_%m_%d', localtime), timetag]
     dv.cd(directory ,True, context = context)
     dependents = [('arb',label,'arb') for label in headings]
     ds =  dv.new(timetag, [('arb', 'arb')], dependents , context = context)
@@ -45,7 +47,8 @@ def setup_data_vault(cxn, context, args, plotLive = True):
             cxn.grapher.plot_with_axis(ds, window_name, axis, send_to_current)     
         except:
             cxn.grapher.plot(ds, window_name, send_to_current)
-    dv.add_parameter('scan_type', scan_type, context = context)
+    dv.add_parameter('pulse_sequence', pulse_sequence, context = context)
+    dv.add_parameter('parameter', scan_type, context = context)
 
 def setup_data_vault_appendable(cxn, context, name, headings):
     '''
@@ -70,7 +73,20 @@ def setup_data_vault_appendable(cxn, context, name, headings):
     except: # dataset does not exist
         dependents = [('arb',label,'arb') for label in headings]
         ds = dv.new( name, [('arb', 'arb')], depdendents, context = context)
-        
+
+def compute_frequency_729(line_selection, sideband_selection, trap_frequencies, drift_tracker):
+    '''
+    Arguments: line_selection, sideband_selection, trap_frequencies parameters from parametervault
+    reference to drift_tracker
+
+    Returns predicted resonance frequency
+    '''
+    center_frequency = cm.frequency_from_line_selection('auto', None , line_selection, drift_tracker)
+    center_frequency = cm.add_sidebands(center_frequency, sideband_selection, trap_frequencies)
+    return center_frequency
+
+def compute_carrier_frequency(line_selection, drift_tracker):
+    return cm.frequency_from_line_selection('auto', None, line_selection, drift_trackeR)
 
 def simple_scan(parameter, unit, offset = None):
     minim,maxim,steps = parameter

@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import excitation_ramsey
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+import lattice.scripts.scriptLibrary.scan_methods as sm
 from lattice.scripts.scriptLibrary import dvParameters
 import time
 import labrad
@@ -48,7 +49,7 @@ class ramsey_scangap(experiment):
         self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
-        self.data_save_context = cxn.context()     
+        self.save_context = cxn.context()     
         try:
             self.grapher = cxn.grapher
         except: self.grapher = None
@@ -59,62 +60,29 @@ class ramsey_scangap(experiment):
     
     def setup_sequence_parameters(self):
         flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
         trap = self.parameters.TrapFrequencies
         if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)   
+            frequency = sm.compute_frequency_729(flop.frequency_selection, flop.sideband_selection, trap, self.drift_tracker)
+        else:
+            frequency = flop.manual_frequency_729
         frequency += self.parameters.RamseyScanGap.detuning
         #print frequency
         self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = self.parameters.RamseyScanGap.scangap
-        minim = minim['us']; maxim = maxim['us']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
-        
-        #print self.scan
-        
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        output_size = self.excite.output_size
-        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.cd(directory, True,context = self.data_save_context)
-        
-        
-        #self.dv.new('{0} {1}'.format(self.name, datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
-        #window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])
-        #self.dv.add_parameter('Window', window_name, context = self.data_save_context)
-        #self.dv.add_parameter('plotLive', True, context = self.data_save_context)
-        
-        
-        ds = self.dv.new('Ramsey {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.data_save_context)
-        #window_name = self.parameters.get('RamseyScanGap.window_name', ['Ramsey Gap Scan'])[0]
-        window_name = 'ramsey'
-               
-       # print window_name    
-               
-        self.dv.add_parameter('Window', [window_name], context = self.data_save_context)
-        #self.dv.add_parameter('plotLive', False, context = self.spectrum_save_context)
-        self.save_parameters(self.dv, self.cxn, self.cxnlab, self.data_save_context)
-        sc = []
-        if self.parameters.Display.relative_frequencies:
-            sc =[x - self.carrier_frequency for x in self.scan]
-        else: sc = self.scan
-        
-        print sc
-        
-        if self.grapher is not None:
-            self.grapher.plot_with_axis(ds, window_name, sc, False)
-
-
-  
+        self.scan = sm.simple_scan(self.parameters.RamseyScanGap.scangap, 'us')
         
     def run(self, cxn, context):
+
+        dv_args = {
+            'pulse_sequence': 'ramsey',
+            'parameter':'Ramsey.ramsey_time',
+            'headings': ['Ion {}'.format(ion) for ion in range(self.excite.output_size)],
+            'window_name':'ramsey',
+            'axis': self.scan,
+            }
+        sm.setup_data_vault(cxn, self.save_context, dv_args)
+   
+
         self.setup_sequence_parameters()
         for i,duration in enumerate(self.scan):
             should_stop = self.pause_or_stop()
@@ -124,7 +92,7 @@ class ramsey_scangap(experiment):
             excitation, readouts = self.excite.run(cxn, context)
             submission = [duration['us']]
             submission.extend(excitation)
-            self.dv.add(submission, context = self.data_save_context)
+            self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
      
     def finalize(self, cxn, context):
@@ -135,8 +103,8 @@ class ramsey_scangap(experiment):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)
 
-    def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+    def save_parameters(self, dv, cxn, context):
+        measuredDict = dvParameters.measureParameters(cxn)
         dvParameters.saveParameters(dv, measuredDict, context)
         dvParameters.saveParameters(dv, dict(self.parameters), context)   
 

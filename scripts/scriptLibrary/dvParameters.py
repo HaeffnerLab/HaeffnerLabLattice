@@ -5,6 +5,9 @@ def saveParameters(dv, d, context):
 
 def measureParameters(cxn, cxnlab, specified = None):
     """Measures parameters in the list and returns the dictionary containing these"""
+
+    import labrad
+    cxnlab = labrad.connect('192.168.169.49')
     d = {}
     local = {
             'endcaps':measure_endcaps,
@@ -36,6 +39,8 @@ def measureParameters(cxn, cxnlab, specified = None):
                     print 'Unable to Measure {0}'.format(name), e
         else:
             raise NotImplementedError
+
+    cxnlab.disconnect()
     return d
 
 def measure_drifttracker(cxn, d):

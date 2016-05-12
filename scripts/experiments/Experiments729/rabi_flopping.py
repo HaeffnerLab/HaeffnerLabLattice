@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import excitation_729
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+import lattice.scripts.scriptLibrary.scan_methods as sm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
@@ -60,53 +61,39 @@ class rabi_flopping(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
-        self.rabi_flop_save_context = cxn.context()
+        self.save_context = cxn.context()
         self.grapher = cxn.grapher
     
     def setup_sequence_parameters(self):
-        self.load_frequency()
         flop = self.parameters.RabiFlopping
-        self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = flop.manual_scan
-        minim = minim['us']; maxim = maxim['us']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
-        
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.rabi_flop_save_context)
-        output_size = self.excite.output_size
-        dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        ds = self.dv.new('Rabi Flopping {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.rabi_flop_save_context)
-        self.dv.add_parameter('Window', ['Rabi Flopping'], context = self.rabi_flop_save_context)
-        #self.dv.add_parameter('plotLive', True, context = self.rabi_flop_save_context)
-        if self.grapher is not None:
-            self.grapher.plot_with_axis(ds, 'rabi', self.scan)
-    
-    def load_frequency(self):
-        #reloads trap frequencies and gets the latest information from the drift tracker
-        self.reload_some_parameters(self.trap_frequencies) 
-        flop = self.parameters.RabiFlopping
-        frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
-        trap = self.parameters.TrapFrequencies
         if flop.frequency_selection == 'auto':
-            frequency = cm.add_sidebands(frequency, flop.sideband_selection, trap)
+            frequency = sm.compute_frequency_729(flop.frequency_selection, flop.sideband_selection, self.parameters.TrapFrequencies, self.drift_tracker)
+        else:
+            frequency = flop.manual_frequency_729
         self.parameters['Excitation_729.rabi_excitation_frequency'] = frequency
+        self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        self.scan = sm.simple_scan(flop.manual_scan, 'us')
+        
         
     def run(self, cxn, context):
-        self.setup_sequence_parameters()
-        self.setup_data_vault()
+
+        dv_args = {
+            'pulse_sequence': 'spectrum_rabi',
+            'parameter':'Excitation_729.rabi_excitaton_duration',
+            'headings': ['Ion {}'.format(ion) for ion in range(self.excite.output_size)],
+            'window_name':'rabi',
+            'axis': sc
+                }
+        sm.setup_data_vault(cxn, self.save_context, dv_args)
+
         t = []
         ex = []
         for i,duration in enumerate(self.scan):
+
+            self.setup_sequence_parameters()
+
             should_stop = self.pause_or_stop()
             if should_stop: break
             excitation = self.get_excitation_crystallizing(cxn, context, duration)
@@ -115,7 +102,7 @@ class rabi_flopping(experiment):
             submission.extend(excitation)
             t.append(duration['us'])
             ex.append(excitation)
-            self.dv.add(submission, context = self.rabi_flop_save_context)
+            self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
         return np.array(t), np.array(ex)
     
@@ -135,7 +122,6 @@ class rabi_flopping(experiment):
         return excitation
     
     def do_get_excitation(self, cxn, context, duration):
-        self.load_frequency()
         self.parameters['Excitation_729.rabi_excitation_duration'] = duration
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
@@ -149,11 +135,10 @@ class rabi_flopping(experiment):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)
 
-    def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+    def save_parameters(self, dv, cxn, context):
+        measuredDict = dvParameters.measureParameters(cxn)
         dvParameters.saveParameters(dv, measuredDict, context)
         dvParameters.saveParameters(dv, dict(self.parameters), context)
-        cxnlab.disconnect()   
 
 if __name__ == '__main__':
     cxn = labrad.connect()
