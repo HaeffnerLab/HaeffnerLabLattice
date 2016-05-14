@@ -72,7 +72,7 @@ class spectrum(experiment):
         self.duration = None
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
-        self.spectrum_save_context = cxn.context()
+        self.save_context = cxn.context()
         try:
             self.grapher = cxn.grapher
         except: self.grapher = None
@@ -112,7 +112,7 @@ class spectrum(experiment):
             'window_name':'spectrum',
             'axis': sc
                 }
-        sm.setup_data_vault(cxn, self.spectrum_save_context, dv_args)
+        sm.setup_data_vault(cxn, self.save_context, dv_args)
 
         fr = []
         exci = []
@@ -127,7 +127,7 @@ class spectrum(experiment):
             else:
                 submission = [freq['MHz']]
             submission.extend(excitation)
-            self.dv.add(submission, context = self.spectrum_save_context)
+            self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
             fr.append(submission[0])
             exci.append(excitation)

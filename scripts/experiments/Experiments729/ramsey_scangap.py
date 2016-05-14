@@ -46,7 +46,6 @@ class ramsey_scangap(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.save_context = cxn.context()     
@@ -62,7 +61,7 @@ class ramsey_scangap(experiment):
         flop = self.parameters.RabiFlopping
         trap = self.parameters.TrapFrequencies
         if flop.frequency_selection == 'auto':
-            frequency = sm.compute_frequency_729(flop.frequency_selection, flop.sideband_selection, trap, self.drift_tracker)
+            frequency = sm.compute_frequency_729(flop.line_selection, flop.sideband_selection, trap, self.drift_tracker)
         else:
             frequency = flop.manual_frequency_729
         frequency += self.parameters.RamseyScanGap.detuning

@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
-from excitations import  molmer_sorensen_gate
+from excitations import molmer_sorensen_gate
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+import lattice.scripts.scriptLibrary.scan_methods as sm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
@@ -58,7 +59,6 @@ class ms_scan_ac_stark(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
@@ -68,24 +68,8 @@ class ms_scan_ac_stark(experiment):
         #self.load_frequency()
         gate = self.parameters.MolmerSorensen
         #self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
-        minim,maxim,steps = gate.ac_stark_shift_scan
-        minim = minim['kHz']; maxim = maxim['kHz']
-        self.scan = linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'kHz') for pt in self.scan]
+        self.scan = sm.simple_scan(gate.ac_stark_shift_scan, 'kHz')
         
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.save_context)
-        dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'kHz')], dependents , context = self.save_context)
-        self.dv.add_parameter('Window', ['AC Stark Scan'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
-    
     def load_frequency(self, ac_stark_shift):
         #reloads trap frequencyies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
@@ -123,6 +107,18 @@ class ms_scan_ac_stark(experiment):
     def run(self, cxn, context):
         self.setup_data_vault()
         self.setup_sequence_parameters()
+
+       dv_args = {
+            'pulse_sequence': 'molmer_sorensen_gate',
+            'parameter':'MolmerSorensen.ac_stark_shift',
+            'headings': ['0', '1', '2'],
+            'window_name':'locaL_stark',
+            'axis': self.scan,
+                }
+
+        sm.setup_data_vault(cxn, self.save_context, dv_args)
+
+
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
@@ -133,7 +129,7 @@ class ms_scan_ac_stark(experiment):
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
     
-    def get_excitation_crystallizing(self, cxn, context, freq):
+v    def get_excitation_crystallizing(self, cxn, context, freq):
         # right now don't crystallize because I'm not sure if it works
         excitation = self.do_get_excitation(cxn, context, freq)
         #if self.parameters.Crystallization.auto_crystallization:
@@ -163,8 +159,8 @@ class ms_scan_ac_stark(experiment):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)
 
-    def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+    def save_parameters(self, dv, cxn, context):
+        measuredDict = dvParameters.measureParameters(cxn)
         dvParameters.saveParameters(dv, measuredDict, context)
         dvParameters.saveParameters(dv, dict(self.parameters), context)   
 

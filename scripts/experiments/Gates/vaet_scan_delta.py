@@ -1,6 +1,7 @@
 from common.abstractdevices.script_scanner.scan_methods import experiment
 from excitations import vaet
 from lattice.scripts.scriptLibrary.common_methods_729 import common_methods_729 as cm
+import lattice.scripts.scriptLibrary.scan_methods as sm
 from lattice.scripts.scriptLibrary import dvParameters
 from lattice.scripts.experiments.Crystallization.crystallization import crystallization
 import time
@@ -69,7 +70,6 @@ class vaet_scan_delta(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
@@ -94,26 +94,6 @@ class vaet_scan_delta(experiment):
 
             # concatenate both lists
             self.scan = self.scan + hlp
-
-
-    def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
-        directory.extend([self.name])
-        directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.save_context)
-        if not self.parameters.StateReadout.use_camera_for_readout:
-            dependents = [('NumberExcited',st,'Probability') for st in ['0', '1', '2'] ]
-        else:
-            dependents = [('State', st, 'Probability') for st in ['SS', 'SD', 'DS', 'DD']]
-        ds=self.dv.new('VAET Scan Time {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
-        self.dv.add_parameter('Window', ['Effective mode frequency'], context = self.save_context)
-        #self.dv.add_parameter('plotLive', True, context = self.save_context)
-        if self.grapher is not None:
-            self.grapher.plot_with_axis(ds, 'vaet_delta', self.scan)
-
 
     def load_frequency(self, delta): # scan the szx detuning
         #reloads trap frequencies and gets the latest information from the drift tracker
@@ -181,7 +161,22 @@ class vaet_scan_delta(experiment):
 
     def run(self, cxn, context):
         self.setup_sequence_parameters()
-        self.setup_data_vault()
+
+       if not self.parameters.StateReadout.use_camera_for_readout:
+            headings = ['0', '1', '2']
+        else:
+            headings = ['SS', 'SD', 'DS', 'DD']
+
+        dv_args = {
+            'pulse_sequence': 'vaet_interaction',
+            'parameter':'VAET.detuning',
+            'headings': headings,
+            'window_name':'vaet_delta',
+            'axis': self.scan,
+                }
+
+        sm.setup_data_vault(cxn, self.save_context, dv_args)
+
         self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
@@ -220,15 +215,15 @@ class vaet_scan_delta(experiment):
      
     def finalize(self, cxn, context):
         self.dds_cw.output('5', True)
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
+        self.save_parameters(self.dv, cxn, self.save_context)
         self.excite.finalize(cxn, context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
         self.sc.script_set_progress(self.ident,  progress)
 
-    def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+    def save_parameters(self, dv, cxn, context):
+        measuredDict = dvParameters.measureParameters(cxn)
         dvParameters.saveParameters(dv, measuredDict, context)
         dvParameters.saveParameters(dv, dict(self.parameters), context)   
 
