@@ -53,6 +53,7 @@ class config(object):
                #('lattice.scripts.experiments.Experiments729.dephasing_scan_phase', 'dephase_scan_phase'),
                #('lattice.scripts.experiments.Experiments729.dephasing_scan_duration_Phase', 'dephase_scan_duration'),
                
+               ('lattice.scripts.experiments.CalibrationScans.two_line_rabi_flop', 'two_line_rabi_flop'),
                ('lattice.scripts.experiments.CalibrationScans.scan_sb_cooling_854', 'scan_sb_cooling_854'),
                ('lattice.scripts.experiments.CalibrationScans.scan_sb_cooling_detuning', 'scan_sb_cooling_detuning'),
                ('lattice.scripts.experiments.CalibrationScans.scan_motional_397pulse_width', 'scan_motional_397pulse_width'),

@@ -17,6 +17,7 @@ class calibrate_all_lines(experiment):
                            ('DriftTracker', 'line_selection_2'),
                            ('CalibrationScans', 'calibrate_sidebands'),
                            ('CalibrationScans', 'feedback_sidebands'),
+                           ('CalibrationScans', 'calibration_channel_729'),
                            ('Spectrum','car1_sensitivity'),
                            ('Spectrum','car2_sensitivity')
                            ]
@@ -41,7 +42,8 @@ class calibrate_all_lines(experiment):
         ('StatePreparation', 'sideband_cooling_enable'),
         ('StatePreparation', 'optical_pumping_enable'),
         ('Excitation_729', 'bichro'),
-        ('Excitation_729', 'channel_729')]
+        ('Excitation_729', 'channel_729')
+        ]
 
         
         
@@ -113,7 +115,7 @@ class calibrate_all_lines(experiment):
             'StateReadout.repeat_each_measurement':100,
             'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False,
-            'Excitation_729.channel_729':'729local',
+            'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
             'Spectrum.window_name':['car1']})
 
         self.spectrum.set_parameters(replace)
@@ -141,7 +143,7 @@ class calibrate_all_lines(experiment):
             'StateReadout.repeat_each_measurement':100,
             'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False,
-            'Excitation_729.channel_729':'729local',
+            'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
             'Spectrum.window_name':['car2']})
 
         self.spectrum.set_parameters(replace)
@@ -174,7 +176,7 @@ class calibrate_all_lines(experiment):
                'StateReadout.repeat_each_measurement':100,
                'StateReadout.use_camera_for_readout':False,
                'Excitation_729.bichro':False,
-               'Excitation_729.channel_729':'729local',
+               'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
                'Spectrum.window_name':['radial1']})
    
            self.spectrum.set_parameters(replace)
@@ -202,7 +204,7 @@ class calibrate_all_lines(experiment):
                'StateReadout.repeat_each_measurement':100,
                'StateReadout.use_camera_for_readout':False,
                'Excitation_729.bichro':False,
-               'Excitation_729.channel_729':'729local',
+               'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
                'Spectrum.window_name':['radial2']})
    
            self.spectrum.set_parameters(replace)

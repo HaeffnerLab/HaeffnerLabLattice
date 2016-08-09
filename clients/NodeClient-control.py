@@ -6,7 +6,9 @@ nodeDict = {
 			'node_lattice_control':[
 								'Serial Server',
 								'Data Vault',
-								'DAC',
+								#'DAC',
+								'DAC Server',
+								'Picomotor',
 								'Pulser',
 								'Real Simple Grapher',
 								'NormalPMTFlow',
