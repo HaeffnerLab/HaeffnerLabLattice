@@ -8,9 +8,8 @@ nodeDict = {
 								'Data Vault',
 								#'DAC',
 								'DAC Server',
-								'Picomotor',
 								'Pulser',
-								'Real Simple Grapher',
+								#'Real Simple Grapher',
 								'NormalPMTFlow',
 								'ADCserver',
 								'SD Tracker',
@@ -25,6 +24,7 @@ nodeDict = {
 								'Rigol DG4062 Server',
 								'Fitter',
 								'DDS_CW',
+								'Picomotor'
 								],
 			}
 #connect to LabRAD

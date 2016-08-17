@@ -94,7 +94,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def makeControlWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
         from electrode_client.electrode import electrode_widget
-        from common.clients.CAVITY_CONTROL import cavityWidget
+        from common.clients.LASERDAC_CONTROL import DAC_Control as laserdac_control_widget
         from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from common.clients.PMT_CONTROL import pmtWidget
         from common.clients.SWITCH_CONTROL import switchWidget
@@ -111,7 +111,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
         gridLayout.addWidget(magnet_Control(reactor, cxn),      2,0,1,1)
         gridLayout.addWidget(oven_Control(reactor, cxn),        2,1,1,1)
-        gridLayout.addWidget(cavityWidget(reactor),             0,2,3,2)
+        gridLayout.addWidget(laserdac_control_widget(reactor),             0,2,3,2)
         gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,2)
         gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
