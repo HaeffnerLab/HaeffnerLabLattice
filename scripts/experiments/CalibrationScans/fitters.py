@@ -37,8 +37,12 @@ class peak_fitter():
             # center, amplitude, width guesses
             return np.array([ fmax,  p.max(), 6e-3 ])
     
-    def fit(self, f, p):
+    def fit(self, f, p, return_all_params = False):
         model = lambda x, c0, a, w: a*np.exp(-(x - c0)**2/w**2)
         guess = self.guess(f, p)
         popt, copt = curve_fit(model, f, p, p0=guess)
-        return popt[0] # just the fitted center value
+        if return_all_params:
+            return (popt[0], popt[1], popt[2]) # center value, amplitude, width
+        else:
+            return popt[0] # return only the center value
+
