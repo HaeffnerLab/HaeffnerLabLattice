@@ -143,9 +143,9 @@ class calibrate_temperature(experiment):
         ex = ex.flatten()
 
         # take the maximum of the line excitation
-        rsb_ex = np.max(ex)
+        #rsb_ex = np.max(ex)
 
-        #sb_1 = self.fitter.fit(fr, ex)
+        fit_center, rsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
         #sb_1 = WithUnit(abs(sb_1), 'MHz')
 
         #### RUN THE BLUE SIDEBAND
@@ -177,9 +177,9 @@ class calibrate_temperature(experiment):
         ex = ex.flatten()
 
         # take the maximum of the line excitation
-        bsb_ex = np.max(ex)
+        #bsb_ex = np.max(ex)
 
-        #sb_2 = self.fitter.fit(fr, ex)
+        fit_center, bsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
         #sb_2 = WithUnit(abs(sb_2), 'MHz')
              
         # resetting DDS5 state

@@ -134,7 +134,7 @@ class ion_state_detector(object):
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
-        params.add('rotation_angle', value = 0.0001, min = -np.pi, max = np.pi, vary = False)
+        params.add('rotation_angle', value = np.pi/2, min = -np.pi, max = np.pi, vary = True)
         params.add('center_x', value = center_x_guess, min = xx.min(), max = xx.max())
         params.add('center_y', value = center_y_guess, min = yy.min(), max = yy.max())
         params.add('spacing', value = spacing_guess, min = 2.0, max = 60)

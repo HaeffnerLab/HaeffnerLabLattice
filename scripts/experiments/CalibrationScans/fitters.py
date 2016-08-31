@@ -25,13 +25,13 @@ class pi_time_fitter():
 
 class peak_fitter():
     
-    def guess(self, f, p):
+    def guess(self, f, p, force_guess = False):
         '''
         just take the point at the peak value
         '''
         max_index = np.where(p == p.max())[0][0]
         fmax = f[max_index]
-        if p.max() <= 0.2:
+        if (p.max() <= 0.2 and not force_guess):
             raise Exception("Peak not found")
         else:
             # center, amplitude, width guesses
@@ -39,10 +39,12 @@ class peak_fitter():
     
     def fit(self, f, p, return_all_params = False):
         model = lambda x, c0, a, w: a*np.exp(-(x - c0)**2/w**2)
-        guess = self.guess(f, p)
+        force_guess = False
+        if return_all_params: force_guess = True
+        guess = self.guess(f, p, force_guess)
         popt, copt = curve_fit(model, f, p, p0=guess)
         if return_all_params:
-            return (popt[0], popt[1], popt[2]) # center value, amplitude, width
+            return popt[0], popt[1], popt[2] # center value, amplitude, width
         else:
             return popt[0] # return only the center value
 

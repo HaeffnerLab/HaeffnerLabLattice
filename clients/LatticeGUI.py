@@ -28,7 +28,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         histogram = self.make_histogram_widget(reactor, cxn)
         drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         single_pass = self.make_sp_control(reactor, cxn)
-        dac_control = self.make_dac_control_widget(reactor, cxn)
         piezo_motor_control = self.make_piezo_motor_control_widget(reactor, cxn)
         #automation_widget = self.make_automation_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
@@ -43,7 +42,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
-        self.tabWidget.addTab(dac_control, '&DAC Control')
+        #self.tabWidget.addTab(dac_control, '&DAC Control')
         self.tabWidget.addTab(piezo_motor_control, 'M&irror Porsche')
         #self.tabWidget.addTab(drift_tracker, '&Autogadget')
         layout.addWidget(self.tabWidget)
@@ -60,11 +59,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget = PICOMOTOR_CONTROL(reactor, cxn = cxn)
         return widget
  
-    def make_dac_control_widget(self, reactor, cxn):
-        from common.clients.DAC_CONTROL import DAC_Control
-        widget = DAC_Control(reactor)#, cxn = cxn)
-        return widget
-   
     def make_drift_tracker_widget(self, reactor, cxn):
         from common.clients.drift_tracker.drift_tracker import drift_tracker
         widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
@@ -93,7 +87,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
     
     def makeControlWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
-        from electrode_client.electrode import electrode_widget
+        #from electrode_client.electrode import electrode_widget
+        from lattice.clients.DAC_CONTROL import DAC_Control
         from common.clients.LASERDAC_CONTROL import DAC_Control as laserdac_control_widget
         from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from common.clients.PMT_CONTROL import pmtWidget
@@ -104,7 +99,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from indicator.indicator import indicator_widget
         from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
+        gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)
+        #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
         gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
         #gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
