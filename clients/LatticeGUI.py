@@ -30,6 +30,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         single_pass = self.make_sp_control(reactor, cxn)
         piezo_motor_control = self.make_piezo_motor_control_widget(reactor, cxn)
         #automation_widget = self.make_automation_widget(reactor, cxn)
+        config_editor = self.make_config_editor_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
         
@@ -45,6 +46,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #self.tabWidget.addTab(dac_control, '&DAC Control')
         self.tabWidget.addTab(piezo_motor_control, 'M&irror Porsche')
         #self.tabWidget.addTab(drift_tracker, '&Autogadget')
+        self.tabWidget.addTab(config_editor, 'Config &Editor')
+
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -68,7 +71,14 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.SINGLE_PASS_CONTROL import DDS_CONTROL
         widget = DDS_CONTROL(reactor, cxn)
         return widget
-    
+ 
+    def make_config_editor_widget(self, reactor, cxn):
+        config_editor_tab = QtGui.QTabWidget()
+        from common.clients.CONFIG_EDITOR import CONFIG_EDITOR
+        config_editor = CONFIG_EDITOR(reactor, cxn)
+        config_editor_tab.addTab(config_editor,"Config Editor")
+        return config_editor_tab
+   
     def make_histogram_widget(self, reactor, cxn):
         histograms_tab = QtGui.QTabWidget()
         from common.clients.readout_histogram import readout_histogram
