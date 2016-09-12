@@ -9,6 +9,8 @@ import time
 import numpy as np
 import labrad
 
+from random import shuffle
+
 class calibrate_heating_rates(experiment):
 
     name = 'CalibHeatingRates'
@@ -69,6 +71,9 @@ class calibrate_heating_rates(experiment):
         scan_param = self.parameters.CalibrationScans.heating_rate_scan_interval
 
         self.scan = scan_methods.simple_scan(scan_param, 'us')
+
+        # randomizing scan
+        shuffle(self.scan)
 
         for i,heat_time in enumerate(self.scan):
             #should_stop = self.pause_or_stop()

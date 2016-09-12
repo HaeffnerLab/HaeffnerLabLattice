@@ -81,18 +81,25 @@ class rabi_flopping_scannable(experiment):
                 single_excitation = excitation
             else:
                 single_excitation = excitation[0]
+            return single_excitation
         else:
-            ion = int(self.parameters.RabiFlopping_Sit.selected_ion)
-            single_excitation = excitation[ion]
-        return single_excitation
+            if not self.report_all_ions:
+                ion = int(self.parameters.RabiFlopping_Sit.selected_ion)
+                single_excitation = excitation[ion]
+                return single_excitation
+            else:
+                return excitation
      
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
                                 
     def save_parameters(self, dv, cxn, cxnlab, context):
-        measuredDict = dvParameters.measureParameters(cxn, cxnlab)
-        dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)     
+        try:
+            #measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+            #dvParameters.saveParameters(dv, measuredDict, context)
+            dvParameters.saveParameters(dv, dict(self.parameters), context)     
+        except:
+            pass
         
 if __name__ == '__main__':
     cxn = labrad.connect()

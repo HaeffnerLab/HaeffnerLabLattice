@@ -205,8 +205,6 @@ class base_excitation(experiment):
             #get percentage of the excitation using the PMT threshold
             readouts = self.pulser.get_readout_counts().asarray
             
-           
-        
             self.save_data(readouts)            
             if len(readouts):
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))

@@ -106,16 +106,22 @@ class calibrate_temperature(experiment):
         sb_blue = sb_red[:]
 
         for k in range(len(sb_red)):
-            sb_blue[k] = -sb_red[k]
+            if sb_red[k] > 0.0:
+                # in case the sideband selection is set to the blue sideband we need to flip the arrays
+                sb_blue[k] = sb_red[k]
+                sb_red[k] = -sb_red[k]
+            else:
+                sb_blue[k] = -sb_red[k]
 
-        print sb_blue
-        print sb_red
+        #print sb_blue
+        #print sb_red
 
-        no_of_repeats = 50
+        #no_of_repeats = 50
         relative_frequencies = True
 
         #### RUN THE RED SIDEBAND
 
+        #'StateReadout.repeat_each_measurement':no_of_repeats,
         replace = TreeDict.fromdict({
             'Spectrum.line_selection':self.parameters.Spectrum.line_selection,
             'Spectrum.scan_selection':'auto',
@@ -125,7 +131,6 @@ class calibrate_temperature(experiment):
             'StatePreparation.sideband_cooling_enable':True,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':relative_frequencies,
-            'StateReadout.repeat_each_measurement':no_of_repeats,
             'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False,
             'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
@@ -145,11 +150,16 @@ class calibrate_temperature(experiment):
         # take the maximum of the line excitation
         #rsb_ex = np.max(ex)
 
-        fit_center, rsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
+        try:
+            fit_center, rsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
+        except:
+            rsb_ex = np.max(ex)
+
         #sb_1 = WithUnit(abs(sb_1), 'MHz')
 
         #### RUN THE BLUE SIDEBAND
 
+        #'StateReadout.repeat_each_measurement':no_of_repeats,
         replace = TreeDict.fromdict({
             'Spectrum.line_selection':self.parameters.Spectrum.line_selection,
             'Spectrum.scan_selection':'auto',
@@ -159,7 +169,6 @@ class calibrate_temperature(experiment):
             'StatePreparation.sideband_cooling_enable':True,
             'StatePreparation.optical_pumping_enable':True,
             'Display.relative_frequencies':relative_frequencies,
-            'StateReadout.repeat_each_measurement':no_of_repeats,
             'StateReadout.use_camera_for_readout':False,
             'Excitation_729.bichro':False,
             'Excitation_729.channel_729':self.parameters.CalibrationScans.calibration_channel_729,
@@ -179,7 +188,11 @@ class calibrate_temperature(experiment):
         # take the maximum of the line excitation
         #bsb_ex = np.max(ex)
 
-        fit_center, bsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
+        try:
+            fit_center, bsb_ex, fit_width = self.fitter.fit(fr, ex, return_all_params = True)
+        except:
+            bsb_ex = np.max(ex)
+
         #sb_2 = WithUnit(abs(sb_2), 'MHz')
              
         # resetting DDS5 state

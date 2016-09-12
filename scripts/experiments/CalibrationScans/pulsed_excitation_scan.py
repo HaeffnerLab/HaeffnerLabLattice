@@ -47,7 +47,7 @@ class pulsed_excitation_scan(experiment):
             #mode = self.parameters.Motion_Analysis.sideband_selection
             mode = 'radial_frequency_1'
             self.scan = scan_methods.simple_scan(scan_param, 'MHz', offset = self.parameters['TrapFrequencies.' + mode])
-            
+
             dv_args = {'output_size':self.rabi_flop.excite.output_size,
                               'experiment_name': self.name,
                               'window_name': 'radial1',
@@ -72,6 +72,7 @@ class pulsed_excitation_scan(experiment):
                                              })
                 self.rabi_flop.set_parameters(replace)
                 excitation = self.rabi_flop.run(cxn, context)
+                print excitation
                 if excitation is None: break 
                 submission = [f['MHz']]
                 submission.extend([excitation])

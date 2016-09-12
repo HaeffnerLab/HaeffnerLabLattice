@@ -66,6 +66,7 @@ class config(object):
                ('lattice.scripts.experiments.CalibrationScans.calibrate_heating_rates', 'calibrate_heating_rates'),
                ('lattice.scripts.experiments.CalibrationScans.pulsed_excitation_scan', 'pulsed_excitation_scan'),
                ('lattice.scripts.experiments.CalibrationScans.ramsey_pulsed_excitation_scan', 'ramsey_pulsed_excitation_scan'),   
+               ('lattice.scripts.experiments.CalibrationScans.scan_beam_position', 'scan_beam_position'),   
                ('lattice.scripts.experiments.Gates.ms_gate', 'ms_gate'),
                ('lattice.scripts.experiments.Gates.ms_scan_ac_stark', 'ms_scan_ac_stark'),
                ('lattice.scripts.experiments.Gates.ms_scan_phase', 'ms_scan_phase'),
