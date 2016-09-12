@@ -63,7 +63,7 @@ class vaet_base(experiment):
             self.crystallizer.initialize(cxn, context, ident)
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
 

@@ -169,8 +169,8 @@ class base_excitation(experiment):
         from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
         dds = cxn.pulser.human_readable_dds()
         ttl = cxn.pulser.human_readable_ttl()
-        channels = cxn.pulser.get_channels().asarray
-        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        channels = cxn.pulser.get_channels()
+        sp = SequencePlotter(ttl, dds.aslist, channels)
         sp.makePlot()
         
     def run(self, cxn, context):
@@ -203,7 +203,7 @@ class base_excitation(experiment):
         if not self.use_camera:
             print "not using camera!"
             #get percentage of the excitation using the PMT threshold
-            readouts = self.pulser.get_readout_counts().asarray
+            readouts = self.pulser.get_readout_counts()
             
             self.save_data(readouts)            
             if len(readouts):
@@ -221,7 +221,7 @@ class base_excitation(experiment):
                 
                 self.finalize(cxn, context)
                 raise Exception ("Did not get all kinetic images from camera")
-            images = self.camera.get_acquired_data(repetitions).asarray
+            images = self.camera.get_acquired_data(repetitions)
             self.camera.abort_acquisition()
             x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
             y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])

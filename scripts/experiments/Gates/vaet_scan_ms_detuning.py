@@ -33,7 +33,7 @@ class vaet_scan_ms_detuning(experiment):
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw
         self.save_context = cxn.context()

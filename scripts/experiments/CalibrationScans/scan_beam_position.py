@@ -33,7 +33,7 @@ class scan_beam_position(experiment):
         self.rabi_flop.initialize(cxn, context, ident, report_all_ions=True)
         self.save_context = cxn.context()
         self.dv = cxn.data_vault
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
 
     def generate_scan(self):
         steps_per_move = int(self.parameters.CalibrationScans.position_scan_steps_per_move)

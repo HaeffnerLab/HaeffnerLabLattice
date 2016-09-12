@@ -36,7 +36,7 @@ class szx_scan_time(experiment):
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.dv = cxn.data_vault
         self.save_context = cxn.context()
         self.contrast_save_context = cxn.context()

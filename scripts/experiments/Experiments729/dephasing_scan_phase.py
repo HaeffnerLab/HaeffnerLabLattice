@@ -26,7 +26,7 @@ class dephase_scan_phase(experiment):
         self.scan_dur = self.make_experiment(dephase_scan_duration)
         self.scan_dur.initialize(cxn, context, ident)
         self.scan = []
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()

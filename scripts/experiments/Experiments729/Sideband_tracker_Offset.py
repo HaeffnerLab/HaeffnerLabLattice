@@ -65,7 +65,7 @@ class Sideband_tracker(experiment):
         self.amplitude = None
         self.duration = None
         #self.radial_mode_offset = None #Not sure, should be removed
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.fitter = cxn.fitter

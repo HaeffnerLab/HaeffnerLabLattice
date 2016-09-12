@@ -30,7 +30,7 @@ class align_729local(experiment):
         self.rabi_flop.initialize(cxn, context, ident, report_all_ions=False)
         self.save_context = cxn.context()
         self.dv = cxn.data_vault
-        self.cxnlab = labrad.connect('192.168.169.49') # connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') # connection to labwide network
         self.server = cxn.picomotorserver
 
     def walk_axis(self, axis, step_size):

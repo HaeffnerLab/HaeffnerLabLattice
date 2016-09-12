@@ -36,7 +36,7 @@ class ramsey_pulsed_excitation_scan(experiment):
         self.save_context = cxn.context()
         self.dv = cxn.data_vault        
         self.pv = cxn.parametervault
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.agi = agilent(cxn)
         
     def run(self, cxn, context):

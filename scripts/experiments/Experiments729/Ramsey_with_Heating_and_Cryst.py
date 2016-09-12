@@ -63,7 +63,7 @@ class ramsey_with_heating_and_cryst(experiment):
             self.crystallizer.initialize(cxn, context, ident)
  
         self.scan = []
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         #self.cxnlab = labrad.connect('localhost') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
