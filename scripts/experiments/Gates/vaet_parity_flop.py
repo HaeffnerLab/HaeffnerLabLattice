@@ -122,7 +122,8 @@ class vaet_parity_flop(experiment):
         # so if we make the single pass frequency 81 MHz, we're actually driving -red-
         # of the carrier by 1 MHz. Keep that in mind until we change it.
 
-        szx_mode = szx.sideband_selection
+        #szx_mode = szx.sideband_selection
+        szx_mode = 'radial_frequency_1'
         szx_trap_frequency = self.parameters['TrapFrequencies.' + szx_mode]
         
         ### MOLMER SORENSEN FREQUENCIES AND AMPLITUDES ###

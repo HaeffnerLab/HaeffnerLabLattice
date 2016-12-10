@@ -199,7 +199,7 @@ class setup_experiment(experiment):
         fitted_freq1 = self.excite.run(cxn, context)
 
 
-	#### D5/2 
+    	#### D5/2 
 
         s12d52 = -25.70
         delta_s12d52 = 0.4/2

@@ -92,7 +92,7 @@ class reference_camera_image(experiment):
             self.camera.abort_acquisition()
             self.finalize(cxn, context)
             raise Exception ("Did not get all kinetic images from camera")
-        images = self.camera.get_acquired_data(self.exposures).asarray
+        images = self.camera.get_acquired_data(self.exposures)
         x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         images = np.reshape(images, (self.exposures, y_pixels, x_pixels))

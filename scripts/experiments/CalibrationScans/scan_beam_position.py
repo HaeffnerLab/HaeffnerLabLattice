@@ -65,7 +65,7 @@ class scan_beam_position(experiment):
         scan_methods.setup_data_vault(cxn, self.save_context, dv_args)
 
         picomotor= self.cxn.picomotorserver
-        picomotor.mark_current_setpoint() # return point after the scan
+        #picomotor.mark_current_setpoint() # return point after the scan
 
        
         axis = int(self.parameters.CalibrationScans.position_scan_axis)
@@ -92,7 +92,8 @@ class scan_beam_position(experiment):
             if isinstance(excitation, np.ndarray):
                 submission.extend(excitation)
             else:
-                submission.extend([excitation])
+                #submission.extend([excitation])
+                submission.extend(excitation)
             print submission
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)

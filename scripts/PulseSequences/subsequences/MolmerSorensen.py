@@ -9,9 +9,6 @@ class molmer_sorensen(pulse_sequence):
                           ('MolmerSorensen','duration'),
                           ('MolmerSorensen','phase'),
                           ('MolmerSorensen','analysis_pulse_enable'),
-                          ('MolmerSorensen','analysis_phase'),
-                          ('MolmerSorensen','analysis_amplitude'),
-                          ('MolmerSorensen','analysis_duration'),
                           ('MolmerSorensen','shape_profile'),
 
                           ('LocalStarkShift', 'enable'),

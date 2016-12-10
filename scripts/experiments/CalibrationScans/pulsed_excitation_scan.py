@@ -67,7 +67,7 @@ class pulsed_excitation_scan(experiment):
                 time.sleep(1)                            
                 
                 replace = TreeDict.fromdict({
-                                             'Motion_Analysis.excitation_enable':True,
+#                                             'Motion_Analysis.excitation_enable':True,
                                              'RabiFlopping.sideband_selection':[1,0,0,0],
                                              })
                 self.rabi_flop.set_parameters(replace)
@@ -107,7 +107,7 @@ class pulsed_excitation_scan(experiment):
                 time.sleep(1)
                                 
                 replace = TreeDict.fromdict({
-                                             'Motion_Analysis.excitation_enable':True,
+#                                             'Motion_Analysis.excitation_enable':True,
                                              'RabiFlopping.sideband_selection':[0,1,0,0],
                                              })
                 self.rabi_flop.set_parameters(replace)

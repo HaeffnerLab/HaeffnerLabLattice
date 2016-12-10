@@ -103,9 +103,12 @@ class calibrate_temperature(experiment):
         time.sleep(1)
 
         sb_red = self.parameters.Spectrum.sideband_selection
-        sb_blue = sb_red[:]
+        sb_blue = []
+        sb_blue.extend(sb_red)
+        #sb_blue = #sb_red[:]
 
         for k in range(len(sb_red)):
+            print sb_red[k]
             if sb_red[k] > 0.0:
                 # in case the sideband selection is set to the blue sideband we need to flip the arrays
                 sb_blue[k] = sb_red[k]
@@ -113,8 +116,9 @@ class calibrate_temperature(experiment):
             else:
                 sb_blue[k] = -sb_red[k]
 
-        #print sb_blue
-        #print sb_red
+        print "SIDEBANDS"
+        print sb_blue
+        print sb_red
 
         #no_of_repeats = 50
         relative_frequencies = True

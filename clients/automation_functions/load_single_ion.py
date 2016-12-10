@@ -6,8 +6,7 @@ import numpy as np
 cxn = labrad.connect()
 
 # connect to labrad in laserroom
-b = labrad.connect('192.168.169.49')
-
+b = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
 
 # how to change things in pulser
 

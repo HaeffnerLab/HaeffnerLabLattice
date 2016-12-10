@@ -24,6 +24,8 @@ class sideband_cooling(pulse_sequence):
                            ('SequentialSBCooling','enable'),
                            ('SequentialSBCooling','frequency'),
                            ('SequentialSBCooling', 'cycles'),
+                           ('SequentialSBCooling', 'channel_729'),
+                            
                            ]
     
     required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
@@ -36,6 +38,7 @@ class sideband_cooling(pulse_sequence):
                                                         ('SidebandCoolingContinuous','sideband_cooling_conitnuous_amplitude_854'),
                                                         ('SidebandCoolingContinuous','sideband_cooling_continuous_amplitude_729'),
                                                         ('SidebandCoolingContinuous','sideband_cooling_continuous_amplitude_866'),
+                                                        ('StatePreparation','channel_729'),
                                                         ],
                             sideband_cooling_pulsed:[
                                                         ('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_729'),
@@ -98,6 +101,7 @@ class sideband_cooling(pulse_sequence):
                                }
             cooling_replace_2 = cooling_replace.copy()
             cooling_replace_2['SidebandCoolingPulsed.sideband_cooling_pulsed_frequency_729'] = sc2.frequency + sc.stark_shift
+            cooling_replace_2['StatePreparation.channel_729'] = sc2.channel_729            
         optical_pump_replace = {
                                 'OpticalPumping.optical_pumping_continuous':True,
                                 'OpticalPumpingContinuous.optical_pumping_continuous_duration':sc.sideband_cooling_optical_pumping_duration,
