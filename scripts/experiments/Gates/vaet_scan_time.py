@@ -124,7 +124,8 @@ class vaet_scan_time(experiment):
         # of the carrier by 1 MHz. Keep that in mind until we change it.
         ms_mode = ms.sideband_selection
         ms_trap_frequency = self.parameters['TrapFrequencies.' + ms_mode]
-        szx_mode = szx.sideband_selection
+        #szx_mode = szx.sideband_selection
+        szx_mode = 'radial_frequency_1'
         szx_trap_frequency = self.parameters['TrapFrequencies.' + szx_mode]
         
         ### MOLMER SORENSEN FREQUENCIES AND AMPLITUDES ###

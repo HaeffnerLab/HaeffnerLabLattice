@@ -23,6 +23,7 @@ class optical_pumping_continuous(pulse_sequence):
     def sequence(self):
         opc = self.parameters.OpticalPumpingContinuous
         channel_729 = self.parameters.StatePreparation.channel_729
+        print channel_729
         repump_dur_854 = opc.optical_pumping_continuous_duration + opc.optical_pumping_continuous_repump_additional
         repump_dur_866 = opc.optical_pumping_continuous_duration + 2 * opc.optical_pumping_continuous_repump_additional
         self.end = self.start + repump_dur_866

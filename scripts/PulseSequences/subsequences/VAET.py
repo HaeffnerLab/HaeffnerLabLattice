@@ -24,6 +24,7 @@ class vaet(pulse_sequence):
         szx = self.parameters.SZX
         pl = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')
+        f_shift = WithUnit(-30., 'kHz')
         try:
             slope_duration = WithUnit(int(slope_dict[v.shape_profile]),'us')
         except KeyError:
@@ -32,10 +33,10 @@ class vaet(pulse_sequence):
         self.end = self.start + 2*frequency_advance_duration + v.duration + slope_duration
         #first advance the frequency but keep amplitude low
         self.addDDS('729global', self.start, frequency_advance_duration, v.frequency, ampl_off)
-        self.addDDS('729local', self.start, frequency_advance_duration, v.frequency, ampl_off)
+        self.addDDS('729local', self.start, frequency_advance_duration, v.frequency + f_shift, ampl_off)
         # turn on bichro on the global and local beams at the same time
         self.addDDS('729global', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
-        self.addDDS('729local', self.start + frequency_advance_duration, v.duration, v.frequency, szx.amplitude, profile=int(v.shape_profile))
+        self.addDDS('729local', self.start + frequency_advance_duration, v.duration, v.frequency + f_shift, szx.amplitude, profile=int(v.shape_profile))
         #self.addDDS('729local', self.start + frequency_advance_duration, v.duration + slope_duration, v.frequency, szx.amplitude, profile=4)
         self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
         self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
@@ -47,6 +48,8 @@ class vaet(pulse_sequence):
             self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
             #self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration + slope_duration, f, pl.amplitude, profile=4)
             self.addDDS('SP_local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, f, ampl_off)
+        else:
+            self.addDDS('SP_local', self.start, frequency_advance_duration, WithUnit(60., 'MHz'), ampl_off) # make sure the SP is far away from the carrier
 
         self.addDDS('729global', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)
         self.addDDS('729local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)

@@ -45,6 +45,10 @@ class setup_local_rotation(experiment):
         self.fitter = pi_time_fitter()
         self.pv = cxn.parametervault
         self.save_context = cxn.context()
+        self.dv = cxn.data_vault
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None        
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -63,15 +67,18 @@ class setup_local_rotation(experiment):
             self.grapher.plot_with_axis(ds, 'rabi', self.scan)
     
     def run(self, cxn, context):
-        self.scan = [WithUnit(0, 'us'), WithUnit(50, 'us'), 60]
+        self.scan = np.linspace(0,50, 25)
+        self.scan = [WithUnit(pt, 'us') for pt in self.scan]
+        #self.scan = [WithUnit(0, 'us'), WithUnit(50, 'us'), 60]
         
         use_cam = self.parameters.StateReadout.use_camera_for_readout
-        
+        self.setup_data_vault()
         t_list = []
         ex_list = []
         
         for t in self.scan:
-            
+            should_stop = self.pause_or_stop()
+            if should_stop: break
             replace = TreeDict.fromdict({'LocalRotation.pi_time':t,
                                          'MolmerSorensen.amplitude':WithUnit(-63, 'dBm'),
                                          'MolmerSorensen.analysis_pulse_enable':False,
@@ -83,11 +90,12 @@ class setup_local_rotation(experiment):
             ex = self.ms.run(cxn, context)
             submission = [t['us']]
             submission.extend(ex)
+            #print submission
             self.dv.add(submission, context = self.save_context)
             
             t_list.append(t['us'])
             if use_cam: # DS state
-                ex_list.append(ex[2])
+                ex_list.append(ex[1])
             else: # 1 ion dark state
                 ex_list.append(ex[1])
 
@@ -104,6 +112,7 @@ class setup_local_rotation(experiment):
 
     def finalize(self, cxn, context):
         self.ms.finalize(cxn, context)
+        #self.cxnlab.disconnect()
 
 if __name__ == '__main__':
     cxn = labrad.connect()

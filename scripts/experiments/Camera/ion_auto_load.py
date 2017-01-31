@@ -57,7 +57,7 @@ class ion_auto_load(experiment):
         self.pulser = cxn.pulser
         self.pv = cxn.parametervault
 
-        self.oven_control = cxn.agilent_e3633a
+        #self.oven_control = cxn.agilent_e3633a
 
         repetitions = self.parameters.IonsAutoLoad.repetition_ion_detection
         self.pv.set_parameter('StateReadout','repeat_each_measurement', repetitions)
@@ -107,15 +107,23 @@ class ion_auto_load(experiment):
             raise Exception ("Did not get all kinetic images from camera")
         
         
-        images = self.camera.get_acquired_data(self.exposures).asarray
+        #images = self.camera.get_acquired_data(self.exposures).asarray
+        images = self.camera.get_acquired_data(self.exposures)
 
         x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         images = np.reshape(images, (self.exposures, y_pixels, x_pixels))
         image  = np.average(images, axis = 0)
-        np.save('37ions_global', image)
         
-        self.fit_and_plot(image)
+        #np.save('37ions_global', image)
+
+        import time
+        my_time = str(time.time())[0:10]
+        np.save('/home/lattice/tmp/images/img_' + my_time, image)
+        np.save('/home/lattice/tmp/images/img_current', image)
+        
+        print images.shape
+        #self.fit_and_plot(image)
 
         
     def fit_and_plot(self, image):
@@ -135,12 +143,14 @@ class ion_auto_load(experiment):
 
         self.pv.set_parameter('IonsAutoLoad','no_of_detected_ions', no_of_detected_ions)
 
+        switch_pis = False
         #self.oven_control.select_device(0)
         # too few ions
         if no_of_detected_ions < self.parameters.IonsAutoLoad.no_of_ions_to_load:
             print "Not enough ions ... switching on oven and ionization laser"
 
-            self.pulser.switch_manual('bluePI', True)
+            if switch_pis:
+                self.pulser.switch_manual('bluePI', True)
             #self.oven_control.current(WithUnit(12.2, 'A'))
             #self.oven_control.output(True)
             #self.oven_control.deselect_device()
@@ -155,7 +165,8 @@ class ion_auto_load(experiment):
             #self.oven_control.output(False)
             #self.oven_control.deselect_device()
 
-            self.pulser.switch_manual('bluePI', False)
+            if switch_pis:
+                self.pulser.switch_manual('bluePI', False)
             #self.oven_control.current(WithUnit(12.2, 'A'))
             #self.oven_control.output(True)
             #self.oven_control.deselect_device()
@@ -163,7 +174,8 @@ class ion_auto_load(experiment):
             return
 
         # the right amount
-        self.pulser.switch_manual('bluePI', False)
+        if switch_pis:
+            self.pulser.switch_manual('bluePI', False)
         #self.oven_control.output(False)
         #self.oven_control.deselect_device()
         return

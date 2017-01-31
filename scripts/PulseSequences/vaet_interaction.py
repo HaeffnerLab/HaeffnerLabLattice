@@ -6,7 +6,7 @@ from subsequences.LocalRotation import local_rotation
 from subsequences.motion_analysis import motion_analysis
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
-from subsequences.SidebandCooling import sideband_cooling
+from subsequences.SidebandCooling import sideband_cooling_with_splocal as sideband_cooling
 from labrad.units import WithUnit
 from treedict import TreeDict
 
