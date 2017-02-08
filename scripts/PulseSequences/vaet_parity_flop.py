@@ -6,6 +6,7 @@ from subsequences.GlobalRotation import global_rotation
 from subsequences.Tomography import tomography_readout
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.SidebandCooling import sideband_cooling
+from subsequences.EmptySequence import empty_sequence
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -32,6 +33,7 @@ class vaet_parity_flop(pulse_sequence):
         if p.StatePreparation.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(global_rotation)
+        self.addSequence(empty_sequence, TreeDict.fromdict({'EmptySequence.empty_sequence_duration':WithUnit(2, 'ms')}))
         self.addSequence(vaet)
         self.addSequence(global_rotation)
         self.addSequence(tomography_readout)
