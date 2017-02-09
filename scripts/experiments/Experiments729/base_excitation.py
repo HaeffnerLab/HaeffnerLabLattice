@@ -26,6 +26,8 @@ class base_excitation(experiment):
                             ('TrapFrequencies','radial_frequency_1'),
                             ('TrapFrequencies','radial_frequency_2'),
                             ('TrapFrequencies','rf_drive_frequency'),
+                            ('TrapFrequencies', 'aux_radial'),
+                            ('TrapFrequencies', 'aux_axial'),
                             ('StateReadout', 'repeat_each_measurement'),
                             ('StateReadout', 'state_readout_threshold'),
 
@@ -62,6 +64,8 @@ class base_excitation(experiment):
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
         params.remove(('StateReadout', 'state_readout_duration'))
         params.remove(('SequentialSBCooling', 'frequency'))
+        params.remove(('SidebandPrecooling', 'frequency_1'))
+        params.remvoe(('SidebandPrecooling', 'frequency_2'))
         return params
     
     def initialize(self, cxn, context, ident, use_camera_override=None):
@@ -152,6 +156,20 @@ class base_excitation(experiment):
         sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
         self.parameters['SequentialSBCooling.frequency'] = sc2freq
         print sc2freq
+
+        ### sideband precooling stuff ###
+        spc = self.parameters.SidebandPrecooling
+        sbc_carrier_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
+        frequency_1 = WithUnit(0.0, 'MHz')
+        frequency_2 = WithUnit(0.0, 'MHz')
+        if spc.mode1 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode1]
+            frequency_1 = sbc_carrier_frequency - tf
+        if spc.mode2 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode2]
+            frequency_2 = sbc_carrier_frequency - tf
+        self.parameters['SidebandPrecooling.frequency_1'] = frequency_1
+        self.parameters['SidebandPrecooling.frequency_2'] = frequency_2
 
         # set state readout time
         if self.use_camera:
