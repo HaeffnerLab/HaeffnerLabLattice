@@ -65,7 +65,7 @@ class base_excitation(experiment):
         params.remove(('StateReadout', 'state_readout_duration'))
         params.remove(('SequentialSBCooling', 'frequency'))
         params.remove(('SidebandPrecooling', 'frequency_1'))
-        params.remvoe(('SidebandPrecooling', 'frequency_2'))
+        params.remove(('SidebandPrecooling', 'frequency_2'))
         return params
     
     def initialize(self, cxn, context, ident, use_camera_override=None):
@@ -162,11 +162,11 @@ class base_excitation(experiment):
         sbc_carrier_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         frequency_1 = WithUnit(0.0, 'MHz')
         frequency_2 = WithUnit(0.0, 'MHz')
-        if spc.mode1 != 'off':
-            tf = self.parameters['TrapFrequencies.' + spc.mode1]
+        if spc.mode_1 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode_1]
             frequency_1 = sbc_carrier_frequency - tf
-        if spc.mode2 != 'off':
-            tf = self.parameters['TrapFrequencies.' + spc.mode2]
+        if spc.mode_2 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode_2]
             frequency_2 = sbc_carrier_frequency - tf
         self.parameters['SidebandPrecooling.frequency_1'] = frequency_1
         self.parameters['SidebandPrecooling.frequency_2'] = frequency_2
@@ -188,7 +188,8 @@ class base_excitation(experiment):
         dds = cxn.pulser.human_readable_dds()
         ttl = cxn.pulser.human_readable_ttl()
         channels = cxn.pulser.get_channels()
-        sp = SequencePlotter(ttl, dds.aslist, channels)
+        #sp = SequencePlotter(ttl, dds.aslist, channels)
+        sp = SequencePlotter(ttl, dds, channels)
         sp.makePlot()
         
     def run(self, cxn, context):
@@ -204,7 +205,7 @@ class base_excitation(experiment):
         pulse_sequence.programSequence(self.pulser)
         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
         print self.use_camera
-        #self.plot_current_sequence(cxn)
+        self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)

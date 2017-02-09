@@ -2,6 +2,7 @@ from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_seq
 from OpticalPumping import optical_pumping
 from SidebandCoolingContinuous import sideband_cooling_continuous
 from SidebandCoolingPulsed import sideband_cooling_pulsed
+from SidebandPrecooling import sideband_precooling, sideband_precooling_with_splocal
 from treedict import TreeDict
 from labrad.units import WithUnit
 
@@ -29,7 +30,7 @@ class sideband_cooling(pulse_sequence):
                             
                            ]
     
-    required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
+    required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping, sideband_precooling]
     replaced_parameters = {
                            sideband_cooling_continuous:[
                                                         ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
@@ -72,6 +73,9 @@ class sideband_cooling(pulse_sequence):
         else:
             raise Exception ("Incorrect Sideband cooling type {0}".format(sc.sideband_cooling_type))
         
+        ## add sideband precooling stage ###
+        self.addSequence(sideband_precooling)
+
         if continuous:
             cooling = sideband_cooling_continuous
             duration_key = 'SidebandCoolingContinuous.sideband_cooling_continuous_duration'
@@ -143,7 +147,7 @@ class sideband_cooling_with_splocal(pulse_sequence):
                             
                            ]
     
-    required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping]
+    required_subsequences = [sideband_cooling_continuous, sideband_cooling_pulsed, optical_pumping, sideband_precooling_with_splocal]
     replaced_parameters = {
                            sideband_cooling_continuous:[
                                                         ('SidebandCoolingContinuous','sideband_cooling_continuous_duration'),
@@ -185,6 +189,10 @@ class sideband_cooling_with_splocal(pulse_sequence):
             continuous = False
         else:
             raise Exception ("Incorrect Sideband cooling type {0}".format(sc.sideband_cooling_type))
+
+        ### add in sideband precooling
+        self.addSequence(sideband_precooling_with_splocal)
+        self.start_splocal = self.end + WithUnit(10, 'us')
         
         if continuous:
             cooling = sideband_cooling_continuous
@@ -235,5 +243,5 @@ class sideband_cooling_with_splocal(pulse_sequence):
             
         f = WithUnit(80. - 0.2, 'MHz')
         duration = self.end - self.start
-        self.addDDS('SP_local', self.start, self.end - self.start, f, WithUnit(-14., 'dBm'))
+        self.addDDS('SP_local', self.start_splocal, self.end - self.start_splocal, f, WithUnit(-14., 'dBm'))
 
