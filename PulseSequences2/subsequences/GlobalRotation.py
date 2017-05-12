@@ -4,7 +4,9 @@ from labrad.units import WithUnit
 
 class global_rotation(pulse_sequence):
     
-
+    '''
+    Global 729 rotation with controlled phase and angle 
+    '''
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
