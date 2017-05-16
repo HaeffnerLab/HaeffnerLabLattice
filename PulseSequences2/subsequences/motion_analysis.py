@@ -28,5 +28,5 @@ class motion_analysis(pulse_sequence):
         self.end = start + ma.pulse_width_397 + WithUnit(2, 'us')
         
         #self.end = self.start + ma.pulse_width_397 + WithUnit(2, 'us')
-        print("dont forget to call optical pumpong after this")
+        print("dont forget to call optical pumpong after this BEFROE a measurement")
         #self.addSequence(optical_pumping)
