@@ -68,11 +68,14 @@ class ms_scan_phase(experiment):
         self.dv = cxn.data_vault
         self.dds_cw = cxn.dds_cw # connection to the CW dds boards
         self.save_context = cxn.context()
-    
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
+        
     def setup_sequence_parameters(self):
         self.load_frequency()
         gate = self.parameters.MolmerSorensen
-        #self.parameters['Excitation_729.rabi_excitation_amplitude'] = flop.rabi_amplitude_729
+        self.parameters['GlobalRotation.angle'] = WithUnit(np.pi/2, 'rad')
         minim,maxim,steps = gate.phase_scan
         minim = minim['deg']; maxim = maxim['deg']
         self.scan = linspace(minim,maxim, steps)
@@ -101,9 +104,12 @@ class ms_scan_phase(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True, context = self.save_context)
         dependents = [('Parity', 'Parity', 'Parity') ]
-        self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
+        ds=self.dv.new('MS Gate {}'.format(datasetNameAppend),[('Excitation', 'us')], dependents , context = self.save_context)
         self.dv.add_parameter('Window', ['Molmer-Sorensen Phase Scan'], context = self.save_context)
-        self.dv.add_parameter('plotLive', True, context = self.save_context)
+        #self.dv.add_parameter('plotLive', True, context = self.save_context)
+        
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, 'parity', self.scan)
     
     def load_frequency(self):
         #reloads trap frequencyies and gets the latest information from the drift tracker
@@ -145,8 +151,9 @@ class ms_scan_phase(experiment):
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
         
     def run(self, cxn, context):
-        self.setup_data_vault()
         self.setup_sequence_parameters()
+        self.setup_data_vault()
+        
         for i,phi in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
@@ -178,9 +185,23 @@ class ms_scan_phase(experiment):
         self.load_frequency()
         self.parameters['GlobalRotation.phase'] = phi
         self.excite.set_parameters(self.parameters)
-        states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
-        #print states
-        parity = self.compute_parity_pmt(readouts)
+        # Eli changes
+        if not self.parameters.StateReadout.use_camera_for_readout:
+            print "using PMT"
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+            parity = self.compute_parity_pmt(readouts)
+        else:
+            print "using Camera"
+            states, readouts = self.excite.run(cxn, context, readout_mode = 'states')
+            parity = self.compute_parity_camera(states)
+        print states
+        
+        ## old sqequence using only PMT
+        
+        ##states, readouts = self.excite.run(cxn, context, readout_mode = 'num_excited')
+        ##print states
+        ##parity = self.compute_parity_pmt(readouts)
+        
         return parity
         #excitations, readouts = self.excite.run(cxn, context)
         #parity = self.compute_parity(readouts)
@@ -200,7 +221,23 @@ class ms_scan_phase(experiment):
         print "odd = ", odd_parity
         parity = (even_parity - odd_parity)/float(len(readouts))
         return parity
-     
+    
+    def compute_parity_camera(self, states):
+        '''
+        computes the parity of the provided readouts using a camera
+        '''
+        print "computing parity using the camera"
+        SS=states[0]
+        SD=states[1]
+        DS=states[2]
+        DD=states[3]
+        parity=1.0*(SS+DD-DS-SD)/(SS+DD+DS+SD)
+        print "States:"
+        print states
+        print "parity:"
+        print parity
+        return parity
+    
     def finalize(self, cxn, context):
         self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
         self.excite.finalize(cxn, context)

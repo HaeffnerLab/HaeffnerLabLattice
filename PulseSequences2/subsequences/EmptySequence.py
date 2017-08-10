@@ -1,6 +1,6 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 
-class empty_sequence(pulse_sequence):
+class EmptySequence(pulse_sequence):
     
   
     def sequence(self):

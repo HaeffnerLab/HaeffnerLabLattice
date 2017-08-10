@@ -1,8 +1,8 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 import numpy as np
 from labrad.units import WithUnit
 
-class global_rotation(pulse_sequence):
+class GlobalRotation(pulse_sequence):
     
     '''
     Global 729 rotation with controlled phase and angle 

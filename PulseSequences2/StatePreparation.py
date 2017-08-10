@@ -1,4 +1,4 @@
-from common.devel.bum.sequences import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
 
@@ -14,14 +14,14 @@ class StatePreparation(pulse_sequence):
                   'sideband_selection']
 
     def sequence(self):
+        print "STARTING STATE PREP"
+        print self.start
         
-        from PulseSequences2.subsequences import RepumpD
-        from PulseSequences2.subsequences import DopplerCooling
-        from PulseSequences2.subsequences import OpticalPumping
-        from PulseSequences2.subsequences import SidebandCooling
-        from PulseSequences2.subsequences import EmptySequence
-        from PulseSequences2.subsequences import RabiExcitation
-        from PulseSequences2.subsequences import StateReadout
+        from subsequences.RepumpD import RepumpD
+        from subsequences.DopplerCooling import DopplerCooling
+        from subsequences.OpticalPumping import OpticalPumping
+        from subsequences.SidebandCooling import SidebandCooling
+        from subsequences.EmptySequence import EmptySequence
         
         self.addSequence(RepumpD) # initializing the state of the ion
         self.addSequence(DopplerCooling) 
@@ -31,10 +31,11 @@ class StatePreparation(pulse_sequence):
 
         if self.parameters.StatePreparation.sideband_cooling_enable:       
             duration_op= self.parameters.SidebandCooling.sideband_cooling_optical_pumping_duration
-            for i in range(self.SidebandCooling.sideband_cooling_cycles):
+            for i in range(int(self.parameters.SidebandCooling.sideband_cooling_cycles)):
                 self.addSequence(SidebandCooling)
-                self.addSequence(OpticalPumping, {'OpticalPumping.optical_pumping_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
-                #print(i) 
+                self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
+                print "Running sideband cooling cycle #"
+                print(i) 
                 
         self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
 

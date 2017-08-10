@@ -1,9 +1,9 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from treedict import TreeDict
 #from OpticalPumping import optical_pumping
 from labrad.units import WithUnit
 
-class motion_analysis(pulse_sequence):
+class MotionAnalysis(pulse_sequence):
     '''
     Pulse sequence for reading out the state of the ion. 
     '''

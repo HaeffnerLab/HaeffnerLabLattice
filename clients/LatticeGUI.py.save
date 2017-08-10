@@ -43,7 +43,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
-        #self.tabWidget.addTab(dac_control, '&DAC Control')
+        #self.tabWidget.addTab(dac_control, '&DAC Contraol')
         self.tabWidget.addTab(piezo_motor_control, 'M&irror Porsche')
         #self.tabWidget.addTab(drift_tracker, '&Autogadget')
         self.tabWidget.addTab(config_editor, 'Config &Editor')
@@ -52,10 +52,10 @@ class LATTICE_GUI(QtGui.QMainWindow):
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
         
-   # def make_automation_widget(self, reactor, cxn):
-   #     from lattice.clients.automation_functions import auto_gadget
-   #     widget = auto_gadget(reactor, cxn = cxn)
-   #     return widget
+    #def make_automation_widget(self, reactor, cxn):
+    #    from lattice.clients.automation_functions import auto_gadget
+    #    widget = auto_gadget(reactor, cxn = cxn)
+    #    return widget
  
     def make_piezo_motor_control_widget(self, reactor, cxn):
         from common.clients.PICOMOTOR_CONTROL import PICOMOTOR_CONTROL

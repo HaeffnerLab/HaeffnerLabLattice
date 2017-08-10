@@ -1,6 +1,6 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 
-class optical_pumping(pulse_sequence):
+class OpticalPumping(pulse_sequence):
     
     '''
     Optical pumping unig a frequency selective transition  
@@ -13,18 +13,19 @@ class optical_pumping(pulse_sequence):
          
         channel_729 = self.parameters.StatePreparation.channel_729
         # choose the carrier frequency
-        Freq_729=self.Calc_freq(op.line_selection)
+        freq_729=self.calc_freq(op.line_selection)
+        print "Optical pumping 729 freq:.{}".format(freq_729)        
         
         #print channel_729
-        repump_dur_854 = op.optical_pumping_duration + op.optical_pumping_repump_additional
-        repump_dur_866 = op.optical_pumping_duration + 2 * op.optical_pumping_repump_additional
+        repump_dur_854 = opc.optical_pumping_continuous_duration + opc.optical_pumping_continuous_repump_additional
+        repump_dur_866 = opc.optical_pumping_continuous_duration + 2 * opc.optical_pumping_continuous_repump_additional
         self.end = self.start + repump_dur_866
         
-        self.addDDS(channel_729, self.start, opc.optical_pumping_continuous_duration, Freq_729, opc.optical_pumping_continuous_amplitude_729)
+        self.addDDS(channel_729, self.start, opc.optical_pumping_continuous_duration, freq_729, op.optical_pumping_amplitude_729)
         #print 'op:', opc.optical_pumping_continuous_frequency_729
         #print 'op:',  opc.optical_pumping_continuous_duration
-        self.addDDS('854', self.start, repump_dur_854, opc.optical_pumping_continuous_frequency_854, opc.optical_pumping_continuous_amplitude_854)
-        self.addDDS('866', self.start, repump_dur_866, opc.optical_pumping_continuous_frequency_866, opc.optical_pumping_continuous_amplitude_866)
+        self.addDDS('854', self.start, repump_dur_854, op.optical_pumping_frequency_854, op.optical_pumping_amplitude_854)
+        self.addDDS('866', self.start, repump_dur_866, op.optical_pumping_frequency_866, op.optical_pumping_amplitude_866)
         
         #aux = self.parameters.OpticalPumpingAux
         #if aux.aux_op_enable:

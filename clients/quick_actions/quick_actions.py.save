@@ -2,8 +2,6 @@ from PyQt4 import QtGui, uic
 import os
 from common.clients.connection import connection
 from twisted.internet.defer import inlineCallbacks
-import threading
-import subprocess
 
 basepath =  os.path.dirname(__file__)
 path = os.path.join(basepath, "quick_actions.ui")
@@ -31,7 +29,8 @@ class actions_widget(QtGui.QFrame, widget_ui):
         if self.cxn is None:
             self.cxn = connection()
             yield self.cxn.connect()
-        self.context = yield self.cxn.context()
+        self.context = yield 
+self.cxn.context()
         try:
             self.connect_layout()
         except Exception, e:
@@ -39,42 +38,12 @@ class actions_widget(QtGui.QFrame, widget_ui):
             self.setDisabled(True)
     
     def connect_layout(self):
-        self.Load_ion.pressed.connect(self.ion_loader)
         self.crystallize.pressed.connect(self.on_crystallize)
         self.fromdc.pressed.connect(self.on_from_dc)
         self.fromstate.pressed.connect(self.on_from_state)
         self.todc.pressed.connect(self.on_to_dc)
         self.tostate.pressed.connect(self.on_to_state)
     
-    @inlineCallbacks
-    def ion_loader(self):
-	script = "/home/lattice/LabRAD/lattice/clients/automation_functions/load_single_ion.py"
-
-	def run_loading():
-		self.p = subprocess.Popen(["python", "/home/lattice/LabRAD/lattice/clients/automation_functions/load_single_ion.py"])
-		self.p.wait()
-		self.Load_ion.setText("Load_ion")
-		return
-
-	try:
-		if self.p.poll() is None:
-			self.p.kill()
-			del self.p
-			self.Load_ion.setText("Load_ion")
-			print "Terminating load_single_ion.py"
-		else:
-			print "Running load_single_ion.py"
-			self.p = subprocess.Popen(["python", script])
-			self.Load_ion.setText("Stop_loading")
-	except:
-		print "Running load_single_ion.py"
-		thread = threading.Thread(target=run_loading, args=())
-		thread.start()
-		self.Load_ion.setText("stop_loading")
-        #execfile(script)
-        yield 1
-        
-
     @inlineCallbacks
     def on_crystallize(self):
         xtal = yield self.cxn.get_server('Crystallizer')

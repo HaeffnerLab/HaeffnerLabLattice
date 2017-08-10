@@ -63,6 +63,8 @@ class DDS(LabradServer):
             channel.frequency = frequency
             self.notifyOtherListeners(c, (name, 'frequency', channel.frequency), self.on_dds_param)
         frequency = WithUnit(channel.frequency, 'MHz')
+        # print frequency['MHz']
+        # print (frequency['MHz'] - 80.0)*1e6
         returnValue(frequency)
     
     @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm]v[deg])'])
@@ -272,10 +274,27 @@ class DDS(LabradServer):
         power is in dbm
         '''
         ans = 0
+        #print "\n\n\n"
+        #print (freq,channel.boardfreqrange, 1, 32)
+        #print (ampl,channel.boardamplrange, 2 ** 32,  16)
+        #print (phase,channel.boardphaserange, 2 ** 48,  16)
+        #print "\n\n\n"
         for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 32), (ampl,channel.boardamplrange, 2 ** 32,  16), (phase,channel.boardphaserange, 2 ** 48,  16)]:
             minim, maxim = r
-            resolution = (maxim - minim) / float(2**precision - 1)
-            seq = int((val - minim)/resolution) #sequential representation
+            
+            #resolution = (maxim - minim) / float(2**precision - 1)
+            #seq = int((val - minim)/resolution) #sequential representation
+            
+            resolution = (maxim - minim) / float(2**precision)
+            seq = int((val - minim)/resolution + 0.5 ) #sequential representation
+           
+            #if m == 1:
+            #    print "freq"
+            #    print val
+            #    print maxim
+            #    seq = int( 2**32 * (val/maxim) + 0.5 )
+            #    print "freq end"
+            
             ans += m*seq
         return ans
     
@@ -292,4 +311,7 @@ class DDS(LabradServer):
         phase_ampl_arr = array.array('B', [a % 256 ,a // 256, b % 256, b // 256])
         
         ans = phase_ampl_arr.tostring() + freq_arr.tostring()
+
+        #print freq_arr
+        #print phase_ampl_arr
         return ans

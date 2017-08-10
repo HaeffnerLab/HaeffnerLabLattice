@@ -71,6 +71,8 @@ class config(object):
                ('lattice.scripts.experiments.Gates.ms_gate', 'ms_gate'),
                ('lattice.scripts.experiments.Gates.ms_scan_ac_stark', 'ms_scan_ac_stark'),
                ('lattice.scripts.experiments.Gates.ms_scan_phase', 'ms_scan_phase'),
+               ('lattice.scripts.experiments.Gates.ms_scan_time', 'ms_scan_time_parity'),
+               
                ('lattice.scripts.experiments.Gates.ms_scan_amp', 'ms_scan_amp'),
                ('lattice.scripts.experiments.Gates.ms_scan_local_stark', 'ms_scan_local_stark'),
                ('lattice.scripts.experiments.Gates.ms_scan_local_stark_detuning', 'ms_scan_local_stark_detuning'),
@@ -78,6 +80,7 @@ class config(object):
                ('lattice.scripts.experiments.Gates.szx_scan_time_phase', 'szx_scan_time_phase'),
                ('lattice.scripts.experiments.Gates.szx_scan_time', 'szx_scan_time'),
                #('lattice.scripts.experiments.Gates.szx_rabi_flop', 'szx_rabi_flop'),
+               ('lattice.scripts.experiments.Gates.vaet_with_feedback', 'vaet_with_feedback'),
                ('lattice.scripts.experiments.Gates.vaet_scan_delta', 'vaet_scan_delta'),
                ('lattice.scripts.experiments.Gates.vaet_scan_time', 'vaet_scan_time'),
                ('lattice.scripts.experiments.Gates.vaet_scan_local_stark', 'vaet_scan_local_stark'),

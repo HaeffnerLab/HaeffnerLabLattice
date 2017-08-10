@@ -1,7 +1,7 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from treedict import TreeDict
 
-class state_readout(pulse_sequence):
+class StateReadout(pulse_sequence):
     '''
     Pulse sequence for reading out the state of the ion. 
     '''
@@ -20,12 +20,12 @@ class state_readout(pulse_sequence):
         if st.use_camera_for_readout:
             self.addTTL('camera', self.start, st.camera_trigger_width)
             # adding 2 milli sec to allow the camera transfer
-            duration_397=st.state_readout_duration + st.camera_transfer_additional 
-            duration_866=st.state_readout_duration + st.camera_transfer_additional + repump_additional
+            duration_397=readout_duration + st.camera_transfer_additional 
+            duration_866=readout_duration + st.camera_transfer_additional + repump_additional
         else:
             # removing the additional time for the camera transfer
-            duration_397=st.state_readout_duration 
-            duration_866=st.state_readout_duration + repump_additional
+            duration_397=readout_duration
+            duration_866=readout_duration + repump_additional
         
         self.addTTL('ReadoutCount', self.start, readout_duration)
         
@@ -34,3 +34,6 @@ class state_readout(pulse_sequence):
           
                     
         self.end = self.start + duration_866
+        print "State readout"
+        print self.start
+        print self.end

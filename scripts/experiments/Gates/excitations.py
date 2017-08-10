@@ -24,3 +24,8 @@ class parity_flop(base_excitation):
     from lattice.scripts.PulseSequences.vaet_parity_flop import vaet_parity_flop as v
     name = 'ParityFlop'
     pulse_sequence = v
+
+class MS_parity_flop(base_excitation):
+    from lattice.scripts.PulseSequences.MS_parity_flop import MS_parity_flop as v
+    name = 'ParityFlop'
+    pulse_sequence = v

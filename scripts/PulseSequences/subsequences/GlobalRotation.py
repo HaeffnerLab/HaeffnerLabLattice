@@ -19,6 +19,8 @@ class global_rotation(pulse_sequence):
         ampl_off = WithUnit(-63.0, 'dBm')
         rotation_fraction = p.angle['rad']/np.pi
         time = p.pi_time*rotation_fraction
+        print "GLOBAL ROTATION"
+        print time
         self.end = self.start + frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        
         self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)

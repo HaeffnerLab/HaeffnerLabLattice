@@ -1,7 +1,7 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class vaet(pulse_sequence):
+class VAET(pulse_sequence):
     '''
     VAET experiment relevant parmeters are
     VAET: freq,duration, shape_profile

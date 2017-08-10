@@ -1,7 +1,7 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class molmer_sorensen(pulse_sequence):
+class MolmerSorensen(pulse_sequence):
         """
         Running a Molmer Sorenson gate 
         """

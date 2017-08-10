@@ -1,7 +1,7 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class stark_shift_global(pulse_sequence):
+class StarkShiftGlobal(pulse_sequence):
     '''
     Apply a GLOBAL (729_global) AC stark shift 
     Stark shift Global: freq, amp and detuning

@@ -1,6 +1,7 @@
-from PyQt4.QtGui import *
+\from PyQt4.QtGui import *
 from twisted.internet.defer import inlineCallbacks, returnValue
 from common.clients.connection import connection
+
 
 import sys
 import time
@@ -48,8 +49,7 @@ class auto_gadget(QWidget):
         #self.multiplexer = labrad.connect('192.168.169.49')
 
     def load_ion_func(self):
-
-        threshold = float(self.load_ion_threshold.text())
+	threshold = float(self.load_ion_threshold.text())
 
         print "Loading Ion with threshold " +  str(threshold)
         self.cxn.pulser.switch_manual('bluePI', True)
@@ -63,14 +63,12 @@ class auto_gadget(QWidget):
 
             # get PMT counts
             counts = self.cxn.normalpmtflow.get_next_counts('ON', 1, True)
-
             # switch off blue PI, if above threshold
             if counts > threshold:
                 self.cxn.pulser.switch_manual('bluePI', False)
                 print "Loaded an ion ..."
 
                 time.sleep(0.5)
-
         self.cxn.pulser.amplitude('global397', labrad.units.Value(ampl_397.value, 'dBm'))
 
     def setup_experiment_func(self):

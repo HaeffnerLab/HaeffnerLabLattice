@@ -19,44 +19,33 @@ class SidebandSpectrum(pulse_sequence):
                   'Spectrum.sideband_selection',
                   'Spectrum.sideband_order'
                   ]
+    
+    def run_initial(self):
+        pass
 
     def sequence(self):
         
-        from PulseSequences2.subsequences import RepumpD
-        from PulseSequences2.subsequences import DopplerCooling
-        from PulseSequences2.subsequences import OpticalPumping
-        from PulseSequences2.subsequences import SidebandCooling
-        from PulseSequences2.subsequences import EmptySequence
+        from PulseSequences2 import StatePreparation
         from PulseSequences2.subsequences import RabiExcitation
         from PulseSequences2.subsequences import StateReadout
         
-        ## calculate the scan params
-        freq_729= self.parameters.Excitation_729.Carrirer[self.parameters.Spectrum.line_selection,self.parameters.Spectrum.sideband_selection,self.parameters.Spectrum.sideband_order]
-        freq_729 +=  self.parameters.Spectrum.sideband_detuning           
+        ## calculate the 729 params
+        carrier=self.parameters.Spectrum.line_selection
+        side_band=self.parameters.Spectrum.sideband_selection
+        order=self.parameters.Spectrum.sideband_order 
+        freq_729 = self.calc_freq(carrier, side_band,order)
+                      
         amp=self.parameters.Spectrum.sideband_amplitude
         duration=self.parameters.Spectrum.sideband_duration
-        
-        self.addSequence(RepumpD) # initializing the state of the ion
-        self.addSequence(DopplerCooling) 
-        
-        if self.parameters.StatePreparation.optical_pumping_enable:
-            self.addSequence(OpticalPumping)
-
-        if self.parameters.StatePreparation.sideband_cooling_enable:       
-            duration_op= self.parameters.SidebandCooling.sideband_cooling_optical_pumping_duration
-            for i in range(self.SidebandCooling.sideband_cooling_cycles):
-                self.addSequence(SidebandCooling)
-                self.addSequence(OpticalPumping, {'OpticalPumping.optical_pumping_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
-                #print(i)  
-             
-                    
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
-        
+                
         #if p.Motion_Analysis.excitation_enable:
         #    self.addSequence(motion_analysis)
-                       
-              
-        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,'Excitation_729.rabi_excitation_amplitude': amp ,'Excitation_729.rabi_excitation_duration': duration })
+        
+        # building the sequence               
+        self.addSequence(StatePreparation)         
+        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
+                                         'Excitation_729.rabi_excitation_amplitude': amp,
+                                         'Excitation_729.rabi_excitation_duration': duration })
         self.addSequence(StateReadout)
         
         

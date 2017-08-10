@@ -15,51 +15,44 @@ class Ramsey(pulse_sequence):
 
     show_params= ['RamseyScanGap.scangap',
                   'RamseyScanPhase.scanphase',
-                  'RamseyScanGap.detunign',
-                  need to work on this
-                  'Ramsey.channel_729',
-                  'Ramsey.rabi_pi_time',
-                  'Spectrum.line_selection',
-                  'Spectrum.sideband_selection']
+                  'RamseyScanGap.detuning',
+                  #need to work on this
+                  'GlobalRotation.pi_time',
+                  'RabiFlopping.line_selection',
+                  'RabiFlopping.sideband_selection',
+                  'sideband_order']
 
+     
+    def run_initial(self):
+        pass
+    
+    
     def sequence(self):
         
-        from PulseSequences2.subsequences import RepumpD
-        from PulseSequences2.subsequences import DopplerCooling
-        from PulseSequences2.subsequences import OpticalPumping
-        from PulseSequences2.subsequences import SidebandCooling
+        from PulseSequences2 import StatePreparation
         from PulseSequences2.subsequences import GlobalRotation
         from PulseSequences2.subsequences import EmptySequence 
         from PulseSequences2.subsequences import StateReadout
         
-                ## calculate the scan params
-        freq_729= self.parameters.Excitation_729.Carrirer[self.parameters.Spectrum.line_selection,self.parameters.Spectrum.sideband_selection,self.parameters.Spectrum.sideband_order]
-        freq_729 +=  self.parameters.Spectrum.sideband_detuning           
-        amp=self.parameters.Spectrum.sideband_amplitude
-        duration=self.parameters.Spectrum.sideband_duration
+        ## calculate the 729 params
+        carrier=self.parameters.RabiFlopping.line_selection
+        side_band=self.parameters.RabiFlopping.sideband_selection
+        order=self.parameters.RabiFlopping.sideband_order 
+        freq_729 = self.calc_freq(carrier, side_band,order)  
+        ramsey_detuning= self.parameters.RamseyScanGap.detuning 
+        freq_729 = freq_729+ramsey_detuning          
         
-        self.addSequence(RepumpD) # initializing the state of the ion
-        self.addSequence(DopplerCooling) 
+        # building the sequence
+        self.addSequence(StatePreparation)            
+        self.addSequence(GlobalRotation, { "GlobalRotation.frequency":freq_729,
+                                           "GlobalRotation.angle": np.pi/2.0,
+                                           "GlobalRotation.phase": 0.0})
         
-        if self.parameters.StatePreparation.optical_pumping_enable:
-            self.addSequence(OpticalPumping)
-
-        if self.parameters.StatePreparation.sideband_cooling_enable:       
-            duration_op= self.parameters.SidebandCooling.sideband_cooling_optical_pumping_duration
-            for i in range(self.SidebandCooling.sideband_cooling_cycles):
-                self.addSequence(SidebandCooling)
-                self.addSequence(OpticalPumping, {'OpticalPumping.optical_pumping_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
-                #print(i)       
-        ### end of state preparation
-        
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
-        
-        #def addSequence(self, sequence, replacement_dict = TreeDict(), position = None):
-            # {'key_to_replace': value_to_put_in
-        # apply the first pi/2            
-        self.addSequence(GlobalRotation, { "GlobalRotation.angle": np.pi/2.0, "GlobalRotation.phase": 0.0})
         self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.Ramsey.ramsey_time})
-        self.addSequence(GlobalRotation, { "GlobalRotation.angle": np.pi/2.0, "GlobalRotation.phase": self.Ramsey.second_pulse_phase })
+        
+        self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
+                                          "GlobalRotation.angle": np.pi/2.0, 
+                                          "GlobalRotation.phase": self.Ramsey.second_pulse_phase })
         self.addSequence(StateReadout)
         
 

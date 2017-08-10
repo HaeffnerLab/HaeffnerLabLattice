@@ -1,7 +1,7 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class local_rotation(pulse_sequence):
+class LocalRotation(pulse_sequence):
     
     required_parameters = [
                           ('LocalRotation','amplitude'),

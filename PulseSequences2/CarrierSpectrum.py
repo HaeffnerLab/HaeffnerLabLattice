@@ -1,63 +1,65 @@
+#!scriptscanner
+
 from common.devel.bum.sequences import pulse_sequence
-#from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
 
+class cs():
+
+    scannable_params = {
+        'RabiExcitation.frequency': (-50, 50, 10, 'kHz'),
+        'RabiExcitation.duration': (1, 1000., 10, 'us')
+        }
+
+    show_params= ['DopplerCooling.duration']
+
+    def sequence(self):
+        from common.devel.bum.sequences.subsequences.ExampleSubsequence import example
+        self.addSequence(example)
+
+'''
 class CarrierSpectrum(pulse_sequence):
     
-    name = 'Spectrum729'
+    #name = 'Spectrum729'
                             #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
-        'Spectrum.carrirer_detuning':  (-50, 50, 100, 'kHz')
+        #'Spectrum.carrier_detuning':  [(-50, 50, 100, 'kHz'), 'window']
+        'Spectrum.carrier_detuning': (-50, 50, 100, 'kHz')
               }
 
     show_params= ['Excitation_729.channel_729',
                   'Excitation_729.bichro',
                   'Spectrum.carrirer_duration',
                   'Spectrum.carrirer_amplitude',
-                  'Spectrum.line_selection',
+                  'Spectrum.line_selection',   
                   ]
+   
+    def run_initial(self):
+        pass
 
     def sequence(self):
         
-        from PulseSequences2.subsequences import RepumpD
-        from PulseSequences2.subsequences import DopplerCooling
-        from PulseSequences2.subsequences import OpticalPumping
-        from PulseSequences2.subsequences import SidebandCooling
-        from PulseSequences2.subsequences import EmptySequence
-        from PulseSequences2.subsequences import RabiExcitation
-        from PulseSequences2.subsequences import StateReadout
+        #from PulseSequences2 import StatePreparation
+        #from PulseSequences2.subsequences import RabiExcitation
+        #from PulseSequences2.subsequences import StateReadout
+        pass
+        # calculate the scan params
+        #carrier=self.parameters.Spectrum.line_selection
+        #sideband=self.parameters.Spectrum.sideband_selection
+        #order=self.parameters.Spectrum.sideband_order
+        #freq_729 = self.calc_freq(carrier, sideband,order)
+        #freq_729 = self.calc_freq(carrier, 0)       
+        #amp=self.parameters.Spectrum.carrirer_amplitude
+        #duration=self.parameters.Spectrum.carrirer_duration
         
-        ## calculate the scan params
-        freq_729= self.parameters.Excitation_729.Carrirer[self.parameters.Spectrum.line_selection]
-        freq_729 +=  self.parameters.Spectrum.carrirer_detuning           
-        amp=self.parameters.Spectrum.carrirer_amplitude
-        duration=self.parameters.Spectrum.carrirer_duration
+        # building the sequence                       
+        #self.addSequence(StatePreparation)        
+        #self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
+        #                                 'Excitation_729.rabi_excitation_amplitude': amp,
+        #                                 'Excitation_729.rabi_excitation_duration': duration })
+        #self.addSequence(StateReadout)
         
-        self.addSequence(RepumpD) # initializing the state of the ion
-        self.addSequence(DopplerCooling) 
-        
-        if self.parameters.StatePreparation.optical_pumping_enable:
-            self.addSequence(OpticalPumping)
-
-        if self.parameters.StatePreparation.sideband_cooling_enable:       
-            duration_op= self.parameters.SidebandCooling.sideband_cooling_optical_pumping_duration
-            for i in range(self.SidebandCooling.sideband_cooling_cycles):
-                self.addSequence(SidebandCooling)
-                self.addSequence(OpticalPumping, {'OpticalPumping.optical_pumping_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
-                #print(i)  
-             
-                   
-        
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
-        #if p.Motion_Analysis.excitation_enable:
-        #    self.addSequence(motion_analysis)
-                       
-              
-        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,'Excitation_729.rabi_excitation_amplitude': amp ,'Excitation_729.rabi_excitation_duration': duration })
-        self.addSequence(StateReadout)
-        
-        
+'''     
 
 if __name__=='__main__':
     #pv = TreeDict.fromdict({'DopplerCooling.duration':U(5, 'us')})

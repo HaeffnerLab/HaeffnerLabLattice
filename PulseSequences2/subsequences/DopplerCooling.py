@@ -1,6 +1,6 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence 
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 
-class doppler_cooling(pulse_sequence):
+class DopplerCooling(pulse_sequence):
    
     #def addDDS(self, channel, start, duration, frequency, amplitude, phase = WithUnit(0, 'deg'), profile = 0):
     def sequence(self):

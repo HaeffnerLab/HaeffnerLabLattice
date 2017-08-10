@@ -183,6 +183,9 @@ class vaet_scan_delta(experiment):
         self.setup_sequence_parameters()
         self.setup_data_vault()
         self.save_parameters(self.dv, cxn, self.cxnlab, self.save_context)
+
+        fr = []
+        exci = []
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
@@ -192,6 +195,11 @@ class vaet_scan_delta(experiment):
             submission.extend(excitation)
             self.dv.add(submission, context = self.save_context)
             self.update_progress(i)
+
+            fr.append(submission[0])
+            exci.append(excitation)
+
+        return fr, exci
     
     def get_excitation_crystallizing(self, cxn, context, freq):
         # right now don't crystallize because I'm not sure if it works

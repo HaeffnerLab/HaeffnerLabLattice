@@ -1,8 +1,8 @@
-from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from OpticalPumpingContinuous import optical_pumping_continuous
 #from treedict import TreeDict
 
-class sideband_cooling(pulse_sequence):
+class SidebandCooling(pulse_sequence):
     '''
     Single step of side band cooling DOES NOT include the optical pumping usually required
     paramters:
@@ -16,9 +16,13 @@ class sideband_cooling(pulse_sequence):
     def sequence(self):
         
         sc = self.parameters.SidebandCooling
-                      
-        freq_729 = self.Calc_freq(sc.line_selection,sc.sideband_selection, -1)+ sc.stark_shift
-        channel_729 = self.parameters.SidebandCooling.channel_729
+                              
+                              
+        freq_729 = self.calc_freq(carrier=sc.line_selection, sideband='aux_axial',order=-1)
+        freq_729 = freq_729 + sc.stark_shift
+        print "SIDEBAND cooling 729 freq:.{}".format(freq_729)
+        
+        channel_729 = self.parameters.StatePreparation.channel_729
         
         repump_additional = self.parameters.OpticalPumpingContinuous.optical_pumping_continuous_repump_additional # need this for the additional repumper times
         
