@@ -8,7 +8,8 @@ class RabiFlopping(pulse_sequence):
     name = 'RabiFlopping'
                             #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
-        'Excitation_729.rabi_excitation_duration':  (0., 50., 2, 'us')
+        'RabiFlopping.duration':  (0., 50., 2, 'us')
+        #'RabiFlopping.manual_scan':  [(0., 50., 2, 'us'), 'rabi']
               }
 
     show_params= ['Excitation_729.channel_729',
@@ -28,13 +29,24 @@ class RabiFlopping(pulse_sequence):
         from subsequences.StateReadout import StateReadout
         from subsequences.TurnOffAll import TurnOffAll
            
-               
-        #freq_729 = self.calculate_frequency()         
+        rf = self.parameters.RabiFlopping   
+        
+        if rf.selection_sideband == "off":         
+            freq_729=self.calc_freq(rf.line_selection)
+        else:
+            freq_729=self.calc_freq(rf.line_selection, rf.selection_sideband ,int(rf.order))
+        
+        print "RABI Flopping"
+        print "729 freq.{}".format(freq_729)
+        
         # building the sequence
         self.end = U(10., 'us')
         self.addSequence(TurnOffAll)           
         self.addSequence(StatePreparation)      
-        self.addSequence(RabiExcitation)
+        #self.addSequence(RabiExcitation)
+        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
+                                         'Excitation_729.rabi_excitation_amplitude': rf.rabi_amplitude_729,
+                                         'Excitation_729.rabi_excitation_duration':  rf.duration })
         self.addSequence(StateReadout)
         
 
