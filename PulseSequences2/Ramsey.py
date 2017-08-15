@@ -1,4 +1,4 @@
-from common.devel.bum.sequences import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
@@ -29,18 +29,22 @@ class Ramsey(pulse_sequence):
     
     def sequence(self):
         
-        from PulseSequences2 import StatePreparation
-        from PulseSequences2.subsequences import GlobalRotation
-        from PulseSequences2.subsequences import EmptySequence 
-        from PulseSequences2.subsequences import StateReadout
+        from StatePreparation import StatePreparation
+        from subsequences.RabiExcitation import RabiExcitation
+        from subsequences.StateReadout import StateReadout
+        #from subsequences.TurnOffAll import TurnOffAll
+        
         
         ## calculate the 729 params
-        carrier=self.parameters.RabiFlopping.line_selection
-        side_band=self.parameters.RabiFlopping.sideband_selection
-        order=self.parameters.RabiFlopping.sideband_order 
-        freq_729 = self.calc_freq(carrier, side_band,order)  
-        ramsey_detuning= self.parameters.RamseyScanGap.detuning 
-        freq_729 = freq_729+ramsey_detuning          
+        rf = self.parameters.RabiFlopping   
+        
+        if rf.selection_sideband == "off":         
+            freq_729=self.calc_freq(rf.line_selection)
+        else:
+            freq_729=self.calc_freq(rf.line_selection, rf.selection_sideband ,int(rf.order))
+        
+        freq_729 = freq_729+ self.parameters.RamseyScanGap.detuning
+        
         
         # building the sequence
         self.addSequence(StatePreparation)            
@@ -48,17 +52,17 @@ class Ramsey(pulse_sequence):
                                            "GlobalRotation.angle": np.pi/2.0,
                                            "GlobalRotation.phase": 0.0})
         
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.Ramsey.ramsey_time})
+        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.RamseyScanGap.scangap})
         
         self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
                                           "GlobalRotation.angle": np.pi/2.0, 
-                                          "GlobalRotation.phase": self.Ramsey.second_pulse_phase })
+                                          "GlobalRotation.phase": self.RamseyScanPhase.scanphase })
         self.addSequence(StateReadout)
         
 
-if __name__=='__main__':
-    #pv = TreeDict.fromdict({'DopplerCooling.duration':U(5, 'us')})
+#if __name__=='__main__':
+#    #pv = TreeDict.fromdict({'DopplerCooling.duration':U(5, 'us')})
     #ex = Sequence(pv)
     #psw = pulse_sequence_wrapper('example.xml', pv)
-    print 'executing a scan gap'
-    Ramsey.execute_external(('Ramsey.ramsey_time', 0, 10.0, 0.1, 'ms'))
+#    print 'executing a scan gap'
+#    Ramsey.execute_external(('Ramsey.ramsey_time', 0, 10.0, 0.1, 'ms'))
