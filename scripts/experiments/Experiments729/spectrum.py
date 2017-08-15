@@ -204,7 +204,7 @@ class spectrum(experiment):
         
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
