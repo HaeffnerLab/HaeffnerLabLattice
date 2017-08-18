@@ -19,7 +19,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         
         show_separate_script_scanner_window = False
         
-        from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
+        #from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
+        from common.devel.bum.gui_scriptscanner2.script_scanner_gui import script_scanner_gui
         script_scanner = script_scanner_gui(reactor, cxn)
         if show_separate_script_scanner_window:        
             script_scanner.show()               

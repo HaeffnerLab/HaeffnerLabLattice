@@ -3,26 +3,25 @@ from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
 
-class RabiFlopping(pulse_sequence):
+class RabiFloppingManual(pulse_sequence):
+    
+    name = 'RabiFloppingManual'
+                            #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
-        'Excitation_729.rabi_excitation_duration':  [(0., 50., 3, 'us'), 'rabi']
+        'Excitation_729.rabi_excitation_duration':  [(0., 50., 2, 'us'), 'rabi'],
+        'Excitation_729.rabi_excitation_frequency':  [(-30, 30., 10, 'MHz'), 'spectrum']
         #'RabiFlopping.manual_scan':  [(0., 50., 2, 'us'), 'rabi']
               }
 
     show_params= ['Excitation_729.channel_729',
                   'Excitation_729.bichro',
-                  'RabiFlopping.line_selection',
-                  'RabiFlopping.rabi_amplitude_729',
-                  'RabiFlopping.sideband_selection',
-                  'RabiFlopping.sideband_order'
+                  'Excitation_729.rabi_excitation_amplitude',
+                  'StateReadout.threshold_list'
                   ]
-
-    def run_initial(self):
-        pass
-
+    
     def sequence(self):
         from StatePreparation import StatePreparation
-        from subsequences.RabiExcitation import RabiExcitation
+        from subsequences.RabiExcitationManual import RabiExcitation
         from subsequences.StateReadout import StateReadout
         from subsequences.TurnOffAll import TurnOffAll
         
