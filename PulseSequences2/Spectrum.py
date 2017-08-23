@@ -10,19 +10,19 @@ class Spectrum(pulse_sequence):
                             #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
         #'Spectrum.carrier_detuning':  [(-50, 50, 100, 'kHz'), 'window']
-        'Spectrum.carrier_detuning' : (-50, 50, 100, 'kHz'),
-        'Spectrum.sideband_detuning' :(-50, 50, 100, 'kHz')
+        'Spectrum.carrier_detuning' : [(-150, 150, 10, 'kHz'),'spectrum'],
+        'Spectrum.sideband_detuning' :[(-50, 50, 100, 'kHz'),'spectrum']
               }
 
     show_params= ['Excitation_729.channel_729',
                   'Excitation_729.bichro',
-                  'Spectrum.carrirer_duration',
-                  'Spectrum.carrirer_amplitude',
-                  'Spectrum.line_selection',   
+                  'Spectrum.manual_amplitude_729',
+                  'Spectrum.manual_excitation_time',
+                  'Spectrum.line_selection',
+                  'Spectrum.selection_sideband',
+                  'Spectrum.order'
                   ]
    
-    def run_initial(self):
-        pass
 
     def sequence(self):
         
@@ -44,6 +44,8 @@ class Spectrum(pulse_sequence):
         print "Spectrum scan"
         print "729 freq.{}".format(freq_729)
         
+        amp=spc.manual_amplitude_729
+        duration=spc.manual_excitation_time
                 
         # building the sequence
         # needs a 10 micro sec for some reason

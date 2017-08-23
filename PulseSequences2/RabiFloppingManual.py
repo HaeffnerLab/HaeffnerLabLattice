@@ -4,12 +4,10 @@ from labrad.units import WithUnit as U
 from treedict import TreeDict
 
 class RabiFloppingManual(pulse_sequence):
-    
-    name = 'RabiFloppingManual'
                             #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
-        'Excitation_729.rabi_excitation_duration':  [(0., 50., 2, 'us'), 'rabi'],
-        'Excitation_729.rabi_excitation_frequency':  [(-30, 30., 10, 'MHz'), 'spectrum']
+        'Excitation_729.rabi_excitation_duration':  [(0., 50., 2., 'us'), 'rabi'],
+        'Excitation_729.rabi_excitation_frequency':  [(-30., 30., 10., 'MHz'), 'spectrum']
         #'RabiFlopping.manual_scan':  [(0., 50., 2, 'us'), 'rabi']
               }
 
@@ -24,6 +22,8 @@ class RabiFloppingManual(pulse_sequence):
         from subsequences.RabiExcitationManual import RabiExcitation
         from subsequences.StateReadout import StateReadout
         from subsequences.TurnOffAll import TurnOffAll
+        
+        
         
         # building the sequence
         self.end = U(10., 'us')

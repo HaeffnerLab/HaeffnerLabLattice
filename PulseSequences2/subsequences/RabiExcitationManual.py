@@ -10,6 +10,8 @@ class RabiExcitation(pulse_sequence):
     def sequence(self):
         
         freq_729 = self.parameters.Excitation_729.rabi_excitation_frequency
+        
+        print "this is the 729 freq{}".format(freq_729)
 
         ampl_off = WithUnit(-63.0, 'dBm')
         frequency_advance_duration = WithUnit(6, 'us')
