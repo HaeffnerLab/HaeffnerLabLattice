@@ -31,7 +31,7 @@ class RabiFlopping(pulse_sequence):
         
         # building the sequence
         self.end = U(10., 'us')
-        self.addSequence(TurnOffAll)
+        #self.addSequence(TurnOffAll)
         self.addSequence(StatePreparation)
         self.addSequence(RabiExcitation)     
         #self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
