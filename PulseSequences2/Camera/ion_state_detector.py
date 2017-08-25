@@ -223,4 +223,5 @@ class ion_state_detector(object):
         if result is not None:
             pyplot.annotate('chi sqr {}'.format(result.redchi), (0.5,0.8), xycoords = 'axes fraction')
         pyplot.tight_layout()
-        pyplot.show()
+        pyplot.savefig('reference_image.pdf')
+        #pyplot.show()

@@ -6,7 +6,7 @@ from treedict import TreeDict
 
 class Spectrum(pulse_sequence):
     
-    name = 'Spectrum729'
+    
                             #(self, scan_param, minim, maxim, steps, unit)
     scannable_params = {
         #'Spectrum.carrier_detuning':  [(-50, 50, 100, 'kHz'), 'window']
@@ -23,7 +23,8 @@ class Spectrum(pulse_sequence):
                   'Spectrum.order'
                   ]
    
-
+    #fixed_params = {'StateReadout.ReadoutMode':'camera'}
+    
     def sequence(self):
         
         from StatePreparation import StatePreparation
@@ -56,3 +57,13 @@ class Spectrum(pulse_sequence):
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
+        
+if __name__ == '__main__':
+    import labrad
+    cxn = labrad.connect()
+    sc = cxn.scriptscanner
+    #scan = [('ReferenceImage',   ('temp', 0, 1, 1, 'us'))]
+    scan =[('Spectrum',   ('Spectrum.carrier_detuning', -150, 150, 10, 'kHz'))] 
+    ident = sc.new_sequence('Spectrum', scan)
+    sc.sequence_completed(ident)
+    cxn.disconnect()

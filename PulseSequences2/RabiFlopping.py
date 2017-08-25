@@ -20,6 +20,8 @@ class RabiFlopping(pulse_sequence):
                   'RabiFlopping.sideband_selection',
                   'RabiFlopping.sideband_order'
                   ]
+    
+    #fixed_params = {'StateReadout.ReadoutMode':'camera'}
 
 
 
