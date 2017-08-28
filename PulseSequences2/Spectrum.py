@@ -20,7 +20,8 @@ class Spectrum(pulse_sequence):
                   'Spectrum.manual_excitation_time',
                   'Spectrum.line_selection',
                   'Spectrum.selection_sideband',
-                  'Spectrum.order'
+                  'Spectrum.order',
+                  'Display.relative_frequencies'
                   ]
    
     #fixed_params = {'StateReadout.ReadoutMode':'camera'}
