@@ -18,8 +18,14 @@ class RabiFlopping(pulse_sequence):
                   'RabiFlopping.line_selection',
                   'RabiFlopping.rabi_amplitude_729',
                   'RabiFlopping.duration',
-                  'RabiFlopping.sideband_selection',
-                  'RabiFlopping.sideband_order'
+                  'RabiFlopping.rabi_amplitude_729',
+                  'RabiFlopping.duration',
+                  'RabiFlopping.line_selection',
+                  'RabiFlopping.selection_sideband',
+                  'RabiFlopping.order',
+                  'StatePreparation.channel_729',
+                  'StatePreparation.optical_pumping_enable',
+                  'StatePreparation.sideband_cooling_enable'
                   ]
     
     #fixed_params = {'StateReadout.ReadoutMode':'camera'}
@@ -35,7 +41,9 @@ class RabiFlopping(pulse_sequence):
         ## calculate the scan params
         rf = self.parameters.RabiFlopping 
         
-        freq_729=self.calc_freq(rf.line_selection)
+        #freq_729=self.calc_freq(rf.line_selection)
+        freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
+        
         print "Rabi flopping 729 freq is {}".format(freq_729)
         print "Rabi flopping duration is {}".format(rf.duration)
         # building the sequence
@@ -49,15 +57,15 @@ class RabiFlopping(pulse_sequence):
                                          'Excitation_729.rabi_excitation_duration':  rf.duration })
         self.addSequence(StateReadout)
         
-    #@classmethod
-    #def run_initial(cls):
-    #    print "Running initial _Rabi_floping"
-    #@classmethod
-    #def run_in_loop(cls):
-    #    print "Running in loop Rabi_floping"
+   # @classmethod
+   # def run_initial(cls,cxn, parameters_dict):
+   #     print "Running initial _Rabi_floping"
+   # @classmethod
+   # def run_in_loop(cls):
+   #     print "Running in loop Rabi_floping"
         #pass
-    #@classmethod
-    #def run_finally(cls):
-    #    print "Running finally Rabi_floping"
+   # @classmethod
+   # def run_finally(cls):
+   #     print "Running finally Rabi_floping"
         #pass
         

@@ -18,7 +18,7 @@ class SidebandCooling(pulse_sequence):
         sc = self.parameters.SidebandCooling
                               
                               
-        freq_729 = self.calc_freq(carrier=sc.line_selection, sideband='aux_axial',order=-1)
+        freq_729 = self.calc_freq(sc.line_selection, sc.selection_sideband ,sc.order)
         freq_729 = freq_729 + sc.stark_shift
         print "SIDEBAND cooling 729 freq:.{}".format(freq_729)
         

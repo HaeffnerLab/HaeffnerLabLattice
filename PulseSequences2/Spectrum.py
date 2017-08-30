@@ -21,7 +21,10 @@ class Spectrum(pulse_sequence):
                   'Spectrum.line_selection',
                   'Spectrum.selection_sideband',
                   'Spectrum.order',
-                  'Display.relative_frequencies'
+                  'Display.relative_frequencies',
+                  'StatePreparation.channel_729',
+                  'StatePreparation.optical_pumping_enable',
+                  'StatePreparation.sideband_cooling_enable'
                   ]
    
     #fixed_params = {'StateReadout.ReadoutMode':'camera'}
@@ -43,16 +46,21 @@ class Spectrum(pulse_sequence):
         
         freq_729=freq_729 + spc.carrier_detuning + spc.sideband_detuning
         
-        print "Spectrum scan"
-        print "729 freq.{}".format(freq_729)
-        
         amp=spc.manual_amplitude_729
         duration=spc.manual_excitation_time
+        print "Spectrum scan"
+        print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
+        print "729 detuning: {}".format(freq_729-self.calc_freq(spc.line_selection))
+        print "729 amp is {}".format(amp)
+        print "729 duration is {}".format(duration)
+        
+        
+
                 
         # building the sequence
         # needs a 10 micro sec for some reason
         self.end = U(10., 'us')
-        #self.addSequence(TurnOffAll)           
+        self.addSequence(TurnOffAll)           
         self.addSequence(StatePreparation)      
         self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': amp,
