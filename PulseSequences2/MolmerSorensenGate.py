@@ -103,7 +103,7 @@ class MolmerSorensenGate(pulse_sequence):
             #print "1254"    
             #print "enabled rotation in "
             self.addSequence(LocalRotation, {"LocalRotation.frequency":freq_729, 
-                                              "LocalRotation.angle": U(np.pi/2.0, 'rad') 
+                                             "LocalRotation.angle": U(np.pi/2.0, 'rad') 
                                                })
   
         

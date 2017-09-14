@@ -34,6 +34,6 @@ class StateReadout(pulse_sequence):
           
                     
         self.end = self.start + duration_866
-        print "State readout"
-        print "397 amp.{}".format(st.state_readout_amplitude_397)
+#         print "State readout"
+#         print "397 amp.{}".format(st.state_readout_amplitude_397)
         

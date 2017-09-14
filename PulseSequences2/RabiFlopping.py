@@ -45,8 +45,8 @@ class RabiFlopping(pulse_sequence):
         #freq_729=self.calc_freq(rf.line_selection)
         freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
         
-        print "Rabi flopping 729 freq is {}".format(freq_729)
-        print "Rabi flopping duration is {}".format(rf.duration)
+        #print "Rabi flopping 729 freq is {}".format(freq_729)
+        #print "Rabi flopping duration is {}".format(rf.duration)
         # building the sequence
         self.end = U(10., 'us')
         #self.addSequence(TurnOffAll)
@@ -63,12 +63,12 @@ class RabiFlopping(pulse_sequence):
         print "Running initial _Rabi_floping"
     @classmethod
     def run_in_loop(cls,cxn, parameters_dict, data, x):
-        print "Running in loop Rabi_floping"
+        #print "Running in loop Rabi_floping"
         pass
     @classmethod
     def run_finally(cls,cxn, parameters_dict, data, x):
-        print "Running finally Rabi_floping"
-        np.save('temp_PMT', data)
+        #print "Running finally Rabi_floping"
+        #np.save('temp_PMT', data)
         print "saved ion data"
         
         
