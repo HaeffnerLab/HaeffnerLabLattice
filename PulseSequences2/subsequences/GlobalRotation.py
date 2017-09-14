@@ -13,7 +13,9 @@ class GlobalRotation(pulse_sequence):
         p = self.parameters.GlobalRotation
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
+    
         rotation_fraction = p.angle['rad']/np.pi
+        #rotation_fraction = 0.5
         time = p.pi_time*rotation_fraction
         self.end = self.start + frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        

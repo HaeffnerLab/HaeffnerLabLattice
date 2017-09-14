@@ -1,12 +1,14 @@
 from PyQt4 import QtGui
 from twisted.internet.defer import inlineCallbacks
 
+        
 class LATTICE_GUI(QtGui.QMainWindow):
     def __init__(self, reactor, clipboard, parent=None):
         super(LATTICE_GUI, self).__init__(parent)
         self.clipboard = clipboard
         self.reactor = reactor
         self.connect_labrad()
+
 
     @inlineCallbacks
     def connect_labrad(self):
@@ -34,6 +36,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         config_editor = self.make_config_editor_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
+        
         
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(contrl_widget,'&Control')
@@ -109,6 +112,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from quick_actions.quick_actions import actions_widget
         from indicator.indicator import indicator_widget
         from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
+        from common.clients.InjectionLock_GUI import InjectionLock_Control
+        
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)
         #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
@@ -116,8 +121,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
         #gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
-        gridLayout.addWidget(magnet_Control(reactor, cxn),      2,0,1,1)
-        gridLayout.addWidget(oven_Control(reactor, cxn),        2,1,1,1)
+        #gridLayout.addWidget(magnet_Control(reactor, cxn),      2,0,1,1)
+        #gridLayout.addWidget(oven_Control(reactor, cxn),        2,1,1,1)
+        
+        gridLayout.addWidget(InjectionLock_Control(reactor),        2,1,1,1)
+        
         gridLayout.addWidget(laserdac_control_widget(reactor),             0,2,3,2)
         gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,2)

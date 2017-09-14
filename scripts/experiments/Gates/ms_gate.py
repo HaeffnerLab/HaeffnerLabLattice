@@ -117,6 +117,12 @@ class ms_gate(experiment):
         f_global = WithUnit(80.0, 'MHz') + WithUnit(0.15, 'MHz')
         freq_blue = f_global - trap_frequency - gate.detuning + gate.ac_stark_shift
         freq_red = f_global + trap_frequency + gate.detuning + gate.ac_stark_shift
+        
+        #print "132 debuging "
+        #print trap_frequency , gate.detuning, gate.ac_stark_shift
+        #print freq_blue
+        #print freq_red
+        
 
         amp_blue = self.parameters.MolmerSorensen.amp_blue
         amp_red = self.parameters.MolmerSorensen.amp_red

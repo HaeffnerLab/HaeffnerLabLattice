@@ -20,7 +20,7 @@ class SidebandCooling(pulse_sequence):
                               
         freq_729 = self.calc_freq(sc.line_selection, sc.selection_sideband ,sc.order)
         freq_729 = freq_729 + sc.stark_shift
-        print "SIDEBAND cooling 729 freq:.{}".format(freq_729)
+        #print "SIDEBAND cooling 729 freq:.{}".format(freq_729)
         
         channel_729 = self.parameters.StatePreparation.channel_729
         

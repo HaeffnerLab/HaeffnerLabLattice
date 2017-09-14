@@ -2,29 +2,23 @@ from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
 class MolmerSorensen(pulse_sequence):
-        """
-        Running a Molmer Sorenson gate 
-        """
-    #required_parameters = [
-                          ('MolmerSorensen','frequency'),
-                          ('MolmerSorensen','amplitude'),
-                          ('MolmerSorensen','duration'),
-                          ('MolmerSorensen','phase'),
-                          ('MolmerSorensen','analysis_pulse_enable'),
-                          ('MolmerSorensen','shape_profile'),
-
-                          ('LocalStarkShift', 'enable'),
-                          ('LocalStarkShift','amplitude'),
-                          ('LocalStarkShift', 'detuning'), # detuning from the carrier transition
-                          ]
-
+    
+    
     def sequence(self):
         
         #this hack will be not needed with the new dds parsing methods
         slope_dict = {0:0.0, 2:2.0, 4:5.0, 6:600.0}
+        
         p = self.parameters.MolmerSorensen
+        
         pl = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')
+        
+        
+        
+        print "212121"
+        print "Running MS subseq freq 729: ", p.frequency 
+        print "MS params" , self.parameters.MolmerSorensen.ac_stark_shift
         
         
         try:

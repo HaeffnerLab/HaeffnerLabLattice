@@ -267,8 +267,11 @@ class base_excitation(experiment):
 
     def count_dark(self, readouts):
         import IPython
-        thresholds = self.parameters.StateReadout.threshold_list
-        thresholds = thresholds[1]
+        #thresholds = self.parameters.StateReadout.threshold_list
+        threshold_list = self.parameters.StateReadout.threshold_list
+        thresholds=[int(x) for x in threshold_list.split(',')]
+        print "working with the string format"
+        #thresholds = thresholds[1]
         #thresholds.append(0)
         thresholds = sorted(thresholds)
         print numpy.array(readouts)

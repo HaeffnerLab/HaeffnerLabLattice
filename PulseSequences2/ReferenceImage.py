@@ -9,10 +9,8 @@ from multiprocessing import Process
 
 class ReferenceImage(pulse_sequence):
     scannable_params = {
-        'temp':  [(0., 1., 1, 'us'), 'current']
-        
-              }
-
+        'temp':  [(0., 1., 1, 'us'), 'current']}
+    
     show_params= ['IonsOnCamera.ion_number',
                   'IonsOnCamera.reference_exposure_factor',
                   'IonsOnCamera.vertical_min',
@@ -38,12 +36,16 @@ class ReferenceImage(pulse_sequence):
 
 
     def sequence(self):
+        from subsequences.RepumpD import RepumpD
+        from subsequences.DopplerCooling import DopplerCooling
         from subsequences.StateReadout import StateReadout
         from subsequences.TurnOffAll import TurnOffAll
         
         # building the sequence
         self.end = U(20, 'ms') #do nothing in the beginning to let the camera transfer each image
-        self.addSequence(TurnOffAll)   
+        self.addSequence(TurnOffAll)  
+        self.addSequence(RepumpD) # initializing the state of the ion
+        self.addSequence(DopplerCooling)  
         self.addSequence(StateReadout,{"StateReadout.use_camera_for_readout": True})
         
    
@@ -53,10 +55,10 @@ class ReferenceImage(pulse_sequence):
     def run_initial(cls, cxn, parameters_dict):
         pass
     @classmethod
-    def run_in_loop(cls, cxn, parameters_dict, data_so_far):
+    def run_in_loop(cls, cxn, parameters_dict, data_so_far,x):
         pass
     @classmethod
-    def run_finally(cls, cxn, parameters_dict, images):
+    def run_finally(cls, cxn, parameters_dict, images,x):
         #import matplotlib.pyplot as plt
         print "RUNNING Reference image analysis"
         pv = cxn.scriptscanner
@@ -114,6 +116,7 @@ if __name__ == '__main__':
     scan = [('ReferenceImage',   ('temp', 0, 1, 1, 'us'))]
     ident = sc.new_sequence('ReferenceImage', scan)
     sc.sequence_completed(ident)
+    cxn.disconnect()
         
         
         

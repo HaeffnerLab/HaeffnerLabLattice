@@ -1,5 +1,6 @@
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
+import numpy as np
 
 class LocalRotation(pulse_sequence):
     
@@ -12,22 +13,25 @@ class LocalRotation(pulse_sequence):
 
     def sequence(self):
         #this hack will be not needed with the new dds parsing methods
-        pl = self.parameters.LocalRotation
+        p = self.parameters.LocalRotation
         
-        # choosing the frequency from the carrires dict
-        freq_729=self.Calc_freq(pl.line_selection)
         
+      
         
         frequency_advance_duration = WithUnit(6, 'us')
         ampl_off = WithUnit(-63.0, 'dBm')
         
-        time = pl.pi_time
+        #rotation_fraction = 0.5
+        rotation_fraction = p.angle['rad']/np.pi
+        time = p.pi_time*rotation_fraction
+        freq_729= p.frequency
+        
         
         self.end = self.start + 2*frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        
         self.addDDS('729local', self.start, frequency_advance_duration, freq_729 , ampl_off)
         #turn on
-        self.addDDS('729local', self.start + frequency_advance_duration, time, freq_729, pl.amplitude)
+        self.addDDS('729local', self.start + frequency_advance_duration, time, freq_729, p.amplitude)
         
         
         ## commented running the SP DDS from running from the pulser 
@@ -36,4 +40,6 @@ class LocalRotation(pulse_sequence):
         #amp = pl.sp_amplitude
         #self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
         #self.addDDS('SP_local', self.start + frequency_advance_duration, time, f, amp)
-        
+       
+    
+    

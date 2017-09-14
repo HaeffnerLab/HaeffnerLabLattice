@@ -2,6 +2,7 @@ from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
+import numpy as np
 
 #class RabiFloppingMulti(pulse_sequence):
 #    is_multi = True
@@ -57,15 +58,18 @@ class RabiFlopping(pulse_sequence):
                                          'Excitation_729.rabi_excitation_duration':  rf.duration })
         self.addSequence(StateReadout)
         
-   # @classmethod
-   # def run_initial(cls,cxn, parameters_dict):
-   #     print "Running initial _Rabi_floping"
-   # @classmethod
-   # def run_in_loop(cls):
-   #     print "Running in loop Rabi_floping"
-        #pass
-   # @classmethod
-   # def run_finally(cls):
-   #     print "Running finally Rabi_floping"
-        #pass
+    @classmethod
+    def run_initial(cls,cxn, parameters_dict):
+        print "Running initial _Rabi_floping"
+    @classmethod
+    def run_in_loop(cls,cxn, parameters_dict, data, x):
+        print "Running in loop Rabi_floping"
+        pass
+    @classmethod
+    def run_finally(cls,cxn, parameters_dict, data, x):
+        print "Running finally Rabi_floping"
+        np.save('temp_PMT', data)
+        print "saved ion data"
+        
+        
         

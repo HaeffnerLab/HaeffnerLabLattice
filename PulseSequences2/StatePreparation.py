@@ -17,12 +17,15 @@ class StatePreparation(pulse_sequence):
         print "STARTING STATE PREP"
         print self.start
         
+        from subsequences.TurnOffAll import TurnOffAll
         from subsequences.RepumpD import RepumpD
         from subsequences.DopplerCooling import DopplerCooling
         from subsequences.OpticalPumping import OpticalPumping
         from subsequences.SidebandCooling import SidebandCooling
         from subsequences.EmptySequence import EmptySequence
         
+        self.end = U(10., 'us')
+        self.addSequence(TurnOffAll)
         self.addSequence(RepumpD) # initializing the state of the ion
         self.addSequence(DopplerCooling) 
         
@@ -34,8 +37,8 @@ class StatePreparation(pulse_sequence):
             for i in range(int(self.parameters.SidebandCooling.sideband_cooling_cycles)):
                 self.addSequence(SidebandCooling)
                 self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
-                print "Running sideband cooling cycle #"
-                print(i) 
+                #print "Running sideband cooling cycle #"
+                #print(i) 
                 
         self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
         

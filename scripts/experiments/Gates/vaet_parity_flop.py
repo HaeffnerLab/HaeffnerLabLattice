@@ -172,8 +172,11 @@ class vaet_parity_flop(experiment):
         '''
         computes the parity of the provided readouts using a pmt
         '''
-        threshold_low = self.parameters.StateReadout.threshold_list[1][0]
-        threshold_high = self.parameters.StateReadout.threshold_list[1][1]
+        threshold=self.parameters.StateReadout.threshold_list
+        threshold_list=[int(x) for x in threshold.split(',')]
+
+        threshold_low = threshold_list[0]#self.parameters.StateReadout.threshold_list[1][0]
+        threshold_high = threshold_list[1]#self.parameters.StateReadout.threshold_list[1][1]
         print "thresholds"
         print threshold_low, threshold_high
         even_parity = np.count_nonzero((readouts <= threshold_low)|(readouts >= threshold_high))

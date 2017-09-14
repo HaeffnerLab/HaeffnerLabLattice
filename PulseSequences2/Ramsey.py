@@ -9,54 +9,60 @@ class Ramsey(pulse_sequence):
     #name = 'Ramsey'
 
     scannable_params = {
-        'RamseyScanGap.scangap': (0, 10.0, 0.1, 'ms'),
-        'RamseyScanPhase.scanphase': (0, 360., 15, 'deg')
+                        
+        'RamseyScanGap.ramsey_duration': [(0, 1.0, 0.5, 'ms') ,'ramsey'],
+        'Ramsey.second_pulse_phase': [(0, 360., 15, 'deg') ,'ramsey']
         }
 
-    show_params= ['RamseyScanGap.scangap',
+    show_params= ['RamseyScanGap.ramsey_duration',
                   'RamseyScanPhase.scanphase',
                   'RamseyScanGap.detuning',
+                  
                   #need to work on this
+                  'GlobalRotation.amplitude',
                   'GlobalRotation.pi_time',
+                  
                   'RabiFlopping.line_selection',
-                  'RabiFlopping.sideband_selection',
-                  'sideband_order']
+                  'RabiFlopping.selection_sideband',
+                  'RabiFlopping.order',
+                                                      
+                  'StatePreparation.channel_729',
+                  'StatePreparation.optical_pumping_enable',
+                  'StatePreparation.sideband_cooling_enable']
 
-     
-    def run_initial(self):
-        pass
-    
     
     def sequence(self):
         
         from StatePreparation import StatePreparation
-        from subsequences.RabiExcitation import RabiExcitation
+        from subsequences.GlobalRotation import GlobalRotation
         from subsequences.StateReadout import StateReadout
-        #from subsequences.TurnOffAll import TurnOffAll
+        from subsequences.EmptySequence import EmptySequence
+        from subsequences.StateReadout import StateReadout
+        
         
         
         ## calculate the 729 params
         rf = self.parameters.RabiFlopping   
-        
-        if rf.selection_sideband == "off":         
-            freq_729=self.calc_freq(rf.line_selection)
-        else:
-            freq_729=self.calc_freq(rf.line_selection, rf.selection_sideband ,int(rf.order))
-        
+        # calculating the 729 freq form the Rabi flop params
+        freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
+        # adding the Ramsey detuning
         freq_729 = freq_729+ self.parameters.RamseyScanGap.detuning
         
+        print "1234"
+        print " freq 729 " , freq_729
+        print " Wait time ", self.parameters.RamseyScanGap.ramsey_duration
         
         # building the sequence
         self.addSequence(StatePreparation)            
         self.addSequence(GlobalRotation, { "GlobalRotation.frequency":freq_729,
-                                           "GlobalRotation.angle": np.pi/2.0,
-                                           "GlobalRotation.phase": 0.0})
+                                           "GlobalRotation.angle": U(np.pi/2.0, 'rad'),
+                                           "GlobalRotation.phase": U(0, 'deg')})
         
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.RamseyScanGap.scangap})
+        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.RamseyScanGap.ramsey_duration})
         
         self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
-                                          "GlobalRotation.angle": np.pi/2.0, 
-                                          "GlobalRotation.phase": self.RamseyScanPhase.scanphase })
+                                          "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
+                                          "GlobalRotation.phase": self.parameters.Ramsey.second_pulse_phase })
         self.addSequence(StateReadout)
         
 
