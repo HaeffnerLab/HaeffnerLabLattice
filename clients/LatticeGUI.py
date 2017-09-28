@@ -112,7 +112,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from quick_actions.quick_actions import actions_widget
         from indicator.indicator import indicator_widget
         from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
-        from common.clients.InjectionLock_GUI import InjectionLock_Control
+        from common.clients.InjectionLock_GUI_new import InjectionLock_Control
         
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)

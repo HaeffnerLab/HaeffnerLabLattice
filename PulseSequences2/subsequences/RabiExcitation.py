@@ -34,12 +34,12 @@ class RabiExcitation(pulse_sequence):
         #detuning = self.parameters.Excitation_729.detuning
         #freq_729 = freq_729 + detuning
         
-#         
-#         print "Rabi Excitation sub sequence"
-#         print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
-#         print "729 amp is {}".format(amp_729)
-#         print "729 duration is {}".format(duration_729)
-#         
+        print "999" 
+        print "Rabi Excitation sub sequence"
+        print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
+        print "729 amp is {}".format(amp_729)
+        print "729 duration is {}".format(duration_729)
+         
         #first advance the frequency but keep amplitude low        
         self.addDDS(channel_729, self.start, frequency_advance_duration, freq_729, ampl_off)
         self.addDDS(channel_729, self.start + frequency_advance_duration, duration_729, freq_729, amp_729, phase_729)

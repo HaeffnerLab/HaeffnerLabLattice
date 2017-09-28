@@ -48,7 +48,11 @@ class Spectrum(pulse_sequence):
         
         amp=spc.manual_amplitude_729
         duration=spc.manual_excitation_time
-        print "Spectrum scan"
+        print "Spectrum scan 555"
+        print "spc.line_selection : " ,spc.line_selection
+        print "spc.selection_sideband : " ,spc.selection_sideband
+        print "spc.order : " , int(spc.order)
+        
         print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
         print "729 detuning: {}".format(freq_729-self.calc_freq(spc.line_selection))
         print "729 amp is {}".format(amp)
@@ -66,6 +70,21 @@ class Spectrum(pulse_sequence):
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
+        
+    @classmethod
+    def run_initial(cls,cxn, parameters_dict):
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
+        
+    @classmethod
+    def run_in_loop(cls,cxn, parameters_dict, data, x):
+        #print "Running in loop Rabi_floping"
+        pass
+    
+    @classmethod
+    def run_finally(cls,cxn, parameters_dict, data, x):
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
         
 if __name__ == '__main__':
     import labrad

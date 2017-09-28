@@ -33,10 +33,17 @@ class CalibLine1(pulse_sequence):
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
         
-
+    @classmethod
+    def run_initial(cls,cxn, parameters_dict):
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
+        
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
+
         # Should find a better way to do this
         global carr_1_global 
         
@@ -86,9 +93,17 @@ class CalibLine2(pulse_sequence):
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
 
-
+    @classmethod
+    def run_initial(cls,cxn, parameters_dict):
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
+        
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
+        
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
+
         
         carrier_translation = {'S+1/2D-3/2':'c0',
                                'S-1/2D-5/2':'c1',

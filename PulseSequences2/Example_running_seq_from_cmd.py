@@ -12,7 +12,7 @@ def get_data(ds):
 
 # modify new_sequence to take a list of override parameters
 
-scan = [('RabiFlopping',   ('Excitation_729.rabi_excitation_duration', 0, 50, 10, 'us'))]
+scan = [('RabiFlopping',   ('RabiFlopping.duration', 0., 50.0, 5.0, 'us'))]
 
 ident = sc.new_sequence('RabiFlopping', scan)
 print "scheduled the sequence"

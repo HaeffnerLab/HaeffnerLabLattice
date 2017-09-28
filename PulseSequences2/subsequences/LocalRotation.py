@@ -25,7 +25,9 @@ class LocalRotation(pulse_sequence):
         rotation_fraction = p.angle['rad']/np.pi
         time = p.pi_time*rotation_fraction
         freq_729= p.frequency
-        
+        print "Local Rotation"
+        print "freq_729" ,freq_729
+        print "time",time
         
         self.end = self.start + 2*frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        

@@ -60,16 +60,20 @@ class RabiFlopping(pulse_sequence):
         
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
-        print "Running initial _Rabi_floping"
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
+        
     @classmethod
     def run_in_loop(cls,cxn, parameters_dict, data, x):
         #print "Running in loop Rabi_floping"
         pass
     @classmethod
     def run_finally(cls,cxn, parameters_dict, data, x):
-        #print "Running finally Rabi_floping"
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
+
         #np.save('temp_PMT', data)
-        print "saved ion data"
+        #print "saved ion data"
         
         
         

@@ -12,11 +12,14 @@ import numpy as np
 class MolmerSorensenGate(pulse_sequence):
     
                           
-    scannable_params = {   'MolmerSorensen.duration': [(0, 1.0, 0.1, 'ms'),'ms_time']
+    scannable_params = {   'MolmerSorensen.duration': [(0, 1.0, 0.1, 'ms'),'ms_time'],
+                           'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
+                           'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
                         }
  
 
     show_params= [        'Excitation_729.channel_729',
+                          'Excitation_729.bichro',
                           'MolmerSorensen.duration',
                           'MolmerSorensen.line_selection',
                           'MolmerSorensen.frequency_selection',
@@ -25,9 +28,11 @@ class MolmerSorensenGate(pulse_sequence):
                           'MolmerSorensen.ac_stark_shift',
                           'MolmerSorensen.amp_red',
                           'MolmerSorensen.amp_blue',
+                          'MolmerSorensen.amplitude',
                           'MolmerSorensen.analysis_pulse_enable',
                           'MolmerSorensen.SDDS_enable',
                           'MolmerSorensen.SDDS_rotate_out',
+                          'MolmerSorensen.shape_profile',
                     
                           'StatePreparation.channel_729',
                           'StatePreparation.optical_pumping_enable',
@@ -36,6 +41,9 @@ class MolmerSorensenGate(pulse_sequence):
     
     @classmethod
     def run_initial(cls, cxn, parameters_dict):
+        
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
         
         ms = parameters_dict.MolmerSorensen
         
@@ -75,10 +83,14 @@ class MolmerSorensenGate(pulse_sequence):
         cxn.dds_cw.output('5', True) # time to thermalize the single pass
         time.sleep(1.0)
         
-        cxn.dds_cw.output('5', False)
+        #cxn.dds_cw.output('5', False)
         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
 
-
+    @classmethod
+    def run_finally(cls,cxn, parameters_dict, data, x):
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
+        
     def sequence(self):        
         from StatePreparation import StatePreparation
         from subsequences.GlobalRotation import GlobalRotation
@@ -100,10 +112,9 @@ class MolmerSorensenGate(pulse_sequence):
         self.addSequence(StatePreparation)     
 
         if p.SDDS_enable:
-            #print "1254"    
-            #print "enabled rotation in "
+
             self.addSequence(LocalRotation, {"LocalRotation.frequency":freq_729, 
-                                             "LocalRotation.angle": U(np.pi/2.0, 'rad') 
+                                             "LocalRotation.angle": U(np.pi, 'rad') 
                                                })
   
         
@@ -113,13 +124,14 @@ class MolmerSorensenGate(pulse_sequence):
         if p.SDDS_rotate_out:
             #print "enabled rotation out "
             self.addSequence(LocalRotation, {"LocalRotation.frequency":freq_729, 
-                                              "LocalRotation.angle": U(np.pi/2.0, 'rad') 
+                                              "LocalRotation.angle": U(np.pi, 'rad') 
                                                })
   
             
         
         if p.analysis_pulse_enable:
-           
+            print "1254"    
+            print "scan phase enabled : " , p.ms_phase
             self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
                                               "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
                                               "GlobalRotation.phase": p.ms_phase })

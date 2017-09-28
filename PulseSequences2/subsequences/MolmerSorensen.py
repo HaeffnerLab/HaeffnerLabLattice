@@ -33,18 +33,19 @@ class MolmerSorensen(pulse_sequence):
         self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)
         self.addDDS('729global', self.start + frequency_advance_duration, p.duration, p.frequency, p.amplitude, p.phase, profile=int(p.shape_profile))
         self.addTTL('bichromatic_1', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
-        
-        if pl.enable: # add a stark shift on the localized beam
-            f = WithUnit(80. - 0.2, 'MHz') + pl.detuning
-            amp = WithUnit(-10., 'dBm')
-            print p.frequency
-            self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
-            self.addDDS('SP_local', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
-            
-            # turn on the double pass at -15 dBm for the stark shift
-            self.addDDS('729local', self.start, frequency_advance_duration, p.frequency, ampl_off)
-            self.addDDS('729local', self.start + frequency_advance_duration, p.duration, p.frequency, amp, p.phase, profile=int(p.shape_profile))
-            
+#  old pulser had an additional channel for local beam to compensate for B filed gradient         
+#         if pl.enable: # add a stark shift on the localized beam
+#             f = WithUnit(80. - 0.2, 'MHz') + pl.detuning
+#             amp = WithUnit(-10., 'dBm')
+#             print p.frequency
+#             self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
+#             self.addDDS('SP_local', self.start + frequency_advance_duration, p.duration, f, pl.amplitude, profile=int(p.shape_profile))
+#             
+#             # turn on the double pass at -15 dBm for the stark shift
+#             self.addDDS('729local', self.start, frequency_advance_duration, p.frequency, ampl_off)
+#             self.addDDS('729local', self.start + frequency_advance_duration, p.duration, p.frequency, amp, p.phase, profile=int(p.shape_profile))
+#
+        # tunning DP off gradually             
         self.addDDS('729global', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
         self.addDDS('729local', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
         
