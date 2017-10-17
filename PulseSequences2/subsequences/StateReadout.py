@@ -13,6 +13,13 @@ class StateReadout(pulse_sequence):
         st = self.parameters.StateReadout 
         repump_additional = self.parameters.DopplerCooling.doppler_cooling_repump_additional# need the doppler paramters for the additional repumper time 
         
+        if 'camera' in st.readout_mode: 
+            print "using camera in the subseq for readout"
+            st.use_camera_for_readout = True
+        else:
+            print "using PMT"
+            st.use_camera_for_readout = False
+        
         # fic the readout duration according to PMT/Camera        
         if st.use_camera_for_readout:
             readout_duration=st.camera_readout_duration

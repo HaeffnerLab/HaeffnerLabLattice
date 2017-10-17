@@ -13,7 +13,7 @@ class MolmerSorensenGate(pulse_sequence):
     
                           
     scannable_params = {   'MolmerSorensen.duration': [(0,200.0, 10.0, 'us'),'ms_time'],
-                           'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
+                           'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'ms_time'],
                            'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
                         }
  
