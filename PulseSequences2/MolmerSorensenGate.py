@@ -12,31 +12,32 @@ import numpy as np
 class MolmerSorensenGate(pulse_sequence):
     
                           
-    scannable_params = {   'MolmerSorensen.duration': [(0, 1.0, 0.1, 'ms'),'ms_time'],
+    scannable_params = {   'MolmerSorensen.duration': [(0,200.0, 10.0, 'us'),'ms_time'],
                            'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
                            'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
                         }
  
 
-    show_params= [        'Excitation_729.channel_729',
-                          'Excitation_729.bichro',
+    show_params= [        
                           'MolmerSorensen.duration',
                           'MolmerSorensen.line_selection',
-                          'MolmerSorensen.frequency_selection',
+                          'MolmerSorensen.line_selection_ion2',
+                          'MolmerSorensen.due_carrier_enable',
                           'MolmerSorensen.sideband_selection',
                           'MolmerSorensen.detuning',
                           'MolmerSorensen.ac_stark_shift',
+                          'MolmerSorensen.asymetric_ac_stark_shift',
                           'MolmerSorensen.amp_red',
                           'MolmerSorensen.amp_blue',
                           'MolmerSorensen.amplitude',
+                          'MolmerSorensen.amplitude_ion2',
                           'MolmerSorensen.analysis_pulse_enable',
                           'MolmerSorensen.SDDS_enable',
                           'MolmerSorensen.SDDS_rotate_out',
                           'MolmerSorensen.shape_profile',
+                          'MolmerSorensen.bichro_enable',
                     
-                          'StatePreparation.channel_729',
-                          'StatePreparation.optical_pumping_enable',
-                          'StatePreparation.sideband_cooling_enable'
+                          
                   ]
     
     @classmethod
@@ -60,8 +61,8 @@ class MolmerSorensenGate(pulse_sequence):
         # be carfull we are collecting the minus order from th SP
         # minus sign in the detuning getts closer to the carrier
         f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
-        freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift
-        freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift
+        freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
+        freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
         
         print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
         print "MS freq_blue", freq_blue
@@ -105,6 +106,11 @@ class MolmerSorensenGate(pulse_sequence):
         ## calculating the DP frquency
         freq_729=self.calc_freq(p.line_selection)           
         print "Running ms gate DP freq is  ", freq_729
+        
+        if p.due_carrier_enable :
+            freq_729_ion2=self.calc_freq(p.line_selection_ion2)
+        else:
+            freq_729_ion2=freq_729
 
         
         self.end = U(10., 'us')
@@ -118,19 +124,22 @@ class MolmerSorensenGate(pulse_sequence):
                                                })
   
         
-        self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729 })
+        self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729,
+                                           'MolmerSorensen.frequency_ion2': freq_729_ion2,
+                                          
+                                           })
 
 
         if p.SDDS_rotate_out:
             #print "enabled rotation out "
             self.addSequence(LocalRotation, {"LocalRotation.frequency":freq_729, 
-                                              "LocalRotation.angle": U(np.pi, 'rad') 
+                                             "LocalRotation.angle": U(np.pi, 'rad') 
                                                })
   
             
         
         if p.analysis_pulse_enable:
-            print "1254"    
+                
             print "scan phase enabled : " , p.ms_phase
             self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
                                               "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 

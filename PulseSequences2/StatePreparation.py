@@ -32,6 +32,7 @@ class StatePreparation(pulse_sequence):
         if self.parameters.StatePreparation.optical_pumping_enable:
             self.addSequence(OpticalPumping)
             
+  
         # side band cooling             
         if self.parameters.StatePreparation.sideband_cooling_enable:       
             duration_op= self.parameters.SidebandCooling.sideband_cooling_optical_pumping_duration
@@ -50,7 +51,18 @@ class StatePreparation(pulse_sequence):
                     self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
                 #print "Running sideband cooling cycle #"
                 #print(i) 
-                
+                # aux_optical_pumping
+        
+        if self.parameters.StatePreparation.aux_optical_pumping_enable:
+            op_aux=self.parameters.OpticalPumpingAux
+#             print "12345 adding aux optical pumping"
+#             print  op_aux.channel_729, op_aux.aux_op_line_selection,op_aux.duration
+            
+            self.addSequence(OpticalPumping, {'StatePreparation.channel_729': op_aux.channel_729,
+                                              'OpticalPumping.line_selection': op_aux.aux_op_line_selection,
+                                              'OpticalPumping.optical_pumping_amplitude_729': op_aux.aux_optical_pumping_amplitude_729,
+                                              'OpticalPumpingContinuous.optical_pumping_continuous_duration':op_aux.duration })
+                  
         self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : self.parameters.Heating.background_heating_time})
         
         

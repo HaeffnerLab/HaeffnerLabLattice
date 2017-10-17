@@ -3,21 +3,17 @@ from labrad.units import WithUnit as U
 from treedict import TreeDict
 
 
-class SidebandOptimization(pulse_sequence):
+class AuxOpticalPumpingOptimization(pulse_sequence):
                             
-    scannable_params = {'SidebandCooling.sideband_cooling_amplitude_854' : [(-30., -6., 3., 'dBm'), 'current'],
-                        'SidebandCooling.stark_shift' : [(-50.0, 50.0, 2.5, 'kHz'), 'current']}
+    scannable_params = {'OpticalPumpingAux.duration' : [(10., 200., 10., 'us'), 'current']
+                        }
 
-    show_params= [
+    show_params= ['OpticalPumpingAux.channel_729',
+                  'OpticalPumpingAux.aux_op_line_selection',
+                  'OpticalPumpingAux.aux_optical_pumping_amplitude_729',
                   
-                  'SidebandCooling.line_selection',
-                  'SidebandCooling.sideband_cooling_amplitude_729',
-                  'SidebandCooling.sideband_cooling_amplitude_854',
-                  'SidebandCooling.sideband_cooling_amplitude_866',
-                  'SidebandCooling.selection_sideband',
-                  'SidebandCooling.order',
-                  'SidebandCooling.stark_shift',
-                  'SidebandCooling.cooling_cycles',
+                  
+                                   
                   'RabiFlopping.rabi_amplitude_729',
                   'RabiFlopping.duration',
                   'RabiFlopping.line_selection',
@@ -36,7 +32,8 @@ class SidebandOptimization(pulse_sequence):
         ## calculate the scan params
         rf = self.parameters.RabiFlopping 
         freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
-
+#         print "321321"
+#         print "freq 729", freq_729 
         self.end = U(10., 'us')      
         
         self.addSequence(TurnOffAll)

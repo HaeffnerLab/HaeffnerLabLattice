@@ -1,7 +1,7 @@
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 
-class MolmerSorensen(pulse_sequence):
+class MolmerSorensenDue(pulse_sequence):
     
     
     def sequence(self):
@@ -11,7 +11,7 @@ class MolmerSorensen(pulse_sequence):
         
         p = self.parameters.MolmerSorensen
         
-        pl = self.parameters.LocalStarkShift
+        #pl = self.parameters.LocalStarkShift
         frequency_advance_duration = WithUnit(6, 'us')
         
         
@@ -33,19 +33,11 @@ class MolmerSorensen(pulse_sequence):
         self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)
         self.addDDS('729global', self.start + frequency_advance_duration, p.duration, p.frequency, p.amplitude, p.phase, profile=int(p.shape_profile))
         
-        
         if (p.due_carrier_enable):
-            print "running due freq"
-            print p.amplitude_ion2
-            print p.frequency_ion2
             self.addDDS('729global_1', self.start, frequency_advance_duration, p.frequency_ion2, ampl_off)
             self.addDDS('729global_1', self.start + frequency_advance_duration, p.duration, p.frequency_ion2, p.amplitude_ion2, p.phase, profile=int(p.shape_profile))
         
-        if (p.bichro_enable):
-            print "bichro enabled-> running ms gate ioi"
-            self.addTTL('bichromatic_1', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
-        else:
-            print "MS subseq bichro IS NOT enabled-> running a carrier"
+        self.addTTL('bichromatic_1', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
 #  old pulser had an additional channel for local beam to compensate for B filed gradient         
 #         if pl.enable: # add a stark shift on the localized beam
 #             f = WithUnit(80. - 0.2, 'MHz') + pl.detuning
@@ -60,9 +52,9 @@ class MolmerSorensen(pulse_sequence):
 #
         # tunning DP off gradually             
         self.addDDS('729global', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
-        self.addDDS('729local', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)        
+        self.addDDS('729local', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency, ampl_off)
         if (p.due_carrier_enable):
             self.addDDS('729global_1', self.start + p.duration + 2*frequency_advance_duration + slope_duration, frequency_advance_duration, p.frequency_ion2, ampl_off)
+        
+        
         self.end = self.end + frequency_advance_duration
-        
-        

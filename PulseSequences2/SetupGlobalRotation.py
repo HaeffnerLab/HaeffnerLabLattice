@@ -23,8 +23,7 @@ class SetupGlobalRotation(pulse_sequence):
         #'Excitation_729.rabi_excitation_duration' : [(-150, 150, 10, 'kHz'),'spectrum'],
               }
 
-    show_params= ['Excitation_729.channel_729',
-                  'Excitation_729.bichro',
+    show_params= [
                   'GlobalRotation.pi_time',
                   'RabiFlopping.line_selection',
                   'RabiFlopping.rabi_amplitude_729',
@@ -34,9 +33,7 @@ class SetupGlobalRotation(pulse_sequence):
                   'RabiFlopping.line_selection',
                   'RabiFlopping.selection_sideband',
                   'RabiFlopping.order',
-                  'StatePreparation.channel_729',
-                  'StatePreparation.optical_pumping_enable',
-                  'StatePreparation.sideband_cooling_enable'
+
                   ]
     
     #fixed_params = {'StateReadout.ReadoutMode':'camera'}
