@@ -33,7 +33,7 @@ class LocalRotation(pulse_sequence):
         #first advance the frequency but keep amplitude low        
         self.addDDS('729local', self.start, frequency_advance_duration, freq_729 , ampl_off)
         #turn on
-        self.addDDS('729local', self.start + frequency_advance_duration, time, freq_729, p.amplitude)
+        self.addDDS('729local', self.start + frequency_advance_duration, time, freq_729, p.amplitude, p.phase)
         
         
         ## commented running the SP DDS from running from the pulser 

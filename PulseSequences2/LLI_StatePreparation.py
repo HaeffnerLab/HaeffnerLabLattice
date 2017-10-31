@@ -39,7 +39,8 @@ class LLI_StatePreparation(pulse_sequence):
                     "LLI.ms_rotation_carrier_1_amplitude",
                     "LLI.pi_time_ms_carrier_2",
                     "LLI.ms_rotation_carrier_2_amplitude",   
-                    "LLI.wait_time",                   
+                    "LLI.wait_time",
+                    "LLI.analysis_pulse_duration",                  
                       
                   ]
     
@@ -178,12 +179,22 @@ class LLI_StatePreparation(pulse_sequence):
         
         
         if lli.analysis_pulse_enable:
+            # calc frequcy shift of the SP
+            mode = ms.sideband_selection
+            trap_frequency =  self.parameters.TrapFrequencies[mode]
+            
+            #print "1325"
+            #print trap_frequency
+            
             
             self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729_ms_carrier_1,
                                                'MolmerSorensen.frequency_ion2': freq_729_ms_carrier_2,
                                                'MolmerSorensen.phase': lli.phase,
                                                'MolmerSorensen.bichro_enable': False,
+                                               'MolmerSorensen.duration': lli.analysis_pulse_duration,
+                                               'MolmerSorensen.detuning': -1.0*trap_frequency
                                               })
+             
         
 #             self.addSequence(Rotation, {"Rotation.channel_729": '729global',
 #                                         "Rotation.frequency":freq_729_ms_carrier_1, 
