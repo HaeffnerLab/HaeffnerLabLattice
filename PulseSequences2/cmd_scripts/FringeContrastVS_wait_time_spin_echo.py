@@ -9,12 +9,14 @@ cxn = labrad.connect()
 sc = cxn.scriptscanner
 dv = cxn.data_vault
 
+# 
 def get_data(ds):
     direc, dset = ds[0]
     dv.cd(direc)
     dv.open(dset)
     return dv.get()
 
+# fit function to a sin 
 def my_sin(x,  amplitude, phase, offset):
     return 1.0*amplitude*np.sin(0.5*x*np.pi/180.0 + phase)**2.0  + offset
 
@@ -29,8 +31,8 @@ scan = [('RamseyLocalHanEcho',   ('Ramsey.second_pulse_phase', 0., 360.0, 30.0, 
 ts=np.arange(100.0,10000.0,200.0)
 
 print ts
-wait_time=[]
-contrast=[]
+
+contrast=np.zeros_like(ts)
 for i,t in enumerate(ts):
     print "Scanning time" , t
     sc.set_parameter('RamseyScanGap','ramsey_duration',U(1.0*t,'us'))
@@ -47,10 +49,9 @@ for i,t in enumerate(ts):
     print "fit params",fit[0]
     print "finished scanning time " , t
     print "amplitude is",fit[0][0]
-    wait_time.append(t)
-    contrast.append(fit[0][0])
+    contrast[i]=fit[0][0]
     
-    np.savetxt('HanEcho.txt', (wait_time,contrast),  delimiter=',')
+    np.savetxt('HanEcho.csv', (ts,contrast),  delimiter=',')
     #plt.plot(x, prob,'ro',label='data')
     #plt.plot(np.arange(0.0,360.0,1.0),my_sin(np.arange(0.0,360.0,1.0),*fit[0]),label='fit')
     #plt.legend()
@@ -58,7 +59,7 @@ for i,t in enumerate(ts):
 
 cxn.disconnect()
 
-plt.plot(wait_time,contrast,'r',label='fring contrast')
+plt.plot(ts,contrast,'r',label='fring contrast')
 plt.xlabel('wait_time [us]')
 plt.ylabel('fring contrast')
 plt.show()

@@ -23,7 +23,7 @@ class CalibLine1(pulse_sequence):
         freq_729 = self.calc_freq(line1)
         freq_729 = freq_729 + p.Spectrum.carrier_detuning
         
-        amp = p.Spectrum.car2_amp
+        amp = p.Spectrum.car1_amp
         duration = p.Spectrum.manual_excitation_time
         
         self.addSequence(TurnOffAll)
@@ -41,8 +41,12 @@ class CalibLine1(pulse_sequence):
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
+
+        
         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
+        
+        print " sequence ident" , int(cxn.scriptscanner.get_running()[0][0])  
 
         # Should find a better way to do this
         global carr_1_global 
@@ -56,9 +60,15 @@ class CalibLine1(pulse_sequence):
         
         #print "139490834", freq_data, all_data
         peak_fit = cls.gaussian_fit(freq_data, all_data)
+        print " this is the peak "
         print peak_fit
+        
         if not peak_fit:
             carr_1_global = None
+            print "4321"
+            ident = int(cxn.scriptscanner.get_running()[0][0])
+            print "stoping the sequence ident" , ident                     
+            cxn.scriptscanner.stop_sequence(ident)
             return
         
         peak_fit = U(peak_fit, "MHz") 
@@ -152,7 +162,7 @@ class CalibLine2(pulse_sequence):
         
         
         submission = [(line_1, carr_1), (line_2, carr_2)]
-        #print  "3243", submission
+        print  "3243", submission
               
         cxn.sd_tracker.set_measurements(submission) 
         
@@ -167,8 +177,5 @@ class CalibAllLines(pulse_sequence):
                   'Spectrum.manual_excitation_time',
                   'DriftTracker.line_selection_1',
                   'DriftTracker.line_selection_2',
-                  'Display.relative_frequencies',
-                  'StatePreparation.channel_729',
-                  'StatePreparation.optical_pumping_enable',
-                  'StatePreparation.sideband_cooling_enable']
+                  'Display.relative_frequencies']
                   
