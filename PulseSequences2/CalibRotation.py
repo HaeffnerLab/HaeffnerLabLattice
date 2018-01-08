@@ -2,7 +2,7 @@ from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
-import num as np
+import numpy as np
 
 #class RabiFloppingMulti(pulse_sequence):
 #    is_multi = True
@@ -11,21 +11,62 @@ import num as np
 def pi_time_guess(t,p,threshold=0.9):
     # looking for the first 0.8 probability
     temp=p/p.max()
-    first_peak=np.where(temp>threshold)[0][0]
-    pi_time=t[first_peak]
-    print "pi time", pi_time
-    f= 1.0/(2*pi_time)/2
+    try:
+        first_peak=np.where(temp>threshold)[0][0]
+        pi_time=t[first_peak]
+    except:
+        f = None
+        return p.max(), f
+    
+    #print "pi time", pi_time
+    if pi_time == 0 :
+        f = None
+    else:
+        f= 1.0/(2*pi_time)/2
     
     return p.max(), f
 
-class SetupGlobalRotation(pulse_sequence):
+def fit_sin(t,data):
+    from scipy.optimize import curve_fit
+    
+    model = lambda  x, a, f: a * np.sin(( 2*np.pi*f*x ))**2
+    p0=pi_time_guess(t,data)
+    
+    
+    if p0[1] == None:
+        print "pi time is zero -> problem with the fit"
+        return None
+    
+    try:
+        popt, copt = curve_fit(model, t, data, p0)
+#         print "best fit params" , popt
+        f=popt[1]
+        pi_time=1.0/f/4
+    except:
+        "wasn't able to fit this, pi time is set to the guess"
+        f =p0[1]
+        pi_time=1.0/f/4
+        
+#     print " pi time is: ", pi_time
+    return pi_time
+
+def DataSort(All_data, num_of_ions):
+    
+    data_out=np.zeros([num_of_ions,len(All_data)])
+    
+    for i in range(len(All_data)):
+        data_out[:,i]=All_data[i]
+    return data_out
+
+
+class CalibRotation(pulse_sequence):
     scannable_params = {
-        'RabiFlopping.duration':  [(0., 50., 3, 'us'), 'rabi']
+        'RabiFlopping.duration':  [(0., 50., 25.0, 'us'), 'rabi']
         #'Excitation_729.rabi_excitation_duration' : [(-150, 150, 10, 'kHz'),'spectrum'],
               }
 
     show_params= [
-                  'GlobalRotation.pi_time',
+                  
                   'RabiFlopping.line_selection',
                   'RabiFlopping.rabi_amplitude_729',
                   'RabiFlopping.duration',
@@ -52,7 +93,7 @@ class SetupGlobalRotation(pulse_sequence):
         
         #freq_729=self.calc_freq(rf.line_selection)
         freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
-        channel_729 = '729_global'#self.parameters.Excitation_729.channel_729
+        channel_729 = self.parameters.Excitation_729.channel_729
         
         print "Rabi flopping 729 freq is {}".format(freq_729)
         print "Rabi flopping duration is {}".format(rf.duration)
@@ -68,41 +109,47 @@ class SetupGlobalRotation(pulse_sequence):
                                          'Excitation_729.rabi_excitation_duration':  rf.duration })
         self.addSequence(StateReadout)
         
+    @classmethod
+    def run_initial(cls,cxn, parameters_dict):
+        print "Switching the 866DP to auto mode"
+        cxn.pulser.switch_auto('866DP')
    
     
     @classmethod
-    def run_finally(cls, cxn, parameters_dict, all_data, t):
-        from scipy.optimize import curve_fit
+    def run_finally(cls, cxn, parameters_dict, data, t):
         
+        
+        print "switching the 866 back to ON"
+        cxn.pulser.switch_manual('866DP', True)
         # for the multiple case we summ the probabilities, this also
         # reduces the dimension to 1 for single ion case 
-        try:
+        all_data=np.array(data)
+        
+#         try:
+#                 all_data = all_data.sum(1)
+#             except ValueError:
+#                 return
+#       
+      
+          
+        if parameters_dict.StateReadout.readout_mode =='pmt':
             all_data = all_data.sum(1)
-        except ValueError:
-            return
+            pi_time=fit_sin(t,all_data)
+            print " pi time is: ", pi_time
+            
+        elif parameters_dict.StateReadout.readout_mode =='camera':
+            num_of_ions=int(parameters_dict.IonsOnCamera.ion_number)
+            all_data=DataSort(all_data,num_of_ions)
+#             print all_data
+            for i in range(num_of_ions):
+#                 
+                pi_time=fit_sin(t,all_data[i,:])
+                print "ion",i, "pi time is:" , pi_time
+           
+          
         
-        #print "139490834", freq_data, all_data
         
-        model = lambda  x, a, f: a * np.sin(( 2*np.pi*f*x ))**2
-        
-        po=pi_time_guess(t,all_data)
-        print po
-        popt, copt = curve_fit(model, t, all_data, p0)
-        print "best fit params" , popt
-        print "pi time is: ", 1.0/f/4
+
         
         # add the setting of the value for the pi time
-        
-        
-   # @classmethod
-   # def run_initial(cls,cxn, parameters_dict):
-   #     print "Running initial _Rabi_floping"
-   # @classmethod
-   # def run_in_loop(cls):
-   #     print "Running in loop Rabi_floping"
-        #pass
-   # @classmethod
-   # def run_finally(cls):
-   #     print "Running finally Rabi_floping"
-        #pass
         

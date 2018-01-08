@@ -31,10 +31,11 @@ class SidebandCooling(pulse_sequence):
         duration=self.parameters.SidebandCoolingContinuous.sideband_cooling_continuous_duration
         repump_dur_854 = duration+ repump_additional
         repump_dur_866 = duration + 2 * repump_additional
-        
-        print "555"
-        print "freq 729:  ", channel_729
-        print "freq 729:  ", freq_729        
+#         
+#         print "Sideband Cooling", sc.line_selection
+#         print "freq 729:  ", channel_729
+#         print "freq 729:  ", channel_729
+#         print "freq 729:  ", freq_729        
      
         self.addDDS(channel_729, self.start, duration, freq_729 , sc.sideband_cooling_amplitude_729)
         self.addDDS('854',       self.start, repump_dur_854, sc.sideband_cooling_frequency_854 , sc.sideband_cooling_amplitude_854)

@@ -3,11 +3,13 @@ from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
 
+carr_1_global = U(0,'kHz') 
 
 class CalibLine1(pulse_sequence):
     
     scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car1']}
-
+    # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
+#     fixed_params = {'StateReadout.readout_mode':'pmt'}
 
     def sequence(self):
 
@@ -25,10 +27,12 @@ class CalibLine1(pulse_sequence):
         
         amp = p.Spectrum.car1_amp
         duration = p.Spectrum.manual_excitation_time
+        channel_729= p.CalibrationScans.calibration_channel_729
         
         self.addSequence(TurnOffAll)
         self.addSequence(StatePreparation)
-        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
+        self.addSequence(RabiExcitation,{'Excitation_729.channel_729': channel_729,
+                                         'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
@@ -45,6 +49,7 @@ class CalibLine1(pulse_sequence):
         
         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
+        print " running finally the CalibLine1 !!!!"
         
         print " sequence ident" , int(cxn.scriptscanner.get_running()[0][0])  
 
@@ -56,6 +61,7 @@ class CalibLine1(pulse_sequence):
         try:
             all_data = all_data.sum(1)
         except ValueError:
+            print "error with the data"
             return
         
         #print "139490834", freq_data, all_data
@@ -77,7 +83,8 @@ class CalibLine1(pulse_sequence):
 class CalibLine2(pulse_sequence):
 
     scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car2']}
-
+    # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
+    #fixed_params = {'StateReadout.readout_mode':'pmt'}
 
     def sequence(self):
 
@@ -95,10 +102,12 @@ class CalibLine2(pulse_sequence):
         
         amp = p.Spectrum.car2_amp
         duration = p.Spectrum.manual_excitation_time
+        channel_729= p.CalibrationScans.calibration_channel_729
         
         self.addSequence(TurnOffAll)
         self.addSequence(StatePreparation)
-        self.addSequence(RabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
+        self.addSequence(RabiExcitation,{'Excitation_729.channel_729': channel_729,
+                                         'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         self.addSequence(StateReadout)
@@ -113,6 +122,8 @@ class CalibLine2(pulse_sequence):
         
         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
+        
+        print " running finally the CalibLine2"
 
         
         carrier_translation = {'S+1/2D-3/2':'c0',
@@ -126,6 +137,7 @@ class CalibLine2(pulse_sequence):
                                'S+1/2D+5/2':'c8',
                                'S-1/2D+3/2':'c9',
                                }
+        global carr_1_global 
         
         carr_1 = carr_1_global
         
@@ -168,10 +180,17 @@ class CalibLine2(pulse_sequence):
         
 class CalibAllLines(pulse_sequence):
     is_composite = True
+    # at the moment fixed params are shared between the sub sequence!!! 
+    fixed_params = {'opticalPumping.line_selection': 'S-1/2D+3/2',
+                    'Display.relative_frequencies': False,
+                    
+                    'StatePreparation.aux_optical_pumping_enable': False,
+#                     'StatePreparation.sideband_cooling_enable': False,
+                    'StateReadout.readout_mode':'pmt'}
     
     sequences = [CalibLine1, CalibLine2]
 
-    show_params= ['Excitation_729.channel_729',
+    show_params= ['CalibrationScans.calibration_channel_729',
                   'Spectrum.car1_amp',
                   'Spectrum.car2_amp',
                   'Spectrum.manual_excitation_time',

@@ -13,12 +13,13 @@ class OpticalPumping(pulse_sequence):
         opc = self.parameters.OpticalPumpingContinuous
          
         print "Optical Pumping"  
+       
          
         channel_729 = self.parameters.StatePreparation.channel_729
         # choose the carrier frequency
         freq_729=self.calc_freq(op.line_selection)
         #print "Optical pumping 729 freq:.{}".format(freq_729)        
-        
+#         print "Optical pumping line selection:.{}".format(op.line_selection)
         #print channel_729
         repump_dur_854 = opc.optical_pumping_continuous_duration + opc.optical_pumping_continuous_repump_additional
         repump_dur_866 = opc.optical_pumping_continuous_duration + 2 * opc.optical_pumping_continuous_repump_additional

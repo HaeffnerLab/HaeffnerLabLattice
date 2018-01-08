@@ -38,11 +38,11 @@ def DataSort(All_data, num_of_ions):
         data_out[:,i]=All_data[i]
     return data_out
 
-class LLI_StatePreparation(pulse_sequence):
+class LLI_PhaseMeasurement(pulse_sequence):
     
                           
-    scannable_params = {   'LLI.phase': [(0, 360.0, 15.0, 'deg'),'parity'],
-                           'LLI.wait_time': [(0, 10.0, 0.1, 'ms'),'parity'],
+    scannable_params = {   'Dummy.dummy_detuning': [(0, 7.0, 1.0, 'deg'),'parity'],
+                           
                         
                            #'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
                            #'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
@@ -50,32 +50,14 @@ class LLI_StatePreparation(pulse_sequence):
  
 
     show_params= [  "MolmerSorensen.due_carrier_enable",
-                    "MolmerSorensen.bichro_enable",
-                    "LLI.ms_carrier_1_line_selection",
-                    "LLI.ms_carrier_2_line_selection",
-                    "LLI.rotation_carrier_1_enable",
-                    "LLI.rotation_carrier_1_line_selection",
-                    "LLI.rotation_carrier_1_channel_729",
-                    "LLI.pi_time_carrier_1",
-                    "LLI.rotation_carrier_1_amplitude",
-                    "LLI.rotation_carrier_2_enable",
-                    "LLI.rotation_carrier_2_line_selection",
-                    "LLI.rotation_carrier_2_channel_729",
-                    "LLI.pi_time_carrier_2",
-                    "LLI.rotation_carrier_2_amplitude",
-                    "LLI.rotation_back_carrier_1_enable",
-                    "LLI.rotation_back_carrier_2_enable",
-                    "LLI.analysis_pulse_enable",
-                    "LLI.pi_time_ms_carrier_1",
-                    "LLI.ms_rotation_carrier_1_amplitude",
-                    "LLI.pi_time_ms_carrier_2",
-                    "LLI.ms_rotation_carrier_2_amplitude",   
+                      
                     "LLI.wait_time",
-                    "LLI.analysis_pulse_duration", 
-                    "LLI.flip_optical_pumping",
-                    "LLI.fit_phase",
-                    "LLI.phase_offset",
-                    "LLI.phase_offset_flipped_op"                 
+                    "LLI.wait_time_long",
+                    "LLI.phase_short_false",
+                    "LLI.phase_short_true",
+                    "LLI.phase_long_false",
+                    "LLI.phase_long_true",
+                                     
                       
                   ]
     
@@ -84,55 +66,6 @@ class LLI_StatePreparation(pulse_sequence):
         
         print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
-
-##################################################################################################
-# Temporarily added this for MS
-##################################################################################################        
-        ms = parameters_dict.MolmerSorensen
-        
-        if ms.bichro_enable:
-            # self.parameters['MolmerSorensen.frequency'] = freq_729
-            #self.parameters['LocalRotation.frequency'] = freq_729
-        
-            # calc frequcy shift of the SP
-            mode = ms.sideband_selection
-            trap_frequency = parameters_dict['TrapFrequencies.' + mode]
-        
-            print "4321"
-            print "Run initial to set the dds_cw freq"
-            print "Running ms gate trap freq is  ", trap_frequency
-            # be carfull we are collecting the minus order from th SP
-            # minus sign in the detuning getts closer to the carrier
-            f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
-            freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
-            freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
-        
-            print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
-            print "MS freq_blue", freq_blue
-            print "MS freq_red  ", freq_red
-        
-            amp_blue = ms.amp_blue
-            amp_red = ms.amp_red
-        
-            cxn.dds_cw.frequency('0', freq_blue)
-            cxn.dds_cw.frequency('1', freq_red)
-            cxn.dds_cw.frequency('2', f_global) # for driving the carrier
-            cxn.dds_cw.amplitude('0', amp_blue)
-            cxn.dds_cw.amplitude('1', amp_red)
-
-            cxn.dds_cw.output('0', True)
-            cxn.dds_cw.output('1', True)
-            cxn.dds_cw.output('2', True)
-        
-            cxn.dds_cw.output('5', True) # time to thermalize the single pass
-            time.sleep(1.0)
-        
-            #cxn.dds_cw.output('5', False)
-            time.sleep(0.5) # just make sure everything is programmed before starting the sequence
-
-#############################################################################################################
-#   Ends here
-#############################################################################################################
        
 
     @classmethod
@@ -171,25 +104,66 @@ class LLI_StatePreparation(pulse_sequence):
         from subsequences.EmptySequence import EmptySequence
         from subsequences.TurnOffAll import TurnOffAll
         from subsequences.Crystallization import Crystallization
-
         
         ms = self.parameters.MolmerSorensen
         lli = self.parameters.LLI
+        iter = self.parameters.Dummy.dummy_detuning
+        iter = iter['deg']
         
+        if iter ==0:
+            wait_time = lli.wait_time
+            flip_optical_pumping = False
+            phase = U(0,'deg')+ lli.phase_short_false
+        elif iter ==1:
+            wait_time = lli.wait_time
+            flip_optical_pumping = False
+            phase = U(90,'deg')+ lli.phase_short_false
+        elif iter ==2:
+            wait_time = lli.wait_time_long
+            flip_optical_pumping = False
+            phase = U(0,'deg') + lli.phase_long_false
+        elif iter ==3:
+            wait_time = lli.wait_time_long
+            flip_optical_pumping = False
+            phase = U(90,'deg') + lli.phase_long_false
+        if iter ==4:
+            wait_time = lli.wait_time
+            flip_optical_pumping = True
+            phase = U(0,'deg') + lli.phase_short_true
+        elif iter ==5:
+            wait_time = lli.wait_time
+            flip_optical_pumping = True
+            phase = U(90,'deg') + lli.phase_short_true
+        elif iter ==6:
+            wait_time = lli.wait_time_long
+            flip_optical_pumping = True
+            phase = U(0,'deg') + lli.phase_long_true
+        elif iter ==7:
+            wait_time = lli.wait_time_long
+            flip_optical_pumping = True
+            phase = U(90,'deg')+ lli.phase_long_true
+        
+        print "iter #" , iter
+        print wait_time , flip_optical_pumping, phase
                        
-        if  lli.flip_optical_pumping:
+        if  flip_optical_pumping:
             print "OPPOSITE optical pumping initial state is S-1/2S+1/2"
             op_line_selection = 'S-1/2D+3/2'
             op_aux_line_selection = 'S+1/2D-3/2'
             sbc_line_selection = 'S+1/2D+5/2'
-            offset=lli.phase_offset_flipped_op
+            
             
         else:
             print "optical pumping initial state is S+1/2S-1/2"
             op_line_selection = self.parameters.OpticalPumping.line_selection
             op_aux_line_selection = self.parameters.OpticalPumpingAux.aux_op_line_selection
             sbc_line_selection = self.parameters.SidebandCooling.line_selection 
-            offset=lli.phase_offset
+            
+        
+        
+        
+        
+        
         
         
         
@@ -203,26 +177,7 @@ class LLI_StatePreparation(pulse_sequence):
 
         ## calculating the DP frquency     
         freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
-        freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection)
-
-##################################################################################################
-# Temporarily added this for MS
-##################################################################################################        
-        
-        if ms.bichro_enable: 
-            freq_729_ms_carrier_1=self.calc_freq(ms.line_selection) + ms.detuning_carrier_1          
-        
-        
-            if ms.due_carrier_enable :
-                freq_729_ms_carrier_2=self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2
-            else:
-                freq_729_ms_carrier_2=freq_729        
- 
-#############################################################################################################
-#   Ends here
-#############################################################################################################
-       
-         
+        freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
         freq_729_rot1=self.calc_freq(lli.rotation_carrier_1_line_selection) 
         freq_729_rot2=self.calc_freq(lli.rotation_carrier_2_line_selection) 
         
@@ -256,7 +211,7 @@ class LLI_StatePreparation(pulse_sequence):
                                         "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
                                         "Rotation.angle": U(np.pi, 'rad') 
                                                })
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : lli.wait_time})
+        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : wait_time})
         
         #self.addSequence(Crystallization,  { "Crystallization.duration" : lli.wait_time})
         
@@ -287,37 +242,18 @@ class LLI_StatePreparation(pulse_sequence):
             # calc frequcy shift of the SP
             mode = ms.sideband_selection
             trap_frequency =  self.parameters.TrapFrequencies[mode]
-            
-            #print "1325"
-            #print trap_frequency
-            
+                       
             
             self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729_ms_carrier_1,
                                                'MolmerSorensen.frequency_ion2': freq_729_ms_carrier_2,
-                                               'MolmerSorensen.phase': lli.phase+offset,
+                                               'MolmerSorensen.phase': phase,
                                                'MolmerSorensen.bichro_enable': False,
                                                'MolmerSorensen.duration': lli.analysis_pulse_duration,
                                                'MolmerSorensen.detuning': -1.0*trap_frequency
                                               })
              
         
-#             self.addSequence(Rotation, {"Rotation.channel_729": '729global',
-#                                         "Rotation.frequency":freq_729_ms_carrier_1, 
-#                                         "Rotation.pi_time":lli.pi_time_ms_carrier_1,
-#                                         "Rotation.amplitude":lli.ms_rotation_carrier_1_amplitude,
-#                                         "Rotation.angle": U(np.pi/2.0, 'rad'),
-#                                         "Rotation.phase": lli.phase,
-#                                         
-#                                                })
-#             
-#             self.addSequence(Rotation, {"Rotation.channel_729": '729global_1',
-#                                         "Rotation.frequency":freq_729_ms_carrier_2, 
-#                                         "Rotation.pi_time":lli.pi_time_ms_carrier_2,
-#                                         "Rotation.amplitude":lli.ms_rotation_carrier_2_amplitude,
-#                                         "Rotation.angle": U(np.pi/2.0, 'rad'),
-#                                         "Rotation.phase": lli.phase, 
-#                                                })
-#             
+
 #             
 
         self.addSequence(StateReadout)

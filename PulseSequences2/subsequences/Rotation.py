@@ -19,11 +19,11 @@ class Rotation(pulse_sequence):
         #rotation_fraction = 0.5
         time = p.pi_time*rotation_fraction
         
-        print "454545"
-        print "rotating ", p.channel_729 , " at frequency ", p.frequency
-        print "rotation duration ", time , " at amplitude  ", p.amplitude
-        print " phase " , p.phase
-        
+#         print "454545"
+#         print "rotating ", p.channel_729 , " at frequency ", p.frequency
+#         print "rotation duration ", time , " at amplitude  ", p.amplitude
+#         print " phase " , p.phase
+#         
         self.end = self.start + frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        
         self.addDDS( p.channel_729, self.start, frequency_advance_duration, p.frequency, ampl_off)

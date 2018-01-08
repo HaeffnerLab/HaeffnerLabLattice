@@ -28,7 +28,7 @@ class Spectrum(pulse_sequence):
                   ]
    
     fixed_params = {'StatePreparation.aux_optical_pumping_enable': False,
-                    'StatePreparation.sideband_cooling_enable': False,
+#                     'StatePreparation.sideband_cooling_enable': False,
                     'StateReadout.readout_mode': 'pmt',
                     }
     

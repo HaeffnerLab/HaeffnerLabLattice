@@ -14,7 +14,10 @@ class MolmerSorensenGate(pulse_sequence):
                           
     scannable_params = {   'MolmerSorensen.duration': [(0,200.0, 10.0, 'us'),'ms_time'],
                            'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'ms_time'],
-                           'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
+                           #'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity'],
+                           'MolmerSorensen.detuning_carrier_1': [(-10.0, 10, 0.5, 'kHz'),'ms_time'],
+                           'MolmerSorensen.detuning_carrier_2': [(-10.0, 10, 0.5, 'kHz'),'ms_time'],
+                           'MolmerSorensen.ms_phase': [(0, 360, 15, 'deg'),'parity']
                         }
  
 
@@ -36,6 +39,9 @@ class MolmerSorensenGate(pulse_sequence):
                           'MolmerSorensen.SDDS_rotate_out',
                           'MolmerSorensen.shape_profile',
                           'MolmerSorensen.bichro_enable',
+                          'MolmerSorensen.carrier_1',
+                          'MolmerSorensen.carrier_2',
+                          'MolmerSorensen.analysis_duration'
                     
                           
                   ]
@@ -104,14 +110,17 @@ class MolmerSorensenGate(pulse_sequence):
         
 
         ## calculating the DP frquency
-        freq_729=self.calc_freq(p.line_selection)           
-        print "Running ms gate DP freq is  ", freq_729
+        freq_729=self.calc_freq(p.line_selection) + p.detuning_carrier_1          
+        
         
         if p.due_carrier_enable :
-            freq_729_ion2=self.calc_freq(p.line_selection_ion2)
+            freq_729_ion2=self.calc_freq(p.line_selection_ion2) + p.detuning_carrier_2
         else:
             freq_729_ion2=freq_729
-
+        
+        print "Running ms gate", p.line_selection, " DP freq is  ", freq_729
+        print "Running ms gate", p.line_selection_ion2, " DP freq is  ", freq_729_ion2
+        
         
         self.end = U(10., 'us')
         self.addSequence(TurnOffAll)
@@ -140,11 +149,28 @@ class MolmerSorensenGate(pulse_sequence):
         
         if p.analysis_pulse_enable:
                 
-            print "scan phase enabled : " , p.ms_phase
-            self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
-                                              "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
-                                              "GlobalRotation.phase": p.ms_phase })
+            if not p.due_carrier_enable:
+                print "scan phase enabled : " , p.ms_phase
+                self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
+                                                  "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
+                                                  "GlobalRotation.phase": p.ms_phase })
 
+            else:
+                # calc frequcy shift of the SP
+                mode = p.sideband_selection
+                trap_frequency =  self.parameters.TrapFrequencies[mode]
+            
+            
+                self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729,
+                                                   'MolmerSorensen.frequency_ion2': freq_729_ion2,
+                                                   'MolmerSorensen.phase': p.ms_phase,
+                                                   'MolmerSorensen.bichro_enable': False,
+                                                   'MolmerSorensen.duration': p.analysis_duration,
+                                                   'MolmerSorensen.detuning': -1.0*trap_frequency
+                                                  })
+             
+        
+        
         self.addSequence(StateReadout)
 
 
