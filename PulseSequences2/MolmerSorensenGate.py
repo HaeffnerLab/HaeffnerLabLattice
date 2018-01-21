@@ -14,7 +14,7 @@ class MolmerSorensenGate(pulse_sequence):
                           
     scannable_params = {   'MolmerSorensen.duration': [(0,200.0, 10.0, 'us'),'ms_time'],
                            'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'ms_time'],
-                           #'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity'],
+                           'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity'],
                            'MolmerSorensen.detuning_carrier_1': [(-10.0, 10, 0.5, 'kHz'),'ms_time'],
                            'MolmerSorensen.detuning_carrier_2': [(-10.0, 10, 0.5, 'kHz'),'ms_time'],
                            'MolmerSorensen.ms_phase': [(0, 360, 15, 'deg'),'parity']
@@ -49,7 +49,7 @@ class MolmerSorensenGate(pulse_sequence):
     @classmethod
     def run_initial(cls, cxn, parameters_dict):
         
-        print "Switching the 866DP to auto mode"
+#         print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
         
         ms = parameters_dict.MolmerSorensen
@@ -61,18 +61,18 @@ class MolmerSorensenGate(pulse_sequence):
         mode = ms.sideband_selection
         trap_frequency = parameters_dict['TrapFrequencies.' + mode]
         
-        print "4321"
-        print "Run initial to set the dds_cw freq"
-        print "Running ms gate trap freq is  ", trap_frequency
+#         print "4321"
+#         print "Run initial to set the dds_cw freq"
+#         print "Running ms gate trap freq is  ", trap_frequency
         # be carfull we are collecting the minus order from th SP
         # minus sign in the detuning getts closer to the carrier
         f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
         freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
         freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
         
-        print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
-        print "MS freq_blue", freq_blue
-        print "MS freq_red  ", freq_red
+#         print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
+#         print "MS freq_blue", freq_blue
+#         print "MS freq_red  ", freq_red
         
         amp_blue = ms.amp_blue
         amp_red = ms.amp_red
@@ -95,7 +95,7 @@ class MolmerSorensenGate(pulse_sequence):
 
     @classmethod
     def run_finally(cls,cxn, parameters_dict, data, x):
-        print "switching the 866 back to ON"
+#         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
     def sequence(self):        
@@ -118,8 +118,8 @@ class MolmerSorensenGate(pulse_sequence):
         else:
             freq_729_ion2=freq_729
         
-        print "Running ms gate", p.line_selection, " DP freq is  ", freq_729
-        print "Running ms gate", p.line_selection_ion2, " DP freq is  ", freq_729_ion2
+#         print "Running ms gate", p.line_selection, " DP freq is  ", freq_729
+#         print "Running ms gate", p.line_selection_ion2, " DP freq is  ", freq_729_ion2
         
         
         self.end = U(10., 'us')
@@ -148,17 +148,24 @@ class MolmerSorensenGate(pulse_sequence):
             
         
         if p.analysis_pulse_enable:
-                
+            mode = p.sideband_selection
+            trap_frequency =  self.parameters.TrapFrequencies[mode]    
             if not p.due_carrier_enable:
-                print "scan phase enabled : " , p.ms_phase
-                self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
-                                                  "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
-                                                  "GlobalRotation.phase": p.ms_phase })
+#                 self.addSequence(GlobalRotation, {"GlobalRotation.frequency":freq_729, 
+#                                                   "GlobalRotation.angle": U(np.pi/2.0, 'rad'), 
+#                                                   "GlobalRotation.phase": p.ms_phase })
+
+                self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729,
+                                                   'MolmerSorensen.frequency_ion2': freq_729,
+                                                   'MolmerSorensen.phase': p.ms_phase,
+                                                   'MolmerSorensen.bichro_enable': False,
+                                                   'MolmerSorensen.duration': p.analysis_duration,
+                                                   'MolmerSorensen.detuning': -1.0*trap_frequency}) 
 
             else:
                 # calc frequcy shift of the SP
-                mode = p.sideband_selection
-                trap_frequency =  self.parameters.TrapFrequencies[mode]
+                 
+               
             
             
                 self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729,
