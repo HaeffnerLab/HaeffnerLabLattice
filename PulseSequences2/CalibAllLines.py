@@ -2,14 +2,14 @@ import numpy as np
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
+from functools import partial
 
-carr_1_global = U(0,'kHz') 
+carr_1_global = U(0,'kHz')
 
 class CalibLine1(pulse_sequence):
     
     scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car1']}
     # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
-#     fixed_params = {'StateReadout.readout_mode':'pmt'}
 
     def sequence(self):
 
@@ -19,8 +19,11 @@ class CalibLine1(pulse_sequence):
         from subsequences.TurnOffAll import TurnOffAll
 
         self.end = U(10., 'us')
+        
         p = self.parameters
         line1 = p.DriftTracker.line_selection_1
+        
+        # Should find better way to do this
         
         freq_729 = self.calc_freq(line1)
         freq_729 = freq_729 + p.Spectrum.carrier_detuning
@@ -35,11 +38,12 @@ class CalibLine1(pulse_sequence):
                                          'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
+        
         self.addSequence(StateReadout)
         
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
-        print "Switching the 866DP to auto mode"
+#        print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
         
     @classmethod
@@ -47,11 +51,11 @@ class CalibLine1(pulse_sequence):
         
 
         
-        print "switching the 866 back to ON"
+#        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
-        print " running finally the CalibLine1 !!!!"
+#        print " running finally the CalibLine1 !!!!"
         
-        print " sequence ident" , int(cxn.scriptscanner.get_running()[0][0])  
+#        print " sequence ident" , int(cxn.scriptscanner.get_running()[0][0])  
 
         # Should find a better way to do this
         global carr_1_global 
@@ -64,10 +68,9 @@ class CalibLine1(pulse_sequence):
             print "error with the data"
             return
         
-        #print "139490834", freq_data, all_data
         peak_fit = cls.gaussian_fit(freq_data, all_data)
-        print " this is the peak "
-        print peak_fit
+#        print " this is the peak "
+#        print peak_fit
         
         if not peak_fit:
             carr_1_global = None
@@ -84,7 +87,6 @@ class CalibLine2(pulse_sequence):
 
     scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car2']}
     # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
-    #fixed_params = {'StateReadout.readout_mode':'pmt'}
 
     def sequence(self):
 
@@ -110,20 +112,21 @@ class CalibLine2(pulse_sequence):
                                          'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
+        
         self.addSequence(StateReadout)
-
+        
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
-        print "Switching the 866DP to auto mode"
+#        print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
         
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
-        print "switching the 866 back to ON"
+#        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
-        print " running finally the CalibLine2"
+#        print " running finally the CalibLine2"
 
         
         carrier_translation = {'S+1/2D-3/2':'c0',
@@ -163,7 +166,6 @@ class CalibLine2(pulse_sequence):
         
         line_1 = parameters_dict.DriftTracker.line_selection_1
         line_2 = parameters_dict.DriftTracker.line_selection_2
-        #print  "3243"
         #print " peak 1 {}", carr_1 
         #print " peak 2 {}", carr_2
         
@@ -174,8 +176,6 @@ class CalibLine2(pulse_sequence):
         
         
         submission = [(line_1, carr_1), (line_2, carr_2)]
-        print  "3243", submission
-              
         cxn.sd_tracker.set_measurements(submission) 
         
 class CalibAllLines(pulse_sequence):
@@ -183,12 +183,13 @@ class CalibAllLines(pulse_sequence):
     # at the moment fixed params are shared between the sub sequence!!! 
     fixed_params = {'opticalPumping.line_selection': 'S-1/2D+3/2',
                     'Display.relative_frequencies': False,
-                    
                     'StatePreparation.aux_optical_pumping_enable': False,
-#                     'StatePreparation.sideband_cooling_enable': False,
-                    'StateReadout.readout_mode':'pmt'}
+                    'StatePreparation.sideband_cooling_enable': False}
+                    
+
     
-    sequences = [CalibLine1, CalibLine2]
+    sequences = [(CalibLine1, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'}), 
+                 (CalibLine2, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'})]
 
     show_params= ['CalibrationScans.calibration_channel_729',
                   'Spectrum.car1_amp',
@@ -196,5 +197,6 @@ class CalibAllLines(pulse_sequence):
                   'Spectrum.manual_excitation_time',
                   'DriftTracker.line_selection_1',
                   'DriftTracker.line_selection_2',
-                  'Display.relative_frequencies']
+                  'Display.relative_frequencies',
+                  'CalibrationScans.readout_mode']
                   
