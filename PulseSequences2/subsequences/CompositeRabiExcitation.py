@@ -17,12 +17,6 @@ class CompositeRabiExcitation(pulse_sequence):
     def sequence(self):
         
         pulse_sequence = self.parameters.CompositeRabi.sequence_type
-        #rf = self.parameters.RabiFlopping
-        
-        #if rf.selection_sideband == "off":         
-        #    freq_729=self.calc_freq(rf.line_selection)
-        #else:
-        #    freq_729=self.calc_freq(rf.line_selection, rf.selection_sideband, int(rf.order))
 
         ampl_off = WithUnit(-63.0, 'dBm')
         frequency_advance_duration = WithUnit(6, 'us')
@@ -32,18 +26,16 @@ class CompositeRabiExcitation(pulse_sequence):
         phase_729 = self.parameters.Excitation_729.rabi_excitation_phase
         amp_729 = self.parameters.Excitation_729.rabi_excitation_amplitude
         channel_729 = self.parameters.Excitation_729.channel_729
-        #detuning = self.parameters.Excitation_729.detuning
-        #freq_729 = freq_729 + detuning
         
-        if pulse_sequence == 2:
         # This optimizes the sequence for insensitivity to detuning
-            duration_729 = duration_729 + duration_729*.17
+        # Currently not working (need to figure out right time)
+#        if pulse_sequence == 2:
+#            duration_729 = duration_729 + duration_729*.17
         
-        print "999" 
-        print "Rabi Excitation sub sequence"
-        print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
-        print "729 amp is {}".format(amp_729)
-        print "729 duration is {}".format(duration_729)
+#        print "Rabi Excitation sub sequence"
+#        print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
+#        print "729 amp is {}".format(amp_729)
+#        print "729 duration is {}".format(duration_729)
          
         #first advance the frequency but keep amplitude low        
    

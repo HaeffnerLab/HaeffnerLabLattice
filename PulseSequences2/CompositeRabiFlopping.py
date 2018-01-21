@@ -4,15 +4,11 @@ from labrad.units import WithUnit as U
 from treedict import TreeDict
 import numpy as np
 
-#class RabiFloppingMulti(pulse_sequence):
-#    is_multi = True
-#    sequences = [RabiFlopping, Spectrum]
 
 class CompositeRabiFlopping(pulse_sequence):
     scannable_params = {
         'RabiFlopping.duration':  [(0., 50., 3, 'us'), 'rabi'],
         'CompositeRabi.detuning':  [(-300., 300., 10., 'kHz'), 'spectrum']
-        #'Excitation_729.rabi_excitation_duration' : [(-150, 150, 10, 'kHz'),'spectrum'],
               }
 
     show_params= ['Excitation_729.channel_729',
@@ -32,9 +28,6 @@ class CompositeRabiFlopping(pulse_sequence):
                   'CompositeRabi.detuning'
                   ]
     
-    #fixed_params = {'StateReadout.ReadoutMode':'camera'}
-
-
 
     def sequence(self):
         from StatePreparation import StatePreparation
@@ -46,17 +39,12 @@ class CompositeRabiFlopping(pulse_sequence):
         rf = self.parameters.RabiFlopping 
         detuning = self.parameters.CompositeRabi.detuning
         
-        #freq_729=self.calc_freq(rf.line_selection)
         freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order) + detuning
         
-        #print "Rabi flopping 729 freq is {}".format(freq_729)
-        #print "Rabi flopping duration is {}".format(rf.duration)
         # building the sequence
         self.end = U(10., 'us')
-        #self.addSequence(TurnOffAll)
         self.addSequence(TurnOffAll)
         self.addSequence(StatePreparation)
-        #self.addSequence(RabiExcitation)     
         self.addSequence(CompositeRabiExcitation,{'Excitation_729.rabi_excitation_frequency': freq_729,
                                          'Excitation_729.rabi_excitation_amplitude': rf.rabi_amplitude_729,
                                          'Excitation_729.rabi_excitation_duration':  rf.duration })
@@ -64,7 +52,7 @@ class CompositeRabiFlopping(pulse_sequence):
         
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
-        print "Switching the 866DP to auto mode"
+#        print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
         
     @classmethod
@@ -73,11 +61,7 @@ class CompositeRabiFlopping(pulse_sequence):
         pass
     @classmethod
     def run_finally(cls,cxn, parameters_dict, data, x):
-        print "switching the 866 back to ON"
+#        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
 
-        #np.save('temp_PMT', data)
-        #print "saved ion data"
-        
-        
         

@@ -142,6 +142,14 @@ class LLI_PhaseMeasurement(pulse_sequence):
             wait_time = lli.wait_time_long
             flip_optical_pumping = True
             phase = U(90,'deg')+ lli.phase_long_true
+        elif iter ==8:
+            wait_time = lli.wait_time
+            flip_optical_pumping = False
+            phase = U(45,'deg')+ lli.phase_short_false
+        elif iter ==9:
+            wait_time = lli.wait_time
+            flip_optical_pumping = False
+            phase = U(45+90,'deg')+ lli.phase_short_false
         
         print "iter #" , iter
         print wait_time , flip_optical_pumping, phase
@@ -175,9 +183,33 @@ class LLI_PhaseMeasurement(pulse_sequence):
                                             "SidebandCooling.line_selection": sbc_line_selection
                                             })     
 
-        ## calculating the DP frquency     
-        freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
-        freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
+#         ## calculating the DP frquency     
+#         freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
+#         freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
+#         
+        ##################################################################################################
+# Temporarily added this for MS
+##################################################################################################        
+        
+        if ms.bichro_enable: 
+            freq_729_ms_carrier_1=self.calc_freq(ms.line_selection) + ms.detuning_carrier_1          
+        
+        
+            if ms.due_carrier_enable :
+                freq_729_ms_carrier_2=self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2
+            else:
+                freq_729_ms_carrier_2=freq_729
+        else:
+            ## calculating the DP frquency     
+            freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
+            freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
+            
+                
+ 
+#############################################################################################################
+#   Ends here
+#############################################################################################################
+        
         freq_729_rot1=self.calc_freq(lli.rotation_carrier_1_line_selection) 
         freq_729_rot2=self.calc_freq(lli.rotation_carrier_2_line_selection) 
         
