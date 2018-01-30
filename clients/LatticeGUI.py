@@ -10,6 +10,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.connect_labrad()
 
 
+
     @inlineCallbacks
     def connect_labrad(self):
         from common.clients.connection import connection
@@ -141,6 +142,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     clipboard = a.clipboard()
+    clipboard.Mode(0)
     import common.clients.qt4reactor as qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
