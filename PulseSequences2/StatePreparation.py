@@ -20,6 +20,7 @@ class StatePreparation(pulse_sequence):
         from subsequences.TurnOffAll import TurnOffAll
         from subsequences.RepumpD import RepumpD
         from subsequences.DopplerCooling import DopplerCooling
+        from subsequences.PreDopplerCooling import PreDopplerCooling
         from subsequences.OpticalPumping import OpticalPumping
         from subsequences.SidebandCooling import SidebandCooling
         from subsequences.EmptySequence import EmptySequence
@@ -27,6 +28,7 @@ class StatePreparation(pulse_sequence):
         self.end = U(10., 'us')
         self.addSequence(TurnOffAll)
         self.addSequence(RepumpD) # initializing the state of the ion
+        self.addSequence(PreDopplerCooling) 
         self.addSequence(DopplerCooling) 
         
         if self.parameters.StatePreparation.optical_pumping_enable:

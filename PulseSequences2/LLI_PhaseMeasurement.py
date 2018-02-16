@@ -47,7 +47,11 @@ class LLI_PhaseMeasurement(pulse_sequence):
                            #'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
                            #'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
                         }
- 
+    
+    fixed_params = {
+                    'StateReadout.readout_mode': 'pmt_parity'
+                    
+                    }
 
     show_params= [  "MolmerSorensen.due_carrier_enable",
                       
@@ -72,25 +76,25 @@ class LLI_PhaseMeasurement(pulse_sequence):
     def run_finally(cls,cxn, parameters_dict, data, phase):
         print "switching the 866 back to ON mode"
         cxn.pulser.switch_manual('866DP', True)
-        parity = None 
-        if parameters_dict.LLI.fit_phase:
-            print "fitting the parity to a sin curve: "
-            all_data=np.array(data)
-          
-            if parameters_dict.StateReadout.readout_mode =='pmt_parity':
-                #all_data = all_data.sum(1)
-                all_data=DataSort(all_data,4)
-                parity = all_data[-1,:]                                    
-            elif parameters_dict.StateReadout.readout_mode =='camera_parity':
-                num_of_ions=int(parameters_dict.IonsOnCamera.ion_number)
-                all_data=DataSort(all_data,2*num_of_ions+1)
-                parity = all_data[-1,:]
-            
-            if  parity== None:
-                print "parity is none-> check StateReadout"  
-            else:
-                offset_phase=fit_sin(phase,parity)
-                print " offset_phase: ", offset_phase
+#         parity = None 
+#         if parameters_dict.LLI.fit_phase:
+#             print "fitting the parity to a sin curve: "
+#             all_data=np.array(data)
+#           
+#             if parameters_dict.StateReadout.readout_mode =='pmt_parity':
+#                 #all_data = all_data.sum(1)
+#                 all_data=DataSort(all_data,4)
+#                 parity = all_data[-1,:]                                    
+#             elif parameters_dict.StateReadout.readout_mode =='camera_parity':
+#                 num_of_ions=int(parameters_dict.IonsOnCamera.ion_number)
+#                 all_data=DataSort(all_data,2*num_of_ions+1)
+#                 parity = all_data[-1,:]
+#             
+#             if  parity== None:
+#                 print "parity is none-> check StateReadout"  
+#             else:
+#                 offset_phase=fit_sin(phase,parity)
+#                 print " offset_phase: ", offset_phase
                       
         
         
@@ -104,6 +108,7 @@ class LLI_PhaseMeasurement(pulse_sequence):
         from subsequences.EmptySequence import EmptySequence
         from subsequences.TurnOffAll import TurnOffAll
         from subsequences.Crystallization import Crystallization
+        from subsequences.RabiExcitation_2ions import RabiExcitation_2ions
         
         ms = self.parameters.MolmerSorensen
         lli = self.parameters.LLI
@@ -114,14 +119,17 @@ class LLI_PhaseMeasurement(pulse_sequence):
             wait_time = lli.wait_time
             flip_optical_pumping = False
             phase = U(0,'deg')+ lli.phase_short_false
+            print 'short false 0 phase is', phase, 'deg'
         elif iter ==1:
             wait_time = lli.wait_time
             flip_optical_pumping = False
             phase = U(90,'deg')+ lli.phase_short_false
+
         elif iter ==2:
             wait_time = lli.wait_time_long
             flip_optical_pumping = False
             phase = U(0,'deg') + lli.phase_long_false
+            print 'long false 0 phase is', phase, 'deg'
         elif iter ==3:
             wait_time = lli.wait_time_long
             flip_optical_pumping = False
@@ -130,6 +138,7 @@ class LLI_PhaseMeasurement(pulse_sequence):
             wait_time = lli.wait_time
             flip_optical_pumping = True
             phase = U(0,'deg') + lli.phase_short_true
+            print 'short true 0 phase is', phase, 'deg'
         elif iter ==5:
             wait_time = lli.wait_time
             flip_optical_pumping = True
@@ -138,6 +147,7 @@ class LLI_PhaseMeasurement(pulse_sequence):
             wait_time = lli.wait_time_long
             flip_optical_pumping = True
             phase = U(0,'deg') + lli.phase_long_true
+            print 'long true 0 phase is', phase, 'deg'
         elif iter ==7:
             wait_time = lli.wait_time_long
             flip_optical_pumping = True
@@ -218,50 +228,77 @@ class LLI_PhaseMeasurement(pulse_sequence):
         print "Running ms Due gate DP freq for the second ion  is  ", freq_729_ms_carrier_2
         
         self.addSequence(MolmerSorensen, { 'MolmerSorensen.frequency': freq_729_ms_carrier_1,
-                                           'MolmerSorensen.frequency_ion2': freq_729_ms_carrier_2
+                                           'MolmerSorensen.frequency_ion2': freq_729_ms_carrier_2,
+                                           'MolmerSorensen.analysis_pulse_enable': False
                                               })
         
 
-        if lli.rotation_carrier_1_enable:
+        if lli.simultaneous_rot:
+            print " Running pi times simultaneously forward"
+            self.addSequence(RabiExcitation_2ions,{ "RabiFlopping_2ions.ion1_line_selection" : lli.rotation_carrier_1_line_selection,
+                                                    "RabiFlopping_2ions.ion1_rabi_amplitude_729" : lli.rotation_carrier_1_amplitude,
+                                                    "RabiFlopping_2ions.ion0_line_selection" : lli.rotation_carrier_2_line_selection,
+                                                    "RabiFlopping_2ions.ion0_rabi_amplitude_729" : lli.rotation_carrier_2_amplitude,
+                                                    "RabiFlopping_2ions.duration" : lli.pi_time_carrier_1,
+
+
+                                                    } )
+            
+        else:
+            if lli.rotation_carrier_1_enable:
             
              
             #print "enabled rotation out "
-            self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
+                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
                                         "Rotation.frequency":freq_729_rot1, 
                                         "Rotation.pi_time":lli.pi_time_carrier_1,
                                         "Rotation.amplitude":lli.rotation_carrier_1_amplitude,
                                         "Rotation.angle": U(np.pi, 'rad') 
                                                })
         
-        if lli.rotation_carrier_2_enable:
+            if lli.rotation_carrier_2_enable:
            
              
             #print "enabled rotation out "
-            self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
+                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
                                         "Rotation.frequency":freq_729_rot2, 
                                         "Rotation.pi_time":lli.pi_time_carrier_2,
                                         "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
                                         "Rotation.angle": U(np.pi, 'rad') 
                                                })
+        
+        
         self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : wait_time})
         
         #self.addSequence(Crystallization,  { "Crystallization.duration" : lli.wait_time})
         
-        if lli.rotation_back_carrier_1_enable:
+        if lli.simultaneous_rot:
+            print " Running pi times simultaneously backward"
+            self.addSequence(RabiExcitation_2ions,{ "RabiFlopping_2ions.ion1_line_selection" : lli.rotation_carrier_1_line_selection,
+                                                    "RabiFlopping_2ions.ion1_rabi_amplitude_729" : lli.rotation_carrier_1_amplitude,
+                                                    "RabiFlopping_2ions.ion0_line_selection" : lli.rotation_carrier_2_line_selection,
+                                                    "RabiFlopping_2ions.ion0_rabi_amplitude_729" : lli.rotation_carrier_2_amplitude,
+                                                    "RabiFlopping_2ions.duration" : lli.pi_time_carrier_1,
+
+
+                                                    } )
+            
+        else:
+            if lli.rotation_back_carrier_1_enable:
              
              
             #print "enabled rotation out "
-            self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
+                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
                                         "Rotation.frequency":freq_729_rot1, 
                                         "Rotation.pi_time":lli.pi_time_carrier_1,
                                         "Rotation.amplitude":lli.rotation_carrier_1_amplitude,
                                         "Rotation.angle": U(np.pi, 'rad') 
                                                })
         
-        if lli.rotation_back_carrier_2_enable:
+            if lli.rotation_back_carrier_2_enable:
                         
             
-            self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
+                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
                                         "Rotation.frequency":freq_729_rot2, 
                                         "Rotation.pi_time":lli.pi_time_carrier_2,
                                         "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
@@ -281,7 +318,8 @@ class LLI_PhaseMeasurement(pulse_sequence):
                                                'MolmerSorensen.phase': phase,
                                                'MolmerSorensen.bichro_enable': False,
                                                'MolmerSorensen.duration': lli.analysis_pulse_duration,
-                                               'MolmerSorensen.detuning': -1.0*trap_frequency
+#                                                'MolmerSorensen.detuning': -1.0*trap_frequency,
+                                               'MolmerSorensen.analysis_pulse_enable': False
                                               })
              
         

@@ -32,7 +32,9 @@ class MolmerSorensen(pulse_sequence):
         #first advance the frequency but keep amplitude low
         self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)
         self.addDDS('729global', self.start + frequency_advance_duration, p.duration, p.frequency, p.amplitude, p.phase, profile=int(p.shape_profile))
-        
+#         making sure that the local is off -> enabling the turned off sp and detuing the beam
+        self.addDDS('729local', self.start , p.duration+ frequency_advance_duration, WithUnit(220.0, 'MHz'), ampl_off)
+        self.addTTL('bichromatic_2', self.start, p.duration + 2*frequency_advance_duration + slope_duration)
         
         if (p.due_carrier_enable):
             print "running due freq"
@@ -40,6 +42,7 @@ class MolmerSorensen(pulse_sequence):
             print p.frequency_ion2
             self.addDDS('729global_1', self.start, frequency_advance_duration, p.frequency_ion2, ampl_off)
             self.addDDS('729global_1', self.start + frequency_advance_duration, p.duration, p.frequency_ion2, p.amplitude_ion2, p.phase, profile=int(p.shape_profile))
+            
         
         if (p.bichro_enable):
             print "bichro enabled-> running ms gate ioi"

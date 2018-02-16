@@ -41,7 +41,15 @@ def get_data(ds):
 #     
 #     return 
    
+def data_sort(data):
+    data_out = np.zeros_like(data)
+    inds = np.argsort(data[:,0])
 
+    c=0
+    for ind in inds:
+        data_out[c,:]= data[ind,:]
+        c=c+1
+    return data_out
     
 
 def calc_phase(ident,iter = 1.0):
@@ -49,11 +57,19 @@ def calc_phase(ident,iter = 1.0):
     ds = sc.get_dataset(ident) # needs to be implemented
     data = np.array(get_data(ds))
     
-#     print data
+     
+    data = data_sort(data) # sorting the points when shuffled
+    print data
     
     laser_phase = data[:,0] 
     parity = data[:,-1]
-    
+   
+#     print data
+    dd=  data[:8,1]
+    ss=  data[:8,-2]
+#   finding decrystalization points  
+    len(np.where((dd-ss)>0.5)[0])
+
     if len(laser_phase) > 7:
         print "calculating the parity "
         print parity[-2], parity[-1]
@@ -61,16 +77,39 @@ def calc_phase(ident,iter = 1.0):
     else:
         contrast=-200.0
    
-    A_short_false=0.78# this is the con
-    A_long_false= 0.6# this is the con
-    A_short_true= 0.75 # this is the con
-    A_long_true= 0.5# this is the con
+    A_short_false=0.85# this is the con
+    A_long_false= 0.65# this is the con
+    A_short_true= 0.84 # this is the con
+    A_long_true=  0.65# this is the con
 
-
-    phase_short_false = 1.0*np.arccos(-(parity[0]-parity[1])/2.0/A_short_false)*180.0/np.pi -90.0 
-    phase_long_false =  1.0*np.arccos(-(parity[2]-parity[3])/2.0/A_long_false)*180.0/np.pi -90.0
-    phase_short_true =  1.0*np.arccos(-(parity[4]-parity[5])/2.0/A_short_true)*180.0/np.pi -90.0
-    phase_long_true =   1.0*np.arccos(-(parity[6]-parity[7])/2.0/A_long_true)*180.0/np.pi -90.0
+    if len(np.where(np.abs(dd[0:2]-ss[0:2])>0.5)[0])==0:
+        phase_short_false = 1.0*np.arccos(-(parity[0]-parity[1])/2.0/A_short_false)*180.0/np.pi -90.0
+    else: 
+        print " ions decrystalized"
+        phase_short_false = np.nan
+    
+    if len(np.where(np.abs(dd[2:4]-ss[2:4])>0.5)[0])==0:
+        phase_long_false =  1.0*np.arccos(-(parity[2]-parity[3])/2.0/A_long_false)*180.0/np.pi -90.0
+    else: 
+        print " ions decrystalized"
+        phase_long_false = np.nan
+    
+    
+    if len(np.where(np.abs(dd[4:6]-ss[4:6])>0.5)[0])==0:
+        phase_short_true =  1.0*np.arccos(-(parity[4]-parity[5])/2.0/A_short_true)*180.0/np.pi -90.0
+    else: 
+        print " ions decrystalized"
+        phase_short_true = np.nan
+        
+    if len(np.where(np.abs(dd[6:8]-ss[6:8])>0.5)[0])==0:
+        phase_long_true =   1.0*np.arccos(-(parity[6]-parity[7])/2.0/A_long_true)*180.0/np.pi -90.0
+    else: 
+        print " ions decrystalized"
+        phase_long_true = np.nan
+        
+    
+    
+    
    
     print " phase_short_false", phase_short_false, "in deg"     
     print " phase_long_false", phase_long_false, "in deg"
@@ -85,14 +124,14 @@ def calc_phase(ident,iter = 1.0):
     else:
         p1=sc.get_parameter('LLI','phase_short_false')
         correction_short_R = (p1- U(phase_short_false,'deg')/2.0) 
-        sc.set_parameter('LLI','phase_short_false',correction_short_R)
-#         avg_correction_short_R[iter % len(avg_correction_short_R)] = correction_short_R['deg']
+#         sc.set_parameter('LLI','phase_short_false',correction_short_R)
+        avg_correction_short_R[iter % len(avg_correction_short_R)] = correction_short_R['deg']
 #         print avg_correction_short_R
 #         print "iter", iter
-#         # stabilizing on the average 
-#         if iter>len(avg_correction_short_R):
-#             print "feedback angle"
-#             sc.set_parameter('LLI','phase_short_false',U(np.average(avg_correction_short_R),'deg'))
+        # stabilizing on the average 
+        if iter>len(avg_correction_short_R):
+            print "feedback angle"
+            sc.set_parameter('LLI','phase_short_false',U(np.average(avg_correction_short_R),'deg'))
     
     # checking if the phase is nan than set's it 
     if np.isnan(phase_long_false):
@@ -102,13 +141,14 @@ def calc_phase(ident,iter = 1.0):
     else:
         p2=sc.get_parameter('LLI','phase_long_false')
         correction_long_R = (p2- U(phase_long_false,'deg')/2.0)
-        sc.set_parameter('LLI','phase_long_false', correction_long_R)
+#         sc.set_parameter('LLI','phase_long_false', correction_long_R)
 #         
-#         avg_correction_long_R[iter % len(avg_correction_long_R)] = correction_long_R['deg']
-#         # stabilizing on the average 
-#         if iter>len(avg_correction_long_R):
-#             sc.set_parameter('LLI','phase_long_false', U(np.average(avg_correction_long_R),'deg'))
-    
+        avg_correction_long_R[iter % len(avg_correction_long_R)] = correction_long_R['deg']
+        # stabilizing on the average 
+        if iter>len(avg_correction_long_R):
+              
+            sc.set_parameter('LLI','phase_long_false', U(np.average(avg_correction_long_R),'deg'))
+     
     # checking if the phase is nan than set's it 
     if np.isnan(phase_short_true):
         phase_short_true=9999
@@ -117,11 +157,11 @@ def calc_phase(ident,iter = 1.0):
     else:
         p3=sc.get_parameter('LLI','phase_short_true')
         correction_short_L = (p3- U(phase_short_true,'deg')/2.0)
-        sc.set_parameter('LLI','phase_short_true',correction_short_L)
-#         avg_correction_short_L[iter % len(avg_correction_short_L)] = correction_short_L['deg']
-#         # stabilizing on the average 
-#         if iter>len(avg_correction_short_L):
-#             sc.set_parameter('LLI','phase_short_true',U(np.average(avg_correction_short_L),'deg'))
+#         sc.set_parameter('LLI','phase_short_true',correction_short_L)
+        avg_correction_short_L[iter % len(avg_correction_short_L)] = correction_short_L['deg']
+        # stabilizing on the average 
+        if iter>len(avg_correction_short_L):
+            sc.set_parameter('LLI','phase_short_true',U(np.average(avg_correction_short_L),'deg'))
     
     # checking if the phase is nan than set's it 
     if np.isnan(phase_long_true):
@@ -131,12 +171,12 @@ def calc_phase(ident,iter = 1.0):
     else:
         p4=sc.get_parameter('LLI','phase_long_true')
         correction_long_L = (p4- U(phase_long_true,'deg')/2.0)
-        sc.set_parameter('LLI','phase_long_true',correction_long_L)
-#         
-#         avg_correction_long_L[iter % len(avg_correction_long_L)] = correction_long_L['deg']
-#         # stabilizing on the average 
-#         if iter>len(avg_correction_long_L):
-#             sc.set_parameter('LLI','phase_long_true',U(np.average(avg_correction_long_L),'deg'))
+#         sc.set_parameter('LLI','phase_long_true',correction_long_L)
+         
+        avg_correction_long_L[iter % len(avg_correction_long_L)] = correction_long_L['deg']
+        # stabilizing on the average 
+        if iter>len(avg_correction_long_L):
+            sc.set_parameter('LLI','phase_long_true',U(np.average(avg_correction_long_L),'deg'))
      
 #     print "the new phase should be", (p1['deg']+ phase_short_false/2)
     
@@ -179,10 +219,10 @@ def setup_Experiment(  name , scan,parameter_to_scan ='param', num_of_params_to_
 # modify new_sequence to take a list of override parameters
 
 scan = [('LLI_PhaseMeasurement',   ('Dummy.dummy_detuning', 0, 9, 1.0, 'deg'))]
-spectrun_scan = [('Spectrum',   ('Spectrum.carrier_detuning', -4, 4, 0.5, 'kHz'))]
+spectrun_scan = [('Spectrum',   ('Spectrum.carrier_detuning', -3, 5, 0.5, 'kHz'))]
 # short_scan = [('LLI_PhaseMeasurement',   ('Dummy.dummy_detuning', 0, 1, 1.0, 'deg'))]
 
-t_min , t_max , step_size = 300.0, 5000.0, 1.0
+t_min , t_max , step_size = 0.0, 10000.0, 1.0
 temp_ts=np.arange(t_min,t_max,step_size)
  
 ts = [ U(x,'us') for i,x in enumerate(temp_ts)]
@@ -219,11 +259,15 @@ for i,t in enumerate(ts):
         print " scan_ident",ident
         sc.sequence_completed(ident) # wait until sequence is completed
     
+    sc.set_parameter('StateReadout','repeat_each_measurement',50.0)
+    sc.set_parameter('ScanParam','shuffle', True)
     ident = sc.new_sequence('LLI_PhaseMeasurement', scan)
     print " scan_ident",ident
     sc.sequence_completed(ident) # wait until sequence is completed
+    sc.set_parameter('StateReadout','repeat_each_measurement',100.0)
+    sc.set_parameter('ScanParam','shuffle',False)
     phase_short_R[i] , phase_long_R[i], phase_short_L[i] , phase_long_L[i] , contrast[i] = calc_phase(ident , iter = i)
-    b_field = dt.get_b_field()[0]
+    b_field = dt.get_b_field()[-1]
     submission = [t['us']]
     submission.extend([phase_short_R[i] , phase_long_R[i], phase_short_L[i] , phase_long_L[i], b_field, contrast[i]] )
     dv.add(submission, context = data_save_context)

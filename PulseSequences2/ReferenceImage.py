@@ -82,7 +82,7 @@ class ReferenceImage(pulse_sequence):
         x_pixels = int( (image_region[3] - image_region[2] + 1.) / (image_region[0]) )
         y_pixels = int(image_region[5] - image_region[4] + 1.) / (image_region[1])
         
-        repetitions=parameters_dict.StateReadout.repeat_each_measurement
+        repetitions = int(parameters_dict.StateReadout.repeat_each_measurement)
         images = np.reshape(images, (repetitions, y_pixels, x_pixels))
         
         image  = np.average(images, axis = 0)

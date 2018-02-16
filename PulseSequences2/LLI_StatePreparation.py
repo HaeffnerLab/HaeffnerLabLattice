@@ -19,9 +19,9 @@ def fit_sin(phase,parity):
     
     try:
         popt, copt = curve_fit(model, phase, parity, p0)
-#        print "best fit params" , popt
-#        print "contrast is " , popt[0]
-#        print "phase is  " , popt[1]
+        print "best fit params" , popt
+        print "contrast is " , popt[0]
+        print "phase is  " , popt[1]
         phase_out=popt[1]
         return phase_out
     except:
@@ -40,12 +40,12 @@ def DataSort(All_data, num_of_ions):
 class LLI_StatePreparation(pulse_sequence):
     
                           
-    scannable_params = {   'LLI.phase': [(0, 360.0, 15.0, 'deg'),'parity'],
-                           'LLI.wait_time': [(0, 10.0, 0.1, 'ms'),'parity'],
-                        
-                           #'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
-                           #'MolmerSorensen.phase': [(0, 360, 15, 'deg'),'parity']
-                        }
+    scannable_params = { 'LLI.phase': [(0, 360.0, 15.0, 'deg'),'parity'],
+                         'LLI.wait_time': [(0, 10.0, 0.1, 'ms'),'parity'] }
+
+    fixed_params = {
+                    'StateReadout.readout_mode': 'pmt_parity'
+                                        }
  
 
     show_params= [  "MolmerSorensen.due_carrier_enable",
@@ -75,13 +75,14 @@ class LLI_StatePreparation(pulse_sequence):
                     "LLI.fit_phase",
                     "LLI.phase_offset",
                     "LLI.phase_offset_flipped_op",                 
-                    "LLI.composite_rabi"
+                    "LLI.composite_rabi",
+                    "LLI.simultaneous_rot",
                   ]
     
     @classmethod
     def run_initial(cls, cxn, parameters_dict):
         
-        print "Switching the 866DP to auto mode"
+#         print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
 
 ##################################################################################################
@@ -122,6 +123,12 @@ class LLI_StatePreparation(pulse_sequence):
             cxn.dds_cw.output('1', True)
             cxn.dds_cw.output('2', True)
         
+        
+            ampl_off = U(-63.0, 'dBm')
+            cxn.dds_cw.amplitude('3',ampl_off )
+            cxn.dds_cw.amplitude('4',ampl_off)
+            cxn.dds_cw.output('3', False) # time to thermalize the single pass
+            cxn.dds_cw.output('4', False) # time to thermalize the single pass
             cxn.dds_cw.output('5', True) # time to thermalize the single pass
             time.sleep(1.0)
         
@@ -152,7 +159,7 @@ class LLI_StatePreparation(pulse_sequence):
                 parity = all_data[-1,:]
             
             if  parity== None:
-#                print "parity is none-> check StateReadout"  
+                print "parity is none-> check StateReadout"  
             else:
                 offset_phase=fit_sin(phase,parity)
 #                print " offset_phase: ", offset_phase
@@ -169,6 +176,7 @@ class LLI_StatePreparation(pulse_sequence):
         from subsequences.EmptySequence import EmptySequence
         from subsequences.TurnOffAll import TurnOffAll
         from subsequences.CompositeRabiExcitation import CompositeRabiExcitation
+        from subsequences.RabiExcitation_2ions import RabiExcitation_2ions
 
         
         ms = self.parameters.MolmerSorensen
@@ -233,30 +241,42 @@ class LLI_StatePreparation(pulse_sequence):
                                               })
         
 
-        if lli.rotation_carrier_1_enable:
+        if lli.simultaneous_rot:
+            print " Running pi times simultaneously"
+            self.addSequence(RabiExcitation_2ions,{ "RabiFlopping_2ions.ion1_line_selection" : lli.rotation_carrier_1_line_selection,
+                                                    "RabiFlopping_2ions.ion1_rabi_amplitude_729" : lli.rotation_carrier_1_amplitude,
+                                                    "RabiFlopping_2ions.ion0_line_selection" : lli.rotation_carrier_2_line_selection,
+                                                    "RabiFlopping_2ions.ion0_rabi_amplitude_729" : lli.rotation_carrier_2_amplitude,
+                                                    "RabiFlopping_2ions.duration" : lli.pi_time_carrier_1,
+
+
+                                                    } )
+            
+        else:
+            if lli.rotation_carrier_1_enable:
             
              
-            if lli.composite_rabi:
-                self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_1_channel_729,
+                if lli.composite_rabi:
+                    self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_1_channel_729,
                                                            "Excitation_729.rabi_excitation_frequency":freq_729_rot1, 
                                                            "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_1,
                                                            "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_1_amplitude,
                                                            "Excitation_729.rabi_excitation_phase": U(0, 'deg') 
                                                             })
             
-            else:
-                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
+                else:
+                    self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
                                             "Rotation.frequency":freq_729_rot1, 
                                             "Rotation.pi_time":lli.pi_time_carrier_1,
                                             "Rotation.amplitude":lli.rotation_carrier_1_amplitude,
                                             "Rotation.angle": U(np.pi, 'rad') 
                                                    })
         
-        if lli.rotation_carrier_2_enable:
+            if lli.rotation_carrier_2_enable:
            
              
-            if lli.composite_rabi:
-                self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_2_channel_729,
+                if lli.composite_rabi:
+                    self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_2_channel_729,
                                                            "Excitation_729.rabi_excitation_frequency":freq_729_rot2, 
                                                            "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_2,
                                                            "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_2_amplitude,
@@ -265,56 +285,70 @@ class LLI_StatePreparation(pulse_sequence):
                 
             
             
-            else:
-                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
-                                            "Rotation.frequency":freq_729_rot2, 
-                                            "Rotation.pi_time":lli.pi_time_carrier_2,
-                                            "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
-                                            "Rotation.angle": U(np.pi, 'rad') 
-                                                   })
-        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : lli.wait_time})
-        
-        #self.addSequence(Crystallization,  { "Crystallization.duration" : lli.wait_time})
-        
-        if lli.rotation_back_carrier_1_enable:
-             
-             
-            if lli.composite_rabi:
-                self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_1_channel_729,
-                                                           "Excitation_729.rabi_excitation_frequency":freq_729_rot1, 
-                                                           "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_1,
-                                                           "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_1_amplitude,
-                                                           "Excitation_729.rabi_excitation_phase": U(0, 'deg') 
-                                                            })
-            
-            else:
-                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
-                                            "Rotation.frequency":freq_729_rot1, 
-                                            "Rotation.pi_time":lli.pi_time_carrier_1,
-                                            "Rotation.amplitude":lli.rotation_carrier_1_amplitude,
-                                            "Rotation.angle": U(np.pi, 'rad') 
-                                                   })
-        
-        if lli.rotation_back_carrier_2_enable:
-                        
-            
-            if lli.composite_rabi:
-                self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_2_channel_729,
-                                                           "Excitation_729.rabi_excitation_frequency":freq_729_rot2, 
-                                                           "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_2,
-                                                           "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_2_amplitude,
-                                                           "Excitation_729.rabi_excitation_phase": U(0, 'deg') 
-                                                            })
-            
-            else:
-                self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
+                else:
+                    self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
                                             "Rotation.frequency":freq_729_rot2, 
                                             "Rotation.pi_time":lli.pi_time_carrier_2,
                                             "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
                                             "Rotation.angle": U(np.pi, 'rad') 
                                                    })
 
+
+
+        self.addSequence(EmptySequence,  { "EmptySequence.empty_sequence_duration" : lli.wait_time})
         
+        #self.addSequence(Crystallization,  { "Crystallization.duration" : lli.wait_time})
+        
+        
+        if lli.simultaneous_rot:
+            self.addSequence(RabiExcitation_2ions,{ "RabiFlopping_2ions.ion1_line_selection" : lli.rotation_carrier_1_line_selection,
+                                                    "RabiFlopping_2ions.ion1_rabi_amplitude_729" : lli.rotation_carrier_1_amplitude,
+                                                    "RabiFlopping_2ions.ion0_line_selection" : lli.rotation_carrier_2_line_selection,
+                                                    "RabiFlopping_2ions.ion0_rabi_amplitude_729" : lli.rotation_carrier_2_amplitude,
+                                                    "RabiFlopping_2ions.duration" : lli.pi_time_carrier_1,
+
+
+                                                    } )
+            
+        else:
+            if lli.rotation_back_carrier_2_enable:
+                        
+            
+                if lli.composite_rabi:
+                    self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_2_channel_729,
+                                                           "Excitation_729.rabi_excitation_frequency":freq_729_rot2, 
+                                                           "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_2,
+                                                           "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_2_amplitude,
+                                                           "Excitation_729.rabi_excitation_phase": U(0, 'deg') 
+                                                           })
+            
+                else:
+                    self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_2_channel_729,
+                                            "Rotation.frequency":freq_729_rot2, 
+                                            "Rotation.pi_time":lli.pi_time_carrier_2,
+                                            "Rotation.amplitude":lli.rotation_carrier_2_amplitude,
+                                            "Rotation.angle": U(np.pi, 'rad') 
+                                            })
+
+        
+            if lli.rotation_back_carrier_1_enable:
+             
+             
+                if lli.composite_rabi:
+                    self.addSequence(CompositeRabiExcitation, {"Excitation_729.channel_729":lli.rotation_carrier_1_channel_729,
+                                                           "Excitation_729.rabi_excitation_frequency":freq_729_rot1, 
+                                                           "Excitation_729.rabi_excitation_duration":lli.pi_time_carrier_1,
+                                                           "Excitation_729.rabi_excitation_amplitude":lli.rotation_carrier_1_amplitude,
+                                                           "Excitation_729.rabi_excitation_phase": U(0, 'deg') 
+                                                           })
+            
+                else:
+                    self.addSequence(Rotation, {"Rotation.channel_729":lli.rotation_carrier_1_channel_729,
+                                            "Rotation.frequency":freq_729_rot1, 
+                                            "Rotation.pi_time":lli.pi_time_carrier_1,
+                                            "Rotation.amplitude":lli.rotation_carrier_1_amplitude,
+                                            "Rotation.angle": U(np.pi, 'rad') 
+                                            })
         
         if lli.analysis_pulse_enable:
             # calc frequcy shift of the SP
