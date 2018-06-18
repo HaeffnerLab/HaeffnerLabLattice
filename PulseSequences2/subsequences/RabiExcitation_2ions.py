@@ -27,6 +27,9 @@ class RabiExcitation_2ions(pulse_sequence):
         freq_729_global_3 = self.calc_freq(p.ion0_line_selection)
         amp_729_global_3 =  p.ion0_rabi_amplitude_729
 
+        # Use middle tone of dp
+        freq_729_global_2 = (2 * freq_729_global_2) - freq_729_global_3
+
         duration_729 = p.duration
         
 #       print "Rabi Excitation sub sequence"

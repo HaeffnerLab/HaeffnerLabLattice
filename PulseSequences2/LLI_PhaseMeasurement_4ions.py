@@ -1,4 +1,5 @@
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
+from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 #from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 import time
@@ -38,10 +39,10 @@ def DataSort(All_data, num_of_ions):
         data_out[:,i]=All_data[i]
     return data_out
 
-class LLI_PhaseMeasurement(pulse_sequence):
+class LLI_PhaseMeasurement_4ions(pulse_sequence):
     
                           
-    scannable_params = {   'Dummy.dummy_detuning': [(0, 7.0, 1.0, 'deg'),'parity'],
+    scannable_params = {   'Dummy.dummy_detuning': [(0, 5.0, 1.0, 'deg'),'parity'],
                            
                         
                            #'MolmerSorensen.amplitude': [(-20, -10, 0.5, 'dBm'),'current'],
@@ -49,18 +50,17 @@ class LLI_PhaseMeasurement(pulse_sequence):
                         }
     
     fixed_params = {
-                    'StateReadout.readout_mode': 'pmt_parity'
+                    # 'StateReadout.readout_mode': 'pmt_parity'
                     
                     }
 
     show_params= [  "MolmerSorensen.due_carrier_enable",
-                      
                     "LLI.wait_time",
                     "LLI.wait_time_long",
                     "LLI.phase_short_false",
-                    "LLI.phase_short_true",
+                    # "LLI.phase_short_true",
                     "LLI.phase_long_false",
-                    "LLI.phase_long_true",
+                    # "LLI.phase_long_true",
                                      
                       
                   ]
@@ -175,7 +175,7 @@ class LLI_PhaseMeasurement(pulse_sequence):
         elif iter ==1:
             wait_time = lli.wait_time
             flip_optical_pumping = False
-            phase = U(90,'deg')+ lli.phase_short_false
+            phase = U(45.0,'deg')+ lli.phase_short_false
 
         elif iter ==2:
             wait_time = lli.wait_time_long
@@ -185,36 +185,21 @@ class LLI_PhaseMeasurement(pulse_sequence):
         elif iter ==3:
             wait_time = lli.wait_time_long
             flip_optical_pumping = False
-            phase = U(90,'deg') + lli.phase_long_false
-        if iter ==4:
+            phase = U(45.0,'deg') + lli.phase_long_false
+       
+   
+        
+        elif iter ==4:
             wait_time = lli.wait_time
-            flip_optical_pumping = True
-            phase = U(0,'deg') + lli.phase_short_true
-            print 'short true 0 phase is', phase, 'deg'
+            flip_optical_pumping = False
+            phase = U(22.5,'deg')+ lli.phase_short_false
         elif iter ==5:
             wait_time = lli.wait_time
-            flip_optical_pumping = True
-            phase = U(90,'deg') + lli.phase_short_true
-        elif iter ==6:
-            wait_time = lli.wait_time_long
-            flip_optical_pumping = True
-            phase = U(0,'deg') + lli.phase_long_true
-            print 'long true 0 phase is', phase, 'deg'
-        elif iter ==7:
-            wait_time = lli.wait_time_long
-            flip_optical_pumping = True
-            phase = U(90,'deg')+ lli.phase_long_true
-        elif iter ==8:
-            wait_time = lli.wait_time
             flip_optical_pumping = False
-            phase = U(45,'deg')+ lli.phase_short_false
-        elif iter ==9:
-            wait_time = lli.wait_time
-            flip_optical_pumping = False
-            phase = U(45+90,'deg')+ lli.phase_short_false
+            phase = U(22.5+45,'deg')+ lli.phase_short_false
         
         print "iter #" , iter
-        print wait_time , flip_optical_pumping, phase
+        print wait_time , phase
                        
         if  flip_optical_pumping:
             print "OPPOSITE optical pumping initial state is S-1/2S+1/2"
@@ -228,10 +213,8 @@ class LLI_PhaseMeasurement(pulse_sequence):
             op_line_selection = self.parameters.OpticalPumping.line_selection
             op_aux_line_selection = self.parameters.OpticalPumpingAux.aux_op_line_selection
             sbc_line_selection = self.parameters.SidebandCooling.line_selection 
-            
-        
-        
-        
+           
+                        
         
         
         
@@ -246,28 +229,34 @@ class LLI_PhaseMeasurement(pulse_sequence):
                                             })     
 
 #         ## calculating the DP frquency     
-#         freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
-#         freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
-#         
-        ##################################################################################################
-# Temporarily added this for MS
-##################################################################################################        
+        ## calculating the DP frquency 
+
+        ms = self.parameters.MolmerSorensen
+
+        ## calculating the DP frquency
+        line1 = self.calc_freq(ms.line_selection)
+        line2 = self.calc_freq(ms.line_selection_ion2)
+
+
+######################################################
+# changing to 2f2 and f1+f2 configuration
+        freq_729_ms_carrier_2 = line2 + ms.detuning_carrier_2
         
-        if ms.bichro_enable: 
-            freq_729_ms_carrier_1=self.calc_freq(ms.line_selection) + ms.detuning_carrier_1          
-        
-        
-            if ms.due_carrier_enable :
-                freq_729_ms_carrier_2=self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2
-            else:
-                freq_729_ms_carrier_2=freq_729
-        else:
-            ## calculating the DP frquency     
-            freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
-            freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection) 
-            
+        if ms.due_carrier_enable:
+            if ms.use_alternate_DP_tones:
+                freq_729_ms_carrier_1 =  ((2 * line1) - line2) + ms.detuning_carrier_1
+                print "MS gate revised lines"
                 
- 
+            else:
+                freq_729_ms_carrier_1 =  line1 + ms.detuning_carrier_1
+        
+        else:
+            freq_729_ms_carrier_1 = freq_729_ms_carrier_2 
+
+
+
+
+
 #############################################################################################################
 #   Ends here
 #############################################################################################################

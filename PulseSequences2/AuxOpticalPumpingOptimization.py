@@ -5,14 +5,17 @@ from treedict import TreeDict
 
 class AuxOpticalPumpingOptimization(pulse_sequence):
                             
-    scannable_params = {'OpticalPumpingAux.duration' : [(10., 200., 10., 'us'), 'current']
+    scannable_params = {'OpticalPumpingAux.duration' : [(10., 200., 10., 'us'), 'current'],
+                        'OpticalPumpingAux.aux_optical_pumping_amplitude_729'  : [(-20, -10, 0.5, 'dBm'),'current'],
+                        'OpticalPumpingAux.amp_854': [(-20, -10, 0.5, 'dBm'),'current']
+
                         }
 
     show_params= ['OpticalPumpingAux.channel_729',
                   'OpticalPumpingAux.aux_op_line_selection',
                   'OpticalPumpingAux.aux_optical_pumping_amplitude_729',
-                  
-                  
+                  "OpticalPumpingAux.amp_854",
+                 
                                    
                   'RabiFlopping.rabi_amplitude_729',
                   'RabiFlopping.duration',

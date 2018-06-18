@@ -12,8 +12,17 @@ class agilent():
     def set_output(self, output):
         self.agi.output(output)
     
-    def set_frequency(self, f):
+    def set_frequency(self, f ):
         self.agi.frequency(f)
-        
+
     def set_amplitude(self, a):
         self.agi.amplitude(a)
+
+    def get_output(self):
+        return self.agi.output()
+
+    def get_frequency(self):
+        return self.agi.frequency()
+
+    def get_amplitude(self):
+        return self.agi.amplitude()

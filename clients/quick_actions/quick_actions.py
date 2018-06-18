@@ -84,53 +84,53 @@ class actions_widget(QtGui.QFrame, widget_ui):
     
     @inlineCallbacks
     def on_to_state(self):
-        pv = yield self.cxn.get_server('ParameterVault')
+        pv = yield self.cxn.get_server('scriptscanner')
         pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pulser.amplitude('global397')
-        ampl866 = yield pulser.amplitude('866DP')
+        # ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
-        freq866 = yield pulser.frequency('866DP')
+        # freq866 = yield pulser.frequency('866DP')
         yield pv.set_parameter('StateReadout','state_readout_amplitude_397', ampl397)
-        yield pv.set_parameter('StateReadout','state_readout_amplitude_866',ampl866)
+        # yield pv.set_parameter('StateReadout','state_readout_amplitude_866',ampl866)
         yield pv.set_parameter('StateReadout','state_readout_frequency_397',freq397)
-        yield pv.set_parameter('StateReadout','state_readout_frequency_866',freq866)
+        # yield pv.set_parameter('StateReadout','state_readout_frequency_866',freq866)
     
     @inlineCallbacks
     def on_to_dc(self):
-        pv = yield self.cxn.get_server('ParameterVault')
+        pv = yield self.cxn.get_server('scriptscanner')
         pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pulser.amplitude('global397')
-        ampl866 = yield pulser.amplitude('866DP')
+        # ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
-        freq866 = yield pulser.frequency('866DP')
+        # freq866 = yield pulser.frequency('866DP')
         yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_397',ampl397)
-        yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_866',ampl866)
+        # yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_866',ampl866)
         yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_397',freq397)
-        yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_866',freq866)
+        # yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_866',freq866)
         
     @inlineCallbacks
     def on_from_dc(self):
-        pv = yield self.cxn.get_server('ParameterVault')
+        pv = yield self.cxn.get_server('scriptscanner')
         pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_amplitude_397'))
-        ampl866 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_amplitude_866'))
+        # ampl866 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_amplitude_866'))
         freq397 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_frequency_397'))
-        freq866 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_frequency_866'))
-        yield pulser.frequency('866DP', freq866)
-        yield pulser.amplitude('866DP', ampl866)
+        # freq866 = yield pv.get_parameter(('DopplerCooling','doppler_cooling_frequency_866'))
+        # yield pulser.frequency('866DP', freq866)
+        # yield pulser.amplitude('866DP', ampl866)
         yield pulser.frequency('global397', freq397)
         yield pulser.amplitude('global397', ampl397)
     
     @inlineCallbacks
     def on_from_state(self):
-        pv = yield self.cxn.get_server('ParameterVault')
+        pv = yield self.cxn.get_server('scriptscanner')
         pulser = yield self.cxn.get_server('Pulser')
         ampl397 = yield pv.get_parameter(('StateReadout','state_readout_amplitude_397'))
         ampl866 = yield pv.get_parameter(('StateReadout','state_readout_amplitude_866'))
         freq397 = yield pv.get_parameter(('StateReadout','state_readout_frequency_397'))
         freq866 = yield pv.get_parameter(('StateReadout','state_readout_frequency_866'))
-        yield pulser.frequency('866DP', freq866)
-        yield pulser.amplitude('866DP', ampl866)
+        # yield pulser.frequency('866DP', freq866)
+        # yield pulser.amplitude('866DP', ampl866)
         yield pulser.frequency('global397', freq397)
         yield pulser.amplitude('global397', ampl397)
     

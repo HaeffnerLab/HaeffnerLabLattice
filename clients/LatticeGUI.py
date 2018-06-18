@@ -36,8 +36,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #automation_widget = self.make_automation_widget(reactor, cxn)
         config_editor = self.make_config_editor_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
+
+
         layout = QtGui.QHBoxLayout()
         
+
         
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(contrl_widget,'&Control')
@@ -56,6 +59,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
+
         
    # def make_automation_widget(self, reactor, cxn):
    #     from lattice.clients.automation_functions import auto_gadget
@@ -116,7 +120,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from common.clients.InjectionLock_GUI_new import InjectionLock_Control
         
         gridLayout = QtGui.QGridLayout()
-        gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)
+        # gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)
         #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
         gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
         #gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)

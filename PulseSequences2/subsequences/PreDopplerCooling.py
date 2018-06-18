@@ -11,7 +11,11 @@ class PreDopplerCooling(pulse_sequence):
         
         
 #         repump_duration = p.doppler_cooling_duration + p.doppler_cooling_repump_additional
-        self.addDDS ('397',self.start, p.pre_duration, p.doppler_cooling_frequency_397 - WithUnit(10.0, 'MHz') , WithUnit(-12.0, 'dBm') )
+        if (p.doppler_cooling_frequency_397 - WithUnit(15.0, "MHz") ) < WithUnit(50, "MHz"):
+            pre_freq = WithUnit(50, "MHz")
+        else:
+            pre_freq = p.doppler_cooling_frequency_397 - WithUnit(15.0, "MHz")
+        self.addDDS ('397',self.start, p.pre_duration, pre_freq, WithUnit(-12.0, 'dBm') )
         self.addDDS('854DP', self.start, p.pre_duration, p_854.repump_d_frequency_854, p_854.repump_d_amplitude_854)
         #self.addDDS ('866',self.start, repump_duration, p.doppler_cooling_frequency_866, p.doppler_cooling_amplitude_866)
         # changing the 866 from a dds to a rf source enabled by a switch

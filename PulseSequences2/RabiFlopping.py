@@ -45,7 +45,8 @@ class RabiFlopping(pulse_sequence):
         #freq_729=self.calc_freq(rf.line_selection)
         freq_729=self.calc_freq(rf.line_selection , rf.selection_sideband , rf.order)
         
-        #print "Rabi flopping 729 freq is {}".format(freq_729)
+        print " Rabi flopping script"
+        print "Rabi flopping 729 freq is {}".format(freq_729)
         #print "Rabi flopping duration is {}".format(rf.duration)
         # building the sequence
         self.end = U(10., 'us')

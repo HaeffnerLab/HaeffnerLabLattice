@@ -29,7 +29,7 @@ class Spectrum(pulse_sequence):
    
     fixed_params = {'StatePreparation.aux_optical_pumping_enable': False,
 #                     'StatePreparation.sideband_cooling_enable': False,
-                    'StateReadout.readout_mode': 'pmt',
+                    # 'StateReadout.readout_mode': 'pmt',
                     }
     
     def sequence(self):
@@ -42,18 +42,20 @@ class Spectrum(pulse_sequence):
         ## calculate the scan params
         spc = self.parameters.Spectrum   
         
-        if spc.selection_sideband == "off":         
+        if spc.order == 0.0: #spc.selection_sideband == "off":         
             freq_729=self.calc_freq(spc.line_selection)
         else:
+            print "1234"
+            print "running a sideban in specrtum"
             freq_729=self.calc_freq(spc.line_selection, spc.selection_sideband ,int(spc.order))
-        
+        # print
         freq_729=freq_729 + spc.carrier_detuning + spc.sideband_detuning
         
         amp=spc.manual_amplitude_729
         duration=spc.manual_excitation_time
         print "Spectrum scan 555"
         print "spc.line_selection : " ,spc.line_selection
-        print "spc.selection_sideband : " ,spc.selection_sideband
+        print "spc.selection_sideband : " ,spc.z    
         print "spc.order : " , int(spc.order)
         
         print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))

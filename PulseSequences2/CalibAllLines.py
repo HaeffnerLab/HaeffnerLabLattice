@@ -2,13 +2,12 @@ import numpy as np
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
-from functools import partial
 
 carr_1_global = U(0,'kHz')
 
 class CalibLine1(pulse_sequence):
     
-    scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car1']}
+    scannable_params = {'Spectrum.carrier_detuning' : [(-5, 5, .75, 'kHz'), 'car1']}
     # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
 
     def sequence(self):
@@ -64,7 +63,6 @@ class CalibLine1(pulse_sequence):
         # reduces the dimension to 1 for single ion case 
         try:
             all_data = all_data.sum(1)
-
         except ValueError:
             print "error with the data"
             return
@@ -83,11 +81,10 @@ class CalibLine1(pulse_sequence):
         
         peak_fit = U(peak_fit, "MHz") 
         carr_1_global = peak_fit 
-        print "print peak fit line 1" , peak_fit
 
 class CalibLine2(pulse_sequence):
 
-    scannable_params = {'Spectrum.carrier_detuning' : [(-15, 15, 1., 'kHz'), 'car2']}
+    scannable_params = {'Spectrum.carrier_detuning' : [(-5, 5, .75, 'kHz'), 'car2']}
     # fixed parmas doesn't work -> you can declare fixed params for all the seq at the main class
 
     def sequence(self):
@@ -125,7 +122,7 @@ class CalibLine2(pulse_sequence):
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
-        
+#        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
 #        print " running finally the CalibLine2"
@@ -156,12 +153,9 @@ class CalibLine2(pulse_sequence):
             all_data = all_data.sum(1)
         except ValueError:
             return
-         
-
-        peak_fit = cls.gaussian_fit(freq_data, all_data) #, init_guess="stop")
+            
+        peak_fit = cls.gaussian_fit(freq_data, all_data)
         
-
-        print "print peak fit line 2" , peak_fit
         if not peak_fit:
             return
         
@@ -180,28 +174,24 @@ class CalibLine2(pulse_sequence):
             carr_2 = carr_2+parameters_dict.Carriers[carrier_translation[line_2]]
         
         
-
         submission = [(line_1, carr_1), (line_2, carr_2)]
-        print "Getting ready to submit."
+
+        print "submission", submission
         cxn.sd_tracker.set_measurements(submission) 
-        print "submitted: ", submission   
         
 class CalibAllLines(pulse_sequence):
     is_composite = True
     # at the moment fixed params are shared between the sub sequence!!! 
-    fixed_params = {'ScanParam.shuffle': False,
-                    'opticalPumping.line_selection': 'S-1/2D+3/2',
+    fixed_params = {'opticalPumping.line_selection': 'S-1/2D+3/2',
                     'Display.relative_frequencies': False,
                     'StatePreparation.aux_optical_pumping_enable': False,
-                    'StateReadout.readout_mode': 'pmt',
-                    'CalibrationScans.readout_mode': 'pmt'
-                    # 'StatePreparation.sideband_cooling_enable': False
-                    }
+                    # 'StatePreparation.sideband_cooling_enable': False,
+                    'StateReadout.readout_mode': "pmt"}
                     
 
-    
-    sequences = [(CalibLine1, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'}), 
-                 (CalibLine2, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'})]
+    sequences = [CalibLine1, CalibLine2] 
+    # sequences = [(CalibLine1, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'}), 
+    #              (CalibLine2, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'})]
 
     show_params= ['CalibrationScans.calibration_channel_729',
                   'Spectrum.car1_amp',

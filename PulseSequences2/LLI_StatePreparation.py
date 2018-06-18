@@ -44,12 +44,13 @@ class LLI_StatePreparation(pulse_sequence):
                          'LLI.wait_time': [(0, 10.0, 0.1, 'ms'),'parity'] }
 
     fixed_params = {
-                    'StateReadout.readout_mode': 'pmt_parity'
+                    'StateReadout.readout_mode': 'camera_parity'
                                         }
  
 
     show_params= [  "MolmerSorensen.due_carrier_enable",
                     "MolmerSorensen.bichro_enable",
+                    "MolmerSorensen.gradient_shift",
                     "LLI.ms_carrier_1_line_selection",
                     "LLI.ms_carrier_2_line_selection",
                     "LLI.rotation_carrier_1_enable",
@@ -85,9 +86,7 @@ class LLI_StatePreparation(pulse_sequence):
 #         print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
 
-##################################################################################################
-# Temporarily added this for MS
-##################################################################################################        
+        # Set up MS option       
         ms = parameters_dict.MolmerSorensen
         
         if ms.bichro_enable:
@@ -130,14 +129,11 @@ class LLI_StatePreparation(pulse_sequence):
             cxn.dds_cw.output('3', False) # time to thermalize the single pass
             cxn.dds_cw.output('4', False) # time to thermalize the single pass
             cxn.dds_cw.output('5', True) # time to thermalize the single pass
-            time.sleep(1.0)
+            time.sleep(0.5)
         
             #cxn.dds_cw.output('5', False)
             time.sleep(0.5) # just make sure everything is programmed before starting the sequence
 
-#############################################################################################################
-#   Ends here
-#############################################################################################################
        
 
     @classmethod
@@ -188,14 +184,14 @@ class LLI_StatePreparation(pulse_sequence):
             op_line_selection = 'S-1/2D+3/2'
             op_aux_line_selection = 'S+1/2D-3/2'
             sbc_line_selection = 'S+1/2D+5/2'
-            offset=lli.phase_offset_flipped_op
+            offset = lli.phase_offset_flipped_op
             
         else:
 #            print "optical pumping initial state is S+1/2S-1/2"
             op_line_selection = self.parameters.OpticalPumping.line_selection
             op_aux_line_selection = self.parameters.OpticalPumpingAux.aux_op_line_selection
             sbc_line_selection = self.parameters.SidebandCooling.line_selection 
-            offset=lli.phase_offset
+            offset = lli.phase_offset
         
         
         
@@ -207,30 +203,63 @@ class LLI_StatePreparation(pulse_sequence):
                                             "SidebandCooling.line_selection": sbc_line_selection
                                             })     
 
-        ## calculating the DP frquency     
-        freq_729_ms_carrier_1=self.calc_freq(lli.ms_carrier_1_line_selection) 
-        freq_729_ms_carrier_2=self.calc_freq(lli.ms_carrier_2_line_selection)
+        ## calculating the DP frquency 
 
-##################################################################################################
-# Temporarily added this for MS
-##################################################################################################        
+        ms = self.parameters.MolmerSorensen
+
+        ## calculating the DP frquency
+        line1 = self.calc_freq(ms.line_selection)
+        line2 = self.calc_freq(ms.line_selection_ion2)
+
+
+######################################################
+# changing to 2f2 and f1+f2 configuration
+        freq_729_ms_carrier_2 = line2 + ms.detuning_carrier_2
         
-        if ms.bichro_enable: 
-            freq_729_ms_carrier_1=self.calc_freq(ms.line_selection) + ms.detuning_carrier_1          
-        
-        
-            if ms.due_carrier_enable :
-                freq_729_ms_carrier_2=self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2
+        if ms.due_carrier_enable:
+            if ms.use_alternate_DP_tones:
+                freq_729_ms_carrier_1 =  ((2 * line1) - line2) + ms.detuning_carrier_1
+                print "MS gate revised lines"
+                
             else:
-                freq_729_ms_carrier_2=freq_729        
+                freq_729_ms_carrier_1 =  line1 + ms.detuning_carrier_1
+        
+        else:
+            freq_729_ms_carrier_1 = freq_729_ms_carrier_2    
+        
+
+        # freq_729_ms_carrier_1 = self.calc_freq(lli.ms_carrier_1_line_selection) 
+        # freq_729_ms_carrier_2 = self.calc_freq(lli.ms_carrier_2_line_selection)
+
+
+
+        # # Set up MS option
+        # if ms.bichro_enable: 
+        #     # Add gradient shift option
+        #     if lli.flip_optical_pumping:
+        #         freq_729_ms_carrier_1 = self.calc_freq(ms.line_selection) + ms.detuning_carrier_1 + ms.gradient_shift
+        #     else:
+        #         freq_729_ms_carrier_1 = self.calc_freq(ms.line_selection) + ms.detuning_carrier_1
+
+
+        #     if ms.due_carrier_enable :
+        #         # Add gradient shift option
+        #         if lli.flip_optical_pumping:
+        #             freq_729_ms_carrier_2 = self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2 - ms.gradient_shift
+        #         else:
+        #             if ms.use_alternate_DP_tones:
+        #                 line1 = self.calc_freq(lli.ms_carrier_1_line_selection)
+        #                 line2 = self.calc_freq(lli.ms_carrier_2_line_selection)
+        #                 freq_729_ms_carrier_2 =  ((2 * line2) - line1) + ms.detuning_carrier_2
+        #             else:
+        #                 freq_729_ms_carrier_2 = self.calc_freq(ms.line_selection_ion2) + ms.detuning_carrier_2
+        #     else:
+        #         freq_729_ms_carrier_2 = freq_729        
  
-#############################################################################################################
-#   Ends here
-#############################################################################################################
        
          
-        freq_729_rot1=self.calc_freq(lli.rotation_carrier_1_line_selection) 
-        freq_729_rot2=self.calc_freq(lli.rotation_carrier_2_line_selection) 
+        freq_729_rot1 = self.calc_freq(lli.rotation_carrier_1_line_selection) 
+        freq_729_rot2 = self.calc_freq(lli.rotation_carrier_2_line_selection) 
         
         
 #        print "Running ms Due gate DP freq is  ", freq_729_ms_carrier_1

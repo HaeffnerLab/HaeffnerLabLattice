@@ -25,10 +25,10 @@ class RabiExcitation(pulse_sequence):
         amp_729 = self.parameters.Excitation_729.rabi_excitation_amplitude
         channel_729 = self.parameters.Excitation_729.channel_729
         
-#       print "Rabi Excitation sub sequence"
-#       print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
-#        print "729 amp is {}".format(amp_729)
-#        print "729 duration is {}".format(duration_729)
+        #print "Rabi Excitation sub sequence"
+        #print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))
+        #print "729 amp is {}".format(amp_729)
+        #print "729 duration is {}".format(duration_729)
          
         #first advance the frequency but keep amplitude low        
         self.addDDS(channel_729, self.start, frequency_advance_duration, freq_729, ampl_off)

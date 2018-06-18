@@ -28,7 +28,7 @@ print "\n\n"
 cxn.pulser.switch_manual('bluePI', True)
 time.sleep(1.0)
 
-threshold = 5.0
+threshold = 28.0
 
 counts = 0.0
 
