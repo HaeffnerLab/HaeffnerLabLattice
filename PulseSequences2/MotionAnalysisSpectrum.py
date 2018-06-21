@@ -31,10 +31,13 @@ class MotionAnalysisSpectrum(pulse_sequence):
                   'RabiFlopping.order',
 
 
-                  
-
-                  
+                 
+                 
                 ]
+
+    fixed_params = {'Display.relative_frequencies': True
+
+                    }
     
     @classmethod
     def run_initial(cls, cxn, parameters_dict):
@@ -126,6 +129,9 @@ class MotionAnalysisSpectrum(pulse_sequence):
         self.addSequence(MotionAnalysis)
         # small optical pumping after the motion excitation
         self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
+
+
+
 
         # 729 excitation to transfer the motional DOF to the electronic DOF
         # running the excitation from the Rabi flopping 
