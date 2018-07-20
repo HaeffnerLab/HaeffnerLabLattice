@@ -90,10 +90,10 @@ class actions_widget(QtGui.QFrame, widget_ui):
         # ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
         # freq866 = yield pulser.frequency('866DP')
-        yield pv.set_parameter('StateReadout','state_readout_amplitude_397', ampl397)
-        # yield pv.set_parameter('StateReadout','state_readout_amplitude_866',ampl866)
-        yield pv.set_parameter('StateReadout','state_readout_frequency_397',freq397)
-        # yield pv.set_parameter('StateReadout','state_readout_frequency_866',freq866)
+        yield pv.set_parameter('StateReadout','state_readout_amplitude_397', ampl397,context = self.context)
+        # yield pv.set_parameter('StateReadout','state_readout_amplitude_866',ampl866,context = self.context)
+        yield pv.set_parameter('StateReadout','state_readout_frequency_397',freq397,context = self.context)
+        # yield pv.set_parameter('StateReadout','state_readout_frequency_866',freq866,context = self.context)
     
     @inlineCallbacks
     def on_to_dc(self):
@@ -103,10 +103,10 @@ class actions_widget(QtGui.QFrame, widget_ui):
         # ampl866 = yield pulser.amplitude('866DP')
         freq397 = yield pulser.frequency('global397')
         # freq866 = yield pulser.frequency('866DP')
-        yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_397',ampl397)
-        # yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_866',ampl866)
-        yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_397',freq397)
-        # yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_866',freq866)
+        yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_397',ampl397,context = self.context)
+        # yield pv.set_parameter('DopplerCooling','doppler_cooling_amplitude_866',ampl866,context = self.context)
+        yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_397',freq397,context = self.context)
+        # yield pv.set_parameter('DopplerCooling','doppler_cooling_frequency_866',freq866,context = self.context)
         
     @inlineCallbacks
     def on_from_dc(self):
