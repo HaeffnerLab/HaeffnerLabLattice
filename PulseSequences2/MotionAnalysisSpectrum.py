@@ -14,7 +14,7 @@ class MotionAnalysisSpectrum(pulse_sequence):
     
                           
     scannable_params = {   'Motion_Analysis.detuning': [(0,200.0, 50.0, 'kHz'),'spectrum'],
-                        }
+                           'Motion_Analysis.amplitude_397': [(-25.0,-13.0, 1.0, 'dBm'),'current']}
  
 
     show_params= ['Motion_Analysis.pulse_width_397',
