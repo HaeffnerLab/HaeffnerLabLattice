@@ -61,9 +61,53 @@ class MolmerSorensenGate(pulse_sequence):
     @classmethod
     def run_initial(cls, cxn, parameters_dict):
         
-#         print "Switching the 866DP to auto mode"
+        print "SOMETHINGSOMETHINGSOMETHINGwitching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
         
+#         ms = parameters_dict.MolmerSorensen
+        
+#         # self.parameters['MolmerSorensen.frequency'] = freq_729
+#         #self.parameters['LocalRotation.frequency'] = freq_729
+        
+#         # calc frequcy shift of the SP
+#         mode = ms.sideband_selection
+#         trap_frequency = parameters_dict['TrapFrequencies.' + mode]
+        
+# #         print "4321"
+# #         print "Run initial to set the dds_cw freq"
+# #         print "Running ms gate trap freq is  ", trap_frequency
+#         # be carfull we are collecting the minus order from th SP
+#         # minus sign in the detuning getts closer to the carrier
+#         f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
+#         freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
+#         freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
+        
+# #         print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
+# #         print "MS freq_blue", freq_blue
+# #         print "MS freq_red  ", freq_red
+        
+#         amp_blue = ms.amp_blue
+#         amp_red = ms.amp_red
+        
+#         cxn.dds_cw.frequency('0', freq_blue + ms.freq_blue)
+#         cxn.dds_cw.frequency('1', freq_red + ms.freq_red)
+#         cxn.dds_cw.frequency('2', f_global) # for driving the carrier
+#         cxn.dds_cw.amplitude('0', amp_blue + ms.sim_bichro_scan)
+#         cxn.dds_cw.amplitude('1', amp_red - ms.sim_bichro_scan)
+
+#         cxn.dds_cw.output('0', True)
+#         cxn.dds_cw.output('1', True)
+#         cxn.dds_cw.output('2', True)
+        
+#         cxn.dds_cw.output('5', True) # time to thermalize the single pass
+#         time.sleep(1.0)
+        
+#         #cxn.dds_cw.output('5', False)
+#         time.sleep(0.5) # just make sure everything is programmed before starting the sequence
+    
+    @classmethod
+    def run_in_loop(cls, cxn, parameters_dict, data_so_far,data_x):
+      
         ms = parameters_dict.MolmerSorensen
         
         # self.parameters['MolmerSorensen.frequency'] = freq_729
@@ -72,64 +116,20 @@ class MolmerSorensenGate(pulse_sequence):
         # calc frequcy shift of the SP
         mode = ms.sideband_selection
         trap_frequency = parameters_dict['TrapFrequencies.' + mode]
-        
-#         print "4321"
-#         print "Run initial to set the dds_cw freq"
-#         print "Running ms gate trap freq is  ", trap_frequency
-        # be carfull we are collecting the minus order from th SP
-        # minus sign in the detuning getts closer to the carrier
+
         f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
         freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
         freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
-        
-#         print "AC strak shift", ms.ac_stark_shift, " ms detuning ",ms.detuning 
-#         print "MS freq_blue", freq_blue
-#         print "MS freq_red  ", freq_red
-        
-        amp_blue = ms.amp_blue
-        amp_red = ms.amp_red
-        
+
+        print "scanning in loop"
+        print "ms freq_blue ", ms.freq_blue
         cxn.dds_cw.frequency('0', freq_blue + ms.freq_blue)
         cxn.dds_cw.frequency('1', freq_red + ms.freq_red)
-        cxn.dds_cw.frequency('2', f_global) # for driving the carrier
-        cxn.dds_cw.amplitude('0', amp_blue + ms.sim_bichro_scan)
-        cxn.dds_cw.amplitude('1', amp_red - ms.sim_bichro_scan)
-
-        cxn.dds_cw.output('0', True)
-        cxn.dds_cw.output('1', True)
-        cxn.dds_cw.output('2', True)
-        
-        cxn.dds_cw.output('5', True) # time to thermalize the single pass
-        time.sleep(1.0)
-        
-        #cxn.dds_cw.output('5', False)
-        time.sleep(0.5) # just make sure everything is programmed before starting the sequence
-    
-    @classmethod
-    def run_in_loop(cls, cxn, parameters_dict, data_so_far,data_x):
-      pass
-        # ms = parameters_dict.MolmerSorensen
-        
-        # # self.parameters['MolmerSorensen.frequency'] = freq_729
-        # #self.parameters['LocalRotation.frequency'] = freq_729
-        
-        # # calc frequcy shift of the SP
-        # mode = ms.sideband_selection
-        # trap_frequency = parameters_dict['TrapFrequencies.' + mode]
-
-        # f_global = U(80.0, 'MHz') + U(0.15, 'MHz')
-        # freq_blue = f_global - trap_frequency - ms.detuning + ms.ac_stark_shift - ms.asymetric_ac_stark_shift
-        # freq_red = f_global + trap_frequency + ms.detuning  + ms.ac_stark_shift + ms.asymetric_ac_stark_shift
-
-        # print "scanning in loop"
-        # print "ms freq_blue ", ms.freq_blue
-        # cxn.dds_cw.frequency('0', freq_blue + ms.freq_blue)
-        # cxn.dds_cw.frequency('1', freq_red + ms.freq_red)
-        # time.sleep(0.5)
-        # print " dds_cw freq 0" , cxn.dds_cw.frequency('0')
-        # print " dds_cw freq 1" , cxn.dds_cw.frequency('1')
-        # cxn.dds_cw.amplitude('0', ms.amp_blue + ms.sim_bichro_scan)
-        # cxn.dds_cw.amplitude('1', ms.amp_red - ms.sim_bichro_scan)
+        time.sleep(0.5)
+        print " dds_cw freq 0" , cxn.dds_cw.frequency('0')
+        print " dds_cw freq 1" , cxn.dds_cw.frequency('1')
+        cxn.dds_cw.amplitude('0', ms.amp_blue + ms.sim_bichro_scan)
+        cxn.dds_cw.amplitude('1', ms.amp_red - ms.sim_bichro_scan)
 
 
 
