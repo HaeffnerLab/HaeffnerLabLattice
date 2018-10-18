@@ -31,6 +31,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         contrl_widget = self.makeControlWidget(reactor, cxn)
         histogram = self.make_histogram_widget(reactor, cxn)
         drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
+        global_drift_tracker = self.make_global_drift_tracker_widget(reactor, cxn)
         single_pass = self.make_sp_control(reactor, cxn)
         piezo_motor_control = self.make_piezo_motor_control_widget(reactor, cxn)
         #automation_widget = self.make_automation_widget(reactor, cxn)
@@ -51,10 +52,12 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
+        self.tabWidget.addTab(global_drift_tracker, 'Global Drift Tracker')
         #self.tabWidget.addTab(dac_control, '&DAC Control')
         self.tabWidget.addTab(piezo_motor_control, 'M&irror Porsche')
         #self.tabWidget.addTab(drift_tracker, '&Autogadget')
         self.tabWidget.addTab(config_editor, 'Config &Editor')
+        
 
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
@@ -73,6 +76,11 @@ class LATTICE_GUI(QtGui.QMainWindow):
  
     def make_drift_tracker_widget(self, reactor, cxn):
         from common.clients.drift_tracker.drift_tracker import drift_tracker
+        widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
+        return widget
+
+    def make_global_drift_tracker_widget(self, reactor, cxn):
+        from common.clients.drift_tracker_global.drift_tracker_global import drift_tracker
         widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
         return widget
     

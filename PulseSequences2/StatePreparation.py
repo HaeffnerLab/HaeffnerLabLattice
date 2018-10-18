@@ -82,7 +82,8 @@ class StatePreparation(pulse_sequence):
                     # replacing the channel, sideband and order 
                     self.addSequence(SidebandCooling,{"StatePreparation.channel_729" : sbc.channel_729,
                                                       "SidebandCooling.selection_sideband" : sbc.selection_sideband,
-                                                      "SidebandCooling.order" : sbc.order
+                                                      "SidebandCooling.order" : sbc.order,
+                                                      "SidebandCooling.line_selection" : sbc.line_selection
                                                       })
                     self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
 

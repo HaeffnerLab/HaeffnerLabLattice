@@ -19,16 +19,16 @@ class ReferenceImage(pulse_sequence):
                   'IonsOnCamera.horizontal_min',
                   'IonsOnCamera.horizontal_max',
                   'IonsOnCamera.horizontal_bin',
-                  'StateReadout.state_readout_duration',
-                  'StateReadout.repeat_each_measurement',
-                  'StateReadout.state_readout_amplitude_397',
-                  'StateReadout.state_readout_frequency_397',
-                  'StateReadout.state_readout_amplitude_866',
-                  'StateReadout.state_readout_frequency_866',
-                  'StateReadout.camera_trigger_width',
-                  'StateReadout.camera_transfer_additional',
-                  'StateReadout.camera_readout_duration',
-                  'DopplerCooling.doppler_cooling_repump_additional'
+                  # 'StateReadout.state_readout_duration',
+                  # 'StateReadout.repeat_each_measurement',
+                  # 'StateReadout.state_readout_amplitude_397',
+                  # 'StateReadout.state_readout_frequency_397',
+                  # 'StateReadout.state_readout_amplitude_866',
+                  # 'StateReadout.state_readout_frequency_866',
+                  # 'StateReadout.camera_trigger_width',
+                  # 'StateReadout.camera_transfer_additional',
+                  # 'StateReadout.camera_readout_duration',
+                  # 'DopplerCooling.doppler_cooling_repump_additional'
                   ]
     
     fixed_params = {'StateReadout.readout_mode':'camera'}
@@ -77,12 +77,13 @@ class ReferenceImage(pulse_sequence):
                              int(p.vertical_min),
                              int(p.vertical_max),
                              ]
-        
+         
         # temporary image
         x_pixels = int( (image_region[3] - image_region[2] + 1.) / (image_region[0]) )
         y_pixels = int(image_region[5] - image_region[4] + 1.) / (image_region[1])
         
         repetitions = int(parameters_dict.StateReadout.repeat_each_measurement)
+        print "images", images
         images = np.reshape(images, (repetitions, y_pixels, x_pixels))
         
         image  = np.average(images, axis = 0)

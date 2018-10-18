@@ -2,6 +2,7 @@ import numpy as np
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
 from treedict import TreeDict
+from common.client_config import client_info as cl
 
 carr_1_global = U(0,'kHz')
 
@@ -74,7 +75,7 @@ class CalibLine1(pulse_sequence):
         if not peak_fit:
             carr_1_global = None
             print "4321"
-            ident = int(cxn.scriptscanner.get_running()[0][0])
+            ident = int(cxn.scriptscanner.get_running()[-1][0])
             print "stoping the sequence ident" , ident                     
             cxn.scriptscanner.stop_sequence(ident)
             return
@@ -178,6 +179,13 @@ class CalibLine2(pulse_sequence):
 
         print "submission", submission
         cxn.sd_tracker.set_measurements(submission) 
+        # if parameters_dict.DriftTracker.global_sd_enable:
+        import labrad
+        global_sd_cxn = labrad.connect('192.168.169.86' , password ='',tls_mode='off')
+        print cl.client_name , "is sub lines to global SD" , 
+        print submission 
+        global_sd_cxn.sd_tracker_global.set_measurements(submission,cl.client_name) 
+        global_sd_cxn.disconnect()
         
 class CalibAllLines(pulse_sequence):
     is_composite = True

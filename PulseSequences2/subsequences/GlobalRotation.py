@@ -19,6 +19,6 @@ class GlobalRotation(pulse_sequence):
         time = p.pi_time*rotation_fraction
         self.end = self.start + frequency_advance_duration + time
         #first advance the frequency but keep amplitude low        
-        self.addDDS('729global', self.start, frequency_advance_duration, p.frequency, ampl_off)
+        self.addDDS(p.channel, self.start, frequency_advance_duration, p.frequency, ampl_off)
         #turn on
-        self.addDDS('729global', self.start + frequency_advance_duration, time, p.frequency, p.amplitude, p.phase)
+        self.addDDS(p.channel, self.start + frequency_advance_duration, time, p.frequency, p.amplitude, p.phase)

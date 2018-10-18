@@ -22,11 +22,7 @@ class tester(pulse_sequence):
 					frequency, ampl_off)
 		self.addDDS('729global', start + frequency_advance_duration, slope_duration, 
 					frequency, U(-5, "dBm"), profile=2)
-		self.addDDS('729global', start + frequency_advance_duration + slope_duration, duration, 
-		 			frequency, U(-5, "dBm"), profile=4)
-		self.addDDS('729global', start + frequency_advance_duration + slope_duration + duration, frequency_advance_duration, 
-		 			frequency, ampl_off, profile=0)
-		
+
 
 
 		self.end = U(100, "us")

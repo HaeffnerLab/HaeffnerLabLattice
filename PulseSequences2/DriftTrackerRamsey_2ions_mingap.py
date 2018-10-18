@@ -1,13 +1,16 @@
 import numpy as np
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit as U
+from labrad import units
 from treedict import TreeDict
 import time
+from fractions import Fraction
 
 
 # Should find a better way to do this
-detuning_1_global = U(0,'kHz') 
-        
+detuning_1_global = U(0,'kHz')
+gap_time_1 = U(80, 'us')
+gap_time_2 = U(30, 'us') 
         
 class TrackLine1(pulse_sequence):
     
@@ -28,14 +31,29 @@ class TrackLine1(pulse_sequence):
         p = self.parameters
         line1 = p.DriftTracker.line_selection_1
         
+        b_dif = p.DriftTrackerRamsey.bfield_difference_2ions
+        ion_no = p.DriftTrackerRamsey.no_of_readout_ion_2ions
+        ms = Fraction(line1[1:5])
+        md = Fraction(line1[6:10])
+        g_factor_S = 2.00225664
+        g_factor_D = 1.2003340
+        energy_scale = units.bohr_magneton / units.hplanck #1.4 MHz / gauss
+        local_detuning_1 = (ion_no - 3/2) * b_dif * (g_factor_D * md - g_factor_S * ms) * energy_scale
+
+        print line1
+        print ms
+        print md
+        print energy_scale
+
         channel_729= p.CalibrationScans.calibration_channel_729
         freq_729 = self.calc_freq(line1)
         detuning = p.DriftTrackerRamsey.detuning
         freq_729 =freq_729 +detuning
+        freq_729 = freq_729 + local_detuning_1
                 
         amp = p.DriftTrackerRamsey.line_1_amplitude
         duration = p.DriftTrackerRamsey.line_1_pi_time
-        ramsey_time = p.DriftTrackerRamsey.gap_time_1
+        ramsey_time = gap_time_1
         phase_2nd_pulse=p.DriftTrackerRamsey.phase_1
         
         print "RAMSEY PARAMS"
@@ -87,8 +105,7 @@ class TrackLine1(pulse_sequence):
         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
-        ident = int(cxn.scriptscanner.get_running()[0][0])
-        print " sequence ident" , ident  
+        print " sequence ident" , int(cxn.scriptscanner.get_running()[-1][0])  
 
         
         # for the multiple case we summ the probabilities, this also
@@ -102,51 +119,30 @@ class TrackLine1(pulse_sequence):
         
         p = parameters_dict
         duration = p.DriftTrackerRamsey.line_1_pi_time
-        ramsey_time = p.DriftTrackerRamsey.gap_time_1
+        ramsey_time = gap_time_1
+        ion_no = p.DriftTrackerRamsey.no_of_readout_ion_2ions
         
         ind1 = np.where(Phase == 90.0)
         ind2 = np.where(Phase == 270.0)
         
-        p1 =all_data[ind1]
-        p2 =all_data[ind2]
-
-        if (p1 == 0.0).all() or (p2 == 0.0).all():
-            print "Populations are zero. Please make sure everything works well."
-            print "stoping the sequence ident" , ident                     
-            cxn.scriptscanner.stop_sequence(ident)
+        try:
+            p1 =all_data[ind1][0][ion_no - 1]
+            p2 =all_data[ind2][0][ion_no - 1]
+        except:
+            print "cannot get population p1 & p2"
             return
-
-        max_gap = U(500, 'us')
-        min_gap = U(50, 'us')
-        if (np.abs((p1-p2)/(p1+p2)) > 0.75).any():
-            new_ramsey_time = ramsey_time/2
-            if new_ramsey_time >= min_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', new_ramsey_time)
-                print "gap_time_1 (line_1) is too big. halve it"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', min_gap)
-                print "gap_time_1 (line_1) is too big. Set it to be minimum gaptime 50us"
-            ident = int(cxn.scriptscanner.get_running()[0][0])
-            print "stoping the sequence ident" , ident                     
-            cxn.scriptscanner.stop_sequence(ident)
-            return
-        elif (np.abs((p1-p2)/(p1+p2)) >0.4).any():
-            new_ramsey_time = ramsey_time - U(50, 'us')
-            if new_ramsey_time >= min_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', new_ramsey_time)
-                print "gap_time_1 (line_1) should be smaller. substract 50us"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', min_gap)
-                print "gap_time_1 (line_1) should be smaller. Set it to be minimum gaptime 50us"
-        elif (np.abs((p1-p2)/(p1+p2)) < 0.07).any():
-            new_ramsey_time = ramsey_time + U(50, 'us')
-            if new_ramsey_time < max_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', new_ramsey_time)
-                print "gap_time_1 (line_1) can be larger. add 50us"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_1', max_gap)
-                print "gap_time_1 (line_1) can be larger. set gap_time_1 to be max gap time"
         
+        if p1 == p2 == 0.0 or p1 == p2 == 1.0:
+            print "Populations are zero. Please make sure everything works well."
+            return
+        
+        if np.abs((p1-p2)/(p1+p2)) > 0.8:
+            scan = [('CalibLine1', ('Spectrum.carrier_detuning', -5, 5, .75, 'kHz')), ('CalibLine2', ('Spectrum.carrier_detuning', -5, 5, .75, 'kHz'))]
+            cxn.scriptscanner.new_sequence('CalibAllLines',scan)
+            print "stoping the sequence ident" , ident                     
+            cxn.scriptscanner.stop_sequence(ident)
+            return
+
         detuning = 1.0*np.arcsin((p1-p2)/(p1+p2))/(2.0*np.pi*ramsey_time['s'] + 4*duration['s'])/1000.0
         
         
@@ -197,15 +193,30 @@ class TrackLine2(pulse_sequence):
         self.end = U(10., 'us')
         p = self.parameters
         line2 = p.DriftTracker.line_selection_2
+
+        b_dif = p.DriftTrackerRamsey.bfield_difference_2ions
+        ion_no = p.DriftTrackerRamsey.no_of_readout_ion_2ions
+        ms = Fraction(line2[1:5])
+        md = Fraction(line2[6:10])
+        g_factor_S = 2.00225664
+        g_factor_D = 1.2003340
+        energy_scale = units.bohr_magneton / units.hplanck #1.4 MHz / gauss
+        local_detuning_2 = (ion_no - 3/2) * b_dif * (g_factor_D * md - g_factor_S * ms) * energy_scale
         
+        print line2
+        print ms
+        print md
+        print energy_scale
+
         channel_729= p.CalibrationScans.calibration_channel_729
         freq_729 = self.calc_freq(line2)
         detuning = p.DriftTrackerRamsey.detuning
         freq_729 =freq_729 +detuning
+        freq_729 = freq_729 + local_detuning_2
                 
         amp = p.DriftTrackerRamsey.line_2_amplitude
         duration = p.DriftTrackerRamsey.line_2_pi_time
-        ramsey_time = p.DriftTrackerRamsey.gap_time_2
+        ramsey_time = gap_time_2
         phase_2nd_pulse=p.DriftTrackerRamsey.phase_2
         
         print "RAMSEY PARAMS"
@@ -256,8 +267,7 @@ class TrackLine2(pulse_sequence):
         print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
-        ident = int(cxn.scriptscanner.get_running()[0][0])
-        print " sequence ident" , ident
+        print " sequence ident" , int(cxn.scriptscanner.get_running()[-1][0])  
 
         # Should find a better way to do this
         #global detuning_1_global 
@@ -269,51 +279,30 @@ class TrackLine2(pulse_sequence):
                         
         p = parameters_dict
         duration = p.DriftTrackerRamsey.line_1_pi_time
-        ramsey_time = p.DriftTrackerRamsey.gap_time_2
+        ramsey_time = gap_time_2
+        ion_no = p.DriftTrackerRamsey.no_of_readout_ion_2ions
         
         ind1 = np.where(Phase == 90.0)
         ind2 = np.where(Phase == 270.0)
         
-        p1 =all_data[ind1]
-        p2 =all_data[ind2]
+        try:
+            p1 =all_data[ind1][0][ion_no - 1]
+            p2 =all_data[ind2][0][ion_no - 1]
+        except:
+            print "cannot get population p1 & p2"
+            return
 
-        if (p1 == 0.0).all() or (p2 == 0.0).all():
+        if p1 == p2 == 0.0 or p1 == p2 == 1.0:
             print "Populations are zero. Please make sure everything works well."
-            print "stoping the sequence ident" , ident                     
-            cxn.scriptscanner.stop_sequence(ident)
+            return
+        
+        if np.abs((p1-p2)/(p1+p2)) > 0.8:
+            scan = [('CalibLine1', ('Spectrum.carrier_detuning', -5, 5, .75, 'kHz')), ('CalibLine2', ('Spectrum.carrier_detuning', -5, 5, .75, 'kHz'))]
+            cxn.scriptscanner.new_sequence('CalibAllLines',scan)
+            # print "stoping the sequence ident" , ident                     
+            # cxn.scriptscanner.stop_sequence(ident)
             return
 
-        max_gap = U(500, 'us')
-        min_gap = U(50, 'us')
-        if (np.abs((p1-p2)/(p1+p2)) > 0.75).any():
-            new_ramsey_time = ramsey_time/2
-            if new_ramsey_time >= min_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', new_ramsey_time)
-                print "gap_time_2 (line_2) is too big. halve it"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', min_gap)
-                print "gap_time_2 (line_2) is too big. Set it to be minimum gaptime 50us"
-            ident = int(cxn.scriptscanner.get_running()[0][0])
-            print "stoping the sequence ident" , ident                     
-            cxn.scriptscanner.stop_sequence(ident)
-            return
-        elif (np.abs((p1-p2)/(p1+p2)) >0.4).any():
-            new_ramsey_time = ramsey_time - U(50, 'us')
-            if new_ramsey_time >= min_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', new_ramsey_time)
-                print "gap_time_2 (line_2) should be smaller. substract 50us"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', min_gap)
-                print "gap_time_2 (line_2) should be smaller. Set it to be minimum gaptime 50us"
-        elif (np.abs((p1-p2)/(p1+p2)) < 0.07).any():
-            new_ramsey_time = ramsey_time + U(50, 'us')
-            if new_ramsey_time < max_gap:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', new_ramsey_time)
-                print "gap_time_2 (line_2) can be larger. add 50us"
-            else:
-                cxn.scriptscanner.set_parameter('DriftTrackerRamsey', 'gap_time_2', max_gap)
-                print "gap_time_2 (line_2) can be larger. set gap_time_2 to be max gap time"
-        
         detuning_2 = 1.0*np.arcsin((p1-p2)/(p1+p2))/(2.0*np.pi*ramsey_time['s'] + 4*duration['s'])/1000.0
         detuning_2 = detuning_2.mean()
         detuning_2 = U(detuning_2, "kHz")
@@ -368,7 +357,7 @@ class TrackLine2(pulse_sequence):
             cxn.sd_tracker.set_measurements(submission) 
         
         
-class DriftTrackerRamsey(pulse_sequence):
+class DriftTrackerRamsey_2ions_mingap(pulse_sequence):
     is_composite = True
     # at the moment fixed params are shared between the sub sequence!!! 
     fixed_params = {'StatePreparation.aux_optical_pumping_enable': False,
@@ -388,8 +377,8 @@ class DriftTrackerRamsey(pulse_sequence):
                   'DriftTrackerRamsey.line_2_pi_time',
                   'DriftTracker.line_selection_1',
                   'DriftTracker.line_selection_2',
-                  'DriftTrackerRamsey.gap_time_1',
-                  'DriftTrackerRamsey.gap_time_2',
                   'DriftTrackerRamsey.submit',
+                  'DriftTrackerRamsey.bfield_difference_2ions',
+                  'DriftTrackerRamsey.no_of_readout_ion_2ions',
                   ]
                   
