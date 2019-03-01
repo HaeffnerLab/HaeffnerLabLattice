@@ -1,52 +1,48 @@
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
-from labrad.units import WithUnit
+from labrad.units import WithUnit as U
 
 class VAET(pulse_sequence):
-    '''
-    VAET experiment relevant parmeters are
-    VAET: freq,duration, shape_profile
-    MS amp, SZX amp
-    Local Strak shift: enable, amp, detuning 
-    '''
+    
         
     def sequence(self):
-        #this hack will be not needed with the new dds parsing methods
-        slope_dict = {0:0.0, 2:2.0, 4:5.0, 6:600.0}
         
         ms = self.parameters.MolmerSorensen
         v = self.parameters.VAET
         szx = self.parameters.SZX
-        pl = self.parameters.LocalStarkShift
-        frequency_advance_duration = WithUnit(6, 'us')
-        f_shift = WithUnit(-30., 'kHz')
-        try:
-            slope_duration = WithUnit(int(slope_dict[v.shape_profile]),'us')
-        except KeyError:
-            raise Exception('Cannot find shape profile: ' + str(v.shape_profile))
-        
-        ampl_off = WithUnit(-63.0, 'dBm')
-        self.end = self.start + 2*frequency_advance_duration + v.duration + slope_duration
-        #first advance the frequency but keep amplitude low
-        self.addDDS('729global', self.start, frequency_advance_duration, v.frequency, ampl_off)
-        self.addDDS('729local', self.start, frequency_advance_duration, v.frequency + f_shift, ampl_off)
-        # turn on bichro on the global and local beams at the same time
-        self.addDDS('729global', self.start + frequency_advance_duration, v.duration, v.frequency, ms.amplitude, profile=int(v.shape_profile))
-        self.addDDS('729local', self.start + frequency_advance_duration, v.duration, v.frequency + f_shift, szx.amplitude, profile=int(v.shape_profile))
-        #self.addDDS('729local', self.start + frequency_advance_duration, v.duration + slope_duration, v.frequency, szx.amplitude, profile=4)
-        self.addTTL('bichromatic_1', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
-        self.addTTL('bichromatic_2', self.start, v.duration + 2*frequency_advance_duration + slope_duration)
-        
-        if pl.enable: # add a stark shift on the localized beam
-            f = WithUnit(80. - 0.2, 'MHz') + pl.detuning
-            #f = WithUnit(80.0 - 0.2, 'MHz') + pl.detuning
-            self.addDDS('SP_local', self.start, frequency_advance_duration, f, ampl_off)
-            self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration, f, pl.amplitude, profile=int(v.shape_profile))
-            #self.addDDS('SP_local', self.start + frequency_advance_duration, v.duration + slope_duration, f, pl.amplitude, profile=4)
-            self.addDDS('SP_local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, f, ampl_off)
-        else:
-            self.addDDS('SP_local', self.start, frequency_advance_duration, WithUnit(60., 'MHz'), ampl_off) # make sure the SP is far away from the carrier
+        duration = v.vaet_duration
 
-        self.addDDS('729global', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)
-        self.addDDS('729local', self.start + frequency_advance_duration + v.duration + slope_duration, frequency_advance_duration, v.frequency, ampl_off)
+        frequency_advance_duration = U(6., "us")
+        ampl_off = U(-63, "dBm")
+        shape_profile = 0
+        slope_duration = U(0, "us")
+
+        self.end = self.start + 3 * frequency_advance_duration + duration + slope_duration
         
-        
+        #first advance the frequency but keep amplitude low
+        self.addDDS("729global", self.start, frequency_advance_duration, ms.frequency, ampl_off)
+        self.addDDS("729local", self.start, frequency_advance_duration, szx.frequency, ampl_off)
+        if ms.due_carrier_enable:
+            self.addDDS("729global_1", self.start, frequency_advance_duration, ms.frequency_ion2, ampl_off)
+
+        self.addDDS("729global", self.start + frequency_advance_duration, duration, ms.frequency, 
+                    ms.amplitude, ms.phase, profile=shape_profile)
+        self.addDDS("729local", self.start + frequency_advance_duration, duration, szx.frequency,
+                    szx.amplitude, szx.phase, profile=shape_profile)
+        if ms.due_carrier_enable:
+            self.addDDS("729global_1", self.start, frequency_advance_duration, ms.frequency_ion2, ms.amplitude_ion2,
+                        ms.phase, profile=shape_profile)
+
+        if ms.bichro_enable:
+            self.addTTL("bichromatic_1", self.start, duration + 2 * frequency_advance_duration + slope_duration)
+        if szx.bichro_enable:
+            #pass
+            self.addTTL("bichromatic_2", self.start, duration + 2 * frequency_advance_duration + slope_duration)
+
+        # Turning of DP gradually
+        self.addDDS("729global", self.start + duration + 2 * frequency_advance_duration + slope_duration, 
+                    frequency_advance_duration, ms.frequency, ampl_off)
+        self.addDDS("729local", self.start + duration + 2 * frequency_advance_duration + slope_duration, 
+                    frequency_advance_duration, szx.frequency, ampl_off)
+        if ms.due_carrier_enable:
+            self.addDDS("729global_1", self.start + duration + 2 * frequency_advance_duration + slope_duration,
+                    frequency_advance_duration, ms.frequency_ion2, ampl_off)        

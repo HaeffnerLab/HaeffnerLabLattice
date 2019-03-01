@@ -1,4 +1,3 @@
-import os
 import  labrad
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,9 +34,9 @@ def find_peak(ident):
     
     print "fit params",fit[0]
     print "finished scanning time " , t
-    print "amplitude is",fit[0][1]
+    print "center  freq",fit[0][0]
     
-    return fit[0][1]
+    return fit[0][0]
 
 def setup_Experiment(  name , scan,parameter_to_scan ='param', num_of_params_to_sub =1):
         # paramter to scan
@@ -73,20 +72,21 @@ def setup_Experiment(  name , scan,parameter_to_scan ='param', num_of_params_to_
 
 # modify new_sequence to take a list of override parameters
 
-scan = [('Spectrum',   ('Spectrum.sideband_detuning', -5, 5, 0.75, 'kHz'))]
+scan = [('Spectrum',   ('Spectrum.sideband_detuning', -7.5, 7.5, 0.75, 'kHz'))]
 
-t_min , t_max , step_size = 0.0, 15000.0, 3000.0
+
+t_min , t_max , step_size = 0.0, 300.0, 1.0
 
 temp_ts=np.arange(t_min,t_max,step_size)
 temp_ts=np.append(temp_ts, t_max)
 
-print temp_ts   
+# print temp_ts   
 # shuffeling the wait times
-np.random.shuffle(temp_ts)  
+# np.random.shuffle(temp_ts)  
 
 ts = [ U(x,'us') for i,x in enumerate(temp_ts)]
 
-data_save_context=setup_Experiment( "HeatingRate" ,  ts , parameter_to_scan ='heating_time' )
+data_save_context=setup_Experiment( "RadialFreqMonitor" ,  ts , parameter_to_scan ='iter',num_of_params_to_sub = 2)
 
 
 
@@ -95,41 +95,41 @@ bsb_peak=np.zeros_like(ts)
 nbar=np.zeros_like(ts)
 wait_time=np.zeros_like(ts)
 for i,t in enumerate(ts):
-    print "Scanning heating time" , t
-    # scan the heating time
-    sc.set_parameter('Heating','background_heating_time',t)
+    print "Scanning iteration" , t
     
-    # scan the redsideband first
-    sc.set_parameter('Spectrum','order',-1.0)
+    
+    # scan the radial 1
+    sc.set_parameter('Spectrum','selection_sideband','radial_frequency_1')
+    sc.set_parameter('Spectrum','manual_amplitude_729',U(-28.0,'dBm'))
     
     ident = sc.new_sequence('Spectrum', scan)
     print "scheduled the sequence -> redsidbend"
     sc.sequence_completed(ident) # wait until sequence is completed
     rsb_peak[i]=find_peak(ident)
     
-    # scan the bluesideband
-    sc.set_parameter('Spectrum','order',1.0)
+    # scan the radial 1
+    sc.set_parameter('Spectrum','selection_sideband','radial_frequency_2')
+    sc.set_parameter('Spectrum','manual_amplitude_729',U(-28.0,'dBm'))
       
     ident = sc.new_sequence('Spectrum', scan)
     print "scheduled the sequence  -> bluesidbend"
     sc.sequence_completed(ident) # wait until sequence is completed
     bsb_peak[i]=find_peak(ident)
       
-    R=1.0*rsb_peak[i]/bsb_peak[i]
-    nbar[i]=1.0*R/(1.0-1.0*R)
-    print "\n", os.getcwd(), "\n"
-    print " n_bar", nbar[i]
+    # R=1.0*rsb_peak[i]/bsb_peak[i]
+    # nbar[i]=1.0*R/(1.0-1.0*R)
+    # print " n_bar", nbar[i]
     wait_time[i]=t['us']
-    submission = [t['us'], nbar[i]]
+    submission = [t['us'], rsb_peak[i], bsb_peak[i] ]
     dv.add(submission, context = data_save_context)
 
-sc.set_parameter('Heating','background_heating_time',U(0.0,'us'))
-sc.set_parameter('Spectrum','order',0.0)   
-np.savetxt('HeatingRate.csv', (ts,nbar),  delimiter=',')
+# sc.set_parameter('Heating','background_heating_time',U(0.0,'us'))
+# sc.set_parameter('Spectrum','order',0.0)   
+#np.savetxt('HeatingRate.csv', (ts,nbar),  delimiter=',')
 cxn.disconnect()
 
 print wait_time, rsb_peak
-plt.plot(ts,nbar,'r',label='fring contrast')
-plt.xlabel('wait_time [us]')
-plt.ylabel('fring contrast')
-plt.show()
+# plt.plot(ts,nbar,'r',label='fring contrast')
+# plt.xlabel('wait_time [us]')
+# plt.ylabel('fring contrast')
+# plt.show()
