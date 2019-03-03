@@ -22,7 +22,6 @@ class LATTICE_GUI(QtGui.QMainWindow):
         
         show_separate_script_scanner_window = False
         
-        #from common.clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
         from common.devel.bum.gui_scriptscanner2.script_scanner_gui import script_scanner_gui
         script_scanner = script_scanner_gui(reactor, cxn)
         if show_separate_script_scanner_window:        
@@ -30,15 +29,13 @@ class LATTICE_GUI(QtGui.QMainWindow):
             
         contrl_widget = self.makeControlWidget(reactor, cxn)
         histogram = self.make_histogram_widget(reactor, cxn)
-        drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
+        #drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         global_drift_tracker = self.make_global_drift_tracker_widget(reactor, cxn)
         single_pass = self.make_sp_control(reactor, cxn)
         piezo_motor_control = self.make_piezo_motor_control_widget(reactor, cxn)
         #automation_widget = self.make_automation_widget(reactor, cxn)
-        config_editor = self.make_config_editor_widget(reactor, cxn)
+        #config_editor = self.make_config_editor_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
-
-
         layout = QtGui.QHBoxLayout()
         
 
@@ -51,12 +48,12 @@ class LATTICE_GUI(QtGui.QMainWindow):
         
         self.tabWidget.addTab(single_pass,'Single &Pass')
         self.tabWidget.addTab(histogram, '&Readout Histogram')
-        self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
+        #self.tabWidget.addTab(drift_tracker, '&Mrs Drift Tracker')
         self.tabWidget.addTab(global_drift_tracker, 'Global Drift Tracker')
         #self.tabWidget.addTab(dac_control, '&DAC Control')
         self.tabWidget.addTab(piezo_motor_control, 'M&irror Porsche')
         #self.tabWidget.addTab(drift_tracker, '&Autogadget')
-        self.tabWidget.addTab(config_editor, 'Config &Editor')
+        #self.tabWidget.addTab(config_editor, 'Config &Editor')
         
 
         layout.addWidget(self.tabWidget)
@@ -64,10 +61,10 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.setCentralWidget(centralWidget)
 
         
-   # def make_automation_widget(self, reactor, cxn):
-   #     from lattice.clients.automation_functions import auto_gadget
-   #     widget = auto_gadget(reactor, cxn = cxn)
-   #     return widget
+    #def make_automation_widget(self, reactor, cxn):
+    #    from lattice.clients.automation_functions import auto_gadget
+    #    widget = auto_gadget(reactor, cxn = cxn)
+    #    return widget
  
     def make_piezo_motor_control_widget(self, reactor, cxn):
         from common.clients.PICOMOTOR_CONTROL import PICOMOTOR_CONTROL
@@ -80,8 +77,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         return widget
 
     def make_global_drift_tracker_widget(self, reactor, cxn):
-        from common.clients.drift_tracker_global.drift_tracker_global import drift_tracker
-        widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
+        from common.clients.drift_tracker_global.drift_tracker_global import drift_tracker_global
+        widget = drift_tracker_global(reactor, cxn = cxn, clipboard = self.clipboard)
         return widget
     
     def make_sp_control(self, reactor, cxn):
@@ -107,15 +104,15 @@ class LATTICE_GUI(QtGui.QMainWindow):
         return histograms_tab
     
     def makeTranslationStageWidget(self, reactor):
-        widget = QtGui.QWidget()
+        widget = QtGui.QTabWidget()
         gridLayout = QtGui.QGridLayout()
         widget.setLayout(gridLayout)
         return widget
     
     def makeControlWidget(self, reactor, cxn):
-        widget = QtGui.QWidget()
+        widget = QtGui.QTabWidget()
         #from electrode_client.electrode import electrode_widget
-        from lattice.clients.DAC_CONTROL import DAC_Control
+        #from lattice.clients.DAC_CONTROL import DAC_Control
         from common.clients.LASERDAC_CONTROL import DAC_Control as laserdac_control_widget
         from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from common.clients.PMT_CONTROL import pmtWidget
@@ -130,15 +127,20 @@ class LATTICE_GUI(QtGui.QMainWindow):
         gridLayout = QtGui.QGridLayout()
         # gridLayout.addWidget(DAC_Control(reactor), 0, 0, 1, 2)
         #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
+        pixmap = QtGui.QPixmap("/home/lattice/quantum_leap.png")
+        qlabel = QtGui.QLabel(self)
+        qlabel.setPixmap(pixmap)
+        from PyQt4.QtCore import Qt as q
+        qlabel.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        qlabel.setAlignment(q.AlignCenter)
+        gridLayout.addWidget(qlabel, 0,0,1,2)
         gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
         #gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
         #gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      2,0,1,1)
         #gridLayout.addWidget(oven_Control(reactor, cxn),        2,1,1,1)
-        
         gridLayout.addWidget(InjectionLock_Control(reactor),        2,1,1,1)
-        
         gridLayout.addWidget(laserdac_control_widget(reactor),             0,2,3,2)
         gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        3,0,1,2)
@@ -160,5 +162,5 @@ if __name__=="__main__":
     from twisted.internet import reactor
     latticeGUI = LATTICE_GUI(reactor, clipboard)
     latticeGUI.setWindowTitle('Lattice GUI')
-    latticeGUI.show()
+    latticeGUI.showMaximized()
     reactor.run()

@@ -37,6 +37,7 @@ class camera_histogram(QtGui.QWidget):
     def create_plot_layout(self):
         layout = QtGui.QVBoxLayout()
         self.fig = Figure()
+        self.fig.patch.set_facecolor((.96, .96, .96))
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self)
         self.axes = self.fig.add_subplot(111)
