@@ -55,7 +55,7 @@ class Spectrum(pulse_sequence):
         duration=spc.manual_excitation_time
         print "Spectrum scan 555"
         print "spc.line_selection : " ,spc.line_selection
-        print "spc.selection_sideband : " ,spc.z    
+        # print "spc.selection_sideband : " ,spc.z    
         print "spc.order : " , int(spc.order)
         
         print "729 freq: {}".format(freq_729.inUnitsOf('MHz'))

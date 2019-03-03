@@ -91,25 +91,25 @@ class StatePreparation(pulse_sequence):
                 self.addSequence(SidebandCooling)
                 self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op }) # apply an additional full optical pumping aftereach cycle
                 
-                # if self.parameters.SequentialSBCooling1.enable:
-                #     print "sequential side band cooling"
-                #     sbc=self.parameters.SequentialSBCooling1
-                #     # replacing the channel, sideband and order 
-                #     self.addSequence(SidebandCooling,{"StatePreparation.channel_729" : sbc.channel_729,
-                #                                       "SidebandCooling.selection_sideband" : sbc.selection_sideband,
-                #                                       "SidebandCooling.order" : sbc.order
-                #                                       })
-                #     self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
+                if self.parameters.SequentialSBCooling1.enable:
+                    print "sequential side band cooling"
+                    sbc=self.parameters.SequentialSBCooling1
+                    # replacing the channel, sideband and order 
+                    self.addSequence(SidebandCooling,{"StatePreparation.channel_729" : sbc.channel_729,
+                                                      "SidebandCooling.selection_sideband" : sbc.selection_sideband,
+                                                      "SidebandCooling.order" : sbc.order
+                                                      })
+                    self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
                 
-                # if self.parameters.SequentialSBCooling2.enable:
-                #     print "sequential side band cooling"
-                #     sbc=self.parameters.SequentialSBCooling2
-                #     # replacing the channel, sideband and order 
-                #     self.addSequence(SidebandCooling,{"StatePreparation.channel_729" : sbc.channel_729,
-                #                                       "SidebandCooling.selection_sideband" : sbc.selection_sideband,
-                #                                       "SidebandCooling.order" : sbc.order
-                #                                       })
-                #     self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
+                if self.parameters.SequentialSBCooling2.enable:
+                    print "sequential side band cooling"
+                    sbc=self.parameters.SequentialSBCooling2
+                    # replacing the channel, sideband and order 
+                    self.addSequence(SidebandCooling,{"StatePreparation.channel_729" : sbc.channel_729,
+                                                      "SidebandCooling.selection_sideband" : sbc.selection_sideband,
+                                                      "SidebandCooling.order" : sbc.order
+                                                      })
+                    self.addSequence(OpticalPumping, {'OpticalPumpingContinuous.optical_pumping_continuous_duration':duration_op })
                 
         
         if self.parameters.StatePreparation.aux_optical_pumping_enable and not self.parameters.StatePreparation.aux_optical_pumping_pulsed_enable:

@@ -23,6 +23,7 @@ class actions_widget(QtGui.QFrame, widget_ui):
         QtGui.QDialog.__init__(self)
         widget_ui.__init__(self)
         self.connect()
+        self.load_ion_threshold.setText("10")
     
     @inlineCallbacks
     def connect(self):
@@ -47,13 +48,15 @@ class actions_widget(QtGui.QFrame, widget_ui):
         self.fromstate.pressed.connect(self.on_from_state)
         self.todc.pressed.connect(self.on_to_dc)
         self.tostate.pressed.connect(self.on_to_state)
+        self.load_ion_threshold.returnPressed.connect(self.update_threshold)
     
     @inlineCallbacks
     def ion_loader(self):
         script = "/home/lattice/LabRAD/lattice/clients/automation_functions/load_single_ion.py"
 
         def run_loading():
-            self.p = subprocess.Popen(["python", "/home/lattice/LabRAD/lattice/clients/automation_functions/load_single_ion.py"])
+            self.p = subprocess.Popen(["python", "/home/lattice/LabRAD/lattice/clients/automation_functions/load_single_ion.py", 
+                                       self.load_ion_threshold.text()])
             self.isloading = True
             self.p.wait()
             self.isloading = False
@@ -69,7 +72,7 @@ class actions_widget(QtGui.QFrame, widget_ui):
             print "Terminating load_single_ion.py"
         
         else:
-            print "Running load_single_ion.py"
+            print "Running load_single_ion.py ", self.load_ion_threshold.text()
             thread = threading.Thread(target=run_loading, args=())
             thread.start()
             self.Load_ion.setText("stop_loading")
@@ -82,6 +85,11 @@ class actions_widget(QtGui.QFrame, widget_ui):
         xtal = yield self.cxn.get_server('Crystallizer')
         yield xtal.crystallize_once()
     
+    @inlineCallbacks
+    def update_threshold(self):
+        # print "Gotem"
+        yield 1
+
     @inlineCallbacks
     def on_to_state(self):
         pv = yield self.cxn.get_server('scriptscanner')

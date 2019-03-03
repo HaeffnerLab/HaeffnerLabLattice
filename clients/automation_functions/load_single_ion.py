@@ -18,9 +18,9 @@ cxn = labrad.connect()
 # voltage in setvoltage is in mV
 #b.laserdac.setvoltage('397', 326)
 
-if len(sys.argv) > 1:
-    cxn.pulser.switch_manual('bluePI', False)
-    sys.exit(0)
+#if len(sys.argv) > 1:
+#    cxn.pulser.switch_manual('bluePI', False)
+#    sys.exit(0)
 
 print "\n\n"
 
@@ -28,7 +28,8 @@ print "\n\n"
 cxn.pulser.switch_manual('bluePI', True)
 time.sleep(1.0)
 
-threshold = 5.0
+print sys.argv[1]
+threshold = float(sys.argv[1]) 
 
 counts = 0.0
 

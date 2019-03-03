@@ -39,22 +39,18 @@ class CalibLine1(pulse_sequence):
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         
-        self.addSequence(StateReadout, {'StateReadout.readout_mode': "pmt"})
+        self.addSequence(StateReadout)
         
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
 #        print "Switching the 866DP to auto mode"
         cxn.pulser.switch_auto('866DP')
-        # Make absolutely sure pmt is used
-        # vault = cxn.parametervault
-        # vault.set_parameter("StateReadout", "readout_mode", "pmt")
         
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
 
-        # vault = cxn.parametervault
-        # vault.set_parameter("StateReadout", "readout_mode", parameters_dict["StateReadout.hack_mode"])  
+        
 #        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
 #        print " running finally the CalibLine1 !!!!"
@@ -85,7 +81,16 @@ class CalibLine1(pulse_sequence):
             return
         
         peak_fit = U(peak_fit, "MHz") 
-        carr_1_global = peak_fit 
+        carr_1 = peak_fit 
+
+        line_1 = parameters_dict.DriftTracker.line_selection_1
+        #print " peak 1 {}", carr_1 
+        #print " peak 2 {}", carr_2
+        
+        if parameters_dict.Display.relative_frequencies:
+            #print "using relative units"
+            carr_1 = carr_1+parameters_dict.Carriers[carrier_translation[line_1]]
+        return 0.8
 
 class CalibLine2(pulse_sequence):
 
@@ -117,21 +122,16 @@ class CalibLine2(pulse_sequence):
                                          'Excitation_729.rabi_excitation_amplitude': amp,
                                          'Excitation_729.rabi_excitation_duration':  duration })
         
-        self.addSequence(StateReadout, {'StateReadout.readout_mode': "pmt"})
+        self.addSequence(StateReadout)
         
     @classmethod
     def run_initial(cls,cxn, parameters_dict):
 #        print "Switching the 866DP to auto mode"
-        # Make absolutely sure pmt is used
-        # vault = cxn.parametervault
-        # vault.set_parameter("StateReadout", "readout_mode", "pmt")
         cxn.pulser.switch_auto('866DP')
         
     @classmethod
     def run_finally(cls, cxn, parameters_dict, all_data, freq_data):
         
-        # vault = cxn.parametervault
-        # vault.set_parameter("StateReadout", "readout_mode", parameters_dict["StateReadout.hack_mode"])  
 #        print "switching the 866 back to ON"
         cxn.pulser.switch_manual('866DP', True)
         
@@ -149,12 +149,6 @@ class CalibLine2(pulse_sequence):
                                'S+1/2D+5/2':'c8',
                                'S-1/2D+3/2':'c9',
                                }
-        global carr_1_global 
-        
-        carr_1 = carr_1_global
-        
-        if not carr_1:
-            return
         
           
         # for the multiple case we summ the probabilities, this also
@@ -173,31 +167,27 @@ class CalibLine2(pulse_sequence):
           
         carr_2 = peak_fit
         
-        line_1 = parameters_dict.DriftTracker.line_selection_1
         line_2 = parameters_dict.DriftTracker.line_selection_2
         #print " peak 1 {}", carr_1 
         #print " peak 2 {}", carr_2
         
         if parameters_dict.Display.relative_frequencies:
             #print "using relative units"
-            carr_1 = carr_1+parameters_dict.Carriers[carrier_translation[line_1]]
             carr_2 = carr_2+parameters_dict.Carriers[carrier_translation[line_2]]
-        
-        
-        submission = [(line_1, carr_1), (line_2, carr_2)]
 
-        print "submission", submission
-        cxn.sd_tracker.set_measurements(submission) 
-        # if parameters_dict.DriftTracker.global_sd_enable:
-        import labrad
-        global_sd_cxn = labrad.connect(cl.global_address, password = cl.global_password,tls_mode='off')
-        print cl.client_name , "is sub lines to global SD" , 
-        print submission 
-        global_sd_cxn.sd_tracker_global.set_measurements(submission,cl.client_name) 
-        global_sd_cxn.disconnect()
+        return 0.2
         
-class CalibAllLines(pulse_sequence):
+class multi2d_test(pulse_sequence):
     is_composite = True
+
+    is_2dimensional = True
+
+    d1_scan = 'n bar'
+
+    scannable_params_1d = {
+        'Heating.background_heating_time': [(0., 5000., 500., 'us'), 'current']
+        }
+
     # at the moment fixed params are shared between the sub sequence!!! 
     fixed_params = {'opticalPumping.line_selection': 'S-1/2D+3/2',
                     'Display.relative_frequencies': False,
@@ -206,7 +196,7 @@ class CalibAllLines(pulse_sequence):
                     'StateReadout.readout_mode': "pmt"}
                     
 
-    sequence = [CalibLine1, CalibLine2] 
+    sequences = [CalibLine1, CalibLine2] 
     # sequences = [(CalibLine1, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'}), 
     #              (CalibLine2, {'StateReadout.readout_mode': 'CalibrationScans.readout_mode'})]
 
@@ -218,4 +208,9 @@ class CalibAllLines(pulse_sequence):
                   'DriftTracker.line_selection_2',
                   'Display.relative_frequencies',
                   'CalibrationScans.readout_mode']
+
+    @classmethod
+    def final_data_process(cls, cxn, processed_data):
+        print "processed_data", processed_data
+        return processed_data[0] - processed_data[1]
                   

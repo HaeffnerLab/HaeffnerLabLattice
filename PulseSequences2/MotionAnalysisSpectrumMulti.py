@@ -27,7 +27,7 @@ class MotionAnalysisSpectrumMulti(pulse_sequence):
                     'StateReadout.readout_mode': "pmt"}
 
                     
-    sequences = [(MotionAnalysisSpectrum1, {'Motion_Analysis.sideband_selection': 'radial_frequency_1',
+    sequence = [(MotionAnalysisSpectrum1, {'Motion_Analysis.sideband_selection': 'radial_frequency_1',
                     'RabiFlopping.selection_sideband': 'radial_frequency_1'}),
                  (MotionAnalysisSpectrum2, {'Motion_Analysis.sideband_selection': 'radial_frequency_2',
                     'RabiFlopping.selection_sideband': 'radial_frequency_2'})] 

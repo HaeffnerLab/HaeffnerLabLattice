@@ -113,7 +113,7 @@ class SpectrumBlue(pulse_sequence):
 class MultiSpectrum(pulse_sequence):
     is_composite = True
     
-    sequences = [SpectrumRed, SpectrumBlue]
+    sequence = [SpectrumRed, SpectrumBlue]
 
     show_params= ['Excitation_729.channel_729',
                   'Excitation_729.bichro',

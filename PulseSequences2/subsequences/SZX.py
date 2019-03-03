@@ -1,29 +1,45 @@
 from common.devel.bum.sequences.pulse_sequence import pulse_sequence
-from labrad.units import WithUnit
+from labrad.units import WithUnit as U
 
 class SZX(pulse_sequence):
-
-    required_parameters = [
-        ('SZX', 'frequency'),
-        ('SZX', 'amplitude'),
-        ('SZX', 'duration'),
-        ]
-
+    
+    
     def sequence(self):
 
         p = self.parameters.SZX
-        frequency_advance_duration = WithUnit(6, 'us')
-        buf = WithUnit(5, 'us') # a little extra time to account for TTL delays
-        ampl_off = WithUnit(-63., 'dBm')
+        amp = p.amplitude
+        duration = p.duration
+        bichros = p.bichro_enable
+        freq = p.frequency
+        phase = p.phase
 
-        szx_amp = p.amplitude
-        gate_duration = p.duration
+        frequency_advance_duration = U(6., "us")
+        ampl_off = U(-63., "dBm")
+        shape_profile = 2
+        slope_duration = U(2., "us")
+
+        self.end = self.start + 3 * frequency_advance_duration + duration + slope_duration
         
-        self.addDDS('729local', self.start, frequency_advance_duration, p.frequency, ampl_off)
+        #  First advance the frequency, but keep amplitude low.
+        self.addDDS("729local", self.start, frequency_advance_duration, freq, ampl_off)
+        # self.addDDS('729global', self.start , duration+ frequency_advance_duration, U(220.0, 'MHz'), ampl_off)
+       
+        #  Making sure that the global is off -> enabling the turned off sp and detuing the beam
+        if bichros:
+            self.addTTL("bichromatic_2", self.start, duration + 2 * frequency_advance_duration + slope_duration)
         
-        te = self.start + frequency_advance_duration
-        self.addTTL('bichromatic_2', te, gate_duration + 2*buf)
-        self.addDDS('729local', te + buf , gate_duration, p.frequency, szx_amp, profile = 4)
-        self.addDDS('SP_local', te + buf , gate_duration, WithUnit(79.3, 'MHz'), ampl_off) # move it off resonance
-        self.end = te + gate_duration + 2*buf
-############ need to write an init function to take care of the dds_cw 
+
+        self.addDDS("729local", self.start + frequency_advance_duration, duration, freq, amp, phase, 
+                    profile=shape_profile)
+
+
+        # tunning DP off gradually             
+        #self.addDDS("729global", self.start + duration + 2 * frequency_advance_duration + slope_duration, 
+        #            frequency_advance_duration, frequency, ampl_off)
+        self.addDDS("729local", self.start + duration + 2 * frequency_advance_duration + slope_duration, 
+                    frequency_advance_duration, freq, ampl_off)
+        # self.addDDS('729global', self.start + duration + 2 * frequency_advance_duration + slope_duration, 
+        #             frequency_advance_duration, U(220., "MHz"), ampl_off)        
+        
+        
+        self.end = self.end + frequency_advance_duration        

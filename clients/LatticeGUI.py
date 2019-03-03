@@ -71,10 +71,10 @@ class LATTICE_GUI(QtGui.QMainWindow):
         widget = PICOMOTOR_CONTROL(reactor, cxn = cxn)
         return widget
  
-    def make_drift_tracker_widget(self, reactor, cxn):
-        from common.clients.drift_tracker.drift_tracker import drift_tracker
-        widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
-        return widget
+    # def make_drift_tracker_widget(self, reactor, cxn):
+    #     from common.clients.drift_tracker.drift_tracker import drift_tracker
+    #     widget = drift_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
+    #     return widget
 
     def make_global_drift_tracker_widget(self, reactor, cxn):
         from common.clients.drift_tracker_global.drift_tracker_global import drift_tracker_global
@@ -161,6 +161,7 @@ if __name__=="__main__":
     qt4reactor.install()
     from twisted.internet import reactor
     latticeGUI = LATTICE_GUI(reactor, clipboard)
+    latticeGUI.showMaximized()
     latticeGUI.setWindowTitle('Lattice GUI')
     latticeGUI.showMaximized()
     reactor.run()

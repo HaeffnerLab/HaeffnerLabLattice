@@ -22,7 +22,7 @@ class auto_gadget(QWidget):
         self.setup_labrad()
 
         self.load_ion = QPushButton('Load Ion')
-        self.load_ion_threshold = QLineEdit('3')
+        self.load_ion_threshold.setText("Test") 
 
         self.load_ion.clicked.connect(self.load_ion_func)
 
