@@ -7,6 +7,7 @@ import time
 import labrad
 from labrad.units import WithUnit
 import numpy as np
+import datetime
 
 class Sideband_tracker(experiment):
     
@@ -48,6 +49,7 @@ class Sideband_tracker(experiment):
         parameters.remove(('Excitation_729','rabi_excitation_amplitude'))
         parameters.remove(('Excitation_729','rabi_excitation_duration'))
         parameters.remove(('Excitation_729','rabi_excitation_frequency'))
+        parameters.remove(('Excitation_729','channel_729'))
         return parameters
     
     def initialize(self, cxn, context, ident):
@@ -60,7 +62,7 @@ class Sideband_tracker(experiment):
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.fitter = cxn.fitter
@@ -68,9 +70,9 @@ class Sideband_tracker(experiment):
         self.spectrum_save_context = cxn.context()
         self.save_trap_freq = cxn.context()
         self.ion_number = int(self.parameters.Sideband_tracker.ion_selection)
-        self.sideband_selection = cm.selected_sideband(self.parameters.Sideband_tracker.sideband_selection)
+        #self.sideband_selection = cm.selected_sideband(self.parameters.Sideband_tracker.sideband_selection)
         self.auto_fit = self.parameters.Sideband_tracker.auto_fit
-        print self.sideband_selection
+        #print self.sideband_selection
     
     def setup_sequence_parameters(self):
         sp = self.parameters.Sideband_tracker
@@ -83,6 +85,7 @@ class Sideband_tracker(experiment):
         steps = int(span / resolution )
         self.parameters['Excitation_729.rabi_excitation_duration'] = duration
         self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
+        self.parameters['Excitation_729.channel_729'] = '729DP_1' ########## CHANGE BACK TO 729DP_1
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
@@ -117,8 +120,11 @@ class Sideband_tracker(experiment):
             window_name = [self.sideband_selection]
             self.dv.add_parameter('Window', window_name,context=self.save_trap_freq)
             self.dv.add_parameter('plotLive', True,context=self.save_trap_freq)
+            time_string = str(datetime.datetime.now())
+            self.dv.add_parameter('Start_time', time_string,context=self.save_trap_freq) 
         
     def run(self, cxn, context):
+        self.sideband_selection = cm.selected_sideband(self.parameters.Sideband_tracker.sideband_selection)
         self.setup_data_vault()
         self.setup_sequence_parameters()
         for i,freq in enumerate(self.scan):
@@ -149,6 +155,7 @@ class Sideband_tracker(experiment):
             self.pv.set_parameter('TrapFrequencies',self.sideband_selection,result)
             print "fit accepted"
             print time.time(), result
+            #data_time = datetime.datetime.now().hour*3600+datetime.datetime.now().minute*60+datetime.datetime.now().second
             self.dv.add([time.time(), result['MHz']],context=self.save_trap_freq)
         else:
             print 'fit rejected!'

@@ -6,6 +6,8 @@ import time
 import labrad
 from labrad.units import WithUnit
 from numpy import linspace
+#The following command brinfgs the sequence plotter.
+#from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
 
 class dephase_scan_duration(experiment):
     
@@ -39,7 +41,7 @@ class dephase_scan_duration(experiment):
         self.excite = self.make_experiment(excitation_dephase)
         self.excite.initialize(cxn, context, ident)
         self.scan = []
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.data_save_context = cxn.context()
@@ -96,6 +98,7 @@ class dephase_scan_duration(experiment):
                 return False
             second_pulse_dur = min(self.max_second_pulse, interaction_duration)
             ramsey_time = max(WithUnit(0,'us'), interaction_duration - self.max_second_pulse)
+            #ramsey_time = WithUnit(0,'us')
             p.evolution_ramsey_time = ramsey_time
             p.evolution_pulses_duration = second_pulse_dur
             self.excite.set_parameters(self.parameters)
@@ -105,6 +108,13 @@ class dephase_scan_duration(experiment):
             self.dv.add(submission, context = self.data_save_context)
             self.update_progress(i)
         self.save_parameters(self.dv, cxn, self.cxnlab, self.data_save_context)
+        ####### FROM DYLAN -- PULSE SEQUENCE PLOTTING #########
+        #ttl = self.cxn.pulser.human_readable_ttl()
+        #dds = self.cxn.pulser.human_readable_dds()
+        #channels = self.cxn.pulser.get_channels().asarray
+        #sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        #sp.makePlot()
+        ############################################3
         return True
      
     def finalize(self, cxn, context):

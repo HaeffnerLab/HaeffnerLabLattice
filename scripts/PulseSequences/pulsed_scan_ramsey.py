@@ -7,20 +7,21 @@ from subsequences.SidebandCooling import sideband_cooling
 from subsequences.TurnOffAll import turn_off_all
 from subsequences.BlueHeating import local_blue_heating
 from subsequences.EmptySequence import empty_sequence
+from subsequences.SamplePID import sample_pid
 from treedict import TreeDict
 from labrad.units import WithUnit
 
 class pulsed_scan_ramsey(pulse_sequence):
     
     required_parameters = [
-                           ('OpticalPumping','optical_pumping_enable'), 
-                           ('SidebandCooling','sideband_cooling_enable'),
+                           ('StatePreparation','optical_pumping_enable'), 
+                           ('StatePreparation','sideband_cooling_enable'),
                            ('PulsedScanRamsey', 'pulse_duration'),
                            ('PulsedScanRamsey', 'ramsey_time'),
                            ]
     
     required_subsequences = [turn_off_all,doppler_cooling_after_repump_d, optical_pumping,sideband_cooling,
-                             local_blue_heating,rabi_excitation, tomography_readout,empty_sequence
+                             local_blue_heating,rabi_excitation, tomography_readout,empty_sequence, sample_pid
                              ]
     
     replaced_parameters = {local_blue_heating:[('Heating','blue_heating_duration')],
@@ -31,10 +32,12 @@ class pulsed_scan_ramsey(pulse_sequence):
         p = self.parameters
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
+        #self.addSequence(sample_pid)
+        
         self.addSequence(doppler_cooling_after_repump_d)
-        if p.OpticalPumping.optical_pumping_enable:
+        if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        if p.SidebandCooling.sideband_cooling_enable:
+        if p.StatePreparation.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(local_blue_heating, TreeDict.fromdict({'Heating.blue_heating_duration':p.PulsedScanRamsey.pulse_duration}))
         start_psk_ttl = self.end

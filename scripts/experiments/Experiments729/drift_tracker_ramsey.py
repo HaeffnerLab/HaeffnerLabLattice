@@ -15,6 +15,7 @@ class drift_tracker_ramsey(experiment):
                            ('DriftTrackerRamsey','line_2_pi_time'),
                            ('DriftTrackerRamsey','line_2_amplitude'),
                            ('DriftTrackerRamsey','error_sensitivity'),
+                           ('DriftTrackerRamsey','use_camera_for_readout'),
                            ]
 
     @classmethod
@@ -34,8 +35,14 @@ class drift_tracker_ramsey(experiment):
         self.drift_tracker = cxn.sd_tracker
         self.ramsey_dt = self.make_experiment(drift_tracker_ramsey_oneline)
         self.ramsey_dt.initialize(cxn, context, ident)
+        self.dds_cw = cxn.dds_cw
         
     def run(self, cxn, context):
+        import time
+        dds5_state = self.dds_cw.output('5')
+
+        self.dds_cw.output('5', True)
+        time.sleep(1)
         dt = self.parameters.DriftTracker
         ramsey_dt = self.parameters.DriftTrackerRamsey
         if dt.line_selection_1 == dt.line_selection_2:
@@ -45,15 +52,16 @@ class drift_tracker_ramsey(experiment):
                                        'DriftTrackerRamsey.pi_time':ramsey_dt.line_1_pi_time,
                                        'DriftTrackerRamsey.amplitude':ramsey_dt.line_1_amplitude,
                                        'DriftTrackerRamsey.detuning':WithUnit(0,'Hz'),
+                                       'StateReadout.use_camera_for_readout':ramsey_dt.use_camera_for_readout,
                                        })
         replace_2 = TreeDict.fromdict({
                                        'DriftTrackerRamsey.line_selection':dt.line_selection_2,
                                        'DriftTrackerRamsey.pi_time':ramsey_dt.line_2_pi_time,
                                        'DriftTrackerRamsey.amplitude':ramsey_dt.line_2_amplitude,
-                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz')
+                                       'DriftTrackerRamsey.detuning':WithUnit(0,'Hz'),
+                                       'StateReadout.use_camera_for_readout':ramsey_dt.use_camera_for_readout,
                                        })
-        
-        replace_1,replace_2 = np.random.permutation([replace_1,replace_2])
+        #replace_1,replace_2 = np.random.permutation([replace_1,replace_2]) this line breaks something
         self.ramsey_dt.set_parameters(replace_1)
         self.ramsey_dt.set_progress_limits(0, 50.0)
         frequency_1,excitation = self.ramsey_dt.run(cxn, context)
@@ -66,6 +74,12 @@ class drift_tracker_ramsey(experiment):
         if not 0.5 - error_sensitivity <= excitation <= 0.5 + error_sensitivity:
             raise Exception("Incorrect Excitation {}".format(replace_2.DriftTrackerRamsey.line_selection)) 
         self.submit_centers(replace_1,frequency_1,replace_2,frequency_2)
+        
+        # resetting DDS5 state
+        time.sleep(1)
+        #self.dds_cw.output('5', False)
+        self.dds_cw.output('5', dds5_state)
+        time.sleep(1)
 
     def submit_centers(self, replace_1, center1, replace_2, center2):     
         if center1 is not None and center2 is not None:

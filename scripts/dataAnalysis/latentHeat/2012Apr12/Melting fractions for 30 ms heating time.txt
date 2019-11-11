@@ -1,1 +1,0 @@
-Value(0.0001, None), Value(5.0, None), Value(15.0, None), Value(100.0, None)xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0.98, 1.0, 1.0, 1.0

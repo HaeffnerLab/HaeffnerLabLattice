@@ -1,1 +1,0 @@
-Value(45.0, None), Value(55.0, None), Value(65.0, None), Value(75.0, None), Value(85.0, None)xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0.02, 0.02, 0.37, 0.82, 1.0

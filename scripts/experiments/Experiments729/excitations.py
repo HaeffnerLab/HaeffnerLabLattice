@@ -32,8 +32,19 @@ class excitation_ramsey_2ions(base_excitation):
 
 class excitation_rabi_2ions(base_excitation):
     from lattice.scripts.PulseSequences.spectrum_rabi_2ions import spectrum_rabi_2ions
-    name = 'Ramsey2ions'
+    name = 'Excitation2ions'
     pulse_sequence = spectrum_rabi_2ions
+
+class excitation_ramsey_with_heating(base_excitation):
+    #from lattice.scripts.PulseSequences.dephasing_chain import dephasing_chain
+    from lattice.scripts.PulseSequences.ramsey_with_heating import ramsey_with_heating
+    name = 'RamseyHeating'
+    pulse_sequence = ramsey_with_heating
+    
+class ramsey_with_stark(base_excitation):
+    from lattice.scripts.PulseSequences.stark_shift_global import stark_shift_global
+    name = 'StarkShiftGlobal'
+    pulse_sequence = stark_shift_global 
     
 if __name__ == '__main__':
     import labrad

@@ -42,7 +42,7 @@ class Parity_LLI_rabi_power_fitter(experiment):
     def initialize(self, cxn, context, ident):
         
         self.ident = ident
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        #self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.power_flop = self.make_experiment(Rabi_power_flopping_2ions)
         self.power_flop.initialize(cxn, context, ident)
         self.enable_feedback = self.parameters['Parity_LLI_rabi_power_fitter.enable_feedback']

@@ -1,6 +1,9 @@
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+# Changed from:
+# from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+# after matplotlib update.
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
@@ -34,6 +37,7 @@ class camera_histogram(QtGui.QWidget):
     def create_plot_layout(self):
         layout = QtGui.QVBoxLayout()
         self.fig = Figure()
+        self.fig.patch.set_facecolor((.96, .96, .96))
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self)
         self.axes = self.fig.add_subplot(111)

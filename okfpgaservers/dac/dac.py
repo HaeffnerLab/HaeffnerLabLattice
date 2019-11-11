@@ -158,6 +158,20 @@ class DAC(LabradServer):
             #if dictionary doesn't exist yet (i.e bad identification error), do nothing
             pass
 
+    @setting(3, "Set Endcaps", voltage = 'v[V]', returns = '')
+    def setEndcaps(self, c, voltage):
+        for channel in ['comp1', 'comp2']:
+            try:
+                chan = self.d[channel]
+                minim,total,channel_number = chan.min_voltage, chan.vpp, chan.channel_number
+            except KeyError:
+                raise Exception ("Channel {} not found".format(channel))
+            voltage_value = voltage['V']
+            value = self.voltage_to_val(voltage_value, minim, total)
+            yield self.do_set_voltage(channel_number, value)
+            chan.voltage = voltage_value
+            self.notifyOtherListeners(c, (channel, voltage_value), self.onNewVoltage)
+
 if __name__ == "__main__":
     from labrad import util
     util.runServer( DAC() )

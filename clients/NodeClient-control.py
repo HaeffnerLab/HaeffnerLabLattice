@@ -6,13 +6,15 @@ nodeDict = {
 			'node_lattice_control':[
 								'Serial Server',
 								'Data Vault',
-								'DAC',
+								#'DAC',
+								'DAC Server',
 								'Pulser',
+								#'Real Simple Grapher',
 								'NormalPMTFlow',
 								'ADCserver',
 								'SD Tracker',
 								'GPIB Device Manager', 
-								'ScriptScanner',
+								# 'ScriptScanner',
 								'ParameterVault',
 								'SHQ_222M_SERVER',
 								'Electrode Diagonalization',
@@ -21,6 +23,8 @@ nodeDict = {
 								'Agilent E3633A',
 								'Rigol DG4062 Server',
 								'Fitter',
+								'DDS_CW',
+								'Picomotor'
 								],
 			}
 #connect to LabRAD
@@ -40,7 +44,9 @@ else:
 			print '\nWorking on {} \n '.format(node)
 			cxn.servers[node].refresh_servers()
 			#if node server is up, start all possible servers on it that are not already running
-			running_servers = np.array(cxn.servers[node].running_servers().asarray)
+			# running_servers = np.array(cxn.servers[node].running_servers().asarray)
+			running_servers = np.asarray(cxn.servers[node].running_servers())
+			# print 'running_servers', running_servers
 			for server in nodeDict[node]:
 				if server in running_servers: 
 					print server + ' is already running'

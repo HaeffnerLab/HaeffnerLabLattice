@@ -1,6 +1,9 @@
 import numpy as np
 import lmfit
 from equilbrium_positions import position_dict
+import peakutils
+
+from multiprocessing import Process
 
 class ion_state_detector(object):
     
@@ -9,7 +12,37 @@ class ion_state_detector(object):
         self.all_state_combinations = self.all_combinations_0_1(ion_number)
         self.spacing_dict = position_dict[ion_number] #provides relative spacings of all the ions
         self.fitted_gaussians, self.background = None, None
-    
+
+    def integrate_image_vertically(self, data, threshold):
+        # sum image vertically        
+        v_sum = data.sum(0)
+
+        v_sum = v_sum - np.min(v_sum)
+
+        if np.max(v_sum) > 200:
+            #v_sum = v_sum/np.max(v_sum)
+
+            indices = peakutils.indexes(v_sum, thres=threshold, min_dist = 2)
+
+            #print indices
+            try:
+                self.plot_integrated_image(v_sum)
+            except:
+                pass
+        else:
+            indices = []
+        
+        # return the number of ions
+        return len(indices)
+
+    def plot_integrated_image(self, v_sum):
+        from matplotlib import pyplot
+        pyplot.plot(v_sum)
+        pyplot.plot(0.4 * np.ones(len(v_sum)))
+        pyplot.tight_layout()
+        pyplot.show()
+
+
     def set_fitted_parameters(self, params, xx, yy):
         self.fitted_gaussians = self.ion_gaussians(params, xx, yy)
         self.background = params['background_level'].value
@@ -101,7 +134,7 @@ class ion_state_detector(object):
         sigma_guess = 1#assume it's hard to resolve the ion, sigma ~ 1
         params.add('background_level', value = background_guess, min = 0.0)
         params.add('amplitude', value = amplitude_guess, min = 0.0)
-        params.add('rotation_angle', value = 0.0001, min = -np.pi, max = np.pi, vary = False)
+        params.add('rotation_angle', value = np.pi/2, min = -np.pi, max = np.pi, vary = True)
         params.add('center_x', value = center_x_guess, min = xx.min(), max = xx.max())
         params.add('center_y', value = center_y_guess, min = yy.min(), max = yy.max())
         params.add('spacing', value = spacing_guess, min = 2.0, max = 60)

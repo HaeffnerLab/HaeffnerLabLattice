@@ -11,8 +11,8 @@ from labrad.units import WithUnit
 class ramsey(pulse_sequence):
     
     required_parameters = [
-                           ('OpticalPumping','optical_pumping_enable'), 
-                           ('SidebandCooling','sideband_cooling_enable'),
+                           ('StatePreparation','optical_pumping_enable'), 
+                           ('StatePreparation','sideband_cooling_enable'),
                            ]
 
     required_subsequences = [doppler_cooling_after_repump_d, optical_pumping, 
@@ -22,10 +22,12 @@ class ramsey(pulse_sequence):
         p = self.parameters
         self.end = WithUnit(10, 'us')
         self.addSequence(turn_off_all)
+        #self.addSequence(sample_pid)
+        
         self.addSequence(doppler_cooling_after_repump_d)
-        if p.OpticalPumping.optical_pumping_enable:
+        if p.StatePreparation.optical_pumping_enable:
             self.addSequence(optical_pumping)
-        if p.SidebandCooling.sideband_cooling_enable:
+        if p.StatePreparation.sideband_cooling_enable:
             self.addSequence(sideband_cooling)
         self.addSequence(ramsey_excitation)
         self.addSequence(tomography_readout)

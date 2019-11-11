@@ -17,6 +17,7 @@ class drift_tracker_ramsey_oneline(experiment):
                            ('DriftTrackerRamsey','detuning'),
                            ('DriftTrackerRamsey','readouts'),
                            ('DriftTrackerRamsey','optical_pumping_enable_DT'),
+                           ('DriftTrackerRamsey','use_camera_for_readout'),       
                            
                            ('StateReadout','camera_primary_ion'),
                            ('StateReadout','use_camera_for_readout'),                 
@@ -42,7 +43,6 @@ class drift_tracker_ramsey_oneline(experiment):
         parameters.remove(('TrapFrequencies','radial_frequency_2')),
         parameters.remove(('TrapFrequencies','rf_drive_frequency')),
         #will be disabling sideband cooling automatically
-        parameters.remove(('SidebandCooling','sideband_cooling_enable')),
         parameters.remove(('SidebandCooling','frequency_selection')),
         parameters.remove(('SidebandCooling','manual_frequency_729')),
         parameters.remove(('SidebandCooling','line_selection')),
@@ -63,14 +63,16 @@ class drift_tracker_ramsey_oneline(experiment):
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_additional_866')),
         parameters.remove(('SidebandCoolingPulsed','sideband_cooling_pulsed_duration_between_pulses')),                          
         #will be enable optical pumping automatically
-        parameters.remove(('OpticalPumping', 'optical_pumping_enable'))
+        parameters.remove(('StatePreparation', 'optical_pumping_enable'))
+        parameters.remove(('StatePreparation', 'sideband_cooling_enable'))
         return parameters
     
     def initialize(self, cxn, context, ident):
+        use_camera = self.parameters.DriftTrackerRamsey.use_camera_for_readout
         self.ident = ident
         self.drift_tracker = cxn.sd_tracker
         self.excitation = self.make_experiment(excitation_ramsey)
-        self.excitation.initialize(cxn, context, ident)
+        self.excitation.initialize(cxn, context, ident, use_camera_override=use_camera)
         self.phases = [WithUnit(90.0, 'deg'), WithUnit(-90.0, 'deg')]
         self.dv = cxn.data_vault
         
@@ -84,7 +86,7 @@ class drift_tracker_ramsey_oneline(experiment):
         directory.extend(dirappend)
         self.dv.cd(directory ,True)
         #try opening the existing dataset
-        datasetname = 'RameyDriftTrack {}'.format(line_name)
+        datasetname = 'RamseyDriftTrack {}'.format(line_name)
         datasets_in_folder = self.dv.dir()[1]
         names = sorted([name for name in datasets_in_folder if datasetname in name])
         if names:
@@ -112,6 +114,7 @@ class drift_tracker_ramsey_oneline(experiment):
                                            'Excitation_729.rabi_excitation_amplitude':dt.amplitude,
                                            'Excitation_729.rabi_excitation_frequency':frequency,
                                            'Tomography.iteration':0.0,
+                                           'StateReadout.use_camera_for_readout':dt.use_camera_for_readout,
                                            'StateReadout.repeat_each_measurement':dt.readouts,
                                            'SidebandCooling.sideband_cooling_enable':False,
                                            'OpticalPumping.optical_pumping_enable':dt.optical_pumping_enable_DT,
@@ -125,8 +128,11 @@ class drift_tracker_ramsey_oneline(experiment):
             else:
                 primary_ion = int(self.parameters.StateReadout.camera_primary_ion)
                 excitation_array, readout = self.excitation.run(cxn, context)
+                import IPython
+                #IPython.embed()
                 excitation = excitation_array[primary_ion]
             excitations.append(excitation)
+        print "exc"
         print excitations
         detuning, average_excitation = self.calculate_detuning(excitations)
         corrected_frequency = frequency + detuning

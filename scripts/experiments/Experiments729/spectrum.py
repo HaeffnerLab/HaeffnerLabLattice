@@ -16,6 +16,8 @@ class spectrum(experiment):
                            ('Spectrum','normal'),
                            ('Spectrum','fine'),
                            ('Spectrum','ultimate'),
+                           ('Spectrum','car1_sensitivity'),
+                           ('Spectrum','car2_sensitivity'),
                            
                            ('Spectrum','line_selection'),
                            ('Spectrum','manual_amplitude_729'),
@@ -39,7 +41,8 @@ class spectrum(experiment):
                            ('Crystallization', 'pmt_record_duration'),
                            ('Crystallization', 'pmt_threshold'),
                            ('Crystallization', 'use_camera'),
-                           ]
+
+                           ('Display', 'relative_frequencies'),                           ]
     
     spectrum_optional_parmeters = [
                           ('Spectrum', 'window_name')
@@ -56,29 +59,35 @@ class spectrum(experiment):
         parameters.remove(('Excitation_729','rabi_excitation_frequency'))
         return parameters
     
-    def initialize(self, cxn, context, ident):
+    def initialize(self, cxn, context, ident, use_camera_override=None):
         self.ident = ident
         self.excite = self.make_experiment(excitation_729)
-        self.excite.initialize(cxn, context, ident)
+        self.excite.initialize(cxn, context, ident, use_camera_override)
         if self.parameters.Crystallization.auto_crystallization:
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
         self.scan = []
         self.amplitude = None
         self.duration = None
-        #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
         self.spectrum_save_context = cxn.context()
-    
+        try:
+            self.grapher = cxn.grapher
+        except: self.grapher = None
+        self.cxn = cxn
+        
     def setup_sequence_parameters(self):
         sp = self.parameters.Spectrum
         if sp.scan_selection == 'manual':
             minim,maxim,steps = sp.manual_scan
             duration = sp.manual_excitation_time
             amplitude = sp.manual_amplitude_729
+            self.carrier_frequency = WithUnit(0.0, 'MHz')
         elif sp.scan_selection == 'auto':
             center_frequency = cm.frequency_from_line_selection(sp.scan_selection, None , sp.line_selection, self.drift_tracker)
+            self.carrier_frequency = center_frequency
             center_frequency = cm.add_sidebands(center_frequency, sp.sideband_selection, self.parameters.TrapFrequencies)
             span, resolution, duration, amplitude = sp[sp.sensitivity_selection]
             minim = center_frequency - span / 2.0
@@ -92,6 +101,17 @@ class spectrum(experiment):
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
         self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
+
+    def get_window_name(self):
+        if self.parameters.Spectrum.scan_selection == 'manual':
+            return ['spectrum']
+        else:
+            car = self.parameters.Spectrum.line_selection
+            sb = self.parameters.Spectrum.sideband_selection
+            window_name = car
+            if sb != [0, 0, 0, 0]: # the scan is some kind of sideband scan
+                window_name = window_name + str(sb)
+            return [window_name]
         
     def setup_data_vault(self):
         localtime = time.localtime()
@@ -103,23 +123,49 @@ class spectrum(experiment):
         self.dv.cd(directory ,True, context = self.spectrum_save_context)
         output_size = self.excite.output_size
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
-        self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
-        window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
-        self.dv.add_parameter('Window', window_name, context = self.spectrum_save_context)
-        self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
+        ds = self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
+        window_name = self.parameters.get('Spectrum.window_name', ['spectrum'])[0]
+        #window_name = self.get_window_name()
+        self.dv.add_parameter('Window', [window_name], context = self.spectrum_save_context)
+        #self.dv.add_parameter('plotLive', False, context = self.spectrum_save_context)
+        self.save_parameters(self.dv, self.cxn, self.cxnlab, self.spectrum_save_context)
+        sc = []
+        if self.parameters.Display.relative_frequencies:
+            sc =[x - self.carrier_frequency for x in self.scan]
+        else: sc = self.scan
+        if self.grapher is not None:
+            self.grapher.plot_with_axis(ds, window_name, sc, False)
         
     def run(self, cxn, context):
-        self.setup_data_vault()
+        import time
+        #t0 = time.time()
+        
         self.setup_sequence_parameters()
+        self.setup_data_vault()
+        
+
+        fr = []
+        exci = []
+        
         for i,freq in enumerate(self.scan):
             should_stop = self.pause_or_stop()
             if should_stop: break
             excitation = self.get_excitation_crystallizing(cxn, context, freq)
             if excitation is None: break
-            submission = [freq['MHz']]
+            if self.parameters.Display.relative_frequencies:
+                submission = [freq['MHz'] - self.carrier_frequency['MHz']]
+            else:
+                submission = [freq['MHz']]
             submission.extend(excitation)
             self.dv.add(submission, context = self.spectrum_save_context)
             self.update_progress(i)
+            fr.append(submission[0])
+            exci.append(excitation)
+            
+        #t1 = time.time()
+        
+        #print t1 - t0    
+        return fr, exci
     
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)
@@ -158,7 +204,7 @@ class spectrum(experiment):
         
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
-        #self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
+        self.save_parameters(self.dv, cxn, self.cxnlab, self.spectrum_save_context)
 
     def update_progress(self, iteration):
         progress = self.min_progress + (self.max_progress - self.min_progress) * float(iteration + 1.0) / len(self.scan)
@@ -167,7 +213,8 @@ class spectrum(experiment):
     def save_parameters(self, dv, cxn, cxnlab, context):
         measuredDict = dvParameters.measureParameters(cxn, cxnlab)
         dvParameters.saveParameters(dv, measuredDict, context)
-        dvParameters.saveParameters(dv, dict(self.parameters), context)   
+        dvParameters.saveParameters(dv, dict(self.parameters), context)
+        cxnlab.disconnect()
 
 if __name__ == '__main__':
     cxn = labrad.connect()

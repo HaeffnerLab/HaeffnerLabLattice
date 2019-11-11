@@ -19,16 +19,22 @@ class base_excitation(experiment):
                             ('SidebandCooling','manual_frequency_729'),
                             ('SidebandCooling','line_selection'),
                             ('SidebandCooling','sideband_selection'),
+                            
+                            ('SequentialSBCooling', 'sideband_selection'),
+                            
                             ('TrapFrequencies','axial_frequency'),
                             ('TrapFrequencies','radial_frequency_1'),
                             ('TrapFrequencies','radial_frequency_2'),
                             ('TrapFrequencies','rf_drive_frequency'),
-                            
+                            ('TrapFrequencies', 'aux_radial'),
+                            ('TrapFrequencies', 'aux_axial'),
                             ('StateReadout', 'repeat_each_measurement'),
                             ('StateReadout', 'state_readout_threshold'),
 
                             ('StateReadout', 'use_camera_for_readout'),
-                            ('StateReadout', 'state_readout_duration'),
+                            #('StateReadout', 'state_readout_duration'),
+                            ('StateReadout', 'pmt_readout_duration'),
+                            ('StateReadout', 'camera_readout_duration'),
                             
                             ('IonsOnCamera','ion_number'),
                             ('IonsOnCamera','vertical_min'),
@@ -56,9 +62,13 @@ class base_excitation(experiment):
         params.remove(('OpticalPumping', 'optical_pumping_frequency_729'))
         params.remove(('SidebandCooling', 'sideband_cooling_frequency_729'))
         params.remove(('OpticalPumpingAux', 'aux_optical_frequency_729'))
+        params.remove(('StateReadout', 'state_readout_duration'))
+        params.remove(('SequentialSBCooling', 'frequency'))
+        params.remove(('SidebandPrecooling', 'frequency_1'))
+        params.remove(('SidebandPrecooling', 'frequency_2'))
         return params
     
-    def initialize(self, cxn, context, ident):
+    def initialize(self, cxn, context, ident, use_camera_override=None):
         self.pulser = cxn.pulser
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
@@ -66,10 +76,14 @@ class base_excitation(experiment):
         self.readout_save_context = cxn.context()
         self.histogram_save_context = cxn.context()
         self.readout_save_iteration = 0
+        
+        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        
         self.setup_sequence_parameters()
         self.setup_initial_switches()
         self.setup_data_vault()
-        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        if use_camera_override != None:
+            self.use_camera=use_camera_override
         if self.use_camera:
             self.initialize_camera(cxn)
             
@@ -123,47 +137,93 @@ class base_excitation(experiment):
     
     def setup_sequence_parameters(self):
         op = self.parameters.OpticalPumping
-        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, op.optical_pumping_enable)
+        sp = self.parameters.StatePreparation
+        optical_pumping_frequency = cm.frequency_from_line_selection(op.frequency_selection, op.manual_frequency_729, op.line_selection, self.drift_tracker, sp.optical_pumping_enable)
         self.parameters['OpticalPumping.optical_pumping_frequency_729'] = optical_pumping_frequency
         aux = self.parameters.OpticalPumpingAux
         aux_optical_pumping_frequency = cm.frequency_from_line_selection('auto', WithUnit(0,'MHz'),  aux.aux_op_line_selection, self.drift_tracker, aux.aux_op_enable)
         self.parameters['OpticalPumpingAux.aux_optical_frequency_729'] = aux_optical_pumping_frequency
         sc = self.parameters.SidebandCooling
-        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sc.sideband_cooling_enable)
+        sideband_cooling_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
         if sc.frequency_selection == 'auto': 
             trap = self.parameters.TrapFrequencies
             sideband_cooling_frequency = cm.add_sidebands(sideband_cooling_frequency, sc.sideband_selection, trap)
         self.parameters['SidebandCooling.sideband_cooling_frequency_729'] = sideband_cooling_frequency
+        #print "sbc"
+        #print sideband_cooling_frequency
+        sc2 = self.parameters.SequentialSBCooling
+        sc2freq = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
+        sc2freq = cm.add_sidebands(sc2freq, sc2.sideband_selection, trap)
+        self.parameters['SequentialSBCooling.frequency'] = sc2freq
+        #print sc2freq
+
+        ### sideband precooling stuff ###
+        spc = self.parameters.SidebandPrecooling
+        sbc_carrier_frequency = cm.frequency_from_line_selection(sc.frequency_selection, sc.manual_frequency_729, sc.line_selection, self.drift_tracker, sp.sideband_cooling_enable)
+        frequency_1 = WithUnit(0.0, 'MHz')
+        frequency_2 = WithUnit(0.0, 'MHz')
+        if spc.mode_1 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode_1]
+            frequency_1 = sbc_carrier_frequency - tf
+        if spc.mode_2 != 'off':
+            tf = self.parameters['TrapFrequencies.' + spc.mode_2]
+            frequency_2 = sbc_carrier_frequency - tf
+        self.parameters['SidebandPrecooling.frequency_1'] = frequency_1
+        self.parameters['SidebandPrecooling.frequency_2'] = frequency_2
+
+        # set state readout time
+        if self.use_camera:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.camera_readout_duration
+        else:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.pmt_readout_duration
     
     def setup_initial_switches(self):
         self.pulser.switch_manual('crystallization',  False)
         #switch off 729 at the beginning
-        self.pulser.output('729DP', False)
+        self.pulser.output('729global', False)
+        self.pulser.output('729local', False)
     
     def plot_current_sequence(self, cxn):
         from common.okfpgaservers.pulser.pulse_sequences.plot_sequence import SequencePlotter
         dds = cxn.pulser.human_readable_dds()
         ttl = cxn.pulser.human_readable_ttl()
-        channels = cxn.pulser.get_channels().asarray
-        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        channels = cxn.pulser.get_channels()
+        #sp = SequencePlotter(ttl, dds.aslist, channels)
+        sp = SequencePlotter(ttl, dds, channels)
         sp.makePlot()
         
     def run(self, cxn, context):
+        # set state readout time
+        if self.use_camera:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.camera_readout_duration
+        else:
+            self.parameters['StateReadout.state_readout_duration'] = self.parameters.StateReadout.pmt_readout_duration
         threshold = int(self.parameters.StateReadout.state_readout_threshold)
         repetitions = int(self.parameters.StateReadout.repeat_each_measurement)
         pulse_sequence = self.pulse_sequence(self.parameters)
+                
         pulse_sequence.programSequence(self.pulser)
-#         self.plot_current_sequence(cxn)
+        self.use_camera = self.parameters.StateReadout.use_camera_for_readout
+        #print self.use_camera
+        #self.plot_current_sequence(cxn)
         if self.use_camera:
             #print 'starting acquisition'
             self.camera.set_number_kinetics(repetitions)
             self.camera.start_acquisition()
+            
+        
         self.pulser.start_number(repetitions)
+        
         self.pulser.wait_sequence_done()
+        
         self.pulser.stop_sequence()
+        
+        
         if not self.use_camera:
+            #print "not using camera!"
             #get percentage of the excitation using the PMT threshold
-            readouts = self.pulser.get_readout_counts().asarray
+            readouts = self.pulser.get_readout_counts()
+            
             self.save_data(readouts)            
             if len(readouts):
                 perc_excited = numpy.count_nonzero(readouts <= threshold) / float(len(readouts))
@@ -180,7 +240,7 @@ class base_excitation(experiment):
                 
                 self.finalize(cxn, context)
                 raise Exception ("Did not get all kinetic images from camera")
-            images = self.camera.get_acquired_data(repetitions).asarray
+            images = self.camera.get_acquired_data(repetitions)
             self.camera.abort_acquisition()
             x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
             y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
@@ -190,7 +250,9 @@ class base_excitation(experiment):
             #useful for debugging, saving the images
 #             numpy.save('readout {}'.format(int(time.time())), images)
             self.save_confidences(confidences)
-        return ion_state, readouts
+                    
+            
+        return ion_state, readouts    
     
     @property
     def output_size(self):
@@ -198,6 +260,7 @@ class base_excitation(experiment):
             return int(self.parameters.IonsOnCamera.ion_number)
         else:
             return 1
+
     
     def finalize(self, cxn, context):
         if self.use_camera:
@@ -207,7 +270,7 @@ class base_excitation(experiment):
             self.camera.set_image_region(self.initial_region)
             if self.camera_initially_live_display:
                 self.camera.start_live_display()
-               
+
     def save_data(self, readouts):
         #save the current readouts
         iters = numpy.ones_like(readouts) * self.readout_save_iteration

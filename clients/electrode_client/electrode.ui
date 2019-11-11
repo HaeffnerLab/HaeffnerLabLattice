@@ -312,10 +312,10 @@
       <string> V</string>
      </property>
      <property name="minimum">
-      <double>-40.000000000000000</double>
+      <double>-400.000000000000000</double>
      </property>
      <property name="maximum">
-      <double>40.000000000000000</double>
+      <double>400.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>
@@ -396,10 +396,10 @@
       <string> V</string>
      </property>
      <property name="minimum">
-      <double>-40.000000000000000</double>
+      <double>-400.000000000000000</double>
      </property>
      <property name="maximum">
-      <double>40.000000000000000</double>
+      <double>400.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>

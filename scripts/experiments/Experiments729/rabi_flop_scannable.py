@@ -43,16 +43,17 @@ class rabi_flopping_scannable(experiment):
         return parameters
     
     
-    def initialize(self, cxn, context, ident):
+    def initialize(self, cxn, context, ident, report_all_ions = False):
         self.ident = ident
         self.excite = self.make_experiment(excitation_729)
         self.excite.initialize(cxn, context, ident)
         self.scan = []
         self.amplitude = None
         self.duration = None
-        self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
+        self.cxnlab = labrad.connect('192.168.169.49', password='lab', tls_mode='off') #connection to labwide network
         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
+        self.report_all_ions = report_all_ions # whether to return the readout state of all ions
         self.rabi_flop_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
@@ -61,7 +62,7 @@ class rabi_flopping_scannable(experiment):
         self.parameters['Excitation_729.rabi_excitation_duration'] = self.parameters.RabiFlopping_Sit.sit_on_excitation
     
     def load_frequency(self):
-        #reloads trap frequencyies and gets the latest information from the drift tracker
+        #reloads trap frequencies and gets the latest information from the drift tracker
         self.reload_some_parameters(self.trap_frequencies) 
         flop = self.parameters.RabiFlopping
         frequency = cm.frequency_from_line_selection(flop.frequency_selection, flop.manual_frequency_729, flop.line_selection, self.drift_tracker)
@@ -76,14 +77,29 @@ class rabi_flopping_scannable(experiment):
         self.excite.set_parameters(self.parameters)
         excitation, readouts = self.excite.run(cxn, context)
         if not self.parameters['StateReadout.use_camera_for_readout']:
-            single_excitation = excitation[0]
+            if self.report_all_ions: # whether to return readout state of all ions
+                single_excitation = excitation
+            else:
+                single_excitation = excitation[0]
+            return single_excitation
         else:
-            ion = int(self.parameters.RabiFlopping_Sit.selected_ion)
-            single_excitation = excitation[ion]
-        return single_excitation
+            if not self.report_all_ions:
+                ion = int(self.parameters.RabiFlopping_Sit.selected_ion)
+                single_excitation = excitation[ion]
+                return single_excitation
+            else:
+                return excitation
      
     def finalize(self, cxn, context):
         self.excite.finalize(cxn, context)
+                                
+    def save_parameters(self, dv, cxn, cxnlab, context):
+        try:
+            #measuredDict = dvParameters.measureParameters(cxn, cxnlab)
+            #dvParameters.saveParameters(dv, measuredDict, context)
+            dvParameters.saveParameters(dv, dict(self.parameters), context)     
+        except:
+            pass
         
 if __name__ == '__main__':
     cxn = labrad.connect()
